@@ -176,35 +176,41 @@ export async function POST(request: NextRequest) {
     const organizationId = '873d8154-8b40-4b8a-8d03-431bf9f697e6' // ID fijo para pruebas
     const createdById = 'a06654c1-d078-404d-bfec-72c883079a41' // Fernando's user ID
 
-    // Validaciones básicas
-    if (!body.customer_id || !body.device_id || !body.title || !body.problem_description) {
+    // Validaciones
+    if (!body.title || !body.problem_description) {
       return NextResponse.json(
-        { error: 'Cliente, dispositivo, título y descripción del problema son obligatorios' },
+        { error: 'Título y descripción del problema son obligatorios' },
+        { status: 400 }
+      )
+    }
+
+    // Validar si es cliente registrado o no
+    if (!body.customer_id && !body.unregistered_customer_name) {
+      return NextResponse.json(
+        { error: 'Debe proporcionar un cliente registrado o los datos de un cliente no registrado.' },
         { status: 400 }
       )
     }
 
     const newRepair = {
       organization_id: organizationId,
-      customer_id: body.customer_id,
-      device_id: body.device_id,
-      assigned_technician_id: null, // Sin técnico asignado inicialmente
+      customer_id: body.customer_id || null,
+      device_id: body.device_id || null,
+      assigned_technician_id: null,
       created_by: createdById,
       title: body.title,
       description: body.description || '',
       problem_description: body.problem_description,
-      solution_description: null,
       status: 'received',
       priority: body.priority || 'medium',
       estimated_cost: body.estimated_cost || 0,
-      final_cost: null,
-      estimated_completion_date: null,
-      actual_completion_date: null,
       received_date: new Date().toISOString(),
-      delivered_date: null,
-      warranty_days: 90, // 90 días por defecto
+      warranty_days: 90,
       internal_notes: body.internal_notes || null,
-      customer_notes: null
+      // Campos para no registrados
+      unregistered_customer_name: body.unregistered_customer_name || null,
+      unregistered_customer_phone: body.unregistered_customer_phone || null,
+      unregistered_device_info: body.unregistered_device_info || null,
     }
 
     console.log('📝 Repair data to insert:', newRepair)

@@ -123,6 +123,7 @@ export default function DispositivosPage() {
   const { isOpen: isDetailOpen, onOpen: onDetailOpen, onClose: onDetailClose } = useDisclosure()
   const { isOpen: isEditOpen, onOpen: onEditOpen, onClose: onEditClose } = useDisclosure()
   const { isOpen: isDeleteOpen, onOpen: onDeleteOpen, onClose: onDeleteClose } = useDisclosure()
+  const { isOpen: isStatusOpen, onOpen: onStatusOpen, onClose: onStatusClose } = useDisclosure()
 
   const fetchDevices = async (page = 1, marca = filtroMarca, search = busqueda) => {
     try {
@@ -365,6 +366,11 @@ export default function DispositivosPage() {
     return customer.name || customer.anonymous_identifier || 'Cliente Anónimo'
   }
 
+  const handleStatusChangeClick = (device: Device) => {
+    setSelectedDevice(device);
+    onStatusOpen();
+  };
+
   const handleStatusChange = async (deviceId: string, newStatus: Device['status']) => {
     // Optimistic UI update
     setDevices(prevDevices => 
@@ -411,6 +417,11 @@ export default function DispositivosPage() {
 
   const DeviceActions = ({ device }: { device: Device }) => (
     <div className="flex justify-end gap-1">
+      <Tooltip content="Cambiar Estado" classNames={{ content: "bg-gray-900 text-white" }}>
+        <Button isIconOnly variant="flat" size="sm" onPress={() => handleStatusChangeClick(device)}>
+          <Clock className="w-4 h-4" />
+        </Button>
+      </Tooltip>
       <Tooltip content="Ver Detalles" classNames={{ content: "bg-gray-900 text-white" }}>
         <Button isIconOnly variant="flat" size="sm" onPress={() => handleViewDetails(device)}>
           <Eye className="w-4 h-4" />
@@ -988,6 +999,93 @@ export default function DispositivosPage() {
                 onPress={confirmDeleteDevice}
               >
                 Eliminar Dispositivo
+              </Button>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
+
+        {/* Modal de cambio de estado */}
+        <Modal isOpen={isStatusOpen} onClose={onStatusClose} size="2xl">
+          <ModalContent>
+            <ModalHeader>
+              <h2 className="text-xl font-bold">Cambiar Estado del Dispositivo</h2>
+            </ModalHeader>
+            <ModalBody className="space-y-4">
+              {selectedDevice && (
+                <div className="space-y-4">
+                  <div className="flex items-center gap-4">
+                    <Avatar
+                      icon={React.createElement(getDeviceIcon(selectedDevice.device_type), { className: "w-8 h-8" })}
+                      classNames={{
+                        base: `${getBrandColor(selectedDevice.brand)} p-2`,
+                        icon: "text-white"
+                      }}
+                      size="lg"
+                    />
+                    <div>
+                      <h3 className={`text-xl font-semibold ${textColors.primary}`}>
+                        {selectedDevice.brand} {selectedDevice.model}
+                      </h3>
+                      <DeviceStatusBadge status={selectedDevice.status} />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2">
+                    <Button
+                      color="default"
+                      variant={selectedDevice.status === 'in_store' ? 'solid' : 'flat'}
+                      onPress={() => handleStatusChange(selectedDevice.id, 'in_store')}
+                      className="w-full"
+                    >
+                      En Tienda
+                    </Button>
+                    <Button
+                      color="warning"
+                      variant={selectedDevice.status === 'in_repair' ? 'solid' : 'flat'}
+                      onPress={() => handleStatusChange(selectedDevice.id, 'in_repair')}
+                      className="w-full"
+                    >
+                      En Reparación
+                    </Button>
+                    <Button
+                      color="secondary"
+                      variant={selectedDevice.status === 'awaiting_parts' ? 'solid' : 'flat'}
+                      onPress={() => handleStatusChange(selectedDevice.id, 'awaiting_parts')}
+                      className="w-full"
+                    >
+                      Esperando Piezas
+                    </Button>
+                    <Button
+                      color="primary"
+                      variant={selectedDevice.status === 'ready_for_pickup' ? 'solid' : 'flat'}
+                      onPress={() => handleStatusChange(selectedDevice.id, 'ready_for_pickup')}
+                      className="w-full"
+                    >
+                      Listo para Recoger
+                    </Button>
+                    <Button
+                      color="success"
+                      variant={selectedDevice.status === 'delivered' ? 'solid' : 'flat'}
+                      onPress={() => handleStatusChange(selectedDevice.id, 'delivered')}
+                      className="w-full"
+                    >
+                      Entregado
+                    </Button>
+                    <Button
+                      color="danger"
+                      variant={selectedDevice.status === 'irreparable' ? 'solid' : 'flat'}
+                      onPress={() => handleStatusChange(selectedDevice.id, 'irreparable')}
+                      className="w-full"
+                    >
+                      Irreparable
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </ModalBody>
+            <ModalFooter>
+              <Button variant="flat" onPress={onStatusClose}>
+                Cerrar
               </Button>
             </ModalFooter>
           </ModalContent>

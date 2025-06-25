@@ -28,7 +28,8 @@ import {
   TableColumn,
   TableBody,
   TableRow,
-  TableCell
+  TableCell,
+  Switch
 } from '@heroui/react'
 import FormField from '@/app/components/ui/FormField'
 import { textColors } from '@/lib/utils/colors'
@@ -123,14 +124,17 @@ interface PaginationInfo {
 }
 
 interface NewRepairForm {
-  customer_id: string
-  device_id: string
-  title: string
-  description: string
-  problem_description: string
-  priority: string
-  estimated_cost: number
-  internal_notes: string
+  customer_id: string;
+  device_id: string;
+  title: string;
+  description: string;
+  problem_description: string;
+  priority: string;
+  estimated_cost: number;
+  internal_notes: string;
+  unregistered_customer_name?: string;
+  unregistered_customer_phone?: string;
+  unregistered_device_info?: string;
 }
 
 interface RepairStats {
@@ -169,6 +173,7 @@ export default function ReparacionesPage() {
     delivered: 0,
     cancelled: 0,
   })
+  const [isUnregistered, setIsUnregistered] = useState(false);
 
   const [newRepair, setNewRepair] = useState<NewRepairForm>({
     customer_id: '',
@@ -178,7 +183,10 @@ export default function ReparacionesPage() {
     problem_description: '',
     priority: 'medium',
     estimated_cost: 0,
-    internal_notes: ''
+    internal_notes: '',
+    unregistered_customer_name: '',
+    unregistered_customer_phone: '',
+    unregistered_device_info: '',
   })
 
   const [selectedRepair, setSelectedRepair] = useState<Repair | null>(null)
@@ -282,20 +290,63 @@ export default function ReparacionesPage() {
   const handleCreateRepair = async (e: React.FormEvent) => {
     e.preventDefault()
     setCreateLoading(true)
+    setError(null)
+    
+    const payload = isUnregistered
+      ? {
+          title: newRepair.title,
+          description: newRepair.description,
+          problem_description: newRepair.problem_description,
+          priority: newRepair.priority,
+          estimated_cost: newRepair.estimated_cost,
+          internal_notes: newRepair.internal_notes,
+          unregistered_customer_name: newRepair.unregistered_customer_name,
+          unregistered_customer_phone: newRepair.unregistered_customer_phone,
+          unregistered_device_info: newRepair.unregistered_device_info,
+          customer_id: null,
+          device_id: null,
+        }
+      : {
+          customer_id: newRepair.customer_id,
+          device_id: newRepair.device_id,
+          title: newRepair.title,
+          description: newRepair.description,
+          problem_description: newRepair.problem_description,
+          priority: newRepair.priority,
+          estimated_cost: newRepair.estimated_cost,
+          internal_notes: newRepair.internal_notes,
+        };
+    
+    if (isUnregistered) {
+      if (!payload.unregistered_customer_name || !payload.unregistered_device_info) {
+        setError('Para clientes no registrados, el nombre y la información del dispositivo son obligatorios.')
+        setCreateLoading(false)
+        return
+      }
+    } else {
+      if (!payload.customer_id || !payload.device_id) {
+        setError('Por favor, seleccione un cliente y un dispositivo.')
+        setCreateLoading(false)
+        return
+      }
+    }
 
     try {
       const response = await fetch('/api/repairs', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
-        body: JSON.stringify(newRepair),
+        body: JSON.stringify(payload)
       })
 
       if (!response.ok) {
-        throw new Error('Error al crear la reparación')
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Error al crear la reparación')
       }
 
+      await fetchRepairs()
+      onCreateClose()
       setNewRepair({
         customer_id: '',
         device_id: '',
@@ -304,15 +355,14 @@ export default function ReparacionesPage() {
         problem_description: '',
         priority: 'medium',
         estimated_cost: 0,
-        internal_notes: ''
+        internal_notes: '',
+        unregistered_customer_name: '',
+        unregistered_customer_phone: '',
+        unregistered_device_info: '',
       })
-      setFilteredDevices([])
-      onCreateClose()
-      fetchRepairs()
-      
+      setIsUnregistered(false);
     } catch (err) {
-      console.error('Error creating repair:', err)
-      alert(err instanceof Error ? err.message : 'Error al crear la reparación')
+      setError(err instanceof Error ? err.message : 'Error desconocido')
     } finally {
       setCreateLoading(false)
     }
@@ -729,11 +779,7 @@ export default function ReparacionesPage() {
                   variant="bordered"
                   size="lg"
                   startContent={<Filter className="w-4 h-4" />}
-                  classNames={{
-                    trigger: "text-gray-900",
-                    value: "text-gray-900",
-                    popoverContent: "bg-white",
-                  }}
+                  className="text-gray-900 dark:text-gray-100"
                 >
                   <SelectItem key="todos" className="text-gray-900">Todos los estados</SelectItem>
                   <SelectItem key="received" className="text-gray-900">Recibido</SelectItem>
@@ -795,125 +841,129 @@ export default function ReparacionesPage() {
             </Card>
         </div>
 
-        {/* Modal de nueva reparación */}
-        <Modal 
-          isOpen={isCreateOpen} 
-          onClose={onCreateClose}
-          size="2xl"
-          scrollBehavior="inside"
-        >
+        {/* Modal para crear reparación */}
+        <Modal isOpen={isCreateOpen} onClose={onCreateClose}>
           <ModalContent>
-            <form onSubmit={handleCreateRepair}>
-              <ModalHeader>
-                <h2 className="text-xl font-bold">Crear Nueva Reparación</h2>
-              </ModalHeader>
-              <ModalBody className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <FormField
-                    label="Cliente"
-                    name="customer_id"
-                    type="select"
-                    value={newRepair.customer_id}
-                    onChange={handleCustomerChange}
-                    required
-                    options={customers.map(customer => ({
-                      value: customer.id,
-                      label: customer.name || customer.anonymous_identifier || `Cliente ${customer.id}`
-                    }))}
-                  />
-                  
-                  <FormField
-                    label="Dispositivo"
-                    name="device_id"
-                    type="select"
-                    value={newRepair.device_id}
-                    onChange={(value) => setNewRepair(prev => ({ ...prev, device_id: value }))}
-                    required
-                    options={filteredDevices.map(device => ({
-                      value: device.id,
-                      label: `${device.brand} ${device.model} - ${device.color || 'Sin color'}`
-                    }))}
-                    helpText={newRepair.customer_id && filteredDevices.length === 0 ? 
-                      'No hay dispositivos para este cliente. Registra uno primero.' : ''}
+            <ModalHeader>Nueva Reparación</ModalHeader>
+            <ModalBody>
+              <form onSubmit={handleCreateRepair} className="space-y-4">
+                <div className="flex items-center gap-4">
+                  <label htmlFor="unregistered-switch" className="text-gray-700 dark:text-gray-300">
+                    Cliente no registrado
+                  </label>
+                  <Switch
+                    id="unregistered-switch"
+                    isSelected={isUnregistered}
+                    onChange={() => setIsUnregistered(!isUnregistered)}
                   />
                 </div>
 
-                <FormField
-                  label="Título de la reparación"
-                  name="title"
+                {isUnregistered ? (
+                  <>
+                    <Input
+                      label="Nombre del Cliente"
+                      placeholder="Ej: Juan Pérez"
+                      value={newRepair.unregistered_customer_name}
+                      onChange={(e) => setNewRepair({ ...newRepair, unregistered_customer_name: e.target.value })}
+                      isRequired
+                    />
+                    <Input
+                      label="Teléfono del Cliente (Opcional)"
+                      placeholder="Ej: +123456789"
+                      value={newRepair.unregistered_customer_phone}
+                      onChange={(e) => setNewRepair({ ...newRepair, unregistered_customer_phone: e.target.value })}
+                    />
+                    <Textarea
+                      label="Información del Dispositivo"
+                      placeholder="Ej: iPhone 13 Pro, color azul, con la pantalla rota."
+                      value={newRepair.unregistered_device_info}
+                      onChange={(e) => setNewRepair({ ...newRepair, unregistered_device_info: e.target.value })}
+                      isRequired
+                    />
+                  </>
+                ) : (
+                  <>
+                    <Select
+                      label="Cliente"
+                      placeholder="Seleccione un cliente"
+                      onSelectionChange={(keys) => handleCustomerChange(Array.from(keys)[0] as string)}
+                      isRequired
+                      className="text-gray-900 dark:text-gray-100"
+                    >
+                      {customers.map((customer) => (
+                        <SelectItem key={customer.id} textValue={`${customer.name} (${customer.email || customer.phone})`} className="text-gray-900 dark:text-gray-100">
+                          {customer.name} ({customer.email || customer.phone})
+                        </SelectItem>
+                      ))}
+                    </Select>
+                    <Select
+                      label="Dispositivo"
+                      placeholder="Seleccione un dispositivo"
+                      onSelectionChange={(keys) => setNewRepair({ ...newRepair, device_id: Array.from(keys)[0] as string })}
+                      isDisabled={!newRepair.customer_id}
+                      isRequired
+                      className="text-gray-900 dark:text-gray-100"
+                    >
+                      {filteredDevices.map((device) => (
+                        <SelectItem key={device.id} textValue={`${device.brand} ${device.model}`} className="text-gray-900 dark:text-gray-100">
+                          {device.brand} {device.model} ({device.device_type})
+                        </SelectItem>
+                      ))}
+                    </Select>
+                  </>
+                )}
+                
+                <Input
+                  label="Título de la Reparación"
+                  placeholder="Ej: Cambio de pantalla iPhone 13"
                   value={newRepair.title}
-                  onChange={(value) => setNewRepair(prev => ({ ...prev, title: value }))}
-                  placeholder="Cambio de pantalla, reparación de batería..."
-                  required
+                  onChange={(e) => setNewRepair({ ...newRepair, title: e.target.value })}
+                  isRequired
                 />
-
-                <FormField
-                  label="Descripción del problema"
-                  name="problem_description"
-                  type="textarea"
+                <Textarea
+                  label="Descripción del Problema"
+                  placeholder="El cliente reporta que el dispositivo no enciende..."
                   value={newRepair.problem_description}
-                  onChange={(value) => setNewRepair(prev => ({ ...prev, problem_description: value }))}
-                  placeholder="Describe el problema reportado por el cliente..."
-                  required
-                  rows={3}
+                  onChange={(e) => setNewRepair({ ...newRepair, problem_description: e.target.value })}
+                  isRequired
                 />
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <FormField
-                    label="Prioridad"
-                    name="priority"
-                    type="select"
-                    value={newRepair.priority}
-                    onChange={(value) => setNewRepair(prev => ({ ...prev, priority: value }))}
-                    options={[
-                      { value: 'low', label: 'Baja' },
-                      { value: 'medium', label: 'Media' },
-                      { value: 'high', label: 'Alta' },
-                      { value: 'urgent', label: 'Urgente' }
-                    ]}
-                  />
-                  
-                  <FormField
-                    label="Costo estimado"
-                    name="estimated_cost"
-                    type="number"
-                    value={newRepair.estimated_cost.toString()}
-                    onChange={(value) => setNewRepair(prev => ({ ...prev, estimated_cost: parseFloat(value) || 0 }))}
-                    placeholder="0.00"
-                    min="0"
-                    step="0.01"
-                  />
-                </div>
-
-                <FormField
-                  label="Notas internas"
-                  name="internal_notes"
-                  type="textarea"
-                  value={newRepair.internal_notes}
-                  onChange={(value) => setNewRepair(prev => ({ ...prev, internal_notes: value }))}
-                  placeholder="Notas para el técnico, piezas necesarias..."
-                  rows={2}
-                />
-              </ModalBody>
-              <ModalFooter>
-                <Button color="default" variant="light" onPress={onCreateClose}>
-                  Cancelar
-                </Button>
-                <Button 
-                  type="submit" 
-                  color="primary" 
-                  isLoading={createLoading}
-                  startContent={!createLoading ? <Plus className="w-4 h-4" /> : null}
+                <Select
+                  label="Prioridad"
+                  selectedKeys={[newRepair.priority]}
+                  onSelectionChange={(keys) => setNewRepair({ ...newRepair, priority: Array.from(keys)[0] as string })}
+                  className="text-gray-900 dark:text-gray-100"
                 >
-                  Crear Reparación
-                </Button>
-              </ModalFooter>
-            </form>
+                  <SelectItem key="low" className="text-gray-900 dark:text-gray-100">Baja</SelectItem>
+                  <SelectItem key="medium" className="text-gray-900 dark:text-gray-100">Media</SelectItem>
+                  <SelectItem key="high" className="text-gray-900 dark:text-gray-100">Alta</SelectItem>
+                </Select>
+                <Input
+                  type="number"
+                  label="Costo Estimado"
+                  placeholder="0.00"
+                  value={String(newRepair.estimated_cost)}
+                  onChange={(e) => setNewRepair({ ...newRepair, estimated_cost: parseFloat(e.target.value) || 0 })}
+                  startContent={<DollarSign className="w-4 h-4 text-gray-400" />}
+                />
+                <Textarea
+                  label="Notas Internas (Opcional)"
+                  placeholder="Recordar pedir la pieza X..."
+                  value={newRepair.internal_notes}
+                  onChange={(e) => setNewRepair({ ...newRepair, internal_notes: e.target.value })}
+                />
+              </form>
+            </ModalBody>
+            <ModalFooter>
+              <Button variant="flat" onClick={onCreateClose}>Cancelar</Button>
+              <Button color="primary" onClick={handleCreateRepair} isLoading={createLoading}>
+                Crear Reparación
+              </Button>
+            </ModalFooter>
           </ModalContent>
         </Modal>
 
-        {/* Modal de detalles */}
-        <Modal isOpen={isDetailOpen} onClose={onDetailClose} size="2xl">
+        {/* Modal para ver detalles */}
+        <Modal isOpen={isDetailOpen} onClose={onDetailClose} size="3xl">
           <ModalContent>
             {(onDetailClose) => (
               <>

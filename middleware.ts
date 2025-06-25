@@ -1,79 +1,50 @@
-import { createServerClient } from '@supabase/ssr'
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
+import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs'
+import { isNetworkError } from '@/lib/supabase/retry-helpers'
 
 export async function middleware(req: NextRequest) {
-  let response = NextResponse.next({
-    request: {
-      headers: req.headers,
-    },
-  })
-
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        get(name: string) {
-          return req.cookies.get(name)?.value
-        },
-        set(name: string, value: string, options: any) {
-          req.cookies.set({
-            name,
-            value,
-            ...options,
-          })
-          response = NextResponse.next({
-            request: {
-              headers: req.headers,
-            },
-          })
-          response.cookies.set({
-            name,
-            value,
-            ...options,
-          })
-        },
-        remove(name: string, options: any) {
-          req.cookies.set({
-            name,
-            value: '',
-            ...options,
-          })
-          response = NextResponse.next({
-            request: {
-              headers: req.headers,
-            },
-          })
-          response.cookies.set({
-            name,
-            value: '',
-            ...options,
-          })
-        },
-      },
+  try {
+    // No aplicar middleware a la página de reconexión
+    if (req.nextUrl.pathname === '/auth/reconnect') {
+      return NextResponse.next()
     }
-  )
 
-  const {
-    data: { session },
-  } = await supabase.auth.getSession()
+    const res = NextResponse.next()
+    const supabase = createMiddlewareClient({ req, res })
+    
+    const {
+      data: { session },
+      error,
+    } = await supabase.auth.getSession()
 
-  // Rutas que requieren autenticación
-  if (req.nextUrl.pathname.startsWith('/dashboard')) {
-    if (!session) {
+    // Manejar errores de red específicamente
+    if (error && isNetworkError(error)) {
+      console.error('🔴 Error de red en middleware:', error)
+      // Permitir un retry suave redirigiendo a una página de reconexión
+      return NextResponse.redirect(new URL('/auth/reconnect', req.url))
+    }
+
+    // Si no hay sesión y la ruta requiere autenticación
+    if (!session && req.nextUrl.pathname.startsWith('/dashboard')) {
       return NextResponse.redirect(new URL('/auth/login', req.url))
     }
-  }
 
-  // Redirigir usuarios autenticados lejos de páginas de auth
-  if (req.nextUrl.pathname.startsWith('/auth') && session) {
-    return NextResponse.redirect(new URL('/dashboard', req.url))
+    return res
+  } catch (error) {
+    console.error('🔴 Error en middleware:', error)
+    // En caso de error crítico, redirigir a reconexión
+    if (error instanceof Error && isNetworkError(error)) {
+      return NextResponse.redirect(new URL('/auth/reconnect', req.url))
+    }
+    return NextResponse.next()
   }
-
-  return response
 }
 
 export const config = {
-  matcher: ['/dashboard/:path*', '/auth/:path*']
+  matcher: [
+    '/dashboard/:path*',
+    '/api/:path*',
+    '/auth/reconnect'
+  ],
 } 

@@ -4,6 +4,9 @@ import { createContext, useContext, useEffect, useState } from 'react'
 import { User, AuthError } from '@supabase/supabase-js'
 import { createClient } from '@/lib/supabase/client'
 
+// Mover la creación del cliente fuera del componente
+const supabase = createClient()
+
 interface AuthContextType {
   user: User | null
   userProfile: UserProfile | null
@@ -40,7 +43,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null)
   const [loading, setLoading] = useState(true)
-  const supabase = createClient()
 
   // Verificar si es super admin
   const isSuperAdmin = userProfile?.role === 'super_admin' || 

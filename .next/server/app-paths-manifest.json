@@ -1,11 +1,8 @@
 {
-  "/dashboard/owner/desbloqueos/page": "app/dashboard/owner/desbloqueos/page.js",
-  "/dashboard/owner/reportes/page": "app/dashboard/owner/reportes/page.js",
-  "/dashboard/owner/inventario/page": "app/dashboard/owner/inventario/page.js",
   "/dashboard/owner/dashboard/page": "app/dashboard/owner/dashboard/page.js",
   "/dashboard/owner/reparaciones/page": "app/dashboard/owner/reparaciones/page.js",
-  "/api/repairs/route": "app/api/repairs/route.js",
-  "/api/repairs/[id]/route": "app/api/repairs/[id]/route.js",
+  "/dashboard/owner/inventario/page": "app/dashboard/owner/inventario/page.js",
+  "/dashboard/owner/reportes/page": "app/dashboard/owner/reportes/page.js",
   "/api/notifications/route": "app/api/notifications/route.js",
-  "/api/dashboard/stats/route": "app/api/dashboard/stats/route.js"
+  "/api/reports/route": "app/api/reports/route.js"
 }

@@ -1,10 +1,5 @@
 {
   "pages": {
-    "/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/page.js"
-    ],
     "/layout": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
@@ -31,40 +26,10 @@
       "static/chunks/main-app.js",
       "static/chunks/app/dashboard/owner/reparaciones/page.js"
     ],
-    "/dashboard/owner/clientes/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/dashboard/owner/clientes/page.js"
-    ],
-    "/dashboard/owner/dispositivos/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/dashboard/owner/dispositivos/page.js"
-    ],
     "/dashboard/owner/inventario/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/dashboard/owner/inventario/page.js"
-    ],
-    "/dashboard/owner/ventas/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/dashboard/owner/ventas/page.js"
-    ],
-    "/dashboard/owner/desbloqueos/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/dashboard/owner/desbloqueos/page.js"
-    ],
-    "/auth/login/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/auth/login/page.js"
-    ],
-    "/dashboard/owner/personal/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/dashboard/owner/personal/page.js"
     ],
     "/dashboard/owner/reportes/page": [
       "static/chunks/webpack.js",
