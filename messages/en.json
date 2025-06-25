@@ -1,0 +1,88 @@
+{
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "create": "Create",
+    "search": "Search",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "yes": "Yes",
+    "no": "No",
+    "actions": "Actions",
+    "total": "Total",
+    "date": "Date",
+    "status": "Status",
+    "name": "Name",
+    "email": "Email",
+    "phone": "Phone"
+  },
+  "navigation": {
+    "dashboard": "Dashboard",
+    "customers": "Customers",
+    "devices": "Devices",
+    "repairs": "Repairs",
+    "sales": "Sales",
+    "inventory": "Inventory",
+    "unlocks": "Unlocks",
+    "technicians": "Staff",
+    "reports": "Reports",
+    "settings": "Settings"
+  },
+  "customers": {
+    "title": "Customer Management",
+    "new": "New Customer",
+    "anonymous": "Anonymous Customer",
+    "identified": "Identified Customer",
+    "recurrent": "Recurrent Customer",
+    "totalSpent": "Total Spent",
+    "repairsCount": "Repairs"
+  },
+  "repairs": {
+    "title": "Repair Management",
+    "new": "New Repair",
+    "status": {
+      "received": "Received",
+      "diagnosed": "Diagnosed",
+      "in_progress": "In Progress",
+      "waiting_parts": "Waiting Parts",
+      "completed": "Completed",
+      "delivered": "Delivered",
+      "cancelled": "Cancelled"
+    },
+    "priority": {
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High",
+      "urgent": "Urgent"
+    }
+  },
+  "sales": {
+    "title": "Point of Sale",
+    "new": "New Sale",
+    "subtotal": "Subtotal",
+    "tax": "Tax",
+    "discount": "Discount",
+    "total": "Total",
+    "paymentMethod": "Payment Method",
+    "cash": "Cash",
+    "card": "Card",
+    "transfer": "Transfer"
+  },
+  "settings": {
+    "title": "Settings",
+    "language": "Language",
+    "currency": "Currency",
+    "general": "General",
+    "business": "Business"
+  },
+  "currencies": {
+    "PEN": "Peruvian Sol",
+    "COP": "Colombian Peso",
+    "BRL": "Brazilian Real",
+    "MXN": "Mexican Peso",
+    "USD": "US Dollar"
+  }
+} 

@@ -1,0 +1,53 @@
+{
+  "name": "tiendafix-web",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev -p 3001",
+    "dev:3000": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@headlessui/react": "^1.7.17",
+    "@heroui/react": "^2.7.11",
+    "@heroui/theme": "^2.4.17",
+    "@hookform/resolvers": "^3.3.2",
+    "@internationalized/date": "^3.8.2",
+    "@nextui-org/date-picker": "^2.3.9",
+    "@supabase/auth-helpers-nextjs": "^0.10.0",
+    "@supabase/ssr": "^0.1.0",
+    "@types/lodash.debounce": "^4.0.9",
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "apexcharts": "^4.7.0",
+    "autoprefixer": "^10.0.1",
+    "class-variance-authority": "^0.7.0",
+    "clsx": "^2.0.0",
+    "date-fns": "^2.30.0",
+    "framer-motion": "^12.19.1",
+    "lodash.debounce": "^4.0.8",
+    "lucide-react": "^0.294.0",
+    "next": "14.0.4",
+    "next-intl": "^4.3.1",
+    "postcss": "^8",
+    "react": "^18",
+    "react-apexcharts": "^1.7.0",
+    "react-dom": "^18",
+    "react-hook-form": "^7.48.2",
+    "react-zxing": "^1.1.3",
+    "recharts": "^3.0.0",
+    "tailwindcss": "^3.3.0",
+    "typescript": "^5",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@supabase/supabase-js": "^2.50.1",
+    "dotenv": "^16.5.0",
+    "eslint": "^8",
+    "eslint-config-next": "14.0.4",
+    "pg": "^8.16.2"
+  }
+}

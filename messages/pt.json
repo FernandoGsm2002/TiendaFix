@@ -1,0 +1,88 @@
+{
+  "common": {
+    "save": "Salvar",
+    "cancel": "Cancelar",
+    "delete": "Excluir",
+    "edit": "Editar",
+    "create": "Criar",
+    "search": "Buscar",
+    "loading": "Carregando...",
+    "error": "Erro",
+    "success": "Sucesso",
+    "yes": "Sim",
+    "no": "Não",
+    "actions": "Ações",
+    "total": "Total",
+    "date": "Data",
+    "status": "Status",
+    "name": "Nome",
+    "email": "Email",
+    "phone": "Telefone"
+  },
+  "navigation": {
+    "dashboard": "Painel",
+    "customers": "Clientes",
+    "devices": "Dispositivos",
+    "repairs": "Reparos",
+    "sales": "Vendas",
+    "inventory": "Estoque",
+    "unlocks": "Desbloqueios",
+    "technicians": "Equipe",
+    "reports": "Relatórios",
+    "settings": "Configurações"
+  },
+  "customers": {
+    "title": "Gestão de Clientes",
+    "new": "Novo Cliente",
+    "anonymous": "Cliente Anônimo",
+    "identified": "Cliente Identificado",
+    "recurrent": "Cliente Recorrente",
+    "totalSpent": "Total Gasto",
+    "repairsCount": "Reparos"
+  },
+  "repairs": {
+    "title": "Gestão de Reparos",
+    "new": "Novo Reparo",
+    "status": {
+      "received": "Recebido",
+      "diagnosed": "Diagnosticado",
+      "in_progress": "Em Progresso",
+      "waiting_parts": "Aguardando Peças",
+      "completed": "Concluído",
+      "delivered": "Entregue",
+      "cancelled": "Cancelado"
+    },
+    "priority": {
+      "low": "Baixa",
+      "medium": "Média",
+      "high": "Alta",
+      "urgent": "Urgente"
+    }
+  },
+  "sales": {
+    "title": "Ponto de Venda",
+    "new": "Nova Venda",
+    "subtotal": "Subtotal",
+    "tax": "Imposto",
+    "discount": "Desconto",
+    "total": "Total",
+    "paymentMethod": "Método de Pagamento",
+    "cash": "Dinheiro",
+    "card": "Cartão",
+    "transfer": "Transferência"
+  },
+  "settings": {
+    "title": "Configurações",
+    "language": "Idioma",
+    "currency": "Moeda",
+    "general": "Geral",
+    "business": "Negócio"
+  },
+  "currencies": {
+    "PEN": "Sol Peruano",
+    "COP": "Peso Colombiano",
+    "BRL": "Real Brasileiro",
+    "MXN": "Peso Mexicano",
+    "USD": "Dólar Americano"
+  }
+} 

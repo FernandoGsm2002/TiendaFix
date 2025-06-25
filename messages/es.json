@@ -1,0 +1,88 @@
+{
+  "common": {
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "create": "Crear",
+    "search": "Buscar",
+    "loading": "Cargando...",
+    "error": "Error",
+    "success": "Éxito",
+    "yes": "Sí",
+    "no": "No",
+    "actions": "Acciones",
+    "total": "Total",
+    "date": "Fecha",
+    "status": "Estado",
+    "name": "Nombre",
+    "email": "Email",
+    "phone": "Teléfono"
+  },
+  "navigation": {
+    "dashboard": "Panel",
+    "customers": "Clientes",
+    "devices": "Dispositivos",
+    "repairs": "Reparaciones",
+    "sales": "Ventas",
+    "inventory": "Inventario",
+    "unlocks": "Desbloqueos",
+    "technicians": "Personal",
+    "reports": "Reportes",
+    "settings": "Configuración"
+  },
+  "customers": {
+    "title": "Gestión de Clientes",
+    "new": "Nuevo Cliente",
+    "anonymous": "Cliente Anónimo",
+    "identified": "Cliente Identificado",
+    "recurrent": "Cliente Recurrente",
+    "totalSpent": "Total Gastado",
+    "repairsCount": "Reparaciones"
+  },
+  "repairs": {
+    "title": "Gestión de Reparaciones",
+    "new": "Nueva Reparación",
+    "status": {
+      "received": "Recibido",
+      "diagnosed": "Diagnosticado",
+      "in_progress": "En Progreso",
+      "waiting_parts": "Esperando Repuestos",
+      "completed": "Completado",
+      "delivered": "Entregado",
+      "cancelled": "Cancelado"
+    },
+    "priority": {
+      "low": "Baja",
+      "medium": "Media",
+      "high": "Alta",
+      "urgent": "Urgente"
+    }
+  },
+  "sales": {
+    "title": "Punto de Venta",
+    "new": "Nueva Venta",
+    "subtotal": "Subtotal",
+    "tax": "Impuesto",
+    "discount": "Descuento",
+    "total": "Total",
+    "paymentMethod": "Método de Pago",
+    "cash": "Efectivo",
+    "card": "Tarjeta",
+    "transfer": "Transferencia"
+  },
+  "settings": {
+    "title": "Configuración",
+    "language": "Idioma",
+    "currency": "Moneda",
+    "general": "General",
+    "business": "Negocio"
+  },
+  "currencies": {
+    "PEN": "Sol Peruano",
+    "COP": "Peso Colombiano",
+    "BRL": "Real Brasileño",
+    "MXN": "Peso Mexicano",
+    "USD": "Dólar Americano"
+  }
+} 
