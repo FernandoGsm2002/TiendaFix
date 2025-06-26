@@ -1,0 +1,298 @@
+'use client'
+
+import { useState } from 'react'
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
+import { 
+  Avatar, 
+  Button, 
+  Tooltip,
+  Card,
+  CardBody,
+  Chip,
+  Divider
+} from '@heroui/react'
+import { 
+  BarChart3, Wrench, Users, Smartphone, Package, 
+  ShoppingCart, Unlock, UserCheck, FileBarChart, 
+  Settings, ChevronLeft, ChevronRight, Building, LogOut, 
+  Activity, Eye, Zap, Sparkles
+} from 'lucide-react'
+import { useAuth } from '@/lib/auth/auth-context'
+import { useRouter } from 'next/navigation'
+
+interface TechnicianSidebarProps {
+  isCollapsed: boolean
+  onToggleCollapse: () => void
+}
+
+// Menú limitado para técnicos - no pueden acceder a reportes, crear personal, ni modificar inventario
+const menuItems = [
+  {
+    id: 'dashboard',
+    label: 'Dashboard',
+    href: '/dashboard/technician/dashboard',
+    icon: BarChart3,
+    color: 'text-blue-600',
+    gradient: 'from-blue-400 to-blue-600'
+  },
+  {
+    id: 'reparaciones',
+    label: 'Mis Reparaciones',
+    href: '/dashboard/technician/reparaciones',
+    icon: Wrench,
+    color: 'text-orange-600',
+    gradient: 'from-orange-400 to-red-600'
+  },
+  {
+    id: 'clientes',
+    label: 'Clientes',
+    href: '/dashboard/technician/clientes',
+    icon: Users,
+    color: 'text-green-600',
+    gradient: 'from-green-400 to-emerald-600'
+  },
+  // TEMPORALMENTE OCULTO - Apartado de dispositivos será eliminado en el nuevo flujo
+  // {
+  //   id: 'dispositivos',
+  //   label: 'Dispositivos',
+  //   href: '/dashboard/technician/dispositivos',
+  //   icon: Smartphone,
+  //   color: 'text-purple-600',
+  //   gradient: 'from-purple-400 to-purple-600'
+  // },
+  {
+    id: 'inventario',
+    label: 'Inventario',
+    href: '/dashboard/technician/inventario',
+    icon: Package,
+    color: 'text-amber-600',
+    gradient: 'from-amber-400 to-orange-600'
+  },
+  {
+    id: 'ventas',
+    label: 'Ventas/POS',
+    href: '/dashboard/technician/ventas',
+    icon: ShoppingCart,
+    color: 'text-emerald-600',
+    gradient: 'from-emerald-400 to-green-600'
+  },
+  {
+    id: 'desbloqueos',
+    label: 'Desbloqueos',
+    href: '/dashboard/technician/desbloqueos',
+    icon: Unlock,
+    color: 'text-cyan-600',
+    gradient: 'from-cyan-400 to-blue-600'
+  }
+]
+
+export default function TechnicianSidebar({ isCollapsed, onToggleCollapse }: TechnicianSidebarProps) {
+  const pathname = usePathname()
+  const { signOut } = useAuth()
+  const router = useRouter()
+
+  const handleSignOut = async () => {
+    await signOut()
+    router.push('/auth/login')
+  }
+
+  const SidebarMenuItem = ({ item }: { item: typeof menuItems[0] }) => {
+    const isActive = pathname === item.href
+    const Icon = item.icon
+
+    if (isCollapsed) {
+      return (
+        <Tooltip
+          content={item.label}
+          placement="right"
+          classNames={{ 
+            content: "bg-gray-900 text-white border border-gray-700 shadow-2xl backdrop-blur-lg" 
+          }}
+          delay={200}
+        >
+          <Button
+            as={Link}
+            href={item.href}
+            isIconOnly
+            variant={isActive ? "solid" : "light"}
+            color={isActive ? "primary" : "default"}
+            className={`
+              w-12 h-12 m-1 transition-all duration-300
+              ${isActive 
+                ? `bg-gradient-to-br ${item.gradient} shadow-lg transform scale-105` 
+                : 'hover:bg-gradient-to-br hover:from-gray-100 hover:to-gray-200 hover:scale-105'
+              }
+            `}
+          >
+            <Icon className={`h-5 w-5 ${isActive ? 'text-white' : item.color}`} />
+          </Button>
+        </Tooltip>
+      );
+    }
+
+    return (
+      <Button
+        as={Link}
+        href={item.href}
+        variant="light"
+        className={`
+          w-full justify-start p-4 h-14 rounded-xl transition-all duration-300 mb-2
+          ${isActive 
+            ? `bg-gradient-to-r ${item.gradient} text-white shadow-lg transform scale-[1.02]` 
+            : 'hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100 hover:shadow-md'
+          }
+        `}
+      >
+        <div className="flex items-center w-full">
+          <div className={`
+            p-2.5 rounded-lg mr-4 transition-all
+            ${isActive 
+              ? 'bg-white/20 backdrop-blur-sm' 
+              : `bg-gradient-to-br ${item.gradient} shadow-md`
+            }
+          `}>
+            <Icon className={`h-5 w-5 ${isActive ? 'text-white' : 'text-white'}`} />
+          </div>
+          <div className="flex-1 text-left flex items-center">
+            <p className={`text-base font-bold ${isActive ? 'text-white' : 'text-gray-800'}`}>
+              {item.label}
+            </p>
+          </div>
+          {isActive && (
+            <div className="ml-2">
+              <Sparkles className="h-4 w-4 text-white/80" />
+            </div>
+          )}
+        </div>
+      </Button>
+    );
+  };
+
+  return (
+    <div className={`
+      flex h-full flex-col bg-gradient-to-b from-white via-gray-50/50 to-white transition-all duration-300 ease-in-out border-r border-gray-200/50
+      ${isCollapsed ? 'w-20' : 'w-80'}
+    `}>
+      {/* Header del Sidebar con gradiente */}
+      <div className={`
+        flex shrink-0 items-center justify-between p-4 border-b border-gray-200/50
+        ${isCollapsed ? 'h-20' : 'h-24'}
+      `}>
+        {!isCollapsed && (
+          <Link href="/dashboard/technician/dashboard" className="flex items-center gap-3 group">
+            <div className="relative">
+              <Avatar
+                icon={<Zap className="h-6 w-6" />}
+                size="lg"
+                classNames={{ 
+                  base: "bg-gradient-to-br from-blue-500 to-purple-600 shadow-lg group-hover:shadow-xl transition-all",
+                  icon: "text-white"
+                }}
+              />
+              <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white shadow-sm animate-pulse"></div>
+            </div>
+            <div className="flex items-center">
+              <span className="font-bold text-xl bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                Panel Técnico
+              </span>
+            </div>
+          </Link>
+        )}
+        <Button
+          isIconOnly
+          variant="light"
+          onPress={onToggleCollapse}
+          className={`
+            h-10 w-10 text-gray-600 hover:text-gray-800 hover:bg-gradient-to-br hover:from-blue-50 hover:to-purple-50 transition-all duration-300 rounded-xl shadow-sm hover:shadow-md
+            ${isCollapsed ? 'mx-auto' : ''}
+          `}
+          aria-label={isCollapsed ? "Expandir sidebar" : "Contraer sidebar"}
+        >
+          {isCollapsed ? <ChevronRight className="h-5 w-5" /> : <ChevronLeft className="h-5 w-5" />}
+        </Button>
+      </div>
+
+      <div className="flex flex-1 flex-col overflow-y-hidden">
+        {/* Badge de estado cuando está colapsado */}
+        {isCollapsed && (
+          <div className="p-2">
+            <div className="w-12 h-1 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full mx-auto"></div>
+          </div>
+        )}
+
+        {/* Navegación Principal */}
+        <nav className={`flex-1 overflow-y-auto py-4 ${isCollapsed ? 'px-2' : 'px-4'}`}>
+          {!isCollapsed && (
+            <div className="mb-6">
+              <div className="flex items-center gap-2 mb-3">
+                <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full"></div>
+                <p className="text-xs font-bold text-gray-600 uppercase tracking-wide">Herramientas</p>
+              </div>
+              <Divider className="bg-gradient-to-r from-transparent via-gray-300 to-transparent" />
+            </div>
+          )}
+          
+          <div className={`space-y-1 ${isCollapsed ? 'flex flex-col items-center' : ''}`}>
+            {menuItems.map((item) => (
+              <SidebarMenuItem key={item.id} item={item} />
+            ))}
+          </div>
+        </nav>
+
+        {/* Footer del sidebar */}
+        <div className={`p-4 border-t border-gray-200/50 bg-gradient-to-r from-gray-50/50 to-white ${isCollapsed ? 'px-2' : ''}`}>
+          {isCollapsed ? (
+            <Tooltip 
+              content="Cerrar Sesión" 
+              placement="right"
+              classNames={{ 
+                content: "bg-red-600 text-white border border-red-700 shadow-2xl" 
+              }}
+            >
+              <Button 
+                isIconOnly 
+                variant="light" 
+                size="lg"
+                className="w-12 h-12 text-red-500 hover:text-red-600 hover:bg-gradient-to-br hover:from-red-50 hover:to-red-100 transition-all duration-300 rounded-xl shadow-sm hover:shadow-md mx-auto"
+                onPress={handleSignOut}
+                aria-label="Cerrar sesión"
+              >
+                <LogOut className="h-5 w-5" />
+              </Button>
+            </Tooltip>
+          ) : (
+            <>
+              <Button 
+                variant="light" 
+                className="w-full justify-start text-red-500 hover:text-red-600 hover:bg-gradient-to-r hover:from-red-50 hover:to-red-100 transition-all duration-300 rounded-xl p-4 h-auto"
+                onPress={handleSignOut}
+              >
+                <div className="flex items-center w-full">
+                  <div className="p-2 rounded-lg bg-gradient-to-br from-red-100 to-red-200 mr-3">
+                    <LogOut className="h-4 w-4 text-red-600" />
+                  </div>
+                  <span className="font-medium">Cerrar Sesión</span>
+                </div>
+              </Button>
+              
+              {/* Footer info */}
+              <div className="mt-4 text-center">
+                <div className="flex items-center justify-center gap-2 mb-2">
+                  <div className="w-1 h-1 bg-green-500 rounded-full animate-pulse"></div>
+                  <Chip size="sm" color="success" variant="dot" className="text-xs text-black">
+                    Sistema Activo
+                  </Chip>
+                </div>
+                <p className="text-xs text-gray-400 font-medium">
+                  © TIENDAFIX V2 - 2025
+                </p>
+
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+} 

@@ -56,32 +56,72 @@ export async function GET(request: NextRequest) {
         throw error
       }
 
-      // Obtener estadísticas de reparaciones para cada cliente
+      // Obtener estadísticas completas para cada cliente (reparaciones + desbloqueos + ventas)
       const customersWithStats = await Promise.all(
         (customers || []).map(async (customer) => {
+          // Obtener reparaciones
           const { data: repairs, error: repairsError } = await supabase
             .from('repairs')
-            .select('id, status, final_cost, estimated_cost')
+            .select('id, status, cost')
+            .eq('customer_id', customer.id)
+            .eq('organization_id', organizationId)
+
+          // Obtener desbloqueos
+          const { data: unlocks, error: unlocksError } = await supabase
+            .from('unlocks')
+            .select('id, status, cost')
+            .eq('customer_id', customer.id)
+            .eq('organization_id', organizationId)
+
+          // Obtener ventas
+          const { data: sales, error: salesError } = await supabase
+            .from('sales')
+            .select('id, status, total_amount')
             .eq('customer_id', customer.id)
             .eq('organization_id', organizationId)
 
           if (repairsError) {
             console.warn(`Error fetching repairs for customer ${customer.id}:`, repairsError)
           }
+          if (unlocksError) {
+            console.warn(`Error fetching unlocks for customer ${customer.id}:`, unlocksError)
+          }
+          if (salesError) {
+            console.warn(`Error fetching sales for customer ${customer.id}:`, salesError)
+          }
 
           const repairsList = repairs || []
-          const totalSpent = repairsList
-            .filter(r => r.final_cost)
-            .reduce((sum, r) => sum + (r.final_cost || 0), 0)
+          const unlocksList = unlocks || []
+          const salesList = sales || []
+
+          // Calcular totales combinados
+          const totalReparaciones = repairsList.length
+          const totalDesbloqueos = unlocksList.length
+          const totalVentas = salesList.length
+          const totalServicios = totalReparaciones + totalDesbloqueos + totalVentas
+
+          // Calcular totales gastados
+          const repairsSpent = repairsList.filter(r => r.cost).reduce((sum, r) => sum + (r.cost || 0), 0)
+          const unlocksSpent = unlocksList.filter(u => u.cost).reduce((sum, u) => sum + (u.cost || 0), 0)
+          const salesSpent = salesList.filter(s => s.total_amount).reduce((sum, s) => sum + (s.total_amount || 0), 0)
+          const totalGastado = repairsSpent + unlocksSpent + salesSpent
+
+          // Calcular estados (considerando reparaciones y desbloqueos principalmente)
+          const pendientes = repairsList.filter(r => r.status === 'received').length + 
+                            unlocksList.filter(u => u.status === 'pending').length
+          const completadas = repairsList.filter(r => r.status === 'completed').length + 
+                             unlocksList.filter(u => u.status === 'completed').length + 
+                             salesList.length // Las ventas se consideran completadas
+          const entregadas = repairsList.filter(r => r.status === 'delivered').length
 
           return {
             ...customer,
             stats: {
-              totalReparaciones: repairsList.length,
-              pendientes: repairsList.filter(r => r.status === 'received').length,
-              completadas: repairsList.filter(r => r.status === 'completed').length,
-              entregadas: repairsList.filter(r => r.status === 'delivered').length,
-              totalGastado: totalSpent
+              totalReparaciones: totalServicios, // Ahora incluye todos los servicios
+              pendientes,
+              completadas,
+              entregadas,
+              totalGastado
             }
           }
         })

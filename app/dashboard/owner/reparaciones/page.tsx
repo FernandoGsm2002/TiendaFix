@@ -50,7 +50,8 @@ import {
   CheckCircle,
   AlertCircle,
   DollarSign,
-  ClipboardList
+  ClipboardList,
+  Shield
 } from 'lucide-react'
 
 interface Repair {
@@ -61,8 +62,7 @@ interface Repair {
   solution_description: string | null
   status: string
   priority: string
-  estimated_cost: number
-  final_cost: number | null
+  cost: number
   estimated_completion_date: string | null
   actual_completion_date: string | null
   received_date: string
@@ -72,6 +72,9 @@ interface Repair {
   customer_notes: string | null
   created_at: string
   updated_at: string
+  unregistered_customer_name: string | null
+  unregistered_customer_phone: string | null
+  unregistered_device_info: string | null
   customers: {
     id: string
     name: string | null
@@ -79,7 +82,7 @@ interface Repair {
     email: string | null
     anonymous_identifier: string | null
     customer_type: string
-  }
+  } | null
   devices: {
     id: string
     brand: string
@@ -88,7 +91,7 @@ interface Repair {
     color: string | null
     serial_number: string | null
     imei: string | null
-  }
+  } | null
   users: {
     id: string
     name: string
@@ -125,12 +128,12 @@ interface PaginationInfo {
 
 interface NewRepairForm {
   customer_id: string;
-  device_id: string;
+  device_description: string;
   title: string;
   description: string;
   problem_description: string;
   priority: string;
-  estimated_cost: number;
+  cost: number;
   internal_notes: string;
   unregistered_customer_name?: string;
   unregistered_customer_phone?: string;
@@ -150,7 +153,6 @@ interface RepairStats {
 export default function ReparacionesPage() {
   const [repairs, setRepairs] = useState<Repair[]>([])
   const [customers, setCustomers] = useState<Customer[]>([])
-  const [devices, setDevices] = useState<Device[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [filtroEstado, setFiltroEstado] = useState('todos')
@@ -177,12 +179,12 @@ export default function ReparacionesPage() {
 
   const [newRepair, setNewRepair] = useState<NewRepairForm>({
     customer_id: '',
-    device_id: '',
+    device_description: '',
     title: '',
     description: '',
     problem_description: '',
     priority: 'medium',
-    estimated_cost: 0,
+    cost: 0,
     internal_notes: '',
     unregistered_customer_name: '',
     unregistered_customer_phone: '',
@@ -191,7 +193,6 @@ export default function ReparacionesPage() {
 
   const [selectedRepair, setSelectedRepair] = useState<Repair | null>(null)
   const [editingRepair, setEditingRepair] = useState<Repair | null>(null)
-  const [filteredDevices, setFilteredDevices] = useState<Device[]>([])
 
   const { isOpen: isCreateOpen, onOpen: onCreateOpen, onClose: onCreateClose } = useDisclosure()
   const { isOpen: isDetailOpen, onOpen: onDetailOpen, onClose: onDetailClose } = useDisclosure()
@@ -252,30 +253,8 @@ export default function ReparacionesPage() {
     }
   }
 
-  const fetchDevices = async () => {
-    try {
-      const response = await fetch('/api/devices?limit=100')
-      
-      if (!response.ok) {
-        throw new Error('Error al cargar dispositivos')
-      }
-      
-      const data = await response.json()
-      
-      if (data.success && data.data) {
-        setDevices(data.data)
-      } else {
-        setDevices([])
-      }
-    } catch (err) {
-      console.error('Error fetching devices:', err)
-      setDevices([])
-    }
-  }
-
   useEffect(() => {
     fetchCustomers()
-    fetchDevices()
   }, [])
 
   const handleFiltroChange = (keys: any) => {
@@ -298,7 +277,7 @@ export default function ReparacionesPage() {
           description: newRepair.description,
           problem_description: newRepair.problem_description,
           priority: newRepair.priority,
-          estimated_cost: newRepair.estimated_cost,
+          cost: newRepair.cost,
           internal_notes: newRepair.internal_notes,
           unregistered_customer_name: newRepair.unregistered_customer_name,
           unregistered_customer_phone: newRepair.unregistered_customer_phone,
@@ -308,12 +287,13 @@ export default function ReparacionesPage() {
         }
       : {
           customer_id: newRepair.customer_id,
-          device_id: newRepair.device_id,
+          unregistered_device_info: newRepair.device_description,
+          device_id: null,
           title: newRepair.title,
           description: newRepair.description,
           problem_description: newRepair.problem_description,
           priority: newRepair.priority,
-          estimated_cost: newRepair.estimated_cost,
+          cost: newRepair.cost,
           internal_notes: newRepair.internal_notes,
         };
     
@@ -324,8 +304,8 @@ export default function ReparacionesPage() {
         return
       }
     } else {
-      if (!payload.customer_id || !payload.device_id) {
-        setError('Por favor, seleccione un cliente y un dispositivo.')
+      if (!payload.customer_id || !newRepair.device_description) {
+        setError('Por favor, seleccione un cliente y describa el dispositivo.')
         setCreateLoading(false)
         return
       }
@@ -349,12 +329,12 @@ export default function ReparacionesPage() {
       onCreateClose()
       setNewRepair({
         customer_id: '',
-        device_id: '',
+        device_description: '',
         title: '',
         description: '',
         problem_description: '',
         priority: 'medium',
-        estimated_cost: 0,
+        cost: 0,
         internal_notes: '',
         unregistered_customer_name: '',
         unregistered_customer_phone: '',
@@ -368,18 +348,10 @@ export default function ReparacionesPage() {
     }
   }
 
-  const filterDevicesByCustomer = (customerId: string) => {
-    const customerDevices = devices.filter(device => device.customer_id === customerId)
-    setFilteredDevices(customerDevices)
-    
-    if (customerDevices.length === 0) {
-      console.log('No devices found for customer:', customerId)
-    }
-  }
+
 
   const handleCustomerChange = (customerId: string) => {
-    setNewRepair(prev => ({ ...prev, customer_id: customerId, device_id: '' }))
-    filterDevicesByCustomer(customerId)
+    setNewRepair(prev => ({ ...prev, customer_id: customerId, device_description: '' }))
   }
 
   const getStatusColor = (status: string) => {
@@ -421,8 +393,16 @@ export default function ReparacionesPage() {
     return `S/ ${amount.toLocaleString('es-PE', { minimumFractionDigits: 2 })}`
   }
 
-  const getCustomerName = (customer: Repair['customers']) => {
+  const getCustomerName = (customer: Repair['customers'], unregisteredName?: string | null) => {
+    if (!customer && unregisteredName) return unregisteredName
+    if (!customer) return 'Cliente no registrado'
     return customer.name || customer.anonymous_identifier || 'Cliente Anónimo'
+  }
+
+  const getDeviceName = (device: Repair['devices'], unregisteredInfo?: string | null) => {
+    if (!device && unregisteredInfo) return unregisteredInfo
+    if (!device) return 'Dispositivo no registrado'
+    return `${device.brand} ${device.model}`
   }
 
   // Funciones CRUD
@@ -537,11 +517,15 @@ export default function ReparacionesPage() {
   }
 
   const renderCell = React.useCallback((repair: Repair, columnKey: React.Key) => {
-    const customerName = getCustomerName(repair.customers)
-    const deviceName = `${repair.devices.brand} ${repair.devices.model}`
+    const customerName = getCustomerName(repair.customers, repair.unregistered_customer_name)
+    const deviceName = getDeviceName(repair.devices, repair.unregistered_device_info)
 
     switch (columnKey) {
       case 'dispositivo':
+        const isUnregisteredDevice = !repair.devices && repair.unregistered_device_info
+        const deviceInfo = isUnregisteredDevice ? 'Dispositivo no registrado' : 
+                          repair.devices?.device_type || 'Tipo desconocido'
+        
         return (
           <div className="flex items-center gap-4">
             <Avatar 
@@ -551,20 +535,28 @@ export default function ReparacionesPage() {
             <div>
               <p className="font-semibold text-gray-900 dark:text-gray-100">{repair.title}</p>
               <p className="text-sm text-gray-600 dark:text-gray-400">{deviceName}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-500">{deviceInfo}</p>
             </div>
           </div>
         )
       case 'cliente':
-        const customerType = repair.customers?.customer_type === 'anonymous' ? 'Anónimo' : 'Registrado';
+        const isUnregistered = !repair.customers && repair.unregistered_customer_name
+        const customerType = isUnregistered ? 'No registrado' : 
+                           repair.customers?.customer_type === 'anonymous' ? 'Anónimo' : 'Registrado'
+        const contactInfo = isUnregistered ? 
+                           (repair.unregistered_customer_phone || 'Sin contacto') :
+                           (repair.customers?.phone || repair.customers?.email || 'Sin contacto')
+        
         return (
           <div className="flex items-center gap-3">
             <Avatar icon={<User />} className="bg-gray-200 text-gray-700" />
             <div>
               <p className="font-semibold text-gray-900 dark:text-gray-100">{customerName}</p>
               <p className="text-sm text-gray-500 dark:text-gray-400">{customerType}</p>
+              <p className="text-xs text-gray-400 dark:text-gray-500">{contactInfo}</p>
             </div>
           </div>
-        );
+        )
       case 'estado':
         return (
           <Chip 
@@ -583,7 +575,7 @@ export default function ReparacionesPage() {
       case 'costo':
         return (
           <div>
-            <p className="font-semibold text-gray-900 dark:text-gray-100">{formatCurrency(repair.estimated_cost)}</p>
+            <p className="font-semibold text-gray-900 dark:text-gray-100">{formatCurrency(repair.cost)}</p>
             <p className="text-sm text-gray-500 dark:text-gray-400">Estimado</p>
           </div>
         );
@@ -844,7 +836,9 @@ export default function ReparacionesPage() {
         {/* Modal para crear reparación */}
         <Modal isOpen={isCreateOpen} onClose={onCreateClose}>
           <ModalContent>
-            <ModalHeader>Nueva Reparación</ModalHeader>
+            <ModalHeader>
+              <h2 className={`text-xl font-bold ${textColors.primary}`}>Nueva Reparación</h2>
+            </ModalHeader>
             <ModalBody>
               <form onSubmit={handleCreateRepair} className="space-y-4">
                 <div className="flex items-center gap-4">
@@ -896,20 +890,15 @@ export default function ReparacionesPage() {
                         </SelectItem>
                       ))}
                     </Select>
-                    <Select
-                      label="Dispositivo"
-                      placeholder="Seleccione un dispositivo"
-                      onSelectionChange={(keys) => setNewRepair({ ...newRepair, device_id: Array.from(keys)[0] as string })}
+                    <Input
+                      label="Descripción del Dispositivo"
+                      placeholder="Ej: iPhone 13 Pro Max 256GB Azul"
+                      value={newRepair.device_description}
+                      onChange={(e) => setNewRepair({ ...newRepair, device_description: e.target.value })}
                       isDisabled={!newRepair.customer_id}
                       isRequired
-                      className="text-gray-900 dark:text-gray-100"
-                    >
-                      {filteredDevices.map((device) => (
-                        <SelectItem key={device.id} textValue={`${device.brand} ${device.model}`} className="text-gray-900 dark:text-gray-100">
-                          {device.brand} {device.model} ({device.device_type})
-                        </SelectItem>
-                      ))}
-                    </Select>
+                      startContent={<Smartphone className="w-4 h-4 text-gray-400" />}
+                    />
                   </>
                 )}
                 
@@ -939,10 +928,10 @@ export default function ReparacionesPage() {
                 </Select>
                 <Input
                   type="number"
-                  label="Costo Estimado"
+                  label="Costo"
                   placeholder="0.00"
-                  value={String(newRepair.estimated_cost)}
-                  onChange={(e) => setNewRepair({ ...newRepair, estimated_cost: parseFloat(e.target.value) || 0 })}
+                  value={String(newRepair.cost)}
+                  onChange={(e) => setNewRepair({ ...newRepair, cost: parseFloat(e.target.value) || 0 })}
                   startContent={<DollarSign className="w-4 h-4 text-gray-400" />}
                 />
                 <Textarea
@@ -968,57 +957,104 @@ export default function ReparacionesPage() {
             {(onDetailClose) => (
               <>
                 <ModalHeader className="flex flex-col gap-1">
-                  Detalles de la Reparación: {selectedRepair?.title}
+                  <h2 className={`text-xl font-bold ${textColors.primary}`}>
+                    Detalles de la Reparación: {selectedRepair?.title}
+                  </h2>
                 </ModalHeader>
                 <ModalBody>
                   {selectedRepair && (
                    <div className="space-y-6">
                      <div className="grid grid-cols-2 gap-4">
                        <div>
-                         <p className="text-sm font-medium text-gray-500">Título</p>
-                         <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">{selectedRepair.title}</p>
+                         <p className={`text-sm font-medium ${textColors.tertiary}`}>Título</p>
+                         <p className={`text-lg font-semibold ${textColors.primary}`}>{selectedRepair.title}</p>
                        </div>
                        <div>
-                         <p className="text-sm font-medium text-gray-500">Estado</p>
+                         <p className={`text-sm font-medium ${textColors.tertiary}`}>Estado</p>
                          <Chip color={getStatusColor(selectedRepair.status)} variant="flat">
                            {getStatusLabel(selectedRepair.status)}
                          </Chip>
                        </div>
                      </div>
+
+                     {/* Información del creador */}
+                     <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                       <div className="flex items-center gap-3">
+                         <div className="p-2 bg-blue-100 rounded-full">
+                           {selectedRepair.users?.email.includes('admin') || selectedRepair.users?.name?.toLowerCase().includes('admin') ? (
+                             <Shield className="w-4 h-4 text-blue-600" />
+                           ) : (
+                             <User className="w-4 h-4 text-blue-600" />
+                           )}
+                         </div>
+                         <div className="flex-1">
+                           <p className="text-sm font-medium text-blue-800">Creado por</p>
+                           <p className="text-base font-semibold text-blue-900">
+                             {selectedRepair.users ? selectedRepair.users.name : 'Usuario desconocido'}
+                           </p>
+                           <p className="text-xs text-blue-600">
+                             {selectedRepair.users ? selectedRepair.users.email : 'Sin información de contacto'}
+                           </p>
+                           <p className="text-xs text-blue-500 mt-1">
+                             {new Date(selectedRepair.created_at).toLocaleString('es-ES', {
+                               day: '2-digit',
+                               month: 'short',
+                               year: 'numeric',
+                               hour: '2-digit',
+                               minute: '2-digit'
+                             })}
+                           </p>
+                         </div>
+                         <div className="ml-auto">
+                           <Chip 
+                             color={selectedRepair.users?.email.includes('admin') || selectedRepair.users?.name?.toLowerCase().includes('admin') ? 'warning' : 'primary'}
+                             variant="flat" 
+                             size="sm"
+                             startContent={selectedRepair.users?.email.includes('admin') || selectedRepair.users?.name?.toLowerCase().includes('admin') ? 
+                               <Shield className="w-3 h-3" /> : 
+                               <User className="w-3 h-3" />
+                             }
+                           >
+                             {selectedRepair.users?.email.includes('admin') || selectedRepair.users?.name?.toLowerCase().includes('admin') ? 
+                               'Administrador' : 
+                               'Técnico'
+                             }
+                           </Chip>
+                         </div>
+                       </div>
+                     </div>
                      
                      <div>
-                       <p className="text-sm font-medium text-gray-500 mb-2">Cliente</p>
-                       <p className="text-base text-gray-900 dark:text-gray-100">{getCustomerName(selectedRepair.customers)}</p>
+                       <p className={`text-sm font-medium ${textColors.tertiary} mb-2`}>Cliente</p>
+                       <p className={`text-base ${textColors.primary}`}>{getCustomerName(selectedRepair.customers, selectedRepair.unregistered_customer_name)}</p>
                      </div>
 
                      <div>
-                       <p className="text-sm font-medium text-gray-500 mb-2">Dispositivo</p>
-                       <p className="text-base text-gray-900 dark:text-gray-100">{selectedRepair.devices.brand} {selectedRepair.devices.model}</p>
+                       <p className={`text-sm font-medium ${textColors.tertiary} mb-2`}>Dispositivo</p>
+                       <p className={`text-base ${textColors.primary}`}>{getDeviceName(selectedRepair.devices, selectedRepair.unregistered_device_info)}</p>
                      </div>
 
                      <div>
-                       <p className="text-sm font-medium text-gray-500 mb-2">Problema Reportado</p>
-                       <p className="text-base text-gray-900 dark:text-gray-100">{selectedRepair.problem_description}</p>
+                       <p className={`text-sm font-medium ${textColors.tertiary} mb-2`}>Problema Reportado</p>
+                       <p className={`text-base ${textColors.primary}`}>{selectedRepair.problem_description}</p>
                      </div>
 
                      {selectedRepair.solution_description && (
                        <div>
-                         <p className="text-sm font-medium text-gray-500 mb-2">Solución</p>
-                         <p className="text-base text-gray-900 dark:text-gray-100">{selectedRepair.solution_description}</p>
+                         <p className={`text-sm font-medium ${textColors.tertiary} mb-2`}>Solución</p>
+                         <p className={`text-base ${textColors.primary}`}>{selectedRepair.solution_description}</p>
                        </div>
                      )}
 
                      <div className="grid grid-cols-2 gap-4">
                        <div>
-                         <p className="text-sm font-medium text-gray-500">Costo Estimado</p>
-                         <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">{formatCurrency(selectedRepair.estimated_cost)}</p>
+                         <p className={`text-sm font-medium ${textColors.tertiary}`}>Costo</p>
+                         <p className={`text-lg font-semibold ${textColors.primary}`}>{formatCurrency(selectedRepair.cost)}</p>
                        </div>
-                       {selectedRepair.final_cost && (
-                         <div>
-                           <p className="text-sm font-medium text-gray-500">Costo Final</p>
-                           <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">{formatCurrency(selectedRepair.final_cost)}</p>
-                         </div>
-                       )}
+                       <div>
+                         <p className={`text-sm font-medium ${textColors.tertiary}`}>Estado</p>
+                         <p className={`text-lg font-semibold ${textColors.primary}`}>{selectedRepair.status}</p>
+                       </div>
                      </div>
                    </div>
                   )}
@@ -1037,16 +1073,16 @@ export default function ReparacionesPage() {
         <Modal isOpen={isDeleteOpen} onClose={onDeleteClose}>
           <ModalContent>
             <ModalHeader>
-              <h3 className="text-xl font-bold text-red-600">Confirmar Eliminación</h3>
+              <h3 className={`text-xl font-bold ${textColors.primary}`}>Confirmar Eliminación</h3>
             </ModalHeader>
             <ModalBody>
               {selectedRepair && (
                 <div className="space-y-4">
-                  <p>¿Estás seguro de que deseas eliminar esta reparación?</p>
+                  <p className={textColors.secondary}>¿Estás seguro de que deseas eliminar esta reparación?</p>
                   <div className="bg-red-50 p-4 rounded-lg">
-                    <p className="font-medium">{selectedRepair.title}</p>
-                    <p className="text-sm text-gray-600">Cliente: {getCustomerName(selectedRepair.customers)}</p>
-                    <p className="text-sm text-gray-600">Dispositivo: {selectedRepair.devices.brand} {selectedRepair.devices.model}</p>
+                    <p className={`font-medium ${textColors.primary}`}>{selectedRepair.title}</p>
+                    <p className={`text-sm ${textColors.secondary}`}>Cliente: {getCustomerName(selectedRepair.customers, selectedRepair.unregistered_customer_name)}</p>
+                    <p className={`text-sm ${textColors.secondary}`}>Dispositivo: {getDeviceName(selectedRepair.devices, selectedRepair.unregistered_device_info)}</p>
                   </div>
                   <p className="text-sm text-red-600">Esta acción no se puede deshacer.</p>
                 </div>
@@ -1070,18 +1106,20 @@ export default function ReparacionesPage() {
         {/* Modal para cambiar estado */}
         <Modal isOpen={isStatusOpen} onClose={onStatusClose}>
           <ModalContent>
-            <ModalHeader className="text-gray-900 dark:text-white">Actualizar Estado de la Reparación</ModalHeader>
+            <ModalHeader>
+              <h2 className={`text-xl font-bold ${textColors.primary}`}>Actualizar Estado de la Reparación</h2>
+            </ModalHeader>
             <ModalBody>
               {selectedRepair && (
                 <div className="space-y-4">
                   <div className="flex items-center gap-2">
-                    <p className="text-sm text-gray-700 dark:text-gray-300">Estado actual:</p>
+                    <p className={`text-sm ${textColors.secondary}`}>Estado actual:</p>
                     <Chip color={getStatusColor(selectedRepair.status) as any} size="sm">
                       {getStatusLabel(selectedRepair.status)}
                     </Chip>
                   </div>
                   <div className="flex flex-col gap-2 pt-2">
-                    <p className="text-sm font-medium text-gray-800 dark:text-gray-200">Seleccionar nuevo estado:</p>
+                    <p className={`text-sm font-medium ${textColors.primary}`}>Seleccionar nuevo estado:</p>
                     <div className="grid grid-cols-2 gap-2">
                       {['received', 'diagnosed', 'in_progress', 'completed', 'delivered', 'cancelled'].map(status => (
                         <Button

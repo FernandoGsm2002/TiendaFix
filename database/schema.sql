@@ -142,8 +142,7 @@ CREATE TABLE repairs (
     solution_description TEXT,
     status VARCHAR(50) DEFAULT 'received', -- received, diagnosed, in_progress, waiting_parts, completed, delivered, cancelled
     priority VARCHAR(20) DEFAULT 'medium', -- low, medium, high, urgent
-    estimated_cost DECIMAL(10,2),
-    final_cost DECIMAL(10,2),
+    cost DECIMAL(10,2),
     estimated_completion_date DATE,
     actual_completion_date DATE,
     received_date TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
@@ -152,7 +151,15 @@ CREATE TABLE repairs (
     internal_notes TEXT,
     customer_notes TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    unregistered_customer_name VARCHAR(255),
+    unregistered_customer_phone VARCHAR(50),
+    unregistered_device_info TEXT,
+    CONSTRAINT repairs_assigned_technician_id_fkey FOREIGN KEY (assigned_technician_id) REFERENCES users(id),
+    CONSTRAINT repairs_created_by_fkey FOREIGN KEY (created_by) REFERENCES users(id),
+    CONSTRAINT repairs_customer_id_fkey FOREIGN KEY (customer_id) REFERENCES customers(id) ON DELETE CASCADE,
+    CONSTRAINT repairs_device_id_fkey FOREIGN KEY (device_id) REFERENCES devices(id) ON DELETE CASCADE,
+    CONSTRAINT repairs_organization_id_fkey FOREIGN KEY (organization_id) REFERENCES organizations(id) ON DELETE CASCADE
 );
 
 -- Tabla de inventario

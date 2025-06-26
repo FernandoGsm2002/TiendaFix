@@ -206,7 +206,6 @@ export interface Database {
           organization_id: string
           device_id: string
           customer_id: string
-          assigned_technician_id: string | null
           created_by: string | null
           title: string
           description: string | null
@@ -214,8 +213,7 @@ export interface Database {
           solution_description: string | null
           status: string
           priority: string
-          estimated_cost: number | null
-          final_cost: number | null
+          cost: number | null
           estimated_completion_date: string | null
           actual_completion_date: string | null
           received_date: string
@@ -231,7 +229,6 @@ export interface Database {
           organization_id: string
           device_id: string
           customer_id: string
-          assigned_technician_id?: string | null
           created_by?: string | null
           title: string
           description?: string | null
@@ -239,8 +236,7 @@ export interface Database {
           solution_description?: string | null
           status?: string
           priority?: string
-          estimated_cost?: number | null
-          final_cost?: number | null
+          cost?: number | null
           estimated_completion_date?: string | null
           actual_completion_date?: string | null
           received_date?: string
@@ -256,7 +252,6 @@ export interface Database {
           organization_id?: string
           device_id?: string
           customer_id?: string
-          assigned_technician_id?: string | null
           created_by?: string | null
           title?: string
           description?: string | null
@@ -264,8 +259,7 @@ export interface Database {
           solution_description?: string | null
           status?: string
           priority?: string
-          estimated_cost?: number | null
-          final_cost?: number | null
+          cost?: number | null
           estimated_completion_date?: string | null
           actual_completion_date?: string | null
           received_date?: string

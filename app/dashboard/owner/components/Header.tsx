@@ -4,6 +4,7 @@ import { useAuth } from '@/lib/auth/auth-context'
 import { Bell, Search, User, LogOut, Settings, Package, Wrench, Unlock } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import { textColors } from '@/lib/utils/colors'
 
 interface NotificationData {
   totalNotifications: number;
@@ -51,7 +52,7 @@ export default function Header() {
           <h1 className="text-2xl font-bold text-gray-900 truncate">
             {userProfile?.organization_name || 'Mi Tienda'}
           </h1>
-          <p className="text-sm text-gray-500">Panel de administración</p>
+          <p className={`text-sm ${textColors.secondary}`}>Panel de administración</p>
         </div>
 
         <div className="flex items-center space-x-4">
@@ -86,12 +87,12 @@ export default function Header() {
                 </div>
                 <div className="py-1 max-h-96 overflow-y-auto">
                   {loading ? (
-                    <p className="text-sm text-gray-500 px-4 py-3">Cargando...</p>
+                    <p className={`text-sm ${textColors.secondary} px-4 py-3`}>Cargando...</p>
                   ) : notifications && notifications.totalNotifications > 0 ? (
                     <>
                       {notifications.items.lowStockProducts.length > 0 && (
                         <div>
-                          <p className="px-4 py-2 text-xs font-bold text-gray-500 uppercase">Bajo Stock</p>
+                          <p className={`px-4 py-2 text-xs font-bold ${textColors.tertiary} uppercase`}>Bajo Stock</p>
                           {notifications.items.lowStockProducts.map((item: any) => (
                             <Link 
                               key={item.id} 
@@ -102,7 +103,7 @@ export default function Header() {
                               <Package className="w-4 h-4 mr-3 text-amber-500" />
                               <div>
                                 <p className="font-medium">{item.name}</p>
-                                <p className="text-xs text-gray-500">Stock actual: {item.stock}</p>
+                                <p className={`text-xs ${textColors.muted}`}>Stock actual: {item.stock}</p>
                               </div>
                             </Link>
                           ))}
@@ -110,7 +111,7 @@ export default function Header() {
                       )}
                       {notifications.items.pendingRepairs.length > 0 && (
                         <div>
-                          <p className="px-4 pt-3 pb-2 text-xs font-bold text-gray-500 uppercase">Reparaciones Pendientes</p>
+                          <p className={`px-4 pt-3 pb-2 text-xs font-bold ${textColors.tertiary} uppercase`}>Reparaciones Pendientes</p>
                           {notifications.items.pendingRepairs.map((item: any) => (
                             <Link 
                               key={item.id} 
@@ -121,7 +122,7 @@ export default function Header() {
                               <Wrench className="w-4 h-4 mr-3 text-blue-500" />
                               <div>
                                 <p className="font-medium">Reparación #{item.id}</p>
-                                <p className="text-xs text-gray-500">S/N: {item.serial_number}</p>
+                                <p className={`text-xs ${textColors.muted}`}>S/N: {item.serial_number}</p>
                               </div>
                             </Link>
                           ))}
@@ -129,7 +130,7 @@ export default function Header() {
                       )}
                       {notifications.items.pendingUnlocks.length > 0 && (
                          <div>
-                           <p className="px-4 pt-3 pb-2 text-xs font-bold text-gray-500 uppercase">Desbloqueos Pendientes</p>
+                           <p className={`px-4 pt-3 pb-2 text-xs font-bold ${textColors.tertiary} uppercase`}>Desbloqueos Pendientes</p>
                            {notifications.items.pendingUnlocks.map((item: any) => (
                              <Link 
                                key={item.id} 
@@ -140,7 +141,7 @@ export default function Header() {
                                <Unlock className="w-4 h-4 mr-3 text-purple-500" />
                                <div>
                                  <p className="font-medium">Desbloqueo #{item.id}</p>
-                                 <p className="text-xs text-gray-500">IMEI: {item.imei}</p>
+                                 <p className={`text-xs ${textColors.muted}`}>IMEI: {item.imei}</p>
                                </div>
                              </Link>
                            ))}
@@ -148,7 +149,7 @@ export default function Header() {
                       )}
                     </>
                   ) : (
-                    <p className="text-sm text-gray-500 px-4 py-10 text-center">No tienes notificaciones nuevas.</p>
+                    <p className={`text-sm ${textColors.secondary} px-4 py-10 text-center`}>No tienes notificaciones nuevas.</p>
                   )}
                 </div>
                 <div className="px-4 py-2 border-t border-gray-100 bg-gray-50 text-center">
@@ -172,7 +173,7 @@ export default function Header() {
                 <p className="text-sm font-medium text-gray-900">
                   {userProfile?.name || 'Usuario'}
                 </p>
-                <p className="text-xs text-gray-500 capitalize">
+                <p className={`text-xs ${textColors.tertiary} capitalize`}>
                   {userProfile?.role || 'owner'}
                 </p>
               </div>
@@ -184,7 +185,7 @@ export default function Header() {
                   <p className="text-sm font-medium text-gray-900">
                     {userProfile?.name}
                   </p>
-                  <p className="text-xs text-gray-500">{user?.email}</p>
+                  <p className={`text-xs ${textColors.tertiary}`}>{user?.email}</p>
                 </div>
                 
                 <button className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center">

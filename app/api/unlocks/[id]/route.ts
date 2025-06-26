@@ -1,18 +1,37 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createServerClient } from '@/lib/supabase/server'
+import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
+import { cookies } from 'next/headers'
 
-export async function PATCH(
+export async function PUT(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
     console.log('🔧 Updating unlock status...')
     
-    const supabase = createServerClient()
+    const supabase = createRouteHandlerClient({ cookies })
     const body = await request.json()
     const unlockId = params.id
     
-    const organizationId = '873d8154-8b40-4b8a-8d03-431bf9f697e6'
+    // Obtener el usuario actual autenticado
+    const { data: { session }, error: authError } = await supabase.auth.getSession()
+    if (authError || !session) {
+      return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
+    }
+
+    // Obtener el perfil del usuario para obtener su organización
+    const { data: userProfile, error: profileError } = await supabase
+      .from('users')
+      .select('id, organization_id, role')
+      .eq('email', session.user.email)
+      .single()
+
+    if (profileError || !userProfile) {
+      console.error('🚨 Error fetching user profile:', profileError)
+      return NextResponse.json({ error: 'Error al obtener perfil de usuario' }, { status: 500 })
+    }
+
+    const organizationId = userProfile.organization_id
 
     if (!unlockId) {
       return NextResponse.json(
@@ -30,9 +49,33 @@ export async function PATCH(
       )
     }
 
+    // Verificar que el desbloqueo existe y el usuario tiene permisos
+    const { data: existingUnlock, error: fetchError } = await supabase
+      .from('unlocks')
+      .select('id, created_by, organization_id')
+      .eq('id', unlockId)
+      .eq('organization_id', organizationId)
+      .single()
+
+    if (fetchError || !existingUnlock) {
+      return NextResponse.json(
+        { error: 'Desbloqueo no encontrado' },
+        { status: 404 }
+      )
+    }
+
+    // Solo el creador del desbloqueo o un owner/admin pueden actualizarlo
+    if (userProfile.role === 'technician' && existingUnlock.created_by !== userProfile.id) {
+      return NextResponse.json(
+        { error: 'No tienes permisos para actualizar este desbloqueo' },
+        { status: 403 }
+      )
+    }
+
     const updateData: any = {}
     if (body.status) updateData.status = body.status
     if (body.completion_time) updateData.completion_time = body.completion_time
+    if (body.notes) updateData.notes = body.notes
     
     updateData.updated_at = new Date().toISOString()
 
@@ -40,7 +83,6 @@ export async function PATCH(
       .from('unlocks')
       .update(updateData)
       .eq('id', unlockId)
-      .eq('organization_id', organizationId)
       .select()
       .single()
 

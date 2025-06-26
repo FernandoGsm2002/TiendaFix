@@ -50,7 +50,7 @@ export async function GET(
       .from('repairs')
       .select(`
         id, title, description, problem_description, solution_description, 
-        status, priority, estimated_cost, final_cost,
+        status, priority, cost,
         estimated_completion_date, actual_completion_date, received_date, delivered_date,
         warranty_days, internal_notes, customer_notes,
         created_at, updated_at,
@@ -125,7 +125,7 @@ export async function PUT(
     // Obtener estado actual de la reparación antes de actualizar
     const { data: currentRepair, error: fetchError } = await supabase
       .from('repairs')
-      .select('status, customer_id, estimated_cost, final_cost, title, device_id')
+      .select('status, customer_id, cost, title, device_id, internal_notes')
       .eq('id', repairId)
       .single()
 
@@ -138,10 +138,17 @@ export async function PUT(
       updated_at: new Date().toISOString()
     };
 
-    // Caso 1: Actualización parcial de estado
-    if (body.status && Object.keys(body).length === 1) {
+    // Caso 1: Actualización parcial de estado (incluyendo notas de progreso)
+    if (body.status && (Object.keys(body).length === 1 || (Object.keys(body).length === 2 && body.progress_notes))) {
       console.log('🔄 Performing partial status update to:', body.status)
       updateData.status = body.status
+      
+      // Agregar notas de progreso si se proporcionan
+      if (body.progress_notes) {
+        updateData.internal_notes = currentRepair.internal_notes 
+          ? `${currentRepair.internal_notes}\n\n--- ${new Date().toLocaleString('es-PE')} ---\n${body.progress_notes}`
+          : `--- ${new Date().toLocaleString('es-PE')} ---\n${body.progress_notes}`
+      }
     } 
     // Caso 2: Actualización completa del formulario
     else {
@@ -163,9 +170,7 @@ export async function PUT(
         solution_description: body.solution_description,
         status: body.status,
         priority: body.priority,
-        estimated_cost: body.estimated_cost,
-        final_cost: body.final_cost,
-        estimated_completion_date: body.estimated_completion_date,
+        cost: body.cost,
         warranty_days: body.warranty_days,
         internal_notes: body.internal_notes,
         customer_notes: body.customer_notes
@@ -244,18 +249,18 @@ export async function PUT(
 
     // Si la reparación se acaba de marcar como 'completed', registrar la venta.
     if (newStatus === 'completed' && currentRepair.status !== 'completed') {
-      const finalCost = body.final_cost || currentRepair.final_cost || currentRepair.estimated_cost || 0;
+      const repairCost = body.cost || currentRepair.cost || 0;
       console.log(`[SalesLog] Checking repair ${repair.id}. Status changed from ${currentRepair.status} to ${newStatus}.`)
-      console.log(`[SalesLog] Calculated final cost: ${finalCost}. (Body: ${body.final_cost}, Current: ${currentRepair.final_cost}, Estimated: ${currentRepair.estimated_cost})`)
+      console.log(`[SalesLog] Calculated repair cost: ${repairCost}. (Body: ${body.cost}, Current: ${currentRepair.cost})`)
 
-      if (finalCost > 0) {
-        console.log(`[SalesLog] Cost is positive. Creating a sales record for ${finalCost}...`);
+      if (repairCost > 0) {
+        console.log(`[SalesLog] Cost is positive. Creating a sales record for ${repairCost}...`);
         
         const saleData = {
           organization_id: organizationId,
           customer_id: currentRepair.customer_id,
           created_by: profileId,
-          total: finalCost,
+          total: repairCost,
           payment_method: 'other', // O un valor predeterminado
           sale_type: 'service',
           notes: `Ingreso por Reparación #${repair.id}: ${currentRepair.title || ''}`.trim()

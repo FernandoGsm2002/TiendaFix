@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import DashboardLayout from '../components/DashboardLayout'
 import { 
   Card, 
@@ -90,6 +91,13 @@ interface PaginationInfo {
 }
 
 export default function DispositivosPage() {
+  const router = useRouter()
+
+  // REDIRECCIÓN AUTOMÁTICA - Apartado de dispositivos temporalmente deshabilitado
+  useEffect(() => {
+    router.push('/dashboard/owner/clientes')
+  }, [router])
+
   const [devices, setDevices] = useState<Device[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)

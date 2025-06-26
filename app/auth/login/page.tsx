@@ -3,7 +3,15 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/lib/auth/auth-context'
-import { Eye, EyeOff, ArrowLeft } from 'lucide-react'
+import { 
+  Card, 
+  CardBody, 
+  Button, 
+  Input,
+  Link as HeroLink,
+  Divider
+} from '@heroui/react'
+import { Eye, EyeOff, ArrowLeft, Lock, Mail, Settings } from 'lucide-react'
 import Link from 'next/link'
 
 export default function LoginPage() {
@@ -50,118 +58,134 @@ export default function LoginPage() {
     }
   }
 
+  const fillDemoCredentials = () => {
+    setEmail('admin@demo.com')
+    setPassword('demo123')
+  }
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         {/* Botón de regreso */}
         <div className="mb-6">
-          <Link 
-            href="/"
-            className="inline-flex items-center text-sm text-gray-600 hover:text-gray-900 transition-colors"
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Volver al inicio
+          <Link href="/">
+            <Button
+              variant="light"
+              startContent={<ArrowLeft className="w-4 h-4" />}
+              className="text-gray-600 hover:text-gray-900"
+            >
+              Volver al inicio
+            </Button>
           </Link>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-xl p-8">
-          <div className="text-center mb-8">
-            <div className="w-12 h-12 bg-indigo-600 rounded-full flex items-center justify-center mx-auto mb-4">
-              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-              </svg>
-            </div>
-            <h1 className="text-2xl font-bold text-gray-900">Iniciar Sesión</h1>
-            <p className="text-gray-600">Accede a tu cuenta de TiendaFix</p>
-          </div>
-
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {error && (
-              <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
-                <p className="text-red-600 text-sm">{error}</p>
+        <Card className="shadow-2xl border-0">
+          <CardBody className="p-8">
+            <div className="text-center mb-8">
+              <div className="w-16 h-16 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+                <Lock className="w-8 h-8 text-white" />
               </div>
-            )}
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">Bienvenido</h1>
+              <p className="text-gray-600">Accede a tu cuenta de TiendaFix</p>
+            </div>
 
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                Correo electrónico
-              </label>
-              <input
-                id="email"
+            <form onSubmit={handleSubmit} className="space-y-6">
+              {error && (
+                <Card className="bg-danger-50 border border-danger-200">
+                  <CardBody className="p-3">
+                    <p className="text-danger-600 text-sm">{error}</p>
+                  </CardBody>
+                </Card>
+              )}
+
+              <Input
                 type="email"
+                label="Correo electrónico"
+                placeholder="Ingresa tu email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-gray-900 bg-white"
-                placeholder="fernandoapple2002@gmail.com"
-                required
-                style={{ color: '#000000' }}
+                onValueChange={setEmail}
+                startContent={<Mail className="w-4 h-4 text-gray-400" />}
+                variant="bordered"
+                size="lg"
+                isRequired
+                classNames={{
+                  label: "text-gray-700 font-medium",
+                  input: "text-gray-900",
+                  inputWrapper: "border-gray-300 hover:border-blue-400 focus-within:border-blue-500"
+                }}
               />
-            </div>
 
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
-                Contraseña
-              </label>
-              <div className="relative">
-                <input
-                  id="password"
-                  type={showPassword ? 'text' : 'password'}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 pr-12 text-gray-900 bg-white"
-                  placeholder="fernandoxD113"
-                  required
-                  style={{ color: '#000000' }}
-                />
-                <button 
-                  type="button" 
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+              <Input
+                type={showPassword ? 'text' : 'password'}
+                label="Contraseña"
+                placeholder="Ingresa tu contraseña"
+                value={password}
+                onValueChange={setPassword}
+                startContent={<Lock className="w-4 h-4 text-gray-400" />}
+                endContent={
+                  <button 
+                    type="button" 
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="text-gray-400 hover:text-gray-600 transition-colors"
+                  >
+                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                }
+                variant="bordered"
+                size="lg"
+                isRequired
+                classNames={{
+                  label: "text-gray-700 font-medium",
+                  input: "text-gray-900",
+                  inputWrapper: "border-gray-300 hover:border-blue-400 focus-within:border-blue-500"
+                }}
+              />
+
+              <Button
+                type="submit"
+                color="primary"
+                size="lg"
+                className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-200"
+                isLoading={loading}
+                isDisabled={!email || !password}
+              >
+                {loading ? 'Iniciando sesión...' : 'Iniciar Sesión'}
+              </Button>
+            </form>
+
+            <Divider className="my-6" />
+
+            <div className="text-center">
+              <p className="text-gray-600 mb-4">
+                ¿No tienes una cuenta?
+              </p>
+              <Link href="/auth/register">
+                <Button
+                  variant="flat"
+                  color="primary"
+                  className="font-medium"
                 >
-                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                </button>
-              </div>
+                  Registra tu tienda
+                </Button>
+              </Link>
             </div>
 
-            <button
-              type="submit"
-              disabled={!email || !password || loading}
-              className="w-full bg-indigo-600 text-white py-3 px-4 rounded-lg hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {loading ? 'Iniciando sesión...' : 'Iniciar Sesión'}
-            </button>
-          </form>
+            <Divider className="my-6" />
 
-          <div className="mt-8 pt-6 border-t border-gray-200">
-            <p className="text-center text-gray-600">
-              ¿No tienes una cuenta?{' '}
-              <Link href="/auth/register" className="text-indigo-600 hover:text-indigo-700 font-medium">
-                Registra tu tienda
-              </Link>
-            </p>
-          </div>
-        </div>
-
-        {/* Información para super admin */}
-        <div className="mt-6 p-4 bg-indigo-50 rounded-lg border border-indigo-200">
-          <h3 className="text-sm font-medium text-indigo-900 mb-2">
-            👨‍💼 Credenciales de Super Admin:
-          </h3>
-          <p className="text-xs text-indigo-700 font-mono mb-3">
-            Email: fernandoapple2002@gmail.com<br/>
-            Password: fernandoxD113
-          </p>
-          <button
-            type="button"
-            onClick={() => {
-              setEmail('fernandoapple2002@gmail.com')
-              setPassword('fernandoxD113')
-            }}
-            className="w-full bg-indigo-100 hover:bg-indigo-200 text-indigo-800 py-2 px-3 rounded text-sm font-medium transition-colors"
-          >
-            🔧 Llenar credenciales automáticamente
-          </button>
-        </div>
+            {/* Botón sutil para llenar credenciales de demo */}
+            <div className="text-center">
+              <Button
+                variant="light"
+                size="sm"
+                startContent={<Settings className="w-4 h-4" />}
+                onClick={fillDemoCredentials}
+                className="text-gray-500 hover:text-gray-700 text-xs"
+              >
+                Modo Demo
+              </Button>
+            </div>
+          </CardBody>
+        </Card>
       </div>
     </div>
   )

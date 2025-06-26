@@ -1,462 +1,709 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
-import { 
-  ResponsiveContainer, 
-  PieChart, 
-  Pie, 
-  Cell, 
-  AreaChart, 
-  Area, 
-  BarChart, 
-  Bar, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
-  Legend 
-} from 'recharts'
+import { useEffect, useState, useCallback } from 'react'
+import dynamic from 'next/dynamic'
 import DashboardLayout from '../components/DashboardLayout'
-import { Card, CardBody, CardHeader, Button, DateRangePicker, Chip } from '@heroui/react'
-import { Download, DollarSign, Wrench, Users, ShoppingCart } from 'lucide-react'
-import { today, getLocalTimeZone } from '@internationalized/date'
-import { formatCurrency } from '@/lib/utils/currency'
+import { useCurrency } from '@/lib/utils/currency'
+import { textColors } from '@/lib/utils/colors'
+import { 
+  Card, 
+  CardBody, 
+  CardHeader, 
+  Skeleton, 
+  DateRangePicker, 
+  Button,
+  Divider,
+  Chip,
+  Progress
+} from '@heroui/react'
+import { 
+  TrendingUp, 
+  Users, 
+  ShoppingCart, 
+  Wrench, 
+  DollarSign, 
+  Calendar,
+  BarChart3,
+  PieChart,
+  Activity,
+  Download
+} from 'lucide-react'
+import { ApexOptions } from 'apexcharts'
+import { parseDate, getLocalTimeZone, today } from '@internationalized/date'
 
-// Añadir interfaces para los tipos
-interface ChartItem {
-  category: string;
-  total_revenue: number;
-  total_quantity: number;
+const Chart = dynamic(() => import('react-apexcharts'), { ssr: false })
+
+interface ReportStats {
+  totalRevenue: number
+  totalSales: number
+  avgSaleValue: number
+  totalRepairs: number
+  completedRepairs: number
+  totalRepairRevenue: number
+  avgCompletionTime: number
+  newCustomers: number
+  newDevices: number
 }
 
-interface RepairStatusItem {
-  status: string;
-  count: number;
+interface TopProduct {
+  id?: string
+  name: string
+  category?: string
+  quantity?: number
+  revenue?: number
+  total?: number
+  count?: number
 }
 
-interface SalesTimeItem {
-  date: string;
-  sales: number;
-  count: number;
+interface SalesByCategory {
+  category: string
+  revenue: number
+  count: number
 }
 
-interface ChartData {
-  category?: string;
-  revenue?: number;
-  total_revenue?: number;
-  quantity?: number;
-  total_quantity?: number;
-  date?: string;
-  sales?: number;
-  count?: number;
-  status?: string;
+interface SalesOverTime {
+  date: string
+  sales: number
+  count: number
 }
 
-interface PieLabelProps {
-  cx: number;
-  cy: number;
-  midAngle: number;
-  innerRadius: number;
-  outerRadius: number;
-  percent: number;
-  index: number;
-  name: string;
+interface ReportCharts {
+  repairs_by_status: Record<string, number>
+  repairs_by_priority: Record<string, number>
+  top_products?: TopProduct[]
+  sales_by_category?: SalesByCategory[]
+  sales_over_time?: SalesOverTime[]
 }
 
-function normalizeCharts(charts: any) {
-  const repairsByStatus = charts.repairs_by_status
-    ? Object.entries(charts.repairs_by_status).map(([status, count]: [string, any]) => ({
-        status,
-        count: Number(count) || 0
-      }))
-    : [];
-  const repairsByPriority = charts.repairs_by_priority
-    ? Object.entries(charts.repairs_by_priority).map(([priority, count]: [string, any]) => ({
-        priority,
-        count: Number(count) || 0
-      }))
-    : [];
-  const salesByCategory = (charts.sales_by_category || []).map((item: ChartData) => ({
-    category: item.category || 'Sin categoría',
-    total_revenue: Number(item.revenue ?? item.total_revenue) || 0,
-    total_quantity: Number(item.quantity ?? item.total_quantity) || 0,
-  }));
-  const salesOverTime = (charts.sales_over_time || []).map((item: ChartData) => ({
-    date: item.date || new Date().toISOString(),
-    sales: Number(item.sales) || 0,
-    count: Number(item.count) || 0,
-  })).filter((item: SalesTimeItem) => !isNaN(item.sales) && item.sales !== null);
-  return { salesByCategory, salesOverTime, repairsByStatus, repairsByPriority };
+interface ReportData {
+  stats: ReportStats
+  charts: ReportCharts
 }
 
-const translateRepairStatus = (status: string): string => {
-  const translations: { [key: string]: string } = {
-    'pending': 'Pendiente',
-    'in_progress': 'En Progreso',
-    'completed': 'Completado',
-    'cancelled': 'Cancelado',
-    'received': 'Recibido',
-    'diagnosed': 'Diagnosticado',
-    'waiting_parts': 'Esperando Repuestos',
-    'delivered': 'Entregado',
-    'low': 'Baja',
-    'medium': 'Media',
-    'high': 'Alta',
-  }
-  return translations[status] || status
-}
-
-export default function ReportesPage() {
+export default function ReportsPage() {
+  const [data, setData] = useState<ReportData | null>(null)
   const [loading, setLoading] = useState(true)
-  const [reportData, setReportData] = useState<any>(null)
-  const [selectedTab, setSelectedTab] = useState(0)
-  const [dateRange, setDateRange] = useState<any>({
-    start: today(getLocalTimeZone()).subtract({ weeks: 1 }),
+  const [error, setError] = useState<string | null>(null)
+  const { format, currencyCode, symbol } = useCurrency()
+  
+  // Estilos globales para el DateRangePicker y encabezados
+  useEffect(() => {
+    // Crear un elemento de estilo
+    const styleElement = document.createElement('style');
+    styleElement.innerHTML = `
+      /* Estilos para el calendario */
+      .heroui-calendar button {
+        color: #1f2937 !important;
+      }
+      .heroui-calendar-header-title {
+        color: #1f2937 !important;
+      }
+      .heroui-calendar-header-cell {
+        color: #4b5563 !important;
+      }
+      .heroui-calendar-cell[aria-selected="true"] button {
+        color: white !important;
+      }
+      
+      /* Estilos para encabezados */
+      .heroui-card h3 {
+        color: #1f2937 !important;
+      }
+      .heroui-card-header h3 {
+        color: #1f2937 !important;
+      }
+    `;
+    // Añadir el elemento al head
+    document.head.appendChild(styleElement);
+    
+    // Limpiar al desmontar
+    return () => {
+      document.head.removeChild(styleElement);
+    };
+  }, []);
+
+  const [dateRange, setDateRange] = useState({
+    start: today(getLocalTimeZone()).subtract({ days: 30 }),
     end: today(getLocalTimeZone()),
-  });
+  })
 
   const fetchReportData = useCallback(async () => {
-    if (!dateRange.start || !dateRange.end) return;
-    setLoading(true);
+    if (!dateRange.start || !dateRange.end) return
+    
+    setLoading(true)
+    setError(null)
+    
     try {
-      const startDate = dateRange.start.toDate('UTC').toISOString();
-      const endDate = dateRange.end.toDate('UTC').toISOString();
-      const response = await fetch(`/api/reports?start_date=${startDate}&end_date=${endDate}`);
-      const data = await response.json();
-      if (data.success) {
-        setReportData(data.data);
+      const startDate = dateRange.start.toDate('UTC').toISOString()
+      const endDate = dateRange.end.toDate('UTC').toISOString()
+      
+      const response = await fetch(`/api/reports?start_date=${startDate}&end_date=${endDate}`)
+      const result = await response.json()
+      
+      if (result.success) {
+        console.log('Datos recibidos:', result.data)
+        setData(result.data)
       } else {
-        setReportData(null);
+        setError(result.error || 'Error al cargar los datos')
       }
-    } catch (error) {
-      setReportData(null);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Error desconocido')
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  }, [dateRange]);
+  }, [dateRange])
+
+  const handleDateRangeChange = (value: any) => {
+    if (value && value.start && value.end) {
+      setDateRange({
+        start: value.start,
+        end: value.end
+      })
+    }
+  }
 
   useEffect(() => {
-    fetchReportData();
-  }, [fetchReportData]);
-
-  const COLORS = [
-    '#6366F1', // Indigo
-    '#10B981', // Emerald
-    '#F59E0B', // Amber
-    '#EC4899', // Pink
-    '#8B5CF6', // Violet
-    '#14B8A6', // Teal
-    '#F43F5E', // Rose
-    '#6366F1', // Indigo (fallback)
-  ];
-  const charts = reportData ? normalizeCharts(reportData.charts) : null;
-
-  const tabs = [
-    { name: 'Resumen General', content: (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-6">
-        <Card className="shadow-lg">
-          <CardBody className="p-6">
-            <div className="flex items-center justify-between mb-4">
-              <div className="p-3 rounded-xl bg-gradient-to-br from-emerald-400 to-emerald-600 shadow-lg">
-                <DollarSign className="w-6 h-6 text-white" />
-              </div>
-            </div>
-            <p className="text-sm font-medium text-gray-500">Ingresos Totales</p>
-            <p className="text-3xl font-bold text-gray-900">
-              {reportData ? formatCurrency(reportData.stats.total_revenue) : '...'}
-            </p>
-            <p className="text-xs text-gray-400">
-              {reportData ? `${reportData.stats.total_sales} ventas` : '...'}
-            </p>
-          </CardBody>
-        </Card>
-        <Card className="shadow-lg">
-          <CardBody className="p-6">
-            <div className="flex items-center justify-between mb-4">
-              <div className="p-3 rounded-xl bg-gradient-to-br from-blue-400 to-blue-600 shadow-lg">
-                <Wrench className="w-6 h-6 text-white" />
-              </div>
-              {reportData && <Chip color="primary" variant="flat">
-                {reportData.stats.total_repairs - reportData.stats.completed_repairs} pendientes
-              </Chip>}
-            </div>
-            <p className="text-sm font-medium text-gray-500">Reparaciones</p>
-            <p className="text-3xl font-bold text-gray-900">{reportData?.stats.total_repairs || '...'}</p>
-            <p className="text-xs text-gray-400">
-              {reportData ? `${reportData.stats.completed_repairs} completadas` : '...'}
-            </p>
-          </CardBody>
-        </Card>
-        <Card className="shadow-lg">
-          <CardBody className="p-6">
-            <div className="flex items-center justify-between mb-4">
-              <div className="p-3 rounded-xl bg-gradient-to-br from-purple-400 to-purple-600 shadow-lg">
-                <Users className="w-6 h-6 text-white" />
-              </div>
-            </div>
-            <p className="text-sm font-medium text-gray-500">Nuevos Clientes</p>
-            <p className="text-3xl font-bold text-gray-900">{reportData?.stats.new_customers || '...'}</p>
-            <p className="text-xs text-gray-400">en el período</p>
-          </CardBody>
-        </Card>
-        <Card className="shadow-lg">
-          <CardBody className="p-6">
-            <div className="flex items-center justify-between mb-4">
-              <div className="p-3 rounded-xl bg-gradient-to-br from-pink-400 to-pink-600 shadow-lg">
-                <ShoppingCart className="w-6 h-6 text-white" />
-              </div>
-            </div>
-            <p className="text-sm font-medium text-gray-500">Venta Promedio</p>
-            <p className="text-3xl font-bold text-gray-900">
-              {reportData ? formatCurrency(reportData.stats.avg_sale_value) : '...'}
-            </p>
-            <p className="text-xs text-gray-400">por transacción</p>
-          </CardBody>
-        </Card>
-      </div>
-    )},
-    { name: 'Análisis de Ventas', content: (
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
-        <Card>
-          <CardHeader className="text-gray-900 dark:text-white">Ventas por Categoría</CardHeader>
-          <CardBody>
-            <div className="h-[400px]">
-              {charts && charts.salesByCategory.length > 0 ? (
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={charts.salesByCategory.filter((item: ChartItem) => item.total_revenue > 0).map((item: ChartItem) => ({ 
-                        name: item.category, 
-                        value: item.total_revenue 
-                      }))}
-                      cx="50%" 
-                      cy="50%" 
-                      labelLine={false} 
-                      outerRadius={120} 
-                      fill="#6366f1" 
-                      dataKey="value"
-                      label={({ name, value, percent }) => percent ? `${name}: ${(percent * 100).toFixed(0)}%` : ''}
-                      stroke="#fff"
-                      strokeWidth={2}
-                    >
-                      {charts.salesByCategory.map((entry: ChartItem, index: number) => (
-                        <Cell 
-                          key={`cell-${index}`} 
-                          fill={COLORS[index % COLORS.length]}
-                        />
-                      ))}
-                    </Pie>
-                    <Tooltip 
-                      formatter={(value: number) => formatCurrency(value)}
-                      contentStyle={{
-                        backgroundColor: 'rgba(255, 255, 255, 0.95)',
-                        border: 'none',
-                        borderRadius: '8px',
-                        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-                        padding: '12px'
-                      }}
-                    />
-                  </PieChart>
-                </ResponsiveContainer>
-              ) : <p className="text-gray-600 dark:text-gray-400 text-center mt-16">No hay datos de ventas por categoría.</p>}
-            </div>
-          </CardBody>
-        </Card>
-        <Card>
-          <CardHeader className="text-gray-900 dark:text-white">Tendencia de Ventas</CardHeader>
-          <CardBody>
-            <div className="h-[400px]">
-              {charts && charts.salesOverTime.length > 0 ? (
-                <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart 
-                    data={charts.salesOverTime.filter((item: SalesTimeItem) => !isNaN(item.sales) && item.sales !== null)} 
-                    margin={{ top: 20, right: 30, left: 0, bottom: 0 }}
-                  >
-                    <defs>
-                      <linearGradient id="colorVentas" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#6366f1" stopOpacity={0.8}/>
-                        <stop offset="95%" stopColor="#6366f1" stopOpacity={0.1}/>
-                      </linearGradient>
-                    </defs>
-                    <CartesianGrid 
-                      strokeDasharray="3 3" 
-                      stroke="#e5e7eb" 
-                      opacity={0.5}
-                    />
-                    <XAxis 
-                      dataKey="date" 
-                      tickFormatter={(tick) => new Date(tick).toLocaleDateString('es-ES', { 
-                        day: 'numeric', 
-                        month: 'short' 
-                      })} 
-                      stroke="#6b7280" 
-                      tick={{ fill: '#6b7280' }}
-                      axisLine={{ stroke: '#e5e7eb' }}
-                    />
-                    <YAxis 
-                      tickFormatter={(value) => {
-                        if (typeof value !== 'number' || isNaN(value)) return '';
-                        return formatCurrency(value);
-                      }}
-                      stroke="#6b7280"
-                      tick={{ fill: '#6b7280' }}
-                      axisLine={{ stroke: '#e5e7eb' }}
-                      width={80}
-                    />
-                    <Tooltip 
-                      formatter={(value: any) => {
-                        if (typeof value !== 'number' || isNaN(value)) return ['0', 'Ventas'];
-                        return [formatCurrency(value), 'Ventas'];
-                      }}
-                      contentStyle={{
-                        backgroundColor: 'rgba(255, 255, 255, 0.95)',
-                        border: 'none',
-                        borderRadius: '8px',
-                        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-                        padding: '12px'
-                      }}
-                    />
-                    <Legend />
-                    <Area 
-                      type="monotone" 
-                      dataKey="sales" 
-                      name="Ventas" 
-                      stroke="#6366f1" 
-                      strokeWidth={3} 
-                      fillOpacity={1} 
-                      fill="url(#colorVentas)"
-                    />
-                  </AreaChart>
-                </ResponsiveContainer>
-              ) : <p className="text-gray-600 dark:text-gray-400 text-center mt-16">No hay datos de tendencia de ventas.</p>}
-            </div>
-          </CardBody>
-        </Card>
-      </div>
-    )},
-    { name: 'Análisis de Reparaciones', content: (
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
-        <Card>
-          <CardHeader className="text-gray-900">Estado de Reparaciones</CardHeader>
-          <CardBody>
-            <div className="h-[400px]">
-              {charts && charts.repairsByStatus.length > 0 ? (
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={charts.repairsByStatus.map((item: RepairStatusItem) => ({ 
-                        name: translateRepairStatus(item.status), 
-                        value: item.count 
-                      }))}
-                      cx="50%" 
-                      cy="50%" 
-                      innerRadius={80} 
-                      outerRadius={120} 
-                      fill="#10B981" 
-                      paddingAngle={5} 
-                      dataKey="value"
-                      label={({ name, value, percent }) => percent ? `${name}: ${(percent * 100).toFixed(0)}%` : ''}
-                      stroke="#fff"
-                      strokeWidth={2}
-                    >
-                      {charts.repairsByStatus.map((entry: RepairStatusItem, index: number) => (
-                        <Cell 
-                          key={`cell-${index}`} 
-                          fill={COLORS[index % COLORS.length]}
-                          style={{ filter: 'drop-shadow(0px 2px 4px rgba(0,0,0,0.1))' }}
-                        />
-                      ))}
-                    </Pie>
-                    <Tooltip formatter={(value: number, name) => [value, name]} />
-                    <Legend />
-                  </PieChart>
-                </ResponsiveContainer>
-              ) : <p className="text-gray-600 text-center mt-16">No hay datos de estado de reparaciones.</p>}
-            </div>
-          </CardBody>
-        </Card>
-        <Card>
-          <CardHeader className="text-gray-900">Reparaciones por Prioridad</CardHeader>
-          <CardBody>
-            <div className="h-[400px]">
-              {charts && charts.repairsByPriority.length > 0 ? (
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart layout="vertical" data={charts.repairsByPriority.map(item => ({ name: translateRepairStatus(item.priority), Reparaciones: item.count }))} margin={{ top: 20, right: 30, left: 30, bottom: 20 }}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis type="number" stroke="#6b7280" />
-                    <YAxis dataKey="name" type="category" stroke="#6b7280" />
-                    <Tooltip formatter={(value: number) => [value, 'Total']} />
-                    <Legend />
-                    <Bar dataKey="Reparaciones" fill="#10B981" radius={[8, 8, 8, 8]} barSize={32}>
-                      {charts.repairsByPriority.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                      ))}
-                    </Bar>
-                  </BarChart>
-                </ResponsiveContainer>
-              ): <p className="text-gray-600 text-center mt-16">No hay datos de reparaciones por prioridad.</p>}
-            </div>
-          </CardBody>
-        </Card>
-      </div>
-    )}
-  ];
+    fetchReportData()
+  }, [fetchReportData])
 
   if (loading) {
-    return <DashboardLayout><div>Cargando reportes...</div></DashboardLayout>
+    return (
+      <DashboardLayout>
+        <div className="space-y-6 p-6">
+          <div className="flex justify-between items-center">
+            <Skeleton className="h-8 w-48 rounded-lg" />
+            <Skeleton className="h-12 w-64 rounded-lg" />
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[...Array(8)].map((_, i) => (
+              <Card key={i}>
+                <CardBody>
+                  <Skeleton className="h-20 w-full rounded" />
+                </CardBody>
+              </Card>
+            ))}
+          </div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {[...Array(4)].map((_, i) => (
+              <Card key={i}>
+                <CardBody>
+                  <Skeleton className="h-80 w-full rounded" />
+                </CardBody>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </DashboardLayout>
+    )
   }
+
+  if (error || !data) {
+    return (
+      <DashboardLayout>
+        <div className="p-6">
+          <Card className="bg-danger-50 border-danger-200">
+            <CardBody>
+              <div className="text-danger-700">
+                <h3 className="text-lg font-semibold mb-2">Error al cargar reportes</h3>
+                <p>{error || 'No se pudieron cargar los datos'}</p>
+                <Button 
+                  color="danger" 
+                  variant="flat" 
+                  className="mt-4"
+                  onClick={fetchReportData}
+                >
+                  Reintentar
+                </Button>
+              </div>
+            </CardBody>
+          </Card>
+        </div>
+      </DashboardLayout>
+    )
+  }
+
+  const { stats, charts } = data
+
+  // Configuración base para gráficos
+  const baseChartOptions: ApexOptions = {
+    chart: {
+      toolbar: { show: false },
+      zoom: { enabled: false },
+      fontFamily: 'inherit',
+    },
+    dataLabels: { enabled: false },
+    stroke: { curve: 'smooth', width: 2 },
+    legend: { 
+      position: 'bottom', 
+      horizontalAlign: 'center', 
+      offsetY: 10,
+      labels: { colors: '#6b7280' }
+    },
+    grid: {
+      borderColor: '#e5e7eb',
+      strokeDashArray: 4,
+    },
+    tooltip: {
+      theme: 'dark',
+    }
+  }
+
+  // Configuración para gráfico de ventas en el tiempo
+  const salesTimeOptions: ApexOptions = {
+    ...baseChartOptions,
+    chart: { ...baseChartOptions.chart, type: 'area' },
+    xaxis: {
+      categories: charts.sales_over_time?.map(item => 
+        new Date(item.date).toLocaleDateString('es-ES', { month: 'short', day: 'numeric' })
+      ) || [],
+      labels: { style: { colors: '#6b7280' } },
+      axisBorder: { show: false },
+      axisTicks: { show: false }
+    },
+    yaxis: [
+      {
+        title: { text: `Ingresos (${currencyCode})`, style: { color: '#6b7280' } },
+        labels: {
+          style: { colors: '#6b7280' },
+          formatter: (val) => format(val)
+        }
+      },
+      {
+        opposite: true,
+        title: { text: 'Cantidad', style: { color: '#6b7280' } },
+        labels: {
+          style: { colors: '#6b7280' },
+          formatter: (val) => Math.round(val).toString()
+        }
+      }
+    ],
+    fill: {
+      type: 'gradient',
+      gradient: {
+        shadeIntensity: 1,
+        opacityFrom: 0.7,
+        opacityTo: 0.2,
+        stops: [0, 90, 100]
+      }
+    },
+    colors: ['#4f46e5', '#10b981']
+  }
+
+  const salesTimeSeries = [
+    {
+      name: `Ingresos (${currencyCode})`,
+      type: 'area',
+      data: charts.sales_over_time?.map(item => item.sales) || []
+    },
+    {
+      name: 'Cantidad de ventas',
+      type: 'line',
+      data: charts.sales_over_time?.map(item => item.count) || []
+    }
+  ]
+
+  // Configuración para gráfico de reparaciones por estado
+  const repairsStatusSeries = Object.values(charts.repairs_by_status || {})
+  const repairsStatusOptions: ApexOptions = {
+    ...baseChartOptions,
+    chart: { ...baseChartOptions.chart, type: 'donut' },
+    labels: Object.keys(charts.repairs_by_status || {}).map(status => {
+      const statusLabels: Record<string, string> = {
+        'received': 'Recibido',
+        'diagnosed': 'Diagnosticado', 
+        'in_progress': 'En Proceso',
+        'waiting_parts': 'Esperando Repuestos',
+        'completed': 'Completado',
+        'delivered': 'Entregado',
+        'cancelled': 'Cancelado'
+      }
+      return statusLabels[status] || status
+    }),
+    colors: ['#6b7280', '#f59e0b', '#3b82f6', '#f97316', '#10b981', '#22c55e', '#ef4444'],
+    plotOptions: {
+      pie: {
+        donut: {
+          size: '70%',
+          labels: {
+            show: true,
+            total: {
+              show: true,
+              label: 'Total',
+              color: '#6b7280',
+              formatter: (w) => w.globals.seriesTotals.reduce((a: number, b: number) => a + b, 0).toString()
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // Configuración para gráfico de reparaciones por prioridad
+  const repairsPrioritySeries = Object.values(charts.repairs_by_priority || {})
+  const repairsPriorityOptions: ApexOptions = {
+    ...baseChartOptions,
+    chart: { ...baseChartOptions.chart, type: 'pie' },
+    labels: Object.keys(charts.repairs_by_priority || {}).map(priority => {
+      const priorityLabels: Record<string, string> = {
+        'low': 'Baja',
+        'medium': 'Media',
+        'high': 'Alta',
+        'urgent': 'Urgente'
+      }
+      return priorityLabels[priority] || priority
+    }),
+    colors: ['#22c55e', '#f59e0b', '#f97316', '#ef4444']
+  }
+
+  // Configuración para gráfico de ventas por categoría
+  const categoryOptions: ApexOptions = {
+    ...baseChartOptions,
+    chart: { ...baseChartOptions.chart, type: 'bar' },
+    xaxis: {
+      categories: charts.sales_by_category?.map(item => item.category) || [],
+      labels: { style: { colors: '#6b7280' } },
+      axisBorder: { show: false },
+      axisTicks: { show: false }
+    },
+    yaxis: {
+      labels: {
+        style: { colors: '#6b7280' },
+        formatter: (val) => format(val)
+      }
+    },
+    colors: ['#4f46e5'],
+    plotOptions: {
+      bar: {
+        borderRadius: 4,
+        horizontal: false,
+      }
+    }
+  }
+
+  const categorySeries = [{
+    name: `Ingresos (${currencyCode})`,
+    data: charts.sales_by_category?.map(item => item.revenue) || []
+  }]
+
+  // Stats cards data
+  const statsCards = [
+    {
+      title: 'Ingresos Totales',
+      value: format(stats.totalRevenue || 0),
+      icon: DollarSign,
+      color: 'success',
+      description: 'Total de ingresos por ventas'
+    },
+    {
+      title: 'Ventas Realizadas',
+      value: (stats.totalSales || 0).toString(),
+      icon: ShoppingCart,
+      color: 'primary',
+      description: 'Número total de ventas'
+    },
+    {
+      title: 'Valor Promedio',
+      value: format(stats.avgSaleValue || 0),
+      icon: TrendingUp,
+      color: 'secondary',
+      description: 'Valor promedio por venta'
+    },
+    {
+      title: 'Ingresos Reparaciones',
+      value: format(stats.totalRepairRevenue || 0),
+      icon: Wrench,
+      color: 'warning',
+      description: 'Total por reparaciones'
+    },
+    {
+      title: 'Reparaciones Totales',
+      value: (stats.totalRepairs || 0).toString(),
+      icon: Activity,
+      color: 'default',
+      description: 'Número total de reparaciones'
+    },
+    {
+      title: 'Reparaciones Completadas',
+      value: (stats.completedRepairs || 0).toString(),
+      icon: Activity,
+      color: 'success',
+      description: 'Reparaciones finalizadas'
+    },
+    {
+      title: 'Nuevos Clientes',
+      value: (stats.newCustomers || 0).toString(),
+      icon: Users,
+      color: 'primary',
+      description: 'Clientes registrados'
+    },
+    {
+      title: 'Tiempo Promedio',
+      value: `${(stats.avgCompletionTime || 0).toFixed(1)}d`,
+      icon: Calendar,
+      color: 'secondary',
+      description: 'Días promedio por reparación'
+    }
+  ]
+
+  const topProducts = charts.top_products || []
 
   return (
     <DashboardLayout>
-      <div className="space-y-8">
-        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
+      <div className="space-y-6 p-6">
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Reportes</h1>
-            <p className="text-gray-500">Análisis detallado del rendimiento del negocio</p>
+            <h1 className="text-2xl font-bold text-gray-900">Reportes y Análisis</h1>
+            <p className="text-gray-600 mt-1">Analiza el rendimiento de tu negocio</p>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
             <DateRangePicker
+              label="Período de análisis"
               value={dateRange}
-              onChange={setDateRange}
-              className="[&_input]:!text-black [&_button]:text-gray-700 [&_button]:dark:text-gray-200 [&_span]:text-gray-700 [&_span]:dark:text-gray-200 [&_div]:bg-white [&_div]:dark:bg-gray-800 [&_.selected]:!bg-blue-600 [&_.selected]:!text-white [&_.today]:border-blue-600 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700"
+              onChange={handleDateRangeChange}
+              className="w-64 text-gray-900"
+              variant="bordered"
+              color="primary"
+              classNames={{
+                base: "bg-white",
+                calendar: "bg-white border-gray-200 shadow-lg",
+                popoverContent: "bg-white border-gray-200",
+                bottomContent: "text-gray-900",
+                selectorIcon: "text-gray-900",
+                selectorButton: "text-gray-900"
+              }}
             />
             <Button
-              onClick={() => {/* Implementar exportación */}}
-              variant="bordered"
-              className="flex items-center gap-2 text-gray-700 dark:text-gray-200 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700"
+              color="primary"
+              startContent={<Download size={16} />}
+              variant="solid"
+              className="shadow-sm"
             >
-              <Download className="w-4 h-4" />
               Exportar
             </Button>
           </div>
         </div>
 
-        <div>
-          <div className="border-b border-gray-200">
-            <nav className="-mb-px flex space-x-8" aria-label="Tabs">
-              {tabs.map((tab, index) => (
-                <button
-                  key={tab.name}
-                  onClick={() => setSelectedTab(index)}
-                  className={`${
-                    selectedTab === index
-                      ? 'border-indigo-500 text-indigo-600'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                  } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm focus:outline-none`}
-                >
-                  {tab.name}
-                </button>
-              ))}
-            </nav>
-          </div>
-          <div className="mt-4">
-            {reportData ? tabs[selectedTab].content : (
-              <div className="text-center py-16">
-                <p className="text-gray-600">No hay datos de reporte para el rango de fechas seleccionado.</p>
-              </div>
-            )}
-          </div>
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {statsCards.map((card, index) => (
+            <Card key={index} className="bg-gradient-to-br from-white to-gray-50">
+              <CardBody className="p-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex-1">
+                    <p className="text-sm text-gray-600 mb-1">{card.title}</p>
+                    <p className="text-2xl font-bold text-gray-900">{card.value}</p>
+                    <p className={`text-xs ${textColors.muted} mt-1`}>{card.description}</p>
+                  </div>
+                  <div className={`p-3 rounded-full bg-${card.color}-100`}>
+                    <card.icon className={`w-6 h-6 text-${card.color}-600`} />
+                  </div>
+                </div>
+              </CardBody>
+            </Card>
+          ))}
         </div>
+
+        {/* Charts Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Ventas en el tiempo */}
+          <Card className="lg:col-span-2">
+            <CardHeader className="pb-2">
+              <div className="flex items-center gap-2">
+                <BarChart3 className="w-5 h-5 text-primary-600" />
+                <h3 className="text-lg font-semibold text-gray-900">Ventas en el Tiempo</h3>
+              </div>
+            </CardHeader>
+            <CardBody>
+              <Chart
+                options={salesTimeOptions}
+                series={salesTimeSeries}
+                type="line"
+                height={300}
+              />
+            </CardBody>
+          </Card>
+
+          {/* Reparaciones por estado */}
+          <Card>
+            <CardHeader className="pb-2">
+              <div className="flex items-center gap-2">
+                <PieChart className="w-5 h-5 text-warning-600" />
+                <h3 className="text-lg font-semibold text-gray-900">Reparaciones por Estado</h3>
+              </div>
+            </CardHeader>
+            <CardBody>
+              <Chart
+                options={repairsStatusOptions}
+                series={repairsStatusSeries}
+                type="donut"
+                height={300}
+              />
+            </CardBody>
+          </Card>
+
+          {/* Reparaciones por prioridad */}
+          <Card>
+            <CardHeader className="pb-2">
+              <div className="flex items-center gap-2">
+                <Activity className="w-5 h-5 text-danger-600" />
+                <h3 className="text-lg font-semibold text-gray-900">Reparaciones por Prioridad</h3>
+              </div>
+            </CardHeader>
+            <CardBody>
+              <Chart
+                options={repairsPriorityOptions}
+                series={repairsPrioritySeries}
+                type="pie"
+                height={300}
+              />
+            </CardBody>
+          </Card>
+
+          {/* Ventas por categoría */}
+          {charts.sales_by_category && charts.sales_by_category.length > 0 && (
+            <Card className="lg:col-span-2">
+              <CardHeader className="pb-2">
+                <div className="flex items-center gap-2">
+                  <ShoppingCart className="w-5 h-5 text-success-600" />
+                  <h3 className="text-lg font-semibold text-gray-900">Ventas por Categoría</h3>
+                </div>
+              </CardHeader>
+              <CardBody>
+                <Chart
+                  options={categoryOptions}
+                  series={categorySeries}
+                  type="bar"
+                  height={300}
+                />
+              </CardBody>
+            </Card>
+          )}
+
+          {/* Top productos */}
+          {topProducts && topProducts.length > 0 && (
+            <Card className="lg:col-span-2">
+              <CardHeader className="pb-2">
+                <div className="flex items-center gap-2">
+                  <TrendingUp className="w-5 h-5 text-success-600" />
+                  <h3 className="text-lg font-semibold text-gray-900">Productos Más Vendidos</h3>
+                </div>
+              </CardHeader>
+              <CardBody>
+                <div className="space-y-6">
+                  {topProducts.slice(0, 5).map((product, index) => {
+                                         const maxRevenue = Math.max(...topProducts.map(p => p.revenue || p.total || 0))
+                     const progressValue = ((product.revenue || product.total || 0) / maxRevenue) * 100
+                    
+                    return (
+                      <div key={product.id || index} className="group">
+                        <div className="flex items-start justify-between mb-2">
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-3">
+                              <div className={`
+                                w-10 h-10 rounded-lg flex items-center justify-center text-white font-bold text-sm
+                                ${index === 0 ? 'bg-gradient-to-br from-yellow-400 to-yellow-600' : 
+                                  index === 1 ? 'bg-gradient-to-br from-gray-300 to-gray-500' :
+                                  index === 2 ? 'bg-gradient-to-br from-orange-400 to-orange-600' :
+                                  'bg-gradient-to-br from-blue-400 to-blue-600'}
+                              `}>
+                                #{index + 1}
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <h4 className="font-semibold text-gray-900 truncate group-hover:text-primary-600 transition-colors">
+                                  {product.name}
+                                </h4>
+                                <div className="flex items-center gap-4 mt-1">
+                                  <Chip 
+                                    size="sm" 
+                                    variant="flat" 
+                                    color="secondary"
+                                    className="text-xs"
+                                  >
+                                    {product.category || 'Sin categoría'}
+                                  </Chip>
+                                                                     <p className="text-sm text-gray-600">
+                                     {product.quantity || product.count || 0} vendidas
+                                   </p>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="text-right ml-4">
+                                                         <p className="text-lg font-bold text-gray-900">
+                               {format(product.revenue || product.total || 0)}
+                             </p>
+                             <p className={`text-xs ${textColors.muted}`}>
+                               {format((product.revenue || product.total || 0) / (product.quantity || product.count || 1))} c/u
+                             </p>
+                          </div>
+                        </div>
+                        
+                        <div className="flex items-center gap-3">
+                          <Progress
+                            value={progressValue}
+                            className="flex-1"
+                            size="sm"
+                            color={
+                              index === 0 ? 'warning' :
+                              index === 1 ? 'default' :
+                              index === 2 ? 'secondary' : 'primary'
+                            }
+                            showValueLabel={false}
+                          />
+                          <span className={`text-xs ${textColors.muted} font-medium min-w-[45px]`}>
+                            {progressValue.toFixed(1)}%
+                          </span>
+                        </div>
+                      </div>
+                    )
+                  })}
+                  
+                  {topProducts.length === 0 && (
+                    <div className="text-center py-8">
+                      <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
+                        <ShoppingCart className="w-8 h-8 text-gray-400" />
+                      </div>
+                      <p className={textColors.muted}>No hay productos vendidos en este período</p>
+                    </div>
+                  )}
+                </div>
+              </CardBody>
+            </Card>
+          )}
+        </div>
+
+        {/* Performance Summary */}
+        <Card>
+          <CardHeader>
+            <h3 className="text-lg font-semibold text-gray-900">Resumen de Rendimiento</h3>
+          </CardHeader>
+          <CardBody>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="text-center">
+                <div className="text-2xl font-bold text-success-600">
+                  {stats.completedRepairs > 0 ? Math.round((stats.completedRepairs / stats.totalRepairs) * 100) : 0}%
+                </div>
+                <p className="text-sm text-gray-600 mt-1">Tasa de Finalización</p>
+                <p className={`text-xs ${textColors.muted}`}>Reparaciones completadas vs total</p>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-primary-600">
+                  {format((stats.totalRevenue || 0) + (stats.totalRepairRevenue || 0))}
+                </div>
+                <p className="text-sm text-gray-600 mt-1">Ingresos Totales</p>
+                <p className={`text-xs ${textColors.muted}`}>Ventas + Reparaciones</p>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-warning-600">
+                  {stats.newCustomers}
+                </div>
+                <p className="text-sm text-gray-600 mt-1">Clientes Nuevos</p>
+                <p className={`text-xs ${textColors.muted}`}>En el período seleccionado</p>
+              </div>
+            </div>
+          </CardBody>
+        </Card>
       </div>
     </DashboardLayout>
   )

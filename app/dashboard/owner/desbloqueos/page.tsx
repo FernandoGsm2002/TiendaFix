@@ -84,6 +84,11 @@ interface UnlockItem {
   created_at: string
   updated_at: string
   customers: Customer | null
+  users: {
+    id: string
+    name: string
+    email: string
+  } | null
 }
 
 interface PaginationInfo {
@@ -266,7 +271,7 @@ export default function DesbloqueoPage() {
       setStatusLoading(true)
       
       const response = await fetch(`/api/unlocks/${unlockId}`, {
-        method: 'PATCH',
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
@@ -1081,18 +1086,18 @@ export default function DesbloqueoPage() {
         <Modal isOpen={isDetailOpen} onClose={onDetailClose} size="2xl">
           <ModalContent>
             <ModalHeader>
-              <h2 className="text-xl font-bold">Detalles del Desbloqueo</h2>
+              <h2 className={`text-xl font-bold ${textColors.primary}`}>Detalles del Desbloqueo</h2>
             </ModalHeader>
             <ModalBody>
               {selectedUnlock && (
                 <div className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <p className="text-sm font-medium text-gray-500">Tipo</p>
-                      <p className="text-base font-semibold">{getUnlockTypeLabel(selectedUnlock.unlock_type)}</p>
+                      <p className={`text-sm font-medium ${textColors.tertiary}`}>Tipo</p>
+                      <p className={`text-base font-semibold ${textColors.primary}`}>{getUnlockTypeLabel(selectedUnlock.unlock_type)}</p>
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-gray-500">Estado</p>
+                      <p className={`text-sm font-medium ${textColors.tertiary}`}>Estado</p>
                       <Chip 
                         color={getStatusInfo(selectedUnlock.status).color as any}
                         variant="flat"
@@ -1102,34 +1107,81 @@ export default function DesbloqueoPage() {
                       </Chip>
                     </div>
                   </div>
+
+                  {/* Información del creador */}
+                  <div className="bg-cyan-50 p-4 rounded-lg border border-cyan-200">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 bg-cyan-100 rounded-full">
+                        {selectedUnlock.users?.email.includes('admin') || selectedUnlock.users?.name?.toLowerCase().includes('admin') ? (
+                          <Shield className="w-4 h-4 text-cyan-600" />
+                        ) : (
+                          <User className="w-4 h-4 text-cyan-600" />
+                        )}
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-sm font-medium text-cyan-800">Creado por</p>
+                        <p className="text-base font-semibold text-cyan-900">
+                          {selectedUnlock.users ? selectedUnlock.users.name : 'Usuario desconocido'}
+                        </p>
+                        <p className="text-xs text-cyan-600">
+                          {selectedUnlock.users ? selectedUnlock.users.email : 'Sin información de contacto'}
+                        </p>
+                        <p className="text-xs text-cyan-500 mt-1">
+                          {new Date(selectedUnlock.created_at).toLocaleString('es-ES', {
+                            day: '2-digit',
+                            month: 'short',
+                            year: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                          })}
+                        </p>
+                      </div>
+                      <div className="ml-auto">
+                        <Chip 
+                          color={selectedUnlock.users?.email.includes('admin') || selectedUnlock.users?.name?.toLowerCase().includes('admin') ? 'warning' : 'primary'}
+                          variant="flat" 
+                          size="sm"
+                          startContent={selectedUnlock.users?.email.includes('admin') || selectedUnlock.users?.name?.toLowerCase().includes('admin') ? 
+                            <Shield className="w-3 h-3" /> : 
+                            <User className="w-3 h-3" />
+                          }
+                        >
+                          {selectedUnlock.users?.email.includes('admin') || selectedUnlock.users?.name?.toLowerCase().includes('admin') ? 
+                            'Administrador' : 
+                            'Técnico'
+                          }
+                        </Chip>
+                      </div>
+                    </div>
+                  </div>
                   
                   <div>
-                    <p className="text-sm font-medium text-gray-500 mb-2">Dispositivo</p>
-                    <p className="text-base">{selectedUnlock.brand} {selectedUnlock.model}</p>
+                    <p className={`text-sm font-medium ${textColors.tertiary} mb-2`}>Dispositivo</p>
+                    <p className={`text-base ${textColors.primary}`}>{selectedUnlock.brand} {selectedUnlock.model}</p>
                   </div>
 
                   <div>
-                    <p className="text-sm font-medium text-gray-500 mb-2">Cliente</p>
-                    <p className="text-base">{getCustomerName(selectedUnlock.customers)}</p>
+                    <p className={`text-sm font-medium ${textColors.tertiary} mb-2`}>Cliente</p>
+                    <p className={`text-base ${textColors.primary}`}>{getCustomerName(selectedUnlock.customers)}</p>
                   </div>
 
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <p className="text-sm font-medium text-gray-500">Costo</p>
-                      <p className="text-lg font-semibold">{formatCurrency(selectedUnlock.cost)}</p>
+                      <p className={`text-sm font-medium ${textColors.tertiary}`}>Costo</p>
+                      <p className={`text-lg font-semibold ${textColors.primary}`}>{formatCurrency(selectedUnlock.cost)}</p>
                     </div>
                     {selectedUnlock.provider && (
                       <div>
-                        <p className="text-sm font-medium text-gray-500">Proveedor</p>
-                        <p className="text-base">{selectedUnlock.provider}</p>
+                        <p className={`text-sm font-medium ${textColors.tertiary}`}>Proveedor</p>
+                        <p className={`text-base ${textColors.primary}`}>{selectedUnlock.provider}</p>
                       </div>
                     )}
                   </div>
 
                   {selectedUnlock.notes && (
                     <div>
-                      <p className="text-sm font-medium text-gray-500 mb-2">Notas</p>
-                      <p className="text-base">{selectedUnlock.notes}</p>
+                      <p className={`text-sm font-medium ${textColors.tertiary} mb-2`}>Notas</p>
+                      <p className={`text-base ${textColors.primary}`}>{selectedUnlock.notes}</p>
                     </div>
                   )}
                 </div>
@@ -1147,16 +1199,16 @@ export default function DesbloqueoPage() {
         <Modal isOpen={isDeleteOpen} onClose={onDeleteClose}>
           <ModalContent>
             <ModalHeader>
-              <h3 className="text-xl font-bold text-red-600">Confirmar Eliminación</h3>
+              <h3 className={`text-xl font-bold ${textColors.primary}`}>Confirmar Eliminación</h3>
             </ModalHeader>
             <ModalBody>
               {selectedUnlock && (
                 <div className="space-y-4">
-                  <p>¿Estás seguro de que deseas eliminar este desbloqueo?</p>
+                  <p className={textColors.secondary}>¿Estás seguro de que deseas eliminar este desbloqueo?</p>
                   <div className="bg-red-50 p-4 rounded-lg">
-                    <p className="font-medium">{getUnlockTypeLabel(selectedUnlock.unlock_type)}</p>
-                    <p className="text-sm text-gray-600">Dispositivo: {selectedUnlock.brand} {selectedUnlock.model}</p>
-                    <p className="text-sm text-gray-600">Cliente: {getCustomerName(selectedUnlock.customers)}</p>
+                    <p className={`font-medium ${textColors.primary}`}>{getUnlockTypeLabel(selectedUnlock.unlock_type)}</p>
+                    <p className={`text-sm ${textColors.secondary}`}>Dispositivo: {selectedUnlock.brand} {selectedUnlock.model}</p>
+                    <p className={`text-sm ${textColors.secondary}`}>Cliente: {getCustomerName(selectedUnlock.customers)}</p>
                   </div>
                   <p className="text-sm text-red-600">Esta acción no se puede deshacer.</p>
                 </div>

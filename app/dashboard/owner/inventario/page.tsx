@@ -851,7 +851,7 @@ export default function InventarioPage() {
             {selectedItem && (
               <>
                 <ModalHeader>
-                  <h2 className="text-xl font-bold">{selectedItem.name}</h2>
+                  <h2 className={`text-xl font-bold ${textColors.primary}`}>{selectedItem.name}</h2>
                 </ModalHeader>
                 <ModalBody className="space-y-4">
                   <div className="flex justify-between items-center">
@@ -861,20 +861,20 @@ export default function InventarioPage() {
                   {selectedItem.description && <p>{selectedItem.description}</p>}
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <p className="text-sm text-gray-500">Precio de Costo</p>
-                      <p className="font-bold">{formatCurrency(selectedItem.unit_cost)}</p>
+                      <p className={`text-sm ${textColors.tertiary}`}>Precio de Costo</p>
+                      <p className={`font-bold ${textColors.primary}`}>{formatCurrency(selectedItem.unit_cost)}</p>
                     </div>
                     <div>
-                      <p className="text-sm text-gray-500">Precio de Venta</p>
-                      <p className="font-bold">{formatCurrency(selectedItem.enduser_price)}</p>
+                      <p className={`text-sm ${textColors.tertiary}`}>Precio de Venta</p>
+                      <p className={`font-bold ${textColors.primary}`}>{formatCurrency(selectedItem.enduser_price)}</p>
                     </div>
                     <div>
-                      <p className="text-sm text-gray-500">Cantidad en Stock</p>
-                      <p className="font-bold">{selectedItem.stock_quantity}</p>
+                      <p className={`text-sm ${textColors.tertiary}`}>Cantidad en Stock</p>
+                      <p className={`font-bold ${textColors.primary}`}>{selectedItem.stock_quantity}</p>
                     </div>
                     <div>
-                      <p className="text-sm text-gray-500">Stock Mínimo</p>
-                      <p className="font-bold">{selectedItem.min_stock}</p>
+                      <p className={`text-sm ${textColors.tertiary}`}>Stock Mínimo</p>
+                      <p className={`font-bold ${textColors.primary}`}>{selectedItem.min_stock}</p>
                     </div>
                   </div>
                 </ModalBody>
@@ -891,7 +891,7 @@ export default function InventarioPage() {
           <ModalContent>
             <form id="edit-item-form" onSubmit={handleUpdateItem}>
               <ModalHeader>
-                <h2 className="text-xl font-bold">Editar Producto</h2>
+                <h2 className={`text-xl font-bold ${textColors.primary}`}>Editar Producto</h2>
               </ModalHeader>
               {editingItem && (
                 <ModalBody className="space-y-6">
@@ -973,11 +973,11 @@ export default function InventarioPage() {
         <Modal isOpen={isDeleteOpen} onClose={onDeleteClose} size="lg">
           <ModalContent>
             <ModalHeader>
-              <h2 className="text-xl font-bold">Eliminar Producto</h2>
+              <h2 className={`text-xl font-bold ${textColors.primary}`}>Eliminar Producto</h2>
             </ModalHeader>
             <ModalBody className="space-y-6">
-              <p>¿Estás seguro de que quieres eliminar este producto?</p>
-              {selectedItem && <p className="font-bold">{selectedItem.name}</p>}
+              <p className={textColors.secondary}>¿Estás seguro de que quieres eliminar este producto?</p>
+              {selectedItem && <p className={`font-bold ${textColors.primary}`}>{selectedItem.name}</p>}
             </ModalBody>
             <ModalFooter>
               <Button variant="flat" onPress={onDeleteClose}>Cancelar</Button>

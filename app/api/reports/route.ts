@@ -79,6 +79,8 @@ export async function GET(request: Request) {
       }, { status: 500 })
     }
 
+    console.log('Reports data received:', data)
+
     return NextResponse.json({
       success: true,
       data

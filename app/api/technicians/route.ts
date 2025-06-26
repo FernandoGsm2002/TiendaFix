@@ -68,7 +68,7 @@ export async function GET(request: NextRequest) {
             // Reparaciones asignadas
             const { data: assignedRepairs, error: assignedError } = await supabase
               .from('repairs')
-              .select('id, status, created_at, updated_at, final_cost')
+              .select('id, status, created_at, updated_at, cost')
               .eq('assigned_technician_id', technician.id)
               .eq('organization_id', organizationId)
 
@@ -78,7 +78,7 @@ export async function GET(request: NextRequest) {
             
             const { data: monthlyRepairs, error: monthlyError } = await supabase
               .from('repairs')
-              .select('id, status, created_at, final_cost')
+              .select('id, status, created_at, cost')
               .eq('assigned_technician_id', technician.id)
               .eq('organization_id', organizationId)
               .gte('created_at', lastMonth.toISOString())
@@ -107,8 +107,8 @@ export async function GET(request: NextRequest) {
 
             // Ingresos generados
             const totalRevenue = assignedRepairsList
-              .filter(r => r.final_cost && (r.status === 'completed' || r.status === 'delivered'))
-              .reduce((sum, r) => sum + (r.final_cost || 0), 0)
+              .filter(r => r.cost && (r.status === 'completed' || r.status === 'delivered'))
+              .reduce((sum, r) => sum + (r.cost || 0), 0)
 
             return {
               ...technician,

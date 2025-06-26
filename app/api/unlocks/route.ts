@@ -1,12 +1,33 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createServerClient } from '@/lib/supabase/server'
+import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
+import { cookies } from 'next/headers'
 
 export async function GET(request: NextRequest) {
   try {
     console.log('🔧 Unlocks API called - getting real data')
     
-    const supabase = createServerClient()
+    const supabase = createRouteHandlerClient({ cookies })
     const { searchParams } = new URL(request.url)
+    
+    // Verificar autenticación y rol del usuario
+    const { data: { session }, error: authError } = await supabase.auth.getSession()
+    if (authError || !session) {
+      console.log('❌ No session found')
+      return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
+    }
+
+    console.log('✅ Session found:', session.user.email)
+
+    // Obtener perfil del usuario para verificar rol
+    const { data: userProfile } = await supabase
+      .from('users')
+      .select('role, id, organization_id')
+      .eq('email', session.user.email)
+      .single()
+
+    if (!userProfile) {
+      return NextResponse.json({ error: 'Perfil de usuario no encontrado' }, { status: 404 })
+    }
     
     // Parámetros de consulta
     const page = parseInt(searchParams.get('page') || '1')
@@ -16,7 +37,6 @@ export async function GET(request: NextRequest) {
     const unlock_type = searchParams.get('unlock_type') || 'todos'
     
     const offset = (page - 1) * limit
-    const organizationId = '873d8154-8b40-4b8a-8d03-431bf9f697e6' // ID fijo para pruebas
 
     try {
       let query = supabase
@@ -24,13 +44,19 @@ export async function GET(request: NextRequest) {
         .select(`
           id, unlock_type, brand, model, imei, serial_number,
           status, cost, provider, provider_order_id, completion_time,
-          notes, created_at, updated_at,
+          notes, created_at, updated_at, created_by,
           customers(id, name, email, phone, anonymous_identifier, customer_type),
           devices(id, brand, model, device_type, color),
           users!unlocks_created_by_fkey(id, name, email)
         `)
-        .eq('organization_id', organizationId)
+        .eq('organization_id', userProfile.organization_id)
         .order('created_at', { ascending: false })
+
+      // Si es técnico, solo mostrar sus propios desbloqueos
+      if (userProfile.role === 'technician') {
+        query = query.eq('created_by', userProfile.id)
+        console.log('🔧 Filtering unlocks for technician:', userProfile.id)
+      }
 
       // Filtrar por estado si no es 'todos'
       if (status !== 'todos') {
@@ -107,11 +133,25 @@ export async function POST(request: NextRequest) {
   try {
     console.log('🔧 Creating new unlock...')
     
-    const supabase = createServerClient()
+    const supabase = createRouteHandlerClient({ cookies })
     const body = await request.json()
     
-    const organizationId = '873d8154-8b40-4b8a-8d03-431bf9f697e6' // ID fijo para pruebas
-    const createdById = 'a06654c1-d078-404d-bfec-72c883079a41' // Fernando's user ID
+    // Verificar autenticación y obtener usuario actual
+    const { data: { session }, error: authError } = await supabase.auth.getSession()
+    if (authError || !session) {
+      return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
+    }
+
+    // Obtener perfil del usuario
+    const { data: userProfile } = await supabase
+      .from('users')
+      .select('role, id, organization_id')
+      .eq('email', session.user.email)
+      .single()
+
+    if (!userProfile) {
+      return NextResponse.json({ error: 'Perfil de usuario no encontrado' }, { status: 404 })
+    }
 
     // Validaciones básicas
     if (!body.unlock_type || !body.brand || !body.model) {
@@ -131,7 +171,7 @@ export async function POST(request: NextRequest) {
       // Si hay cliente específico, crear dispositivo automáticamente
       if (body.brand && body.model) {
         const newDevice = {
-          organization_id: organizationId,
+          organization_id: userProfile.organization_id,
           customer_id: customerId,
           brand: body.brand,
           model: body.model,
@@ -165,10 +205,10 @@ export async function POST(request: NextRequest) {
 
     // Validar tipo de unlock (ahora permite cualquier texto)
     const newUnlock = {
-      organization_id: organizationId,
+      organization_id: userProfile.organization_id,
       customer_id: customerId,
       device_id: deviceId,
-      created_by: createdById,
+      created_by: userProfile.id,
       unlock_type: body.unlock_type,
       brand: body.brand,
       model: body.model,

@@ -13,7 +13,7 @@
 
 #### Credenciales Configuradas
 ```bash
-Project URL: https://hdqhdijirmfmgtbhqpjq.supabase.co
+Project URL: https://your-project.supabase.co
 Anon Key: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSI...
 Service Role Key: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSI...
 JWT Secret: 4mxiMKq1zcl8jAX21dL1XSySTrnHklmsR9Qj7NXdqgcLUy1SOaePTaWqFODLwsr5...
@@ -66,11 +66,11 @@ JWT Secret: 4mxiMKq1zcl8jAX21dL1XSySTrnHklmsR9Qj7NXdqgcLUy1SOaePTaWqFODLwsr5...
 
 #### `.env.local` ✅ Configurado
 ```bash
-NEXT_PUBLIC_SUPABASE_URL=https://hdqhdijirmfmgtbhqpjq.supabase.co
+NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbG...
 SUPABASE_SERVICE_ROLE_KEY=eyJhbG...
 SUPABASE_JWT_SECRET=4mxiMK...
-DATABASE_URL=postgresql://postgres:fernandoxD113@db...
+DATABASE_URL=postgresql://postgres:your_password@db...
 NEXTAUTH_SECRET=tu-secret-super-seguro...
 NEXTAUTH_URL=http://localhost:3000
 SUPER_ADMIN_EMAIL=admin@tiendafix.com
@@ -139,8 +139,8 @@ npm run build
 ### 📱 URLs del Proyecto
 
 - **Frontend**: http://localhost:3000
-- **Supabase Dashboard**: https://supabase.com/dashboard/project/hdqhdijirmfmgtbhqpjq
-- **Base de datos**: https://hdqhdijirmfmgtbhqpjq.supabase.co
+- **Supabase Dashboard**: https://supabase.com/dashboard/project/your-project
+- **Base de datos**: https://your-project.supabase.co
 
 ---
 

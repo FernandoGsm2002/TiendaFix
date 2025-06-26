@@ -1,164 +1,174 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createServerClient } from '@/lib/supabase/server'
+import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
+import { cookies } from 'next/headers'
 
 export async function GET(request: NextRequest) {
   try {
     console.log('🔧 Repairs API called - getting real data')
     
-    const supabase = createServerClient()
-    const { searchParams } = new URL(request.url)
+    const supabase = createRouteHandlerClient({ cookies })
     
-    // Parámetros de consulta
+    // Verificar autenticación
+    const { data: { session }, error: authError } = await supabase.auth.getSession()
+    if (authError || !session) {
+      console.log('❌ No session found')
+      return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
+    }
+
+    console.log('✅ Session found:', session.user.email)
+
+    // Obtener perfil del usuario - CORREGIDO: usar tabla 'users'
+    const { data: userProfile } = await supabase
+      .from('users')
+      .select('role, id, organization_id')
+      .eq('email', session.user.email)
+      .single()
+
+    if (!userProfile) {
+      console.log('❌ User profile not found')
+      return NextResponse.json({ error: 'Perfil de usuario no encontrado' }, { status: 404 })
+    }
+
+    console.log('✅ User profile found:', { role: userProfile.role, id: userProfile.id })
+
+    const { searchParams } = new URL(request.url)
     const page = parseInt(searchParams.get('page') || '1')
     const limit = parseInt(searchParams.get('limit') || '10')
-    const search = searchParams.get('search') || ''
-    const status = searchParams.get('status') || 'todos'
-    
+    const status = searchParams.get('status')
+    const search = searchParams.get('search')
     const offset = (page - 1) * limit
-    const organizationId = '873d8154-8b40-4b8a-8d03-431bf9f697e6' // ID fijo para pruebas
 
-    try {
-      let query = supabase
-        .from('repairs_view')
-        .select(`*`, { count: 'exact' })
-        .eq('organization_id', organizationId)
-        .order('created_at', { ascending: false })
+    // Construir query base
+    let query = supabase
+      .from('repairs_view')
+      .select(`
+        id,
+        title,
+        description,
+        problem_description,
+        solution_description,
+        status,
+        priority,
+        cost,
+        estimated_completion_date,
+        actual_completion_date,
+        received_date,
+        delivered_date,
+        warranty_days,
+        internal_notes,
+        customer_notes,
+        created_at,
+        updated_at,
+        unregistered_customer_name,
+        unregistered_customer_phone,
+        unregistered_device_info,
+        customers (
+          id,
+          name,
+          phone,
+          email,
+          anonymous_identifier,
+          customer_type
+        ),
+        devices (
+          id,
+          brand,
+          model,
+          device_type,
+          color,
+          serial_number,
+          imei
+        ),
+        users (
+          id,
+          name,
+          email
+        )
+      `, { count: 'exact' })
 
-      // Filtrar por estado si no es 'todos'
-      if (status !== 'todos') {
-        query = query.eq('status', status)
-      }
+    // Filtrar por organización
+    query = query.eq('organization_id', userProfile.organization_id)
 
-      // Filtrar por búsqueda si se proporciona
-      if (search) {
-        const searchConditions = [
-          `title.ilike.%${search}%`,
-          `problem_description.ilike.%${search}%`,
-          `customer_name.ilike.%${search}%`,
-          `customer_anonymous_identifier.ilike.%${search}%`,
-          `device_brand.ilike.%${search}%`,
-          `device_model.ilike.%${search}%`,
-          `device_imei.ilike.%${search}%`
-        ].join(',')
-        
-        query = query.or(searchConditions)
-      }
-
-      // Obtener datos con paginación
-      const { data: flatRepairs, error, count } = await query
-        .range(offset, offset + limit - 1)
-
-      if (error) {
-        console.error('🚨 Error fetching repairs:', error)
-        throw error
-      }
-      
-      const repairs = flatRepairs.map(r => ({
-        id: r.id,
-        title: r.title,
-        description: r.description,
-        problem_description: r.problem_description,
-        solution_description: r.solution_description,
-        status: r.status,
-        priority: r.priority,
-        estimated_cost: r.estimated_cost,
-        final_cost: r.final_cost,
-        estimated_completion_date: r.estimated_completion_date,
-        actual_completion_date: r.actual_completion_date,
-        received_date: r.received_date,
-        delivered_date: r.delivered_date,
-        warranty_days: r.warranty_days,
-        internal_notes: r.internal_notes,
-        customer_notes: r.customer_notes,
-        created_at: r.created_at,
-        updated_at: r.updated_at,
-        customers: {
-          id: r.customer_id,
-          name: r.customer_name,
-          email: r.customer_email,
-          phone: r.customer_phone,
-          anonymous_identifier: r.customer_anonymous_identifier,
-          customer_type: r.customer_type,
-        },
-        devices: {
-          id: r.device_id,
-          brand: r.device_brand,
-          model: r.device_model,
-          device_type: r.device_type,
-          serial_number: r.device_serial_number,
-          imei: r.device_imei,
-          color: r.device_color,
-        },
-        users: {
-          id: r.created_by,
-          name: r.created_by_name,
-          email: r.created_by_email,
-        }
-      }));
-
-      // Obtener estadísticas
-      const statusCounts = [
-        supabase.from('repairs').select('id', { count: 'exact', head: true }).eq('organization_id', organizationId).eq('status', 'received'),
-        supabase.from('repairs').select('id', { count: 'exact', head: true }).eq('organization_id', organizationId).eq('status', 'diagnosed'),
-        supabase.from('repairs').select('id', { count: 'exact', head: true }).eq('organization_id', organizationId).eq('status', 'in_progress'),
-        supabase.from('repairs').select('id', { count: 'exact', head: true }).eq('organization_id', organizationId).eq('status', 'completed'),
-        supabase.from('repairs').select('id', { count: 'exact', head: true }).eq('organization_id', organizationId).eq('status', 'delivered'),
-        supabase.from('repairs').select('id', { count: 'exact', head: true }).eq('organization_id', organizationId).eq('status', 'cancelled')
-      ];
-      
-      const [
-        received,
-        diagnosed,
-        inProgress,
-        completed,
-        delivered,
-        cancelled
-      ] = await Promise.all(statusCounts);
-
-      const stats = {
-        total: count || 0,
-        received: received.count || 0,
-        diagnosed: diagnosed.count || 0,
-        inProgress: inProgress.count || 0,
-        completed: completed.count || 0,
-        delivered: delivered.count || 0,
-        cancelled: cancelled.count || 0
-      }
-
-      console.log(`✅ Fetched ${repairs?.length || 0} repairs from database`)
-
-      return NextResponse.json({
-        success: true,
-        data: repairs || [],
-        stats: stats,
-        pagination: {
-          page,
-          limit,
-          total: count || 0,
-          totalPages: Math.ceil((count || 0) / limit)
-        }
-      })
-
-    } catch (dbError) {
-      console.error('🚨 Database query error:', dbError)
-      
-      // Devolver estructura vacía si falla la BD
-      return NextResponse.json({
-        success: true,
-        data: [],
-        pagination: {
-          page: 1,
-          limit: 10,
-          total: 0,
-          totalPages: 0
-        }
-      })
+    // FILTRO POR ROL: Técnicos solo ven SUS reparaciones
+    if (userProfile.role === 'technician') {
+      console.log('🔍 Filtering repairs for technician:', userProfile.id)
+      query = query.eq('created_by', userProfile.id)
     }
+
+    // Aplicar filtros adicionales
+    if (status && status !== 'todos') {
+      query = query.eq('status', status)
+    }
+
+    if (search) {
+      query = query.or(`title.ilike.%${search}%,description.ilike.%${search}%,problem_description.ilike.%${search}%`)
+    }
+
+    // Ejecutar query con paginación
+    const { data: repairs, error, count } = await query
+      .order('created_at', { ascending: false })
+      .range(offset, offset + limit - 1)
+
+    if (error) {
+      console.error('❌ Database error:', error)
+      throw error
+    }
+
+    console.log(`✅ Fetched ${repairs?.length || 0} repairs from database`)
+
+    // Calcular estadísticas
+    const statsQuery = supabase
+      .from('repairs_view')
+      .select('status', { count: 'exact' })
+      .eq('organization_id', userProfile.organization_id)
+
+    // Filtrar estadísticas por técnico si aplica
+    if (userProfile.role === 'technician') {
+      statsQuery.eq('created_by', userProfile.id)
+    }
+
+    const { data: statsData, error: statsError } = await statsQuery
+
+    let stats = {
+      total: 0,
+      received: 0,
+      diagnosed: 0,
+      inProgress: 0,
+      completed: 0,
+      delivered: 0,
+      cancelled: 0,
+    }
+
+    if (!statsError && statsData) {
+      stats = {
+        total: count || 0,
+        received: statsData.filter(r => r.status === 'received').length,
+        diagnosed: statsData.filter(r => r.status === 'diagnosed').length,
+        inProgress: statsData.filter(r => r.status === 'in_progress').length,
+        completed: statsData.filter(r => r.status === 'completed').length,
+        delivered: statsData.filter(r => r.status === 'delivered').length,
+        cancelled: statsData.filter(r => r.status === 'cancelled').length,
+      }
+    }
+
+    console.log('📊 Stats calculated:', stats)
+
+    return NextResponse.json({
+      success: true,
+      data: repairs || [],
+      pagination: {
+        page,
+        limit,
+        total: count || 0,
+        totalPages: Math.ceil((count || 0) / limit)
+      },
+      stats
+    })
 
   } catch (error) {
     console.error('🚨 Repairs API error:', error)
     return NextResponse.json(
-      { error: 'Error interno del servidor', details: error instanceof Error ? error.message : 'Unknown error' },
+      { error: 'Error interno del servidor' },
       { status: 500 }
     )
   }
@@ -166,76 +176,58 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    console.log('🔧 Creating new repair...')
+    const supabase = createRouteHandlerClient({ cookies })
     
-    const supabase = createServerClient()
+    // Verificar autenticación
+    const { data: { session }, error: authError } = await supabase.auth.getSession()
+    if (authError || !session) {
+      return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
+    }
+
+    // Obtener perfil del usuario - CORREGIDO: usar tabla 'users'
+    const { data: userProfile } = await supabase
+      .from('users')
+      .select('role, id, organization_id')
+      .eq('email', session.user.email)
+      .single()
+
+    if (!userProfile) {
+      return NextResponse.json({ error: 'Perfil de usuario no encontrado' }, { status: 404 })
+    }
+
     const body = await request.json()
-    
-    console.log('📋 Repair request body:', body)
-    
-    const organizationId = '873d8154-8b40-4b8a-8d03-431bf9f697e6' // ID fijo para pruebas
-    const createdById = 'a06654c1-d078-404d-bfec-72c883079a41' // Fernando's user ID
 
-    // Validaciones
-    if (!body.title || !body.problem_description) {
-      return NextResponse.json(
-        { error: 'Título y descripción del problema son obligatorios' },
-        { status: 400 }
-      )
-    }
-
-    // Validar si es cliente registrado o no
-    if (!body.customer_id && !body.unregistered_customer_name) {
-      return NextResponse.json(
-        { error: 'Debe proporcionar un cliente registrado o los datos de un cliente no registrado.' },
-        { status: 400 }
-      )
-    }
-
-    const newRepair = {
-      organization_id: organizationId,
+    // Preparar datos de la reparación
+    const repairData = {
+      organization_id: userProfile.organization_id,
       customer_id: body.customer_id || null,
       device_id: body.device_id || null,
-      assigned_technician_id: null,
-      created_by: createdById,
       title: body.title,
-      description: body.description || '',
+      description: body.description,
       problem_description: body.problem_description,
-      status: 'received',
       priority: body.priority || 'medium',
-      estimated_cost: body.estimated_cost || 0,
+      cost: body.cost || 0,
+      internal_notes: body.internal_notes,
+      created_by: userProfile.id,
+      status: 'received',
       received_date: new Date().toISOString(),
-      warranty_days: 90,
-      internal_notes: body.internal_notes || null,
-      // Campos para no registrados
+      warranty_days: 30,
+      // Campos para clientes no registrados
       unregistered_customer_name: body.unregistered_customer_name || null,
       unregistered_customer_phone: body.unregistered_customer_phone || null,
-      unregistered_device_info: body.unregistered_device_info || null,
+      unregistered_device_info: body.unregistered_device_info || null
     }
-
-    console.log('📝 Repair data to insert:', newRepair)
 
     const { data: repair, error } = await supabase
       .from('repairs')
-      .insert(newRepair)
+      .insert(repairData)
       .select()
       .single()
 
     if (error) {
-      console.error('🚨 Error creating repair:', error)
-      console.error('🚨 Error details:', {
-        message: error.message,
-        details: error.details,
-        hint: error.hint,
-        code: error.code
-      })
-      return NextResponse.json(
-        { error: 'Error al crear la reparación', details: error.message },
-        { status: 500 }
-      )
+      console.error('Error creating repair:', error)
+      throw error
     }
-
-    console.log('✅ Repair created successfully:', repair.id)
 
     return NextResponse.json({
       success: true,
@@ -243,9 +235,9 @@ export async function POST(request: NextRequest) {
     })
 
   } catch (error) {
-    console.error('🚨 Create repair error:', error)
+    console.error('Error in POST /api/repairs:', error)
     return NextResponse.json(
-      { error: 'Error interno del servidor', details: error instanceof Error ? error.message : 'Unknown error' },
+      { error: 'Error interno del servidor' },
       { status: 500 }
     )
   }

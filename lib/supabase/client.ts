@@ -22,7 +22,7 @@ export const createClient = () => {
   });
 
   // Envolver métodos de autenticación con retry
-  const originalSignIn = client.auth.signInWithPassword;
+  const originalSignIn = client.auth.signInWithPassword.bind(client.auth);
   client.auth.signInWithPassword = async (credentials) => {
     return retryOperation(() => originalSignIn(credentials));
   };

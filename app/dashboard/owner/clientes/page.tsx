@@ -41,7 +41,17 @@ import {
   TrendingUp,
   Users,
   UserCheck,
-  ShoppingBag
+  ShoppingBag,
+  Wrench,
+  Unlock,
+  Clock,
+  CheckCircle,
+  Calendar,
+  DollarSign,
+  CreditCard,
+  Activity,
+  FileText,
+  History
 } from 'lucide-react'
 
 interface Customer {
@@ -62,6 +72,33 @@ interface Customer {
     completadas: number
     entregadas: number
     totalGastado: number
+  }
+}
+
+interface CustomerService {
+  id: string
+  type: 'repair' | 'unlock' | 'sale'
+  title: string
+  description?: string
+  status: string
+  cost: number
+  created_at: string
+  completed_at?: string
+  device_info?: string
+  items?: Array<{
+    name: string
+    quantity: number
+    price: number
+  }>
+}
+
+interface CustomerDetail extends Customer {
+  services: CustomerService[]
+  financialSummary: {
+    totalSpent: number
+    totalPending: number
+    totalPaid: number
+    lastPayment?: string
   }
 }
 
@@ -99,7 +136,9 @@ export default function ClientesPage() {
 
   // Estados para los modales
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null)
+  const [customerDetail, setCustomerDetail] = useState<CustomerDetail | null>(null)
   const [editingCustomer, setEditingCustomer] = useState<Customer | null>(null)
+  const [loadingDetail, setLoadingDetail] = useState(false)
 
   const [newCustomer, setNewCustomer] = useState<NewCustomerForm>({
     name: '',
@@ -204,9 +243,28 @@ export default function ClientesPage() {
   }
 
   // Función para ver detalles
+  const fetchCustomerDetail = async (customerId: string) => {
+    setLoadingDetail(true)
+    try {
+      const response = await fetch(`/api/customers/${customerId}/details`)
+      if (!response.ok) {
+        throw new Error('Error al cargar detalles del cliente')
+      }
+      const data = await response.json()
+      setCustomerDetail(data.data)
+    } catch (err) {
+      console.error('Error fetching customer detail:', err)
+      setError(err instanceof Error ? err.message : 'Error al cargar detalles')
+    } finally {
+      setLoadingDetail(false)
+    }
+  }
+
   const handleViewDetails = (customer: Customer) => {
     setSelectedCustomer(customer)
+    setCustomerDetail(null)
     onDetailOpen()
+    fetchCustomerDetail(customer.id)
   }
 
   // Función para editar
@@ -306,6 +364,46 @@ export default function ClientesPage() {
 
   const getCustomerDisplayName = (customer: Customer) => {
     return customer.name || customer.anonymous_identifier || 'Cliente Anónimo'
+  }
+
+  const getServiceTypeLabel = (type: string) => {
+    switch (type) {
+      case 'repair': return 'Reparación'
+      case 'unlock': return 'Desbloqueo'
+      case 'sale': return 'Venta'
+      default: return type
+    }
+  }
+
+  const getServiceTypeColor = (type: string) => {
+    switch (type) {
+      case 'repair': return 'primary'
+      case 'unlock': return 'secondary'
+      case 'sale': return 'success'
+      default: return 'default'
+    }
+  }
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'pending': return 'warning'
+      case 'completed': return 'success'
+      case 'delivered': return 'success'
+      case 'cancelled': return 'danger'
+      case 'in_progress': return 'primary'
+      default: return 'default'
+    }
+  }
+
+  const getStatusLabel = (status: string) => {
+    switch (status) {
+      case 'pending': return 'Pendiente'
+      case 'completed': return 'Completado'
+      case 'delivered': return 'Entregado'
+      case 'cancelled': return 'Cancelado'
+      case 'in_progress': return 'En Proceso'
+      default: return status
+    }
   }
 
   // Estadísticas
@@ -542,7 +640,7 @@ export default function ClientesPage() {
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className={`text-sm ${textColors.muted}`}>Reparaciones:</span>
+                    <span className={`text-sm ${textColors.muted}`}>Servicios:</span>
                     <span className={`text-sm font-semibold ${textColors.primary}`}>
                       {customer.stats?.totalReparaciones || 0}
                     </span>
@@ -651,46 +749,62 @@ export default function ClientesPage() {
           </ModalContent>
         </Modal>
 
-        {/* Modal de ver detalles */}
-        <Modal isOpen={isDetailOpen} onClose={onDetailClose} size="3xl">
+        {/* Modal de ver detalles mejorado */}
+        <Modal isOpen={isDetailOpen} onClose={onDetailClose} size="5xl" scrollBehavior="inside">
           <ModalContent>
-            <ModalHeader>
-              <h2 className="text-xl font-bold">Detalles del Cliente</h2>
+            <ModalHeader className="border-b">
+              <div className="flex items-center gap-3">
+                <Avatar
+                  name={selectedCustomer ? getCustomerDisplayName(selectedCustomer).charAt(0) : '?'}
+                  size="lg"
+                  className="bg-gradient-to-br from-blue-500 to-purple-600"
+                />
+                <div>
+                  <h2 className={`text-xl font-bold ${textColors.primary}`}>
+                    {selectedCustomer ? getCustomerDisplayName(selectedCustomer) : 'Cliente'}
+                  </h2>
+                  <p className={`text-sm ${textColors.muted}`}>Perfil completo del cliente</p>
+                </div>
+              </div>
             </ModalHeader>
-            <ModalBody>
+            <ModalBody className="p-6">
               {selectedCustomer && (
                 <div className="space-y-6">
-                  {/* Información básica */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="space-y-4">
-                      <h3 className={`text-lg font-semibold ${textColors.primary}`}>Información Personal</h3>
-                      <div className="space-y-3">
+                  {/* Información básica mejorada */}
+                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    {/* Información personal */}
+                    <Card>
+                      <CardHeader className="pb-3">
+                        <h3 className={`text-lg font-semibold flex items-center gap-2 ${textColors.primary}`}>
+                          <User className="w-5 h-5 text-blue-500" />
+                          Información Personal
+                        </h3>
+                      </CardHeader>
+                      <CardBody className="pt-0 space-y-3">
                         <div>
-                          <label className={`text-sm font-medium ${textColors.secondary}`}>Nombre:</label>
-                          <p className={`text-base ${textColors.primary}`}>
-                            {getCustomerDisplayName(selectedCustomer)}
-                          </p>
+                          <label className={`text-sm font-medium ${textColors.tertiary}`}>Nombre:</label>
+                          <p className={`text-base font-medium ${textColors.primary}`}>{getCustomerDisplayName(selectedCustomer)}</p>
                         </div>
                         {selectedCustomer.email && (
                           <div>
-                            <label className={`text-sm font-medium ${textColors.secondary}`}>Email:</label>
+                            <label className={`text-sm font-medium ${textColors.tertiary}`}>Email:</label>
                             <p className={`text-base ${textColors.primary}`}>{selectedCustomer.email}</p>
                           </div>
                         )}
                         {selectedCustomer.phone && (
                           <div>
-                            <label className={`text-sm font-medium ${textColors.secondary}`}>Teléfono:</label>
+                            <label className={`text-sm font-medium ${textColors.tertiary}`}>Teléfono:</label>
                             <p className={`text-base ${textColors.primary}`}>{selectedCustomer.phone}</p>
                           </div>
                         )}
                         {selectedCustomer.address && (
                           <div>
-                            <label className={`text-sm font-medium ${textColors.secondary}`}>Dirección:</label>
+                            <label className={`text-sm font-medium ${textColors.tertiary}`}>Dirección:</label>
                             <p className={`text-base ${textColors.primary}`}>{selectedCustomer.address}</p>
                           </div>
                         )}
                         <div>
-                          <label className={`text-sm font-medium ${textColors.secondary}`}>Tipo:</label>
+                          <label className={`text-sm font-medium ${textColors.tertiary}`}>Tipo:</label>
                           <div className="mt-1">
                             <Chip
                               color={getBadgeColor(selectedCustomer.customer_type, selectedCustomer.is_recurrent)}
@@ -700,63 +814,192 @@ export default function ClientesPage() {
                             </Chip>
                           </div>
                         </div>
-                      </div>
-                    </div>
+                        <div>
+                          <label className={`text-sm font-medium ${textColors.tertiary}`}>Registro:</label>
+                          <p className={`text-sm ${textColors.primary}`}>{new Date(selectedCustomer.created_at).toLocaleDateString('es-ES')}</p>
+                        </div>
+                      </CardBody>
+                    </Card>
 
-                    <div className="space-y-4">
-                      <h3 className={`text-lg font-semibold ${textColors.primary}`}>Estadísticas</h3>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="text-center p-4 bg-blue-50 rounded-lg">
-                          <p className="text-2xl font-bold text-blue-600">{selectedCustomer.stats.totalReparaciones}</p>
-                          <p className={`text-sm ${textColors.muted}`}>Total Reparaciones</p>
+                    {/* Estadísticas actuales */}
+                    <Card>
+                      <CardHeader className="pb-3">
+                        <h3 className={`text-lg font-semibold flex items-center gap-2 ${textColors.primary}`}>
+                          <Activity className="w-5 h-5 text-green-500" />
+                          Estadísticas Básicas
+                        </h3>
+                      </CardHeader>
+                      <CardBody className="pt-0">
+                        <div className="grid grid-cols-2 gap-3">
+                          <div className="text-center p-3 bg-blue-50 rounded-lg">
+                            <p className="text-xl font-bold text-blue-600">{selectedCustomer.stats.totalReparaciones}</p>
+                            <p className="text-xs text-gray-600">Total Servicios</p>
+                          </div>
+                          <div className="text-center p-3 bg-green-50 rounded-lg">
+                            <p className="text-xl font-bold text-green-600">{formatCurrency(selectedCustomer.stats.totalGastado)}</p>
+                            <p className="text-xs text-gray-600">Total Gastado</p>
+                          </div>
+                          <div className="text-center p-3 bg-orange-50 rounded-lg">
+                            <p className="text-xl font-bold text-orange-600">{selectedCustomer.stats.pendientes}</p>
+                            <p className="text-xs text-gray-600">Pendientes</p>
+                          </div>
+                          <div className="text-center p-3 bg-purple-50 rounded-lg">
+                            <p className="text-xl font-bold text-purple-600">{selectedCustomer.stats.completadas}</p>
+                            <p className="text-xs text-gray-600">Completadas</p>
+                          </div>
                         </div>
-                        <div className="text-center p-4 bg-green-50 rounded-lg">
-                          <p className="text-2xl font-bold text-green-600">{formatCurrency(selectedCustomer.stats.totalGastado)}</p>
-                          <p className={`text-sm ${textColors.muted}`}>Total Gastado</p>
-                        </div>
-                        <div className="text-center p-4 bg-orange-50 rounded-lg">
-                          <p className="text-2xl font-bold text-orange-600">{selectedCustomer.stats.pendientes}</p>
-                          <p className={`text-sm ${textColors.muted}`}>Pendientes</p>
-                        </div>
-                        <div className="text-center p-4 bg-purple-50 rounded-lg">
-                          <p className="text-2xl font-bold text-purple-600">{selectedCustomer.stats.completadas}</p>
-                          <p className={`text-sm ${textColors.muted}`}>Completadas</p>
-                        </div>
-                      </div>
-                    </div>
+                      </CardBody>
+                    </Card>
+
+                    {/* Resumen financiero */}
+                    <Card>
+                      <CardHeader className="pb-3">
+                        <h3 className={`text-lg font-semibold flex items-center gap-2 ${textColors.primary}`}>
+                          <CreditCard className="w-5 h-5 text-green-500" />
+                          Resumen Financiero
+                        </h3>
+                      </CardHeader>
+                      <CardBody className="pt-0">
+                        {loadingDetail ? (
+                          <div className="space-y-3">
+                            <Skeleton className="h-4 rounded" />
+                            <Skeleton className="h-4 rounded" />
+                            <Skeleton className="h-4 rounded" />
+                          </div>
+                        ) : customerDetail ? (
+                          <div className="space-y-3">
+                            <div className="flex justify-between">
+                              <span className={`text-sm ${textColors.secondary}`}>Total gastado:</span>
+                              <span className="font-semibold text-green-600">
+                                {formatCurrency(customerDetail.financialSummary.totalSpent)}
+                              </span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className={`text-sm ${textColors.secondary}`}>Pendiente:</span>
+                              <span className="font-semibold text-orange-600">
+                                {formatCurrency(customerDetail.financialSummary.totalPending)}
+                              </span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className={`text-sm ${textColors.secondary}`}>Pagado:</span>
+                              <span className="font-semibold text-blue-600">
+                                {formatCurrency(customerDetail.financialSummary.totalPaid)}
+                              </span>
+                            </div>
+                            {customerDetail.financialSummary.lastPayment && (
+                              <div className={`pt-2 border-t text-xs ${textColors.muted}`}>
+                                Último pago: {new Date(customerDetail.financialSummary.lastPayment).toLocaleDateString('es-ES')}
+                              </div>
+                            )}
+                          </div>
+                        ) : (
+                          <p className={`text-sm ${textColors.muted}`}>Sin datos financieros</p>
+                        )}
+                      </CardBody>
+                    </Card>
                   </div>
 
-                  {/* Información adicional */}
-                  <div className="border-t pt-4">
-                    <h3 className={`text-lg font-semibold ${textColors.primary} mb-3`}>Información Adicional</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <label className={`text-sm font-medium ${textColors.secondary}`}>Fecha de registro:</label>
-                        <p className={`text-base ${textColors.primary}`}>
-                          {new Date(selectedCustomer.created_at).toLocaleDateString('es-ES', {
-                            year: 'numeric',
-                            month: 'long',
-                            day: 'numeric'
-                          })}
-                        </p>
-                      </div>
-                      <div>
-                        <label className={`text-sm font-medium ${textColors.secondary}`}>Última actualización:</label>
-                        <p className={`text-base ${textColors.primary}`}>
-                          {new Date(selectedCustomer.updated_at).toLocaleDateString('es-ES', {
-                            year: 'numeric',
-                            month: 'long',
-                            day: 'numeric'
-                          })}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
+                  {/* Historial de servicios */}
+                  <Card>
+                    <CardHeader>
+                      <h3 className={`text-xl font-semibold flex items-center gap-2 ${textColors.primary}`}>
+                        <History className="w-6 h-6 text-purple-500" />
+                        Historial de Servicios
+                      </h3>
+                    </CardHeader>
+                    <CardBody>
+                      {loadingDetail ? (
+                        <div className="space-y-4">
+                          {[...Array(3)].map((_, i) => (
+                            <div key={i} className="p-4 border rounded-lg space-y-2">
+                              <Skeleton className="h-4 w-1/4 rounded" />
+                              <Skeleton className="h-3 w-3/4 rounded" />
+                              <Skeleton className="h-3 w-1/2 rounded" />
+                            </div>
+                          ))}
+                        </div>
+                      ) : customerDetail && customerDetail.services.length > 0 ? (
+                        <div className="space-y-3 max-h-96 overflow-y-auto">
+                          {customerDetail.services
+                            .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+                            .map((service) => (
+                            <div key={service.id} className="p-4 border rounded-lg hover:bg-gray-50 transition-colors">
+                              <div className="flex justify-between items-start mb-2">
+                                <div className="flex items-center gap-2">
+                                  {service.type === 'repair' && <Wrench className="w-4 h-4 text-blue-500" />}
+                                  {service.type === 'unlock' && <Unlock className="w-4 h-4 text-purple-500" />}
+                                  {service.type === 'sale' && <ShoppingBag className="w-4 h-4 text-green-500" />}
+                                  <Chip
+                                    size="sm"
+                                    color={getServiceTypeColor(service.type)}
+                                    variant="flat"
+                                  >
+                                    {getServiceTypeLabel(service.type)}
+                                  </Chip>
+                                  <Chip
+                                    size="sm"
+                                    color={getStatusColor(service.status)}
+                                    variant="flat"
+                                  >
+                                    {getStatusLabel(service.status)}
+                                  </Chip>
+                                </div>
+                                <span className="font-semibold text-green-600">
+                                  {formatCurrency(service.cost)}
+                                </span>
+                              </div>
+                              <h4 className={`font-medium mb-1 ${textColors.primary}`}>{service.title}</h4>
+                              {service.description && (
+                                <p className={`text-sm mb-2 ${textColors.secondary}`}>{service.description}</p>
+                              )}
+                              {service.device_info && (
+                                <p className={`text-sm mb-2 ${textColors.secondary}`}>
+                                  <strong>Dispositivo:</strong> {service.device_info}
+                                </p>
+                              )}
+                              {service.items && service.items.length > 0 && (
+                                <div className={`text-sm mb-2 ${textColors.secondary}`}>
+                                  <strong>Productos:</strong> {service.items.map(item => 
+                                    `${item.name} (${item.quantity}x)`
+                                  ).join(', ')}
+                                </div>
+                              )}
+                              <div className={`flex justify-between text-xs ${textColors.muted}`}>
+                                <span>Creado: {new Date(service.created_at).toLocaleDateString('es-ES')}</span>
+                                {service.completed_at && (
+                                  <span>Completado: {new Date(service.completed_at).toLocaleDateString('es-ES')}</span>
+                                )}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="text-center py-8">
+                          <FileText className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                          <p className={textColors.muted}>No hay servicios registrados para este cliente</p>
+                        </div>
+                      )}
+                    </CardBody>
+                  </Card>
                 </div>
               )}
             </ModalBody>
-            <ModalFooter>
-              <Button onPress={onDetailClose}>Cerrar</Button>
+            <ModalFooter className="border-t">
+              <Button variant="flat" onPress={onDetailClose}>
+                Cerrar
+              </Button>
+              {selectedCustomer && (
+                <Button 
+                  color="primary" 
+                  startContent={<Edit className="w-4 h-4" />}
+                  onPress={() => {
+                    handleEditCustomer(selectedCustomer)
+                    onDetailClose()
+                  }}
+                >
+                  Editar Cliente
+                </Button>
+              )}
             </ModalFooter>
           </ModalContent>
         </Modal>
@@ -766,7 +1009,7 @@ export default function ClientesPage() {
           <ModalContent>
             <form onSubmit={handleUpdateCustomer}>
               <ModalHeader>
-                <h2 className="text-xl font-bold">Editar Cliente</h2>
+                <h2 className={`text-xl font-bold ${textColors.primary}`}>Editar Cliente</h2>
               </ModalHeader>
               <ModalBody className="space-y-4">
                 {editingCustomer && (
@@ -835,7 +1078,7 @@ export default function ClientesPage() {
         <Modal isOpen={isDeleteOpen} onClose={onDeleteClose} size="md">
           <ModalContent>
             <ModalHeader>
-              <h2 className="text-xl font-bold text-red-600">Confirmar Eliminación</h2>
+              <h2 className={`text-xl font-bold ${textColors.error}`}>Confirmar Eliminación</h2>
             </ModalHeader>
             <ModalBody>
               {selectedCustomer && (
