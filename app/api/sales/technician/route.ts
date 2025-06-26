@@ -81,17 +81,33 @@ export async function POST(request: Request) {
 
     // Actualizar el inventario (reducir stock)
     for (const item of body.items) {
-      const { error: inventoryError } = await supabase
+      // Primero obtener el stock actual
+      const { data: currentItem, error: fetchError } = await supabase
         .from('inventory')
-        .update({ 
-          stock: supabase.sql`stock - ${item.quantity}` 
-        })
+        .select('stock')
         .eq('id', item.product_id)
-        .gte('stock', item.quantity) // Solo actualizar si hay suficiente stock
+        .single()
 
-      if (inventoryError) {
-        console.error('Error updating inventory:', inventoryError)
-        // No fallar la venta por errores de inventario, solo loggear
+      if (fetchError) {
+        console.error('Error fetching current stock:', fetchError)
+        continue
+      }
+
+      // Calcular nuevo stock
+      const newStock = currentItem.stock - item.quantity
+
+      // Solo actualizar si hay suficiente stock
+      if (newStock >= 0) {
+        const { error: inventoryError } = await supabase
+          .from('inventory')
+          .update({ stock: newStock })
+          .eq('id', item.product_id)
+
+        if (inventoryError) {
+          console.error('Error updating inventory:', inventoryError)
+        }
+      } else {
+        console.warn(`Insufficient stock for product ${item.product_id}`)
       }
     }
 
