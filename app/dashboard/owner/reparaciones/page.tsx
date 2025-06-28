@@ -51,7 +51,8 @@ import {
   AlertCircle,
   DollarSign,
   ClipboardList,
-  Shield
+  Shield,
+  Settings
 } from 'lucide-react'
 
 interface Repair {
@@ -348,8 +349,6 @@ export default function ReparacionesPage() {
     }
   }
 
-
-
   const handleCustomerChange = (customerId: string) => {
     setNewRepair(prev => ({ ...prev, customer_id: customerId, device_description: '' }))
   }
@@ -628,25 +627,39 @@ export default function ReparacionesPage() {
   if (loading) {
     return (
       <DashboardLayout>
-        <div className="space-y-6">
-          <div className="flex justify-between items-center">
-            <div className="space-y-2">
-              <Skeleton className="h-8 w-64 rounded-lg" />
-              <Skeleton className="h-4 w-96 rounded-lg" />
-            </div>
-            <Skeleton className="h-10 w-32 rounded-lg" />
+        <div className="space-y-4 md:space-y-6">
+          <Skeleton className="h-6 md:h-8 w-48 rounded-lg" />
+          <div className="flex flex-col sm:flex-row gap-4">
+            <Skeleton className="h-10 w-full sm:w-64 rounded-lg" />
+            <Skeleton className="h-10 w-full sm:w-32 rounded-lg" />
+            <Skeleton className="h-10 w-full sm:w-24 rounded-lg" />
           </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {[...Array(4)].map((_, i) => (
               <Card key={i}>
-                <CardBody className="p-6 space-y-3">
-                  <Skeleton className="h-4 w-20 rounded" />
-                  <Skeleton className="h-8 w-12 rounded" />
-                  <Skeleton className="h-3 w-24 rounded" />
+                <CardBody className="p-4">
+                  <Skeleton className="h-16 w-full rounded" />
                 </CardBody>
               </Card>
             ))}
+          </div>
+          <Card>
+            <CardBody className="p-4">
+              <Skeleton className="h-64 w-full rounded" />
+            </CardBody>
+          </Card>
+        </div>
+      </DashboardLayout>
+    )
+  }
+
+  if (error) {
+    return (
+      <DashboardLayout>
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <AlertTriangle className="h-12 w-12 text-red-500 mx-auto mb-4" />
+            <p className="text-gray-600">Error al cargar reparaciones: {error}</p>
           </div>
         </div>
       </DashboardLayout>
@@ -655,183 +668,367 @@ export default function ReparacionesPage() {
 
   return (
     <DashboardLayout>
-      <div className="space-y-8">
+      <div className="space-y-4 md:space-y-6">
         {/* Header */}
-        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
-          <div className="space-y-2">
-            <h1 className={`text-4xl font-bold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent`}>
-              Gestión de Reparaciones
-            </h1>
-            <p className={`${textColors.secondary} text-lg`}>
-              Seguimiento de reparaciones y servicios técnicos
-            </p>
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div>
+            <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-gray-900">Gestión de Reparaciones</h1>
+            <p className={`text-sm md:text-base ${textColors.secondary} mt-1`}>Administra todas las reparaciones del taller</p>
           </div>
-          
-          <Button
-            color="primary"
-            size="lg"
-            startContent={<Plus className="w-5 h-5" />}
+          <Button 
+            color="primary" 
+            startContent={<Plus className="h-4 w-4" />}
             onPress={onCreateOpen}
-            className="shadow-lg"
+            className="w-full sm:w-auto font-semibold"
+            size="lg"
           >
             Nueva Reparación
           </Button>
         </div>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
-          <Card className="hover:scale-105 transition-transform border-0 shadow-lg">
-            <CardBody className="p-6">
-              <div className="flex items-center justify-between mb-4">
-                <div className="p-3 rounded-xl bg-gradient-to-br from-blue-400 to-blue-600 shadow-lg">
-                  <Wrench className="w-6 h-6 text-white" />
-                </div>
-                <Chip color="primary" variant="flat">Total</Chip>
-              </div>
-              <div className="space-y-2">
-                <p className={`text-sm font-medium ${textColors.tertiary}`}>Total Reparaciones</p>
-                <p className={`text-3xl font-bold ${textColors.primary}`}>{allStats.total}</p>
-                <Progress value={100} color="primary" size="sm" />
-              </div>
-            </CardBody>
-          </Card>
-
-          <Card className="hover:scale-105 transition-transform border-0 shadow-lg">
-            <CardBody className="p-6">
-              <div className="flex items-center justify-between mb-4">
-                <div className="p-3 rounded-xl bg-gradient-to-br from-gray-400 to-gray-600 shadow-lg">
-                  <Clock className="w-6 h-6 text-white" />
-                </div>
-                <Chip color="default" variant="flat">Pendientes</Chip>
-              </div>
-              <div className="space-y-2">
-                <p className={`text-sm font-medium ${textColors.tertiary}`}>Pendientes</p>
-                <p className={`text-3xl font-bold text-gray-600`}>{allStats.pending}</p>
-                <Progress value={(allStats.pending / Math.max(allStats.total, 1)) * 100} color="default" size="sm" />
-              </div>
-            </CardBody>
-          </Card>
-
-          <Card className="hover:scale-105 transition-transform border-0 shadow-lg">
-            <CardBody className="p-6">
-              <div className="flex items-center justify-between mb-4">
-                <div className="p-3 rounded-xl bg-gradient-to-br from-orange-400 to-orange-600 shadow-lg">
-                  <AlertCircle className="w-6 h-6 text-white" />
-                </div>
-                <Chip color="warning" variant="flat">Proceso</Chip>
-              </div>
-              <div className="space-y-2">
-                <p className={`text-sm font-medium ${textColors.tertiary}`}>En Proceso</p>
-                <p className={`text-3xl font-bold text-orange-600`}>{allStats.inProgress}</p>
-                <Progress value={(allStats.inProgress / Math.max(allStats.total, 1)) * 100} color="warning" size="sm" />
-              </div>
-            </CardBody>
-          </Card>
-
-          <Card className="hover:scale-105 transition-transform border-0 shadow-lg">
-            <CardBody className="p-6">
-              <div className="flex items-center justify-between mb-4">
-                <div className="p-3 rounded-xl bg-gradient-to-br from-green-400 to-green-600 shadow-lg">
-                  <CheckCircle className="w-6 h-6 text-white" />
-                </div>
-                <Chip color="success" variant="flat">Listos</Chip>
-              </div>
-              <div className="space-y-2">
-                <p className={`text-sm font-medium ${textColors.tertiary}`}>Completados</p>
-                <p className={`text-3xl font-bold text-green-600`}>{allStats.completed}</p>
-                <Progress value={(allStats.completed / Math.max(allStats.total, 1)) * 100} color="success" size="sm" />
-              </div>
-            </CardBody>
-          </Card>
-        </div>
-
         {/* Filtros */}
-        <Card>
-          <CardBody className="p-6">
-            <div className="flex flex-col md:flex-row gap-4">
+        <Card className="shadow-lg border-0 bg-white/80 backdrop-blur-sm">
+          <CardBody className="p-4 md:p-6">
+            <div className="flex flex-col lg:flex-row gap-4">
               <div className="flex-1">
                 <Input
-                  placeholder="Buscar por título, cliente, dispositivo..."
-                  startContent={<Search className="w-4 h-4 text-gray-400" />}
+                  placeholder="Buscar por cliente, dispositivo o número de serie..."
                   value={busqueda}
-                  onValueChange={handleBusquedaChange}
+                  onChange={(e) => handleBusquedaChange(e.target.value)}
+                  startContent={<Search className="h-4 w-4 text-gray-400" />}
                   variant="bordered"
                   size="lg"
+                  className="w-full"
                   classNames={{
-                    input: "text-gray-900 placeholder:text-gray-500",
-                    inputWrapper: "border-gray-300",
+                    input: "text-sm",
+                    inputWrapper: "border-gray-200 hover:border-gray-300"
                   }}
                 />
               </div>
-              <div className="w-full md:w-64">
-                <Select
-                  placeholder="Filtrar por estado"
-                  selectedKeys={new Set([filtroEstado])}
-                  onSelectionChange={handleFiltroChange}
-                  variant="bordered"
-                  size="lg"
-                  startContent={<Filter className="w-4 h-4" />}
-                  className="text-gray-900 dark:text-gray-100"
-                >
-                  <SelectItem key="todos" className="text-gray-900">Todos los estados</SelectItem>
-                  <SelectItem key="received" className="text-gray-900">Recibido</SelectItem>
-                  <SelectItem key="diagnosed" className="text-gray-900">Diagnosticado</SelectItem>
-                  <SelectItem key="in_progress" className="text-gray-900">En Proceso</SelectItem>
-                  <SelectItem key="completed" className="text-gray-900">Completado</SelectItem>
-                  <SelectItem key="delivered" className="text-gray-900">Entregado</SelectItem>
-                  <SelectItem key="cancelled" className="text-gray-900">Cancelado</SelectItem>
-                </Select>
-              </div>
+              <Select
+                placeholder="Filtrar por estado"
+                selectedKeys={[filtroEstado]}
+                onSelectionChange={handleFiltroChange}
+                startContent={<Filter className="h-4 w-4 text-gray-400" />}
+                variant="bordered"
+                size="lg"
+                className="w-full lg:w-48"
+                classNames={{
+                  trigger: "border-gray-200 hover:border-gray-300"
+                }}
+              >
+                <SelectItem key="todos">Todos los estados</SelectItem>
+                <SelectItem key="received">Recibido</SelectItem>
+                <SelectItem key="diagnosed">Diagnosticado</SelectItem>
+                <SelectItem key="in_progress">En Proceso</SelectItem>
+                <SelectItem key="waiting_parts">Esperando Repuestos</SelectItem>
+                <SelectItem key="completed">Completado</SelectItem>
+                <SelectItem key="delivered">Entregado</SelectItem>
+                <SelectItem key="cancelled">Cancelado</SelectItem>
+              </Select>
             </div>
           </CardBody>
         </Card>
 
-        {/* Lista de reparaciones */}
-        <div className="mt-6">
-          <Card>
-            <CardBody>
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          <Card className="hover:scale-105 transition-all duration-300 border-0 shadow-xl bg-gradient-to-br from-blue-50 to-blue-100">
+            <CardBody className="p-4">
+              <div className="flex items-center justify-between mb-3">
+                <div className="p-2 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 shadow-lg">
+                  <Wrench className="w-5 h-5 text-white" />
+                </div>
+                <Chip color="primary" variant="flat" className="font-semibold">Total</Chip>
+              </div>
+              <div className="space-y-2">
+                <p className="text-sm font-medium text-blue-700">Total Reparaciones</p>
+                <p className="text-2xl font-bold text-blue-800">{stats.total}</p>
+              </div>
+            </CardBody>
+          </Card>
+
+          <Card className="hover:scale-105 transition-all duration-300 border-0 shadow-xl bg-gradient-to-br from-orange-50 to-orange-100">
+            <CardBody className="p-4">
+              <div className="flex items-center justify-between mb-3">
+                <div className="p-2 rounded-xl bg-gradient-to-br from-orange-500 to-orange-600 shadow-lg">
+                  <Clock className="w-5 h-5 text-white" />
+                </div>
+                <Chip color="warning" variant="flat" className="font-semibold">Pendientes</Chip>
+              </div>
+              <div className="space-y-2">
+                <p className="text-sm font-medium text-orange-700">Pendientes</p>
+                <p className="text-2xl font-bold text-orange-800">{stats.received + stats.diagnosed}</p>
+              </div>
+            </CardBody>
+          </Card>
+
+          <Card className="hover:scale-105 transition-all duration-300 border-0 shadow-xl bg-gradient-to-br from-blue-50 to-indigo-100">
+            <CardBody className="p-4">
+              <div className="flex items-center justify-between mb-3">
+                <div className="p-2 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 shadow-lg">
+                  <Settings className="w-5 h-5 text-white" />
+                </div>
+                <Chip color="primary" variant="flat" className="font-semibold">Proceso</Chip>
+              </div>
+              <div className="space-y-2">
+                <p className="text-sm font-medium text-blue-700">En Proceso</p>
+                <p className="text-2xl font-bold text-blue-800">{stats.inProgress}</p>
+              </div>
+            </CardBody>
+          </Card>
+
+          <Card className="hover:scale-105 transition-all duration-300 border-0 shadow-xl bg-gradient-to-br from-green-50 to-emerald-100">
+            <CardBody className="p-4">
+              <div className="flex items-center justify-between mb-3">
+                <div className="p-2 rounded-xl bg-gradient-to-br from-green-500 to-emerald-600 shadow-lg">
+                  <CheckCircle className="w-5 h-5 text-white" />
+                </div>
+                <Chip color="success" variant="flat" className="font-semibold">Completadas</Chip>
+              </div>
+              <div className="space-y-2">
+                <p className="text-sm font-medium text-green-700">Completadas</p>
+                <p className="text-2xl font-bold text-green-800">{stats.completed + stats.delivered}</p>
+              </div>
+            </CardBody>
+          </Card>
+        </div>
+
+        {/* Lista de Reparaciones */}
+        <Card className="shadow-lg border-0 bg-white/80 backdrop-blur-sm">
+          <CardBody className="p-0">
+            {/* Desktop Table */}
+            <div className="hidden lg:block overflow-x-auto">
               <Table 
-                aria-label="Tabla de Reparaciones" 
-                removeWrapper
-                bottomContent={
-                  !loading && pagination.totalPages > 1 ? (
-                    <div className="flex w-full justify-center">
-                      <Pagination
-                        isCompact
-                        showControls
-                        showShadow
-                        color="primary"
-                        page={pagination.page}
-                        total={pagination.totalPages}
-                        onChange={(page) => fetchRepairs(page)}
-                      />
-                      </div>
-                  ) : null
-                }
+                aria-label="Tabla de reparaciones"
+                classNames={{
+                  wrapper: "shadow-none rounded-none",
+                  th: "bg-gray-50 text-gray-700 font-semibold",
+                  td: "border-b border-gray-100"
+                }}
               >
-                <TableHeader columns={columns}>
-                  {(column) => (
-                    <TableColumn key={column.uid} className="bg-gray-100 text-gray-600 uppercase text-sm">
-                      {column.name}
-                    </TableColumn>
-                  )}
+                <TableHeader>
+                  <TableColumn>REPARACIÓN</TableColumn>
+                  <TableColumn>CLIENTE</TableColumn>
+                  <TableColumn>DISPOSITIVO</TableColumn>
+                  <TableColumn>ESTADO</TableColumn>
+                  <TableColumn>PRIORIDAD</TableColumn>
+                  <TableColumn>COSTO</TableColumn>
+                  <TableColumn>FECHA</TableColumn>
+                  <TableColumn>ACCIONES</TableColumn>
                 </TableHeader>
-                <TableBody 
-                  items={repairs} 
-                  isLoading={loading}
-                  loadingContent={<p>Cargando reparaciones...</p>}
-                  emptyContent={"No se encontraron reparaciones que coincidan con los filtros."}
-                >
-                  {(item) => (
-                    <TableRow key={item.id}>
-                      {(columnKey) => <TableCell>{renderCell(item, columnKey)}</TableCell>}
+                <TableBody>
+                  {repairs.map((repair) => (
+                    <TableRow key={repair.id} className="hover:bg-gray-50">
+                      <TableCell>
+                        <div>
+                          <p className="font-semibold text-gray-900">{repair.title}</p>
+                          <p className="text-sm text-gray-600 truncate max-w-[200px]">{repair.description}</p>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          <Avatar size="sm" name={getCustomerName(repair.customers, repair.unregistered_customer_name)} />
+                          <div>
+                            <p className="font-medium text-gray-900">{getCustomerName(repair.customers, repair.unregistered_customer_name)}</p>
+                            <p className="text-sm text-gray-600">{repair.customers?.phone || repair.unregistered_customer_phone}</p>
+                          </div>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div>
+                          <p className="font-medium text-gray-900">{getDeviceName(repair.devices, repair.unregistered_device_info)}</p>
+                          <p className="text-sm text-gray-600">{repair.devices?.serial_number || 'S/N no disponible'}</p>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <Chip 
+                          color={getStatusColor(repair.status)} 
+                          variant="flat" 
+                          size="sm"
+                          className="font-medium"
+                        >
+                          {getStatusLabel(repair.status)}
+                        </Chip>
+                      </TableCell>
+                      <TableCell>
+                        <Chip 
+                          color={getPriorityColor(repair.priority)} 
+                          variant="dot" 
+                          size="sm"
+                          className="font-medium"
+                        >
+                          {repair.priority}
+                        </Chip>
+                      </TableCell>
+                      <TableCell>
+                        <p className="font-semibold text-gray-900">{formatCurrency(repair.cost)}</p>
+                      </TableCell>
+                      <TableCell>
+                        <p className="text-sm text-gray-600">{new Date(repair.created_at).toLocaleDateString()}</p>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex gap-1">
+                          <Tooltip content="Ver detalles">
+                            <Button
+                              isIconOnly
+                              variant="light"
+                              size="sm"
+                              onPress={() => handleViewDetails(repair)}
+                            >
+                              <Eye className="h-4 w-4" />
+                            </Button>
+                          </Tooltip>
+                          <Tooltip content="Editar">
+                            <Button
+                              isIconOnly
+                              variant="light"
+                              size="sm"
+                              onPress={() => handleEditRepair(repair)}
+                            >
+                              <Edit className="h-4 w-4" />
+                            </Button>
+                          </Tooltip>
+                          <Tooltip content="Eliminar">
+                            <Button
+                              isIconOnly
+                              variant="light"
+                              size="sm"
+                              color="danger"
+                              onPress={() => handleDeleteRepair(repair)}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </Tooltip>
+                        </div>
+                      </TableCell>
                     </TableRow>
-                  )}
+                  ))}
                 </TableBody>
               </Table>
-              </CardBody>
-            </Card>
-        </div>
+            </div>
+
+            {/* Mobile Cards */}
+            <div className="lg:hidden p-4 space-y-4">
+              {repairs.map((repair) => (
+                <Card key={repair.id} className="shadow-md border border-gray-200 hover:shadow-lg transition-all">
+                  <CardBody className="p-4">
+                    <div className="space-y-3">
+                      {/* Header */}
+                      <div className="flex justify-between items-start">
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-semibold text-gray-900 truncate">{repair.title}</h3>
+                          <p className="text-sm text-gray-600 line-clamp-2">{repair.description}</p>
+                        </div>
+                        <Chip 
+                          color={getStatusColor(repair.status)} 
+                          variant="flat" 
+                          size="sm"
+                          className="ml-2 flex-shrink-0"
+                        >
+                          {getStatusLabel(repair.status)}
+                        </Chip>
+                      </div>
+
+                      {/* Customer & Device */}
+                      <div className="grid grid-cols-1 gap-2">
+                        <div className="flex items-center gap-2">
+                          <User className="h-4 w-4 text-gray-400 flex-shrink-0" />
+                          <div className="min-w-0 flex-1">
+                            <p className="text-sm font-medium text-gray-900 truncate">
+                              {getCustomerName(repair.customers, repair.unregistered_customer_name)}
+                            </p>
+                            <p className="text-xs text-gray-600">{repair.customers?.phone || repair.unregistered_customer_phone}</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Smartphone className="h-4 w-4 text-gray-400 flex-shrink-0" />
+                          <div className="min-w-0 flex-1">
+                            <p className="text-sm font-medium text-gray-900 truncate">
+                              {getDeviceName(repair.devices, repair.unregistered_device_info)}
+                            </p>
+                            <p className="text-xs text-gray-600">{repair.devices?.serial_number || 'S/N no disponible'}</p>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Footer */}
+                      <div className="flex justify-between items-center pt-2 border-t border-gray-100">
+                        <div className="flex items-center gap-3">
+                          <Chip 
+                            color={getPriorityColor(repair.priority)} 
+                            variant="dot" 
+                            size="sm"
+                          >
+                            {repair.priority}
+                          </Chip>
+                          <p className="text-sm font-semibold text-gray-900">{formatCurrency(repair.cost)}</p>
+                        </div>
+                        <div className="flex gap-1">
+                          <Button
+                            isIconOnly
+                            variant="light"
+                            size="sm"
+                            onPress={() => handleViewDetails(repair)}
+                          >
+                            <Eye className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            isIconOnly
+                            variant="light"
+                            size="sm"
+                            onPress={() => handleEditRepair(repair)}
+                          >
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            isIconOnly
+                            variant="light"
+                            size="sm"
+                            color="danger"
+                            onPress={() => handleDeleteRepair(repair)}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  </CardBody>
+                </Card>
+              ))}
+            </div>
+
+            {/* Empty State */}
+            {repairs.length === 0 && (
+              <div className="text-center py-12">
+                <Wrench className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">No hay reparaciones</h3>
+                <p className="text-gray-600 mb-6">Comienza creando tu primera reparación</p>
+                <Button 
+                  color="primary" 
+                  startContent={<Plus className="h-4 w-4" />}
+                  onPress={onCreateOpen}
+                >
+                  Nueva Reparación
+                </Button>
+              </div>
+            )}
+          </CardBody>
+        </Card>
+
+        {/* Paginación */}
+        {pagination.totalPages > 1 && (
+          <div className="flex justify-center">
+            <Pagination
+              total={pagination.totalPages}
+              page={pagination.page}
+              onChange={(page) => fetchRepairs(page)}
+              size="lg"
+              showControls
+              color="primary"
+              className="gap-2"
+            />
+          </div>
+        )}
 
         {/* Modal para crear reparación */}
         <Modal isOpen={isCreateOpen} onClose={onCreateClose}>

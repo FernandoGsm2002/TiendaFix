@@ -137,28 +137,28 @@ export default function TechnicianDashboardPage() {
   if (loading) {
     return (
       <TechnicianDashboardLayout>
-        <div className="space-y-6">
-          <div className="flex justify-between items-center">
-            <Skeleton className="h-8 w-48 rounded-lg" />
+        <div className="space-y-4 md:space-y-6">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <Skeleton className="h-6 md:h-8 w-48 rounded-lg" />
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
             {[...Array(4)].map((_, i) => (
               <Card key={i}>
-                <CardBody>
-                  <Skeleton className="h-24 w-full rounded" />
+                <CardBody className="p-4 md:p-6">
+                  <Skeleton className="h-20 md:h-24 w-full rounded" />
                 </CardBody>
               </Card>
             ))}
           </div>
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
             <Card className="lg:col-span-2">
-              <CardBody>
-                <Skeleton className="h-64 w-full rounded" />
+              <CardBody className="p-4 md:p-6">
+                <Skeleton className="h-48 md:h-64 w-full rounded" />
               </CardBody>
             </Card>
             <Card>
-              <CardBody>
-                <Skeleton className="h-64 w-full rounded" />
+              <CardBody className="p-4 md:p-6">
+                <Skeleton className="h-48 md:h-64 w-full rounded" />
               </CardBody>
             </Card>
           </div>
@@ -256,6 +256,37 @@ export default function TechnicianDashboardPage() {
     }
   }
 
+  // Gráfico de completadas por día
+  const completionChartSeries = [{
+    name: 'Completadas',
+    data: chartData.completionTimeline.map(d => d.completed),
+  }]
+  
+  const completionChartOptions: ApexOptions = {
+    ...baseChartOptions,
+    chart: { ...baseChartOptions.chart, type: 'bar' },
+    xaxis: {
+      categories: chartData.completionTimeline.map(d => d.day),
+      labels: { style: { colors: '#6b7280' } },
+      axisBorder: { show: false },
+      axisTicks: { show: false }
+    },
+    yaxis: {
+      labels: {
+        style: { colors: '#6b7280' },
+        formatter: (val) => Math.floor(val).toString()
+      },
+      min: 0
+    },
+    colors: ['#10b981'],
+    plotOptions: {
+      bar: {
+        borderRadius: 4,
+        columnWidth: '60%',
+      }
+    }
+  }
+
   // Gráfico de eficiencia
   const efficiencyChartSeries = [{
     name: 'Eficiencia (%)',
@@ -315,60 +346,52 @@ export default function TechnicianDashboardPage() {
 
   const getActivityColor = (type: string) => {
     switch(type) {
-      case 'repair_completed': return 'text-green-600';
-      case 'repair_started': return 'text-blue-600';
-      case 'repair_diagnosed': return 'text-orange-600';
-      case 'unlock_completed': return 'text-emerald-600';
-      case 'unlock_started': return 'text-purple-600';
-      case 'unlock_received': return 'text-yellow-600';
-      default: return 'text-gray-600';
+      case 'repair_completed': return 'green';
+      case 'repair_started': return 'blue';
+      case 'repair_diagnosed': return 'orange';
+      case 'unlock_completed': return 'emerald';
+      case 'unlock_started': return 'purple';
+      case 'unlock_received': return 'yellow';
+      default: return 'gray';
     }
   }
 
   return (
     <TechnicianDashboardLayout>
-      <div className="space-y-6">
+      <div className="space-y-4 md:space-y-6">
         {/* Header */}
-        <div className="flex justify-between items-center">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Mi Dashboard</h1>
-            <p className="text-gray-600">Resumen de tu actividad y rendimiento</p>
-          </div>
-          <div className="flex gap-2">
-            <Chip 
-              color="primary" 
-              variant="flat"
-              startContent={<Target className="w-4 h-4" />}
-            >
-              {stats.todayTasks} tareas hoy
-            </Chip>
+            <h1 className="text-xl md:text-2xl lg:text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              Mi Panel de Trabajo
+            </h1>
+            <p className={`text-sm md:text-base ${textColors.secondary} mt-1`}>
+              Gestiona tus reparaciones y seguimiento de tareas
+            </p>
           </div>
         </div>
 
-        {/* Cards de estadísticas */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
           {statsCards.map((stat, index) => {
             const Icon = stat.icon
             return (
-              <Card key={index} className="border-0 shadow-lg">
-                <CardBody className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div className="flex-1">
-                      <p className={`text-sm font-medium ${textColors.secondary}`}>
+              <Card key={index} className="shadow-lg border-0 bg-white/90 backdrop-blur-sm hover:shadow-xl transition-all duration-300">
+                <CardBody className="p-4 md:p-6">
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1 min-w-0">
+                      <p className={`text-xs md:text-sm font-medium ${textColors.tertiary} uppercase tracking-wide truncate`}>
                         {stat.title}
                       </p>
-                      <p className={`text-3xl font-bold mt-2 ${textColors.primary}`}>
+                      <p className="text-lg md:text-xl lg:text-2xl font-bold text-gray-900 mt-1 truncate">
                         {stat.value}
                       </p>
-                      <p className={`text-xs mt-1 ${textColors.muted}`}>
+                      <p className={`text-xs md:text-sm ${textColors.muted} mt-2 line-clamp-2`}>
                         {stat.description}
                       </p>
                     </div>
-                    <div className={`
-                      w-14 h-14 rounded-xl bg-gradient-to-br ${stat.bgGradient} 
-                      flex items-center justify-center shadow-lg
-                    `}>
-                      <Icon className="w-6 h-6 text-white" />
+                    <div className={`p-2 md:p-3 rounded-xl bg-gradient-to-br ${stat.bgGradient} shadow-lg flex-shrink-0 ml-3`}>
+                      <Icon className="h-5 w-5 md:h-6 md:w-6 text-white" />
                     </div>
                   </div>
                 </CardBody>
@@ -377,229 +400,168 @@ export default function TechnicianDashboardPage() {
           })}
         </div>
 
-        {/* Desglose de Ingresos */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Card className="border-0 shadow-lg">
-            <CardHeader className="pb-3">
-              <h3 className={`text-lg font-semibold ${textColors.primary}`}>
-                Ingresos por Reparaciones
-              </h3>
-            </CardHeader>
-            <CardBody className="pt-0">
-              <div className="flex items-center justify-between">
+        {/* Charts and Activity */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
+          {/* Completion Chart */}
+          <Card className="lg:col-span-2 shadow-lg border-0 bg-white/90 backdrop-blur-sm">
+            <CardHeader className="pb-2 md:pb-4">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
                 <div>
-                  <p className={`text-3xl font-bold ${textColors.primary}`}>
-                    {format(stats.totalRepairRevenue)}
-                  </p>
-                  <p className={`text-sm ${textColors.secondary} mt-1`}>
-                    {stats.completedRepairs} reparaciones completadas
-                  </p>
+                  <h3 className="text-base md:text-lg font-bold text-gray-900">Completadas Esta Semana</h3>
+                  <p className={`text-xs md:text-sm ${textColors.secondary}`}>Reparaciones finalizadas por día</p>
                 </div>
-                <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center">
-                  <Wrench className="w-6 h-6 text-white" />
+                <Chip color="success" variant="flat" size="sm">
+                  Semanal
+                </Chip>
+              </div>
+            </CardHeader>
+            <CardBody className="pt-0 px-3 md:px-6 pb-4 md:pb-6">
+              <div className="h-48 md:h-64">
+                <Chart
+                  options={completionChartOptions}
+                  series={completionChartSeries}
+                  type="bar"
+                  height="100%"
+                />
+              </div>
+            </CardBody>
+          </Card>
+
+          {/* Repairs Status Chart */}
+          <Card className="shadow-lg border-0 bg-white/90 backdrop-blur-sm">
+            <CardHeader className="pb-2 md:pb-4">
+              <div>
+                <h3 className="text-base md:text-lg font-bold text-gray-900">Mis Reparaciones</h3>
+                <p className={`text-xs md:text-sm ${textColors.secondary}`}>Estado actual</p>
+              </div>
+            </CardHeader>
+            <CardBody className="pt-0 px-3 md:px-6 pb-4 md:pb-6">
+              <div className="h-48 md:h-64">
+                <Chart
+                  options={repairsChartOptions}
+                  series={repairsChartSeries}
+                  type="donut"
+                  height="100%"
+                />
+              </div>
+            </CardBody>
+          </Card>
+        </div>
+
+        {/* Efficiency Progress */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+          <Card className="shadow-lg border-0 bg-white/90 backdrop-blur-sm">
+            <CardHeader className="pb-2 md:pb-4">
+              <div>
+                <h3 className="text-base md:text-lg font-bold text-gray-900">Eficiencia Semanal</h3>
+                <p className={`text-xs md:text-sm ${textColors.secondary}`}>Rendimiento actual</p>
+              </div>
+            </CardHeader>
+            <CardBody className="pt-0 px-3 md:px-6 pb-4 md:pb-6">
+              <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm md:text-base font-medium text-gray-700">Progreso</span>
+                  <span className="text-lg md:text-xl font-bold text-gray-900">{stats.weeklyEfficiency}%</span>
+                </div>
+                <Progress 
+                  value={stats.weeklyEfficiency} 
+                  color={stats.weeklyEfficiency >= 80 ? "success" : stats.weeklyEfficiency >= 60 ? "warning" : "danger"}
+                  size="lg"
+                  className="max-w-full"
+                />
+                <div className="grid grid-cols-2 gap-4 pt-2">
+                  <div className="text-center">
+                    <p className="text-xs md:text-sm text-gray-500">Completadas</p>
+                    <p className="text-lg md:text-xl font-bold text-green-600">{stats.completedRepairs}</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-xs md:text-sm text-gray-500">En Proceso</p>
+                    <p className="text-lg md:text-xl font-bold text-blue-600">{stats.inProgressRepairs}</p>
+                  </div>
                 </div>
               </div>
             </CardBody>
           </Card>
-          
-          <Card className="border-0 shadow-lg">
-            <CardHeader className="pb-3">
-              <h3 className={`text-lg font-semibold ${textColors.primary}`}>
-                Ingresos por Desbloqueos
-              </h3>
+
+          <Card className="shadow-lg border-0 bg-white/90 backdrop-blur-sm">
+            <CardHeader className="pb-2 md:pb-4">
+              <div>
+                <h3 className="text-base md:text-lg font-bold text-gray-900">Ingresos del Mes</h3>
+                <p className={`text-xs md:text-sm ${textColors.secondary}`}>Reparaciones y desbloqueos</p>
+              </div>
             </CardHeader>
-            <CardBody className="pt-0">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className={`text-3xl font-bold ${textColors.primary}`}>
-                    {format(stats.totalUnlockRevenue)}
+            <CardBody className="pt-0 px-3 md:px-6 pb-4 md:pb-6">
+              <div className="space-y-4">
+                <div className="text-center">
+                  <p className="text-2xl md:text-3xl font-bold text-gray-900">
+                    {format(stats.monthlyRevenue)}
                   </p>
-                  <p className={`text-sm ${textColors.secondary} mt-1`}>
-                    {stats.completedUnlocks} desbloqueos completados
-                  </p>
+                  <p className={`text-xs md:text-sm ${textColors.muted}`}>Total generado este mes</p>
                 </div>
-                <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center">
-                  <CheckCircle className="w-6 h-6 text-white" />
+                <div className="grid grid-cols-2 gap-4 pt-2">
+                  <div className="text-center">
+                    <p className="text-xs md:text-sm text-gray-500">Reparaciones</p>
+                    <p className="text-sm md:text-base font-bold text-blue-600">{format(stats.totalRepairRevenue)}</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-xs md:text-sm text-gray-500">Desbloqueos</p>
+                    <p className="text-sm md:text-base font-bold text-purple-600">{format(stats.totalUnlockRevenue)}</p>
+                  </div>
                 </div>
               </div>
             </CardBody>
           </Card>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Gráfico de estado de reparaciones */}
-          <Card className="border-0 shadow-lg">
-            <CardHeader className="pb-3">
-              <h3 className={`text-lg font-semibold ${textColors.primary}`}>
-                Estado de Mis Reparaciones
-              </h3>
-            </CardHeader>
-            <CardBody className="pt-0">
-              <Chart
-                options={repairsChartOptions}
-                series={repairsChartSeries}
-                type="donut"
-                height={280}
-              />
-            </CardBody>
-          </Card>
-
-          {/* Gráfico de eficiencia */}
-          <Card className="border-0 shadow-lg">
-            <CardHeader className="pb-3">
-              <h3 className={`text-lg font-semibold ${textColors.primary}`}>
-                Mi Eficiencia Semanal
-              </h3>
-            </CardHeader>
-            <CardBody className="pt-0">
-              <Chart
-                options={efficiencyChartOptions}
-                series={efficiencyChartSeries}
-                type="line"
-                height={280}
-              />
-            </CardBody>
-          </Card>
-
-          {/* Actividad reciente */}
-          <Card className="border-0 shadow-lg">
-            <CardHeader className="pb-3">
-              <h3 className={`text-lg font-semibold ${textColors.primary}`}>
-                Mi Actividad Reciente
-              </h3>
-            </CardHeader>
-            <CardBody className="pt-0">
-              <div className="space-y-4">
-                {recentActivity.map((activity, index) => {
+        {/* Recent Activity */}
+        <Card className="shadow-lg border-0 bg-white/90 backdrop-blur-sm">
+          <CardHeader className="pb-2 md:pb-4">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+              <div>
+                <h3 className="text-base md:text-lg font-bold text-gray-900">Actividad Reciente</h3>
+                <p className={`text-xs md:text-sm ${textColors.secondary}`}>Tus últimas acciones</p>
+              </div>
+              <Chip color="primary" variant="flat" size="sm">
+                {recentActivity.length} eventos
+              </Chip>
+            </div>
+          </CardHeader>
+          <CardBody className="pt-0 px-3 md:px-6 pb-4 md:pb-6">
+            {recentActivity.length > 0 ? (
+              <div className="space-y-3 md:space-y-4">
+                {recentActivity.slice(0, 6).map((activity, index) => {
                   const Icon = getActivityIcon(activity.type)
-                  const colorClass = getActivityColor(activity.type)
+                  const color = getActivityColor(activity.type)
                   
                   return (
-                    <div key={index} className="flex items-start gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors">
-                      <div className={`p-2 rounded-lg bg-gray-100`}>
-                        <Icon className={`w-4 h-4 ${colorClass}`} />
+                    <div key={index} className="flex items-center space-x-3 md:space-x-4 p-3 md:p-4 bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl hover:from-blue-50 hover:to-purple-50 transition-all duration-200">
+                      <div className={`p-2 rounded-lg bg-${color}-100 flex-shrink-0`}>
+                        <Icon className={`h-4 w-4 md:h-5 md:w-5 text-${color}-600`} />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className={`font-medium text-sm ${textColors.primary}`}>
-                          {activity.title}
-                        </p>
+                        <p className="text-sm md:text-base font-medium text-gray-900 truncate">{activity.title}</p>
                         {activity.customer && (
-                          <p className={`text-xs ${textColors.secondary}`}>
-                            Cliente: {activity.customer}
-                          </p>
+                          <p className={`text-xs md:text-sm ${textColors.muted} truncate`}>Cliente: {activity.customer}</p>
                         )}
                         {activity.repairId && (
-                          <p className={`text-xs ${textColors.muted}`}>
-                            {(activity as any).itemType === 'unlock' ? 'Desbloqueo' : 'Reparación'} #{activity.repairId}
-                          </p>
+                          <p className={`text-xs md:text-sm ${textColors.muted}`}>Reparación #{activity.repairId}</p>
                         )}
-                        <p className={`text-xs ${textColors.muted}`}>
-                          {timeAgo(activity.time)}
-                        </p>
                       </div>
+                      <p className={`text-xs md:text-sm ${textColors.tertiary} flex-shrink-0`}>
+                        {timeAgo(activity.time)}
+                      </p>
                     </div>
                   )
                 })}
               </div>
-            </CardBody>
-          </Card>
-        </div>
-
-        {/* Métricas de rendimiento */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <Card className="border-0 shadow-lg">
-            <CardBody className="p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className={`text-lg font-semibold ${textColors.primary}`}>
-                  Mi Progreso Semanal
-                </h3>
-                <Calendar className="w-5 h-5 text-gray-400" />
+            ) : (
+              <div className="text-center py-8 md:py-12">
+                <Activity className="h-8 w-8 md:h-12 md:w-12 text-gray-400 mx-auto mb-3 md:mb-4" />
+                <p className={`text-sm md:text-base ${textColors.secondary}`}>No hay actividad reciente</p>
               </div>
-              <div className="space-y-3">
-                <div className="flex justify-between text-sm">
-                  <span className={textColors.secondary}>Completadas</span>
-                  <span className={textColors.primary}>{stats.completedRepairs + stats.completedUnlocks}/{stats.assignedRepairs + stats.assignedUnlocks + stats.completedRepairs + stats.completedUnlocks}</span>
-                </div>
-                <Progress 
-                  value={stats.weeklyEfficiency} 
-                  color="success"
-                  size="md"
-                  className="w-full"
-                />
-                <p className={`text-xs ${textColors.muted}`}>
-                  {stats.weeklyEfficiency >= 80 ? '¡Excelente progreso!' : 
-                   stats.weeklyEfficiency >= 60 ? 'Buen progreso' : 
-                   'Puedes mejorar tu eficiencia'}
-                </p>
-              </div>
-            </CardBody>
-          </Card>
-
-          <Card className="border-0 shadow-lg">
-            <CardBody className="p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className={`text-lg font-semibold ${textColors.primary}`}>
-                  Resumen de Ingresos
-                </h3>
-                <TrendingUp className="w-5 h-5 text-green-500" />
-              </div>
-              <div className="space-y-3">
-                <div>
-                  <p className={`text-2xl font-bold ${textColors.primary}`}>
-                    {format(stats.monthlyRevenue)}
-                  </p>
-                  <p className={`text-sm ${textColors.secondary}`}>
-                    Total este mes
-                  </p>
-                </div>
-                <div className="grid grid-cols-2 gap-3 pt-2 border-t border-gray-100">
-                  <div className="text-center">
-                    <p className={`text-sm font-semibold ${textColors.primary}`}>
-                      {format(stats.totalRepairRevenue)}
-                    </p>
-                    <p className={`text-xs ${textColors.secondary}`}>
-                      Reparaciones
-                    </p>
-                  </div>
-                  <div className="text-center">
-                    <p className={`text-sm font-semibold ${textColors.primary}`}>
-                      {format(stats.totalUnlockRevenue)}
-                    </p>
-                    <p className={`text-xs ${textColors.secondary}`}>
-                      Desbloqueos
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </CardBody>
-          </Card>
-
-          <Card className="border-0 shadow-lg">
-            <CardBody className="p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className={`text-lg font-semibold ${textColors.primary}`}>
-                  Mi Objetivo Mensual
-                </h3>
-                <Target className="w-5 h-5 text-blue-500" />
-              </div>
-              <div className="space-y-3">
-                <div className="flex justify-between text-sm">
-                  <span className={textColors.secondary}>Trabajos Completados</span>
-                  <span className={textColors.primary}>{stats.completedRepairs + stats.completedUnlocks}/30</span>
-                </div>
-                <Progress 
-                  value={((stats.completedRepairs + stats.completedUnlocks) / 30) * 100} 
-                  color="primary"
-                  size="md"
-                  className="w-full"
-                />
-                <p className={`text-xs ${textColors.muted}`}>
-                  {Math.max(0, 30 - (stats.completedRepairs + stats.completedUnlocks))} trabajos restantes para la meta
-                </p>
-              </div>
-            </CardBody>
-          </Card>
-        </div>
+            )}
+          </CardBody>
+        </Card>
       </div>
     </TechnicianDashboardLayout>
   )

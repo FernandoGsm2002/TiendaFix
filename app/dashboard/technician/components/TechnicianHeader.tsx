@@ -90,25 +90,25 @@ export default function TechnicianHeader() {
 
   return (
     <Card className="shadow-xl border-0 bg-gradient-to-r from-blue-50 via-white to-purple-50 backdrop-blur-sm">
-      <CardBody className="px-8 py-6">
-        <div className="flex items-center justify-between space-x-6">
+      <CardBody className="px-4 md:px-8 py-4 md:py-6">
+        <div className="flex items-center justify-between space-x-3 md:space-x-6">
           {/* Logo y título con gradiente */}
-          <div className="flex items-center space-x-4">
-            <div className="p-3 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 shadow-lg">
-              <Activity className="w-6 h-6 text-white" />
+          <div className="flex items-center space-x-2 md:space-x-4 flex-1 min-w-0">
+            <div className="p-2 md:p-3 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 shadow-lg flex-shrink-0">
+              <Activity className="w-5 md:w-6 h-5 md:h-6 text-white" />
             </div>
             <div className="flex-1 min-w-0">
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              <h1 className="text-xl md:text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent truncate">
                 {userProfile?.organization_name || 'Mi Taller'}
               </h1>
-              <p className="text-gray-600 font-medium">Panel de Técnico • Área de trabajo personal</p>
+              <p className="text-gray-600 font-medium text-xs md:text-base hidden sm:block">Panel de Técnico • Área de trabajo personal</p>
             </div>
           </div>
 
           {/* Barra de búsqueda y controles */}
-          <div className="flex items-center space-x-4">
-            {/* Búsqueda mejorada */}
-            <form onSubmit={handleSearch} className="hidden lg:block">
+          <div className="flex items-center space-x-2 md:space-x-4">
+            {/* Búsqueda mejorada - Solo visible en desktop */}
+            <form onSubmit={handleSearch} className="hidden xl:block">
               <Input
                 placeholder="Buscar reparaciones, clientes, dispositivos..."
                 value={searchValue}
@@ -157,7 +157,7 @@ export default function TechnicianHeader() {
               </DropdownTrigger>
               <DropdownMenu
                 aria-label="Menu de notificaciones"
-                className="w-96 max-h-96 overflow-y-auto"
+                className="w-80 md:w-96 max-h-96 overflow-y-auto"
                 variant="flat"
                 classNames={{
                   base: "bg-white/95 backdrop-blur-lg border border-gray-200 shadow-2xl"
@@ -170,7 +170,7 @@ export default function TechnicianHeader() {
                 >
                   <div className="px-2 py-3 border-b border-gray-100">
                     <div className="flex items-center justify-between">
-                      <p className="text-lg font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                      <p className="text-base md:text-lg font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                         Mis Notificaciones
                       </p>
                       <Chip size="sm" color="primary" variant="flat">
@@ -208,12 +208,12 @@ export default function TechnicianHeader() {
                             className="hover:bg-orange-50"
                           >
                             <div className="flex items-center space-x-4 py-2">
-                              <div className="p-2 rounded-lg bg-gradient-to-br from-orange-100 to-red-100">
+                              <div className="p-2 rounded-lg bg-gradient-to-br from-orange-100 to-red-100 flex-shrink-0">
                                 <Wrench className="w-4 h-4 text-orange-600" />
                               </div>
-                              <div className="flex-1">
+                              <div className="flex-1 min-w-0">
                                 <p className="font-semibold text-gray-900">Reparación #{item.id}</p>
-                                <p className="text-sm text-gray-600">S/N: {item.serial_number}</p>
+                                <p className="text-sm text-gray-600 truncate">S/N: {item.serial_number}</p>
                                 <Chip size="sm" color="warning" variant="flat" className="mt-1">
                                   Pendiente
                                 </Chip>
@@ -243,12 +243,12 @@ export default function TechnicianHeader() {
                             className="hover:bg-purple-50"
                           >
                             <div className="flex items-center space-x-4 py-2">
-                              <div className="p-2 rounded-lg bg-gradient-to-br from-purple-100 to-indigo-100">
+                              <div className="p-2 rounded-lg bg-gradient-to-br from-purple-100 to-indigo-100 flex-shrink-0">
                                 <Unlock className="w-4 h-4 text-purple-600" />
                               </div>
-                              <div className="flex-1">
+                              <div className="flex-1 min-w-0">
                                 <p className="font-semibold text-gray-900">Desbloqueo #{item.id}</p>
-                                <p className="text-sm text-gray-600">IMEI: {item.imei}</p>
+                                <p className="text-sm text-gray-600 truncate">IMEI: {item.imei}</p>
                                 <Chip size="sm" color="secondary" variant="flat" className="mt-1">
                                   En cola
                                 </Chip>
@@ -287,19 +287,19 @@ export default function TechnicianHeader() {
               <DropdownTrigger>
                 <Button
                   variant="light"
-                  className="flex items-center space-x-3 p-3 bg-white/80 backdrop-blur-sm border border-gray-200 hover:border-blue-300 shadow-lg hover:shadow-xl transition-all rounded-xl"
+                  className="flex items-center space-x-2 md:space-x-3 p-2 md:p-3 bg-white/80 backdrop-blur-sm border border-gray-200 hover:border-blue-300 shadow-lg hover:shadow-xl transition-all rounded-xl"
                   aria-label="Menu de usuario"
                 >
                   <Avatar
-                    icon={<User className="w-5 h-5" />}
+                    icon={<User className="w-4 md:w-5 h-4 md:h-5" />}
                     size="sm"
                     classNames={{
                       base: "bg-gradient-to-br from-blue-500 to-purple-600",
                       icon: "text-white"
                     }}
                   />
-                  <div className="hidden lg:block text-left">
-                    <p className="text-sm font-bold text-gray-900">
+                  <div className="hidden md:block text-left">
+                    <p className="text-sm font-bold text-gray-900 truncate">
                       {userProfile?.name || 'Usuario'}
                     </p>
                     <div className="flex items-center gap-2">
@@ -329,11 +329,11 @@ export default function TechnicianHeader() {
                           icon: "text-white"
                         }}
                       />
-                      <div>
-                        <p className="text-sm font-bold text-gray-900">
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm font-bold text-gray-900 truncate">
                           {userProfile?.name}
                         </p>
-                        <p className="text-xs text-gray-600">{user?.email}</p>
+                        <p className="text-xs text-gray-600 truncate">{user?.email}</p>
                         <Chip size="sm" color="primary" variant="flat" className="mt-1">
                           Técnico Autorizado
                         </Chip>

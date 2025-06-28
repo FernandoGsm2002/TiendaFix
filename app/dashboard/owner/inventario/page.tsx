@@ -545,135 +545,323 @@ export default function InventarioPage() {
         {/* Tabla de productos */}
         <Card>
           <CardBody className="p-0">
-            <Table
-              aria-label="Tabla de inventario"
-              classNames={{
-                wrapper: "min-h-[400px]",
-                th: "bg-gray-50 text-gray-700 font-semibold",
-                td: "py-4"
-              }}
-            >
-              <TableHeader>
-                <TableColumn>PRODUCTO</TableColumn>
-                <TableColumn>STOCK</TableColumn>
-                <TableColumn>PRECIOS</TableColumn>
-                <TableColumn>UBICACIÓN</TableColumn>
-                <TableColumn>ESTADO</TableColumn>
-                <TableColumn>ACCIONES</TableColumn>
-              </TableHeader>
-              <TableBody emptyContent="No hay productos en el inventario">
-                {items.map((item) => (
-                  <TableRow key={item.id}>
-                    <TableCell>
-                      <div className="flex items-center gap-3">
-                        <Avatar
-                          icon={<Package className="w-5 h-5" />}
-                          classNames={{
-                            base: `bg-gradient-to-br ${getCategoryColor(item.category)}`,
-                            icon: "text-white"
-                          }}
-                          size="md"
-                        />
-                        <div>
-                          <p className={`font-semibold ${textColors.primary}`}>{item.name}</p>
-                          {item.brand && item.model && (
-                            <p className={`text-sm ${textColors.secondary}`}>
-                              {item.brand} {item.model}
+            {/* Vista Desktop - Tabla */}
+            <div className="hidden lg:block">
+              <Table
+                aria-label="Tabla de inventario"
+                classNames={{
+                  wrapper: "min-h-[400px]",
+                  th: "bg-gray-50 text-gray-700 font-semibold",
+                  td: "py-4"
+                }}
+              >
+                <TableHeader>
+                  <TableColumn>PRODUCTO</TableColumn>
+                  <TableColumn>STOCK</TableColumn>
+                  <TableColumn>PRECIOS</TableColumn>
+                  <TableColumn>UBICACIÓN</TableColumn>
+                  <TableColumn>ESTADO</TableColumn>
+                  <TableColumn>ACCIONES</TableColumn>
+                </TableHeader>
+                <TableBody emptyContent="No hay productos en el inventario">
+                  {items.map((item) => (
+                    <TableRow key={item.id}>
+                      <TableCell>
+                        <div className="flex items-center gap-3">
+                          <Avatar
+                            icon={<Package className="w-5 h-5" />}
+                            classNames={{
+                              base: `bg-gradient-to-br ${getCategoryColor(item.category)}`,
+                              icon: "text-white"
+                            }}
+                            size="md"
+                          />
+                          <div>
+                            <p className={`font-semibold ${textColors.primary}`}>{item.name}</p>
+                            {item.brand && item.model && (
+                              <p className={`text-sm ${textColors.secondary}`}>
+                                {item.brand} {item.model}
+                              </p>
+                            )}
+                            <div className="flex gap-2 mt-1">
+                              <Chip size="sm" variant="flat" color="default">
+                                {item.category}
+                              </Chip>
+                              {item.sku && (
+                                <Chip size="sm" variant="flat" color="primary">
+                                  {item.sku}
+                                </Chip>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-2">
+                            {item.stock_quantity === 0 ? (
+                              <TrendingDown className="w-4 h-4 text-red-500" />
+                            ) : item.stock_quantity <= item.min_stock ? (
+                              <AlertTriangle className="w-4 h-4 text-yellow-500" />
+                            ) : (
+                              <TrendingUp className="w-4 h-4 text-green-500" />
+                            )}
+                            <span className={`font-medium ${textColors.primary}`}>
+                              {item.stock_quantity} unidades
+                            </span>
+                          </div>
+                          <p className={`text-xs ${textColors.muted}`}>
+                            Mín: {item.min_stock}
+                          </p>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-2">
+                            <span className={`text-sm ${textColors.secondary}`}>Costo:</span>
+                            <span className="text-sm font-medium">{formatCurrency(item.unit_cost)}</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className={`text-sm ${textColors.secondary}`}>Venta:</span>
+                            <span className="text-sm font-medium text-green-600">{formatCurrency(item.enduser_price)}</span>
+                          </div>
+                          {item.unit_cost && item.enduser_price && (
+                            <Chip size="sm" color="success" variant="flat">
+                              {calculateMargin(item.unit_cost, item.enduser_price)}
+                            </Chip>
+                          )}
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="space-y-1">
+                          {item.location && (
+                            <p className={`text-sm ${textColors.primary}`}>{item.location}</p>
+                          )}
+                          {item.supplier && (
+                            <p className={`text-xs ${textColors.muted}`}>
+                              Proveedor: {item.supplier}
                             </p>
                           )}
-                          <div className="flex gap-2 mt-1">
-                            <Chip size="sm" variant="flat" color="default">
-                              {item.category}
-                            </Chip>
-                            {item.sku && (
-                              <Chip size="sm" variant="flat" color="primary">
-                                {item.sku}
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <Chip
+                          color={getStatusColor(item)}
+                          variant="flat"
+                          size="sm"
+                        >
+                          {getStatusLabel(item)}
+                        </Chip>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-1">
+                          <Tooltip content="Ver detalles" classNames={{ content: "bg-gray-900 text-white" }}>
+                            <Button isIconOnly variant="flat" size="sm" onPress={() => handleViewDetails(item)}>
+                              <Eye className="w-4 h-4" />
+                            </Button>
+                          </Tooltip>
+                          <Tooltip content="Editar" classNames={{ content: "bg-gray-900 text-white" }}>
+                            <Button isIconOnly variant="flat" size="sm" onPress={() => handleEditItem(item)}>
+                              <Edit className="w-4 h-4" />
+                            </Button>
+                          </Tooltip>
+                          <Tooltip content="Eliminar" classNames={{ content: "bg-gray-900 text-white" }}>
+                            <Button isIconOnly variant="flat" size="sm" color="danger" onPress={() => handleDeleteItem(item)}>
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </Tooltip>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+
+            {/* Vista Móvil - Cards */}
+            <div className="lg:hidden">
+              {loading ? (
+                <div className="space-y-4 p-4">
+                  {[...Array(5)].map((_, i) => (
+                    <Card key={i} className="shadow-sm">
+                      <CardBody className="p-4">
+                        <div className="space-y-3">
+                          <div className="flex items-center gap-3">
+                            <Skeleton className="w-12 h-12 rounded-full" />
+                            <div className="space-y-2 flex-1">
+                              <Skeleton className="h-4 w-32 rounded" />
+                              <Skeleton className="h-3 w-24 rounded" />
+                            </div>
+                          </div>
+                          <Skeleton className="h-16 w-full rounded" />
+                        </div>
+                      </CardBody>
+                    </Card>
+                  ))}
+                </div>
+              ) : items.length === 0 ? (
+                <div className="text-center py-12 px-4">
+                  <Package className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                  <h3 className={`text-lg font-semibold ${textColors.primary} mb-2`}>
+                    No hay productos
+                  </h3>
+                  <p className={`${textColors.muted} mb-6`}>
+                    No se encontraron productos en el inventario
+                  </p>
+                  <Button color="primary" startContent={<Plus className="w-4 h-4" />} onPress={onCreateOpen}>
+                    Agregar Producto
+                  </Button>
+                </div>
+              ) : (
+                <div className="space-y-4 p-4">
+                  {items.map((item) => (
+                    <Card key={item.id} className="shadow-sm hover:shadow-md transition-shadow">
+                      <CardBody className="p-4">
+                        {/* Header del producto */}
+                        <div className="flex items-start gap-3 mb-4">
+                          <Avatar
+                            icon={<Package className="w-5 h-5" />}
+                            classNames={{
+                              base: `bg-gradient-to-br ${getCategoryColor(item.category)}`,
+                              icon: "text-white"
+                            }}
+                            size="md"
+                          />
+                          <div className="flex-1 min-w-0">
+                            <h4 className={`font-semibold ${textColors.primary} truncate`}>
+                              {item.name}
+                            </h4>
+                            {item.brand && item.model && (
+                              <p className={`text-sm ${textColors.secondary} truncate`}>
+                                {item.brand} {item.model}
+                              </p>
+                            )}
+                            <div className="flex gap-2 mt-2">
+                              <Chip size="sm" variant="flat" color="default">
+                                {item.category}
                               </Chip>
+                              {item.sku && (
+                                <Chip size="sm" variant="flat" color="primary">
+                                  {item.sku}
+                                </Chip>
+                              )}
+                            </div>
+                          </div>
+                          <Chip
+                            color={getStatusColor(item)}
+                            variant="flat"
+                            size="sm"
+                          >
+                            {getStatusLabel(item)}
+                          </Chip>
+                        </div>
+
+                        {/* Información del producto */}
+                        <div className="grid grid-cols-2 gap-4 mb-4">
+                          {/* Stock */}
+                          <div className="space-y-1">
+                            <p className={`text-xs font-medium ${textColors.tertiary} uppercase tracking-wide`}>
+                              Stock
+                            </p>
+                            <div className="flex items-center gap-2">
+                              {item.stock_quantity === 0 ? (
+                                <TrendingDown className="w-3 h-3 text-red-500" />
+                              ) : item.stock_quantity <= item.min_stock ? (
+                                <AlertTriangle className="w-3 h-3 text-yellow-500" />
+                              ) : (
+                                <TrendingUp className="w-3 h-3 text-green-500" />
+                              )}
+                              <span className={`font-medium ${textColors.primary}`}>
+                                {item.stock_quantity}
+                              </span>
+                            </div>
+                            <p className={`text-xs ${textColors.muted}`}>
+                              Mín: {item.min_stock}
+                            </p>
+                          </div>
+
+                          {/* Ubicación */}
+                          <div className="space-y-1">
+                            <p className={`text-xs font-medium ${textColors.tertiary} uppercase tracking-wide`}>
+                              Ubicación
+                            </p>
+                            <p className={`text-sm ${textColors.primary}`}>
+                              {item.location || 'Sin ubicación'}
+                            </p>
+                            {item.supplier && (
+                              <p className={`text-xs ${textColors.muted}`}>
+                                {item.supplier}
+                              </p>
                             )}
                           </div>
                         </div>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="space-y-1">
-                        <div className="flex items-center gap-2">
-                          {item.stock_quantity === 0 ? (
-                            <TrendingDown className="w-4 h-4 text-red-500" />
-                          ) : item.stock_quantity <= item.min_stock ? (
-                            <AlertTriangle className="w-4 h-4 text-yellow-500" />
-                          ) : (
-                            <TrendingUp className="w-4 h-4 text-green-500" />
+
+                        {/* Precios */}
+                        <div className="bg-gray-50 rounded-lg p-3 mb-4">
+                          <div className="grid grid-cols-2 gap-3">
+                            <div>
+                              <p className={`text-xs font-medium ${textColors.tertiary} mb-1`}>
+                                Costo
+                              </p>
+                              <p className="text-sm font-medium">
+                                {formatCurrency(item.unit_cost)}
+                              </p>
+                            </div>
+                            <div>
+                              <p className={`text-xs font-medium ${textColors.tertiary} mb-1`}>
+                                Precio Venta
+                              </p>
+                              <p className="text-sm font-medium text-green-600">
+                                {formatCurrency(item.enduser_price)}
+                              </p>
+                            </div>
+                          </div>
+                          {item.unit_cost && item.enduser_price && (
+                            <div className="mt-3">
+                              <Chip size="sm" color="success" variant="flat">
+                                Margen: {calculateMargin(item.unit_cost, item.enduser_price)}
+                              </Chip>
+                            </div>
                           )}
-                          <span className={`font-medium ${textColors.primary}`}>
-                            {item.stock_quantity} unidades
-                          </span>
                         </div>
-                        <p className={`text-xs ${textColors.muted}`}>
-                          Mín: {item.min_stock}
-                        </p>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="space-y-1">
-                        <div className="flex items-center gap-2">
-                          <span className={`text-sm ${textColors.secondary}`}>Costo:</span>
-                          <span className="text-sm font-medium">{formatCurrency(item.unit_cost)}</span>
+
+                        {/* Acciones */}
+                        <div className="flex justify-between gap-2">
+                          <Button 
+                            variant="flat" 
+                            size="sm" 
+                            startContent={<Eye className="w-4 h-4" />}
+                            onPress={() => handleViewDetails(item)}
+                            className="flex-1"
+                          >
+                            Ver
+                          </Button>
+                          <Button 
+                            variant="flat" 
+                            size="sm" 
+                            startContent={<Edit className="w-4 h-4" />}
+                            onPress={() => handleEditItem(item)}
+                            className="flex-1"
+                          >
+                            Editar
+                          </Button>
+                          <Button 
+                            variant="flat" 
+                            size="sm" 
+                            color="danger"
+                            startContent={<Trash2 className="w-4 h-4" />}
+                            onPress={() => handleDeleteItem(item)}
+                            className="flex-1"
+                          >
+                            Eliminar
+                          </Button>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <span className={`text-sm ${textColors.secondary}`}>Venta:</span>
-                          <span className="text-sm font-medium text-green-600">{formatCurrency(item.enduser_price)}</span>
-                        </div>
-                        {item.unit_cost && item.enduser_price && (
-                          <Chip size="sm" color="success" variant="flat">
-                            {calculateMargin(item.unit_cost, item.enduser_price)}
-                          </Chip>
-                        )}
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="space-y-1">
-                        {item.location && (
-                          <p className={`text-sm ${textColors.primary}`}>{item.location}</p>
-                        )}
-                        {item.supplier && (
-                          <p className={`text-xs ${textColors.muted}`}>
-                            Proveedor: {item.supplier}
-                          </p>
-                        )}
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <Chip
-                        color={getStatusColor(item)}
-                        variant="flat"
-                        size="sm"
-                      >
-                        {getStatusLabel(item)}
-                      </Chip>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-1">
-                        <Tooltip content="Ver detalles" classNames={{ content: "bg-gray-900 text-white" }}>
-                          <Button isIconOnly variant="flat" size="sm" onPress={() => handleViewDetails(item)}>
-                            <Eye className="w-4 h-4" />
-                          </Button>
-                        </Tooltip>
-                        <Tooltip content="Editar" classNames={{ content: "bg-gray-900 text-white" }}>
-                          <Button isIconOnly variant="flat" size="sm" onPress={() => handleEditItem(item)}>
-                            <Edit className="w-4 h-4" />
-                          </Button>
-                        </Tooltip>
-                        <Tooltip content="Eliminar" classNames={{ content: "bg-gray-900 text-white" }}>
-                          <Button isIconOnly variant="flat" size="sm" color="danger" onPress={() => handleDeleteItem(item)}>
-                            <Trash2 className="w-4 h-4" />
-                          </Button>
-                        </Tooltip>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                      </CardBody>
+                    </Card>
+                  ))}
+                </div>
+              )}
+            </div>
           </CardBody>
         </Card>
 

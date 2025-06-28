@@ -571,67 +571,212 @@ export default function TechnicianUnlocksPage() {
           </CardBody>
         </Card>
 
-        {/* Tabla de desbloqueos */}
-        <Card className="shadow-xl border-0 bg-white">
-          <CardBody className="p-0">
-            <Table 
-              aria-label="Tabla de desbloqueos" 
-              classNames={{
-                wrapper: "min-h-[400px] shadow-none",
-                th: "bg-gradient-to-r from-gray-50 to-gray-100 text-gray-700 font-bold text-sm border-b border-gray-200",
-                td: "py-4 border-b border-gray-100"
-              }}
-            >
-              <TableHeader>
-                <TableColumn>CLIENTE & DISPOSITIVO</TableColumn>
-                <TableColumn>IMEI & OPERADORA</TableColumn>
-                <TableColumn>SERVICIO</TableColumn>
-                <TableColumn>ESTADO</TableColumn>
-                <TableColumn>PRECIO</TableColumn>
-                <TableColumn>TIEMPO ESTIMADO</TableColumn>
-                <TableColumn>FECHA</TableColumn>
-                <TableColumn>ACCIONES</TableColumn>
-              </TableHeader>
-              <TableBody>
-                {filteredUnlocks.map((unlock) => (
-                  <TableRow key={unlock.id}>
-                    <TableCell>
-                      <div className="flex items-center gap-3">
+        {/* Vista Desktop - Tabla */}
+        <div className="hidden lg:block">
+          <Card className="shadow-xl border-0 bg-white">
+            <CardBody className="p-0">
+              <Table 
+                aria-label="Tabla de desbloqueos" 
+                classNames={{
+                  wrapper: "min-h-[400px] shadow-none",
+                  th: "bg-gradient-to-r from-gray-50 to-gray-100 text-gray-700 font-bold text-sm border-b border-gray-200",
+                  td: "py-4 border-b border-gray-100"
+                }}
+              >
+                <TableHeader>
+                  <TableColumn>CLIENTE & DISPOSITIVO</TableColumn>
+                  <TableColumn>IMEI & OPERADORA</TableColumn>
+                  <TableColumn>SERVICIO</TableColumn>
+                  <TableColumn>ESTADO</TableColumn>
+                  <TableColumn>PRECIO</TableColumn>
+                  <TableColumn>TIEMPO ESTIMADO</TableColumn>
+                  <TableColumn>FECHA</TableColumn>
+                  <TableColumn>ACCIONES</TableColumn>
+                </TableHeader>
+                <TableBody>
+                  {filteredUnlocks.map((unlock) => (
+                    <TableRow key={unlock.id}>
+                      <TableCell>
+                        <div className="flex items-center gap-3">
+                          <Avatar
+                            icon={<Smartphone className="w-4 h-4" />}
+                            classNames={{
+                              base: "bg-gradient-to-br from-purple-400 to-indigo-600",
+                              icon: "text-white"
+                            }}
+                          />
+                          <div>
+                            <p className={`font-semibold ${textColors.primary}`}>{unlock.customer_name}</p>
+                            <p className={`text-sm ${textColors.muted}`}>
+                              {unlock.brand} {unlock.model}
+                            </p>
+                            {unlock.customer_phone && (
+                              <p className={`text-xs ${textColors.muted}`}>{unlock.customer_phone}</p>
+                            )}
+                          </div>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div>
+                          <p className={`text-sm font-mono ${textColors.primary}`}>{unlock.imei}</p>
+                          <p className={`text-sm ${textColors.secondary}`}>{unlock.carrier}</p>
+                          <p className={`text-xs ${textColors.muted}`}>{unlock.country}</p>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <Chip
+                          color="secondary"
+                          variant="flat"
+                          size="sm"
+                        >
+                          {getServiceTypeLabel(unlock.service_type)}
+                        </Chip>
+                      </TableCell>
+                      <TableCell>
+                        <Chip
+                          color={getStatusColor(unlock.status)}
+                          variant="flat"
+                          size="sm"
+                        >
+                          {getStatusLabel(unlock.status)}
+                        </Chip>
+                      </TableCell>
+                      <TableCell>
+                        <p className={`font-semibold ${textColors.primary}`}>
+                          {formatCurrency(unlock.price)}
+                        </p>
+                      </TableCell>
+                      <TableCell>
+                        <p className={`text-sm ${textColors.secondary}`}>
+                          {unlock.estimated_time}
+                        </p>
+                      </TableCell>
+                      <TableCell>
+                        <div>
+                          <p className={`text-sm ${textColors.secondary}`}>
+                            {formatDate(unlock.created_at)}
+                          </p>
+                          {unlock.completion_date && (
+                            <p className={`text-xs ${textColors.muted}`}>
+                              Completado: {formatDate(unlock.completion_date)}
+                            </p>
+                          )}
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          <Tooltip 
+                            content="Ver detalles"
+                            classNames={{
+                              content: "bg-gray-900 text-white"
+                            }}
+                          >
+                            <Button 
+                              isIconOnly 
+                              size="sm" 
+                              variant="flat"
+                              color="primary"
+                              onPress={() => handleViewDetails(unlock)}
+                            >
+                              <Eye className="w-4 h-4" />
+                            </Button>
+                          </Tooltip>
+                          
+                          <Tooltip 
+                            content="Cambiar estado"
+                            classNames={{
+                              content: "bg-gray-900 text-white"
+                            }}
+                          >
+                              <Button 
+                                isIconOnly 
+                                size="sm" 
+                              variant="flat"
+                              color="warning"
+                              onPress={() => handleStatusChange(unlock)}
+                              >
+                                <Edit className="w-4 h-4" />
+                              </Button>
+                            </Tooltip>
+
+                          {unlock.status === 'in_progress' && (
+                            <Tooltip 
+                              content="Marcar como completado"
+                              classNames={{
+                                content: "bg-gray-900 text-white"
+                              }}
+                            >
+                              <Button 
+                                isIconOnly 
+                                size="sm"
+                                variant="flat" 
+                                color="success" 
+                                onPress={() => handleCompleteUnlock(unlock)}
+                              >
+                                <Check className="w-4 h-4" />
+                              </Button>
+                            </Tooltip>
+                          )}
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardBody>
+          </Card>
+        </div>
+
+        {/* Vista Móvil - Cards */}
+        <div className="lg:hidden">
+          {loading ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {[...Array(4)].map((_, i) => (
+                <Card key={i} className="h-64">
+                  <CardBody className="p-4">
+                    <Skeleton className="h-full w-full rounded" />
+                  </CardBody>
+                </Card>
+              ))}
+            </div>
+          ) : filteredUnlocks.length === 0 ? (
+            <Card className="shadow-xl border-0 bg-white">
+              <CardBody className="p-8">
+                <div className="text-center">
+                  <Unlock className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">No hay servicios de desbloqueo</h3>
+                  <p className="text-gray-600">
+                    {busqueda || filtroEstado !== 'todos' || filtroMarca !== 'todas'
+                      ? 'No se encontraron servicios con los filtros aplicados.'
+                      : 'Aún no has creado servicios de desbloqueo. Haz clic en "Nuevo Desbloqueo" para comenzar.'}
+                  </p>
+                </div>
+              </CardBody>
+            </Card>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {filteredUnlocks.map((unlock) => (
+                <Card key={unlock.id} className="shadow-xl hover:shadow-2xl transition-shadow">
+                  <CardBody className="p-0">
+                    {/* Header del Card */}
+                    <div className="bg-gradient-to-r from-cyan-50 to-blue-50 p-4 border-b">
+                      <div className="flex items-center gap-3 mb-2">
                         <Avatar
-                          icon={<Smartphone className="w-4 h-4" />}
+                          icon={<Unlock className="w-4 h-4" />}
                           classNames={{
                             base: "bg-gradient-to-br from-purple-400 to-indigo-600",
                             icon: "text-white"
                           }}
                         />
-                        <div>
-                          <p className={`font-semibold ${textColors.primary}`}>{unlock.customer_name}</p>
-                          <p className={`text-sm ${textColors.muted}`}>
-                            {unlock.brand} {unlock.model}
+                        <div className="flex-1">
+                          <h3 className="font-semibold text-gray-900 truncate text-sm md:text-base">
+                            {getServiceTypeLabel(unlock.service_type)}
+                          </h3>
+                          <p className="text-xs text-gray-600">
+                            {formatDate(unlock.created_at)}
                           </p>
-                          {unlock.customer_phone && (
-                            <p className={`text-xs ${textColors.muted}`}>{unlock.customer_phone}</p>
-                          )}
                         </div>
                       </div>
-                    </TableCell>
-                    <TableCell>
-                      <div>
-                        <p className={`text-sm font-mono ${textColors.primary}`}>{unlock.imei}</p>
-                        <p className={`text-sm ${textColors.secondary}`}>{unlock.carrier}</p>
-                        <p className={`text-xs ${textColors.muted}`}>{unlock.country}</p>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <Chip
-                        color="secondary"
-                        variant="flat"
-                        size="sm"
-                      >
-                        {getServiceTypeLabel(unlock.service_type)}
-                      </Chip>
-                    </TableCell>
-                    <TableCell>
                       <Chip
                         color={getStatusColor(unlock.status)}
                         variant="flat"
@@ -639,102 +784,132 @@ export default function TechnicianUnlocksPage() {
                       >
                         {getStatusLabel(unlock.status)}
                       </Chip>
-                    </TableCell>
-                    <TableCell>
-                      <p className={`font-semibold ${textColors.primary}`}>
-                        {formatCurrency(unlock.price)}
-                      </p>
-                    </TableCell>
-                    <TableCell>
-                      <p className={`text-sm ${textColors.secondary}`}>
-                        {unlock.estimated_time}
-                      </p>
-                    </TableCell>
-                    <TableCell>
-                      <div>
-                        <p className={`text-sm ${textColors.secondary}`}>
-                          {formatDate(unlock.created_at)}
-                        </p>
-                        {unlock.completion_date && (
-                          <p className={`text-xs ${textColors.muted}`}>
-                            Completado: {formatDate(unlock.completion_date)}
-                          </p>
-                        )}
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-2">
-                        <Tooltip 
-                          content="Ver detalles"
-                          classNames={{
-                            content: "bg-gray-900 text-white"
-                          }}
-                        >
-                          <Button 
-                            isIconOnly 
-                            size="sm" 
-                            variant="flat"
-                            color="primary"
-                            onPress={() => handleViewDetails(unlock)}
-                          >
-                            <Eye className="w-4 h-4" />
-                          </Button>
-                        </Tooltip>
-                        
-                        <Tooltip 
-                          content="Cambiar estado"
-                          classNames={{
-                            content: "bg-gray-900 text-white"
-                          }}
-                        >
-                            <Button 
-                              isIconOnly 
-                              size="sm" 
-                            variant="flat"
-                            color="warning"
-                            onPress={() => handleStatusChange(unlock)}
-                            >
-                              <Edit className="w-4 h-4" />
-                            </Button>
-                          </Tooltip>
+                    </div>
 
-                        {unlock.status === 'in_progress' && (
-                          <Tooltip 
-                            content="Marcar como completado"
-                            classNames={{
-                              content: "bg-gray-900 text-white"
-                            }}
-                          >
-                            <Button 
-                              isIconOnly 
-                              size="sm"
-                              variant="flat" 
-                              color="success" 
-                              onPress={() => handleCompleteUnlock(unlock)}
-                            >
-                              <Check className="w-4 h-4" />
-                            </Button>
-                          </Tooltip>
+                    {/* Cliente */}
+                    <div className="bg-green-50 p-3 border-b">
+                      <div className="flex items-center gap-2 mb-1">
+                        <User className="w-4 h-4 text-green-600" />
+                        <span className="text-xs font-medium text-green-800">CLIENTE</span>
+                      </div>
+                      <p className="font-semibold text-gray-900 text-sm">
+                        {unlock.customer_name}
+                      </p>
+                      {unlock.customer_phone && (
+                        <p className="text-xs text-gray-600">{unlock.customer_phone}</p>
+                      )}
+                    </div>
+
+                    {/* Dispositivo */}
+                    <div className="bg-blue-50 p-3 border-b">
+                      <div className="flex items-center gap-2 mb-1">
+                        <Smartphone className="w-4 h-4 text-blue-600" />
+                        <span className="text-xs font-medium text-blue-800">DISPOSITIVO</span>
+                      </div>
+                      <p className="font-semibold text-gray-900 text-sm">
+                        {unlock.brand} {unlock.model}
+                      </p>
+                      <p className="text-xs text-gray-600 font-mono">
+                        IMEI: {unlock.imei}
+                      </p>
+                    </div>
+
+                    {/* Operadora */}
+                    <div className="bg-purple-50 p-3 border-b">
+                      <div className="flex items-center gap-2 mb-1">
+                        <Clock className="w-4 h-4 text-purple-600" />
+                        <span className="text-xs font-medium text-purple-800">OPERADORA & TIEMPO</span>
+                      </div>
+                      <p className="font-semibold text-gray-900 text-sm">
+                        {unlock.carrier} - {unlock.country}
+                      </p>
+                      <p className="text-xs text-gray-600">
+                        Tiempo estimado: {unlock.estimated_time}
+                      </p>
+                    </div>
+
+                    {/* Precio */}
+                    <div className="bg-gray-50 p-3 border-b">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-xs font-medium text-gray-500">PRECIO</p>
+                          <p className="font-bold text-lg text-green-600">
+                            {formatCurrency(unlock.price)}
+                          </p>
+                        </div>
+                        {unlock.completion_date && (
+                          <div className="text-right">
+                            <p className="text-xs font-medium text-gray-500">COMPLETADO</p>
+                            <p className="text-xs text-gray-700">
+                              {formatDate(unlock.completion_date)}
+                            </p>
+                          </div>
                         )}
                       </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-            {filteredUnlocks.length === 0 && (
-              <div className="text-center py-12">
-                <Unlock className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">No hay servicios de desbloqueo</h3>
-                <p className="text-gray-600">
-                  {busqueda || filtroEstado !== 'todos' || filtroMarca !== 'todas'
-                    ? 'No se encontraron servicios con los filtros aplicados.'
-                    : 'Aún no has creado servicios de desbloqueo. Haz clic en "Nuevo Desbloqueo" para comenzar.'}
-                </p>
-              </div>
-            )}
-          </CardBody>
-        </Card>
+                    </div>
+
+                    {/* Acciones */}
+                    <div className="p-3">
+                      <div className="flex gap-2">
+                        <Button 
+                          size="sm" 
+                          variant="flat" 
+                          color="primary"
+                          className="flex-1"
+                          startContent={<Eye className="w-4 h-4" />}
+                          onPress={() => handleViewDetails(unlock)}
+                        >
+                          Ver
+                        </Button>
+                        <Button 
+                          size="sm" 
+                          variant="flat" 
+                          color="warning"
+                          className="flex-1"
+                          startContent={<Edit className="w-4 h-4" />}
+                          onPress={() => handleStatusChange(unlock)}
+                        >
+                          Estado
+                        </Button>
+                        {unlock.status === 'in_progress' && (
+                          <Button 
+                            size="sm" 
+                            variant="flat" 
+                            color="success"
+                            className="flex-1"
+                            startContent={<Check className="w-4 h-4" />}
+                            onPress={() => handleCompleteUnlock(unlock)}
+                          >
+                            Completar
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                  </CardBody>
+                </Card>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Empty state para ambas vistas */}
+        {!loading && filteredUnlocks.length === 0 && (
+          <div className="hidden lg:block">
+            <Card className="shadow-xl border-0 bg-white">
+              <CardBody className="p-0">
+                <div className="text-center py-12">
+                  <Unlock className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">No hay servicios de desbloqueo</h3>
+                  <p className="text-gray-600">
+                    {busqueda || filtroEstado !== 'todos' || filtroMarca !== 'todas'
+                      ? 'No se encontraron servicios con los filtros aplicados.'
+                      : 'Aún no has creado servicios de desbloqueo. Haz clic en "Nuevo Desbloqueo" para comenzar.'}
+                  </p>
+                </div>
+              </CardBody>
+            </Card>
+          </div>
+        )}
 
         {/* Modal para ver detalles */}
         <Modal isOpen={isDetailOpen} onOpenChange={onDetailClose} size="2xl">

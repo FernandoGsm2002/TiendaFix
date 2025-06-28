@@ -211,7 +211,7 @@ export default function ConfiguracionPage() {
                 <div>
                   <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-800 to-slate-600 bg-clip-text text-transparent">
                     Configuración del Sistema
-                  </h1>
+            </h1>
                   <p className="text-gray-600 text-base mt-1">
                     Gestiona todos los aspectos de tu tienda desde un solo lugar
                   </p>
@@ -237,25 +237,25 @@ export default function ConfiguracionPage() {
                   </Chip>
                 </div>
               )}
-            </div>
-            
-            <div className="flex gap-3">
-              <Button
-                variant="bordered"
-                startContent={<Download className="w-4 h-4" />}
+          </div>
+          
+          <div className="flex gap-3">
+            <Button
+              variant="bordered"
+              startContent={<Download className="w-4 h-4" />}
                 className="bg-white/50 backdrop-blur-sm border-gray-300"
-              >
-                Exportar Config
-              </Button>
-              <Button
-                color="primary"
-                onPress={handleSaveShopConfig}
-                isLoading={loading}
-                startContent={<Save className="w-4 h-4" />}
+            >
+              Exportar Config
+            </Button>
+            <Button
+              color="primary"
+              onPress={handleSaveShopConfig}
+              isLoading={loading}
+              startContent={<Save className="w-4 h-4" />}
                 className="shadow-lg bg-gradient-to-r from-blue-600 to-purple-600 text-white"
-              >
+            >
                 {loading ? 'Guardando...' : 'Guardar Todo'}
-              </Button>
+            </Button>
             </div>
           </div>
         </div>
@@ -297,46 +297,46 @@ export default function ConfiguracionPage() {
                       </div>
                     ) : organizationData ? (
                       <>
-                        <FormField
-                          label="Nombre de la Tienda"
-                          name="name"
+                    <FormField
+                      label="Nombre de la Tienda"
+                      name="name"
                           value={organizationData.name}
                           onChange={(value) => setOrganizationData(prev => prev ? { ...prev, name: value } : null)}
-                          required
-                        />
-                        
-                        <FormField
+                      required
+                    />
+                    
+                    <FormField
                           label="Identificador único"
                           name="slug"
                           value={organizationData.slug}
                           onChange={(value) => setOrganizationData(prev => prev ? { ...prev, slug: value } : null)}
                           disabled
                           helpText="Este es tu identificador único en el sistema"
-                        />
+                    />
 
-                        <FormField
-                          label="Dirección"
-                          name="address"
+                    <FormField
+                      label="Dirección"
+                      name="address"
                           value={organizationData.address || ''}
                           onChange={(value) => setOrganizationData(prev => prev ? { ...prev, address: value } : null)}
-                        />
+                    />
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <FormField
-                            label="Teléfono"
-                            name="phone"
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <FormField
+                        label="Teléfono"
+                        name="phone"
                             value={organizationData.phone || ''}
                             onChange={(value) => setOrganizationData(prev => prev ? { ...prev, phone: value } : null)}
-                          />
-                          <FormField
-                            label="Email"
-                            name="email"
-                            type="email"
+                      />
+                      <FormField
+                        label="Email"
+                        name="email"
+                        type="email"
                             value={organizationData.email}
                             onChange={(value) => setOrganizationData(prev => prev ? { ...prev, email: value } : null)}
                             required
-                          />
-                        </div>
+                      />
+                    </div>
 
                         {/* Información de suscripción */}
                         <Divider />
@@ -515,31 +515,31 @@ export default function ConfiguracionPage() {
                       </div>
                     ) : userProfile ? (
                       <>
-                        <div className="text-center">
-                          <Avatar
+                    <div className="text-center">
+                      <Avatar
                             name={userProfile.name}
-                            size="lg"
-                            classNames={{
-                              base: "bg-gradient-to-br from-purple-400 to-purple-600",
-                              icon: "text-white"
-                            }}
-                            className="mx-auto mb-4"
-                          />
+                        size="lg"
+                        classNames={{
+                          base: "bg-gradient-to-br from-purple-400 to-purple-600",
+                          icon: "text-white"
+                        }}
+                        className="mx-auto mb-4"
+                      />
                           <h4 className={`text-lg font-semibold ${textColors.primary}`}>{userProfile.name}</h4>
-                          <Chip color="secondary" variant="flat" size="sm">
+                      <Chip color="secondary" variant="flat" size="sm">
                             {userProfile.role === 'owner' ? 'Propietario' : 
                              userProfile.role === 'technician' ? 'Técnico' : userProfile.role}
-                          </Chip>
-                        </div>
+                      </Chip>
+                    </div>
 
-                        <Divider />
+                    <Divider />
 
-                        <div className="space-y-3">
-                          <div className="flex items-center gap-2">
-                            <Mail className="w-4 h-4 text-gray-400" />
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-2">
+                        <Mail className="w-4 h-4 text-gray-400" />
                             <span className={`text-sm ${textColors.secondary}`}>{userProfile.email}</span>
-                          </div>
-                          <div className="flex items-center gap-2">
+                      </div>
+                      <div className="flex items-center gap-2">
                             <Building className="w-4 h-4 text-gray-400" />
                             <span className={`text-sm ${textColors.secondary}`}>
                               ID: {userProfile.organization_id?.slice(0, 8)}...
@@ -548,21 +548,21 @@ export default function ConfiguracionPage() {
                           {organizationData && (
                             <div className="flex items-center gap-2">
                               <Calendar className="w-4 h-4 text-gray-400" />
-                              <span className={`text-sm ${textColors.secondary}`}>
+                        <span className={`text-sm ${textColors.secondary}`}>
                                 Registrado: {formatDate(organizationData.created_at)}
-                              </span>
-                            </div>
+                        </span>
+                      </div>
                           )}
-                        </div>
+                    </div>
 
-                        <Button
-                          variant="flat"
-                          color="primary"
-                          startContent={<Edit className="w-4 h-4" />}
-                          className="w-full"
-                        >
-                          Editar Perfil
-                        </Button>
+                    <Button
+                      variant="flat"
+                      color="primary"
+                      startContent={<Edit className="w-4 h-4" />}
+                      className="w-full"
+                    >
+                      Editar Perfil
+                    </Button>
                       </>
                     ) : (
                       <div className="text-center py-4">

@@ -514,140 +514,338 @@ export default function PersonalPage() {
         {/* Lista de personal */}
         <Card>
           <CardBody className="p-0">
-            <Table
-              aria-label="Tabla de personal"
-              classNames={{
-                wrapper: "min-h-[400px]",
-                th: "bg-gray-50 text-gray-700 font-semibold",
-                td: "py-4"
-              }}
-            >
-              <TableHeader>
-                <TableColumn>EMPLEADO</TableColumn>
-                <TableColumn>CONTACTO</TableColumn>
-                <TableColumn>ROL</TableColumn>
-                <TableColumn>ESTADO</TableColumn>
-                <TableColumn>ACTIVIDAD</TableColumn>
-                <TableColumn>ESTADÍSTICAS</TableColumn>
-                <TableColumn>ACCIONES</TableColumn>
-              </TableHeader>
-              <TableBody emptyContent="No hay personal registrado">
-                {technicians.map((technician) => (
-                  <TableRow key={technician.id}>
-                    <TableCell>
-                      <div className="flex items-center gap-3">
-                        <Avatar
-                          src={technician.avatar_url || undefined}
-                          name={technician.name}
-                          classNames={{
-                            base: "bg-gradient-to-br from-blue-400 to-purple-600",
-                            icon: "text-white"
-                          }}
-                        />
-                        <div>
-                          <p className={`font-semibold ${textColors.primary}`}>{technician.name}</p>
-                          <p className={`text-sm ${textColors.muted}`}>
-                            Registrado: {formatDate(technician.created_at)}
+            {/* Vista Desktop - Tabla */}
+            <div className="hidden lg:block">
+              <Table
+                aria-label="Tabla de personal"
+                classNames={{
+                  wrapper: "min-h-[400px]",
+                  th: "bg-gray-50 text-gray-700 font-semibold",
+                  td: "py-4"
+                }}
+              >
+                <TableHeader>
+                  <TableColumn>EMPLEADO</TableColumn>
+                  <TableColumn>CONTACTO</TableColumn>
+                  <TableColumn>ROL</TableColumn>
+                  <TableColumn>ESTADO</TableColumn>
+                  <TableColumn>ACTIVIDAD</TableColumn>
+                  <TableColumn>ESTADÍSTICAS</TableColumn>
+                  <TableColumn>ACCIONES</TableColumn>
+                </TableHeader>
+                <TableBody emptyContent="No hay personal registrado">
+                  {technicians.map((technician) => (
+                    <TableRow key={technician.id}>
+                      <TableCell>
+                        <div className="flex items-center gap-3">
+                          <Avatar
+                            src={technician.avatar_url || undefined}
+                            name={technician.name}
+                            classNames={{
+                              base: "bg-gradient-to-br from-blue-400 to-purple-600",
+                              icon: "text-white"
+                            }}
+                          />
+                          <div>
+                            <p className={`font-semibold ${textColors.primary}`}>{technician.name}</p>
+                            <p className={`text-sm ${textColors.muted}`}>
+                              Registrado: {formatDate(technician.created_at)}
+                            </p>
+                          </div>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="space-y-2">
+                          <div className="flex items-center gap-2">
+                            <Mail className="w-4 h-4 text-gray-400" />
+                            <span className={`text-sm ${textColors.secondary}`}>{technician.email}</span>
+                          </div>
+                          {technician.phone && (
+                            <div className="flex items-center gap-2">
+                              <Phone className="w-4 h-4 text-gray-400" />
+                              <span className={`text-sm ${textColors.secondary}`}>{technician.phone}</span>
+                            </div>
+                          )}
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <Chip
+                          color={getRoleColor(technician.role) as any}
+                          variant="flat"
+                          startContent={<Shield className="w-3 h-3" />}
+                        >
+                          {getRoleLabel(technician.role)}
+                        </Chip>
+                      </TableCell>
+                      <TableCell>
+                        <Chip
+                          color={technician.is_active ? 'success' : 'danger'}
+                          variant="flat"
+                          startContent={technician.is_active ? <CheckCircle className="w-3 h-3" /> : <X className="w-3 h-3" />}
+                        >
+                          {technician.is_active ? 'Activo' : 'Inactivo'}
+                        </Chip>
+                      </TableCell>
+                      <TableCell>
+                        <div className="space-y-2">
+                          <Chip
+                            color={getActivityStatus(technician.last_login).color as any}
+                            variant="flat"
+                            size="sm"
+                            startContent={<Clock className="w-3 h-3" />}
+                          >
+                            {getActivityStatus(technician.last_login).label}
+                          </Chip>
+                          <p className={`text-xs ${textColors.muted}`}>
+                            {formatDate(technician.last_login)}
                           </p>
                         </div>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="space-y-2">
+                      </TableCell>
+                      <TableCell>
+                        {technician.stats ? (
+                          <div className="space-y-2">
+                            <div className="grid grid-cols-2 gap-2 text-xs">
+                              <div className="text-center p-2 bg-blue-50 rounded">
+                                <p className="font-bold text-blue-600">{technician.stats.totalReparaciones}</p>
+                                <p className={textColors.muted}>Total</p>
+                              </div>
+                              <div className="text-center p-2 bg-green-50 rounded">
+                                <p className="font-bold text-green-600">{technician.stats.completadas}</p>
+                                <p className={textColors.muted}>Completadas</p>
+                              </div>
+                            </div>
+                            <Progress 
+                              value={technician.stats.eficiencia} 
+                              color={getEfficiencyColor(technician.stats.eficiencia) as any}
+                              size="sm"
+                            />
+                            <p className={`text-xs ${textColors.muted} text-center`}>
+                              {technician.stats.eficiencia}% eficiencia
+                            </p>
+                          </div>
+                        ) : (
+                          <p className={`text-sm ${textColors.muted}`}>Sin datos</p>
+                        )}
+                      </TableCell>
+                      <TableCell>
                         <div className="flex items-center gap-2">
-                          <Mail className="w-4 h-4 text-gray-400" />
-                          <span className={`text-sm ${textColors.secondary}`}>{technician.email}</span>
+                          <Tooltip content="Ver detalles" classNames={{ content: "bg-gray-900 text-white" }}>
+                            <Button isIconOnly variant="flat" size="sm" onPress={() => handleViewDetails(technician)}>
+                              <Eye className="w-5 h-5" />
+                            </Button>
+                          </Tooltip>
+                          <Tooltip content="Editar" classNames={{ content: "bg-gray-900 text-white" }}>
+                            <Button isIconOnly variant="flat" size="sm" onPress={() => handleEditTechnician(technician)}>
+                              <Edit className="w-5 h-5" />
+                            </Button>
+                          </Tooltip>
+                          <Tooltip content="Eliminar" classNames={{ content: "bg-gray-900 text-white" }}>
+                            <Button isIconOnly variant="flat" color="danger" size="sm" onPress={() => handleDeleteTechnician(technician)}>
+                              <Trash2 className="w-5 h-5" />
+                            </Button>
+                          </Tooltip>
                         </div>
-                        {technician.phone && (
-                          <div className="flex items-center gap-2">
-                            <Phone className="w-4 h-4 text-gray-400" />
-                            <span className={`text-sm ${textColors.secondary}`}>{technician.phone}</span>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+
+            {/* Vista Móvil - Cards */}
+            <div className="lg:hidden">
+              {loading ? (
+                <div className="space-y-4 p-4">
+                  {[...Array(5)].map((_, i) => (
+                    <Card key={i} className="shadow-sm">
+                      <CardBody className="p-4">
+                        <div className="space-y-3">
+                          <div className="flex items-center gap-3">
+                            <Skeleton className="w-12 h-12 rounded-full" />
+                            <div className="space-y-2 flex-1">
+                              <Skeleton className="h-4 w-32 rounded" />
+                              <Skeleton className="h-3 w-24 rounded" />
+                            </div>
+                          </div>
+                          <Skeleton className="h-16 w-full rounded" />
+                        </div>
+                      </CardBody>
+                    </Card>
+                  ))}
+                </div>
+              ) : technicians.length === 0 ? (
+                <div className="text-center py-12 px-4">
+                  <Users className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                  <h3 className={`text-lg font-semibold ${textColors.primary} mb-2`}>
+                    No hay personal
+                  </h3>
+                  <p className={`${textColors.muted} mb-6`}>
+                    No se encontró personal registrado en el sistema
+                  </p>
+                  <Button color="primary" startContent={<Plus className="w-4 h-4" />} onPress={onCreateOpen}>
+                    Agregar Personal
+                  </Button>
+                </div>
+              ) : (
+                <div className="space-y-4 p-4">
+                  {technicians.map((technician) => (
+                    <Card key={technician.id} className="shadow-sm hover:shadow-md transition-shadow">
+                      <CardBody className="p-4">
+                        {/* Header del empleado */}
+                        <div className="flex items-start gap-3 mb-4">
+                          <Avatar
+                            src={technician.avatar_url || undefined}
+                            name={technician.name}
+                            classNames={{
+                              base: "bg-gradient-to-br from-blue-400 to-purple-600",
+                              icon: "text-white"
+                            }}
+                            size="lg"
+                          />
+                          <div className="flex-1 min-w-0">
+                            <h4 className={`font-semibold ${textColors.primary} truncate`}>
+                              {technician.name}
+                            </h4>
+                            <p className={`text-sm ${textColors.muted} mb-2`}>
+                              Registrado: {formatDate(technician.created_at)}
+                            </p>
+                            <div className="flex gap-2 flex-wrap">
+                              <Chip
+                                color={getRoleColor(technician.role) as any}
+                                variant="flat"
+                                size="sm"
+                                startContent={<Shield className="w-3 h-3" />}
+                              >
+                                {getRoleLabel(technician.role)}
+                              </Chip>
+                              <Chip
+                                color={technician.is_active ? 'success' : 'danger'}
+                                variant="flat"
+                                size="sm"
+                                startContent={technician.is_active ? <CheckCircle className="w-3 h-3" /> : <X className="w-3 h-3" />}
+                              >
+                                {technician.is_active ? 'Activo' : 'Inactivo'}
+                              </Chip>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Información de contacto */}
+                        <div className="bg-gray-50 rounded-lg p-3 mb-4">
+                          <p className={`text-xs font-medium ${textColors.tertiary} uppercase tracking-wide mb-2`}>
+                            Contacto
+                          </p>
+                          <div className="space-y-2">
+                            <div className="flex items-center gap-2">
+                              <Mail className="w-3 h-3 text-gray-600" />
+                              <span className={`text-sm ${textColors.primary} truncate`}>
+                                {technician.email}
+                              </span>
+                            </div>
+                            {technician.phone && (
+                              <div className="flex items-center gap-2">
+                                <Phone className="w-3 h-3 text-gray-600" />
+                                <span className={`text-sm ${textColors.primary}`}>
+                                  {technician.phone}
+                                </span>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Actividad */}
+                        <div className="bg-blue-50 rounded-lg p-3 mb-4">
+                          <p className={`text-xs font-medium ${textColors.tertiary} uppercase tracking-wide mb-2`}>
+                            Actividad
+                          </p>
+                          <div className="space-y-2">
+                            <Chip
+                              color={getActivityStatus(technician.last_login).color as any}
+                              variant="flat"
+                              size="sm"
+                              startContent={<Clock className="w-3 h-3" />}
+                            >
+                              {getActivityStatus(technician.last_login).label}
+                            </Chip>
+                            <p className={`text-xs ${textColors.muted}`}>
+                              Último acceso: {formatDate(technician.last_login)}
+                            </p>
+                          </div>
+                        </div>
+
+                        {/* Estadísticas */}
+                        {technician.stats ? (
+                          <div className="bg-green-50 rounded-lg p-3 mb-4">
+                            <p className={`text-xs font-medium ${textColors.tertiary} uppercase tracking-wide mb-3`}>
+                              Estadísticas
+                            </p>
+                            <div className="grid grid-cols-2 gap-3 mb-3">
+                              <div className="text-center p-2 bg-white rounded border">
+                                <p className="font-bold text-blue-600 text-lg">{technician.stats.totalReparaciones}</p>
+                                <p className={`text-xs ${textColors.muted}`}>Total</p>
+                              </div>
+                              <div className="text-center p-2 bg-white rounded border">
+                                <p className="font-bold text-green-600 text-lg">{technician.stats.completadas}</p>
+                                <p className={`text-xs ${textColors.muted}`}>Completadas</p>
+                              </div>
+                            </div>
+                            <div className="space-y-2">
+                              <div className="flex justify-between items-center">
+                                <span className={`text-xs ${textColors.muted}`}>Eficiencia</span>
+                                <span className={`text-xs font-medium ${textColors.primary}`}>
+                                  {technician.stats.eficiencia}%
+                                </span>
+                              </div>
+                              <Progress 
+                                value={technician.stats.eficiencia} 
+                                color={getEfficiencyColor(technician.stats.eficiencia) as any}
+                                size="sm"
+                              />
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="bg-gray-50 rounded-lg p-3 mb-4 text-center">
+                            <p className={`text-sm ${textColors.muted}`}>Sin estadísticas disponibles</p>
                           </div>
                         )}
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <Chip
-                        color={getRoleColor(technician.role) as any}
-                        variant="flat"
-                        startContent={<Shield className="w-3 h-3" />}
-                      >
-                        {getRoleLabel(technician.role)}
-                      </Chip>
-                    </TableCell>
-                    <TableCell>
-                      <Chip
-                        color={technician.is_active ? 'success' : 'danger'}
-                        variant="flat"
-                        startContent={technician.is_active ? <CheckCircle className="w-3 h-3" /> : <X className="w-3 h-3" />}
-                      >
-                        {technician.is_active ? 'Activo' : 'Inactivo'}
-                      </Chip>
-                    </TableCell>
-                    <TableCell>
-                      <div className="space-y-2">
-                        <Chip
-                          color={getActivityStatus(technician.last_login).color as any}
-                          variant="flat"
-                          size="sm"
-                          startContent={<Clock className="w-3 h-3" />}
-                        >
-                          {getActivityStatus(technician.last_login).label}
-                        </Chip>
-                        <p className={`text-xs ${textColors.muted}`}>
-                          {formatDate(technician.last_login)}
-                        </p>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      {technician.stats ? (
-                        <div className="space-y-2">
-                          <div className="grid grid-cols-2 gap-2 text-xs">
-                            <div className="text-center p-2 bg-blue-50 rounded">
-                              <p className="font-bold text-blue-600">{technician.stats.totalReparaciones}</p>
-                              <p className={textColors.muted}>Total</p>
-                            </div>
-                            <div className="text-center p-2 bg-green-50 rounded">
-                              <p className="font-bold text-green-600">{technician.stats.completadas}</p>
-                              <p className={textColors.muted}>Completadas</p>
-                            </div>
-                          </div>
-                          <Progress 
-                            value={technician.stats.eficiencia} 
-                            color={getEfficiencyColor(technician.stats.eficiencia) as any}
-                            size="sm"
-                          />
-                          <p className={`text-xs ${textColors.muted} text-center`}>
-                            {technician.stats.eficiencia}% eficiencia
-                          </p>
+
+                        {/* Acciones */}
+                        <div className="flex gap-2">
+                          <Button 
+                            variant="flat" 
+                            size="sm" 
+                            startContent={<Eye className="w-4 h-4" />}
+                            onPress={() => handleViewDetails(technician)}
+                            className="flex-1"
+                          >
+                            Ver
+                          </Button>
+                          <Button 
+                            variant="flat" 
+                            size="sm" 
+                            startContent={<Edit className="w-4 h-4" />}
+                            onPress={() => handleEditTechnician(technician)}
+                            className="flex-1"
+                          >
+                            Editar
+                          </Button>
+                          <Button 
+                            variant="flat" 
+                            size="sm" 
+                            color="danger"
+                            startContent={<Trash2 className="w-4 h-4" />}
+                            onPress={() => handleDeleteTechnician(technician)}
+                            className="flex-1"
+                          >
+                            Eliminar
+                          </Button>
                         </div>
-                      ) : (
-                        <p className={`text-sm ${textColors.muted}`}>Sin datos</p>
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-2">
-                        <Tooltip content="Ver detalles" classNames={{ content: "bg-gray-900 text-white" }}>
-                          <Button isIconOnly variant="flat" size="sm" onPress={() => handleViewDetails(technician)}>
-                            <Eye className="w-5 h-5" />
-                          </Button>
-                        </Tooltip>
-                        <Tooltip content="Editar" classNames={{ content: "bg-gray-900 text-white" }}>
-                          <Button isIconOnly variant="flat" size="sm" onPress={() => handleEditTechnician(technician)}>
-                            <Edit className="w-5 h-5" />
-                          </Button>
-                        </Tooltip>
-                        <Tooltip content="Eliminar" classNames={{ content: "bg-gray-900 text-white" }}>
-                          <Button isIconOnly variant="flat" color="danger" size="sm" onPress={() => handleDeleteTechnician(technician)}>
-                            <Trash2 className="w-5 h-5" />
-                          </Button>
-                        </Tooltip>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                      </CardBody>
+                    </Card>
+                  ))}
+                </div>
+              )}
+            </div>
           </CardBody>
         </Card>
 

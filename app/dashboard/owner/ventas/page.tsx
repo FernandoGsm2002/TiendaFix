@@ -31,7 +31,7 @@ import {
   ShoppingCart, Plus, Minus, Search, Filter, CreditCard, 
   Calculator, Trash2, Receipt, Clock, DollarSign, TrendingUp,
   AlertTriangle, Package, Wrench, Unlock, X, User, Calendar,
-  Camera
+  Camera, Eye
 } from 'lucide-react'
 import { useZxing } from 'react-zxing';
 import { Result, Exception } from '@zxing/library';
@@ -786,108 +786,264 @@ export default function VentasPage() {
               {/* Tabla de ventas */}
               <Card>
                 <CardBody className="p-0">
-                  <Table
-                    aria-label="Tabla de ventas"
-                    classNames={{
-                      wrapper: "min-h-[400px]",
-                      th: "bg-gray-50 text-gray-700 font-semibold",
-                      td: "py-4"
-                    }}
-                  >
-                    <TableHeader>
-                      <TableColumn>TIPO</TableColumn>
-                      <TableColumn>CLIENTE</TableColumn>
-                      <TableColumn>VENDEDOR</TableColumn>
-                      <TableColumn>PRODUCTOS</TableColumn>
-                      <TableColumn>TOTAL</TableColumn>
-                      <TableColumn>PAGO</TableColumn>
-                      <TableColumn>FECHA</TableColumn>
-                      <TableColumn>ACCIONES</TableColumn>
-                    </TableHeader>
-                    <TableBody 
-                      emptyContent="No hay ventas registradas"
-                      isLoading={loadingSales}
-                      loadingContent={<Skeleton className="w-full h-12" />}
+                  {/* Vista Desktop - Tabla */}
+                  <div className="hidden lg:block">
+                    <Table
+                      aria-label="Tabla de ventas"
+                      classNames={{
+                        wrapper: "min-h-[400px]",
+                        th: "bg-gray-50 text-gray-700 font-semibold",
+                        td: "py-4"
+                      }}
                     >
-                      {sales.map((sale) => (
-                        <TableRow key={sale.id}>
-                          <TableCell>
-                            <Chip
-                              color={getSaleTypeColor(sale.sale_type)}
-                              variant="flat"
-                              startContent={getSaleTypeIcon(sale.sale_type)}
-                              size="sm"
-                            >
-                              {sale.sale_type.charAt(0).toUpperCase() + sale.sale_type.slice(1)}
-                            </Chip>
-                          </TableCell>
-                          <TableCell>
-                            <div className="flex items-center gap-2">
-                              <User className="w-4 h-4 text-gray-400" />
-                              <span className={`text-sm ${textColors.primary}`}>{getCustomerName(sale.customer)}</span>
-                            </div>
-                          </TableCell>
-                          <TableCell>
-                            <div>
-                              <p className={`text-sm font-medium ${textColors.primary}`}>{sale.seller.name}</p>
-                              <p className={`text-xs ${textColors.muted}`}>{sale.seller.email}</p>
-                            </div>
-                          </TableCell>
-                          <TableCell>
-                            <div>
-                              <p className={`text-sm font-medium ${textColors.primary}`}>
-                                {sale.sale_items.length} item{sale.sale_items.length !== 1 ? 's' : ''}
-                              </p>
-                              <div className={`text-xs ${textColors.muted} space-y-1`}>
-                                {sale.sale_items.slice(0, 2).map((item, idx) => (
-                                  <div key={idx}>
-                                    {item.inventory?.name || 'Producto'} x{item.quantity}
-                                  </div>
-                                ))}
-                                {sale.sale_items.length > 2 && (
-                                  <div>+{sale.sale_items.length - 2} más...</div>
-                                )}
+                      <TableHeader>
+                        <TableColumn>TIPO</TableColumn>
+                        <TableColumn>CLIENTE</TableColumn>
+                        <TableColumn>VENDEDOR</TableColumn>
+                        <TableColumn>PRODUCTOS</TableColumn>
+                        <TableColumn>TOTAL</TableColumn>
+                        <TableColumn>PAGO</TableColumn>
+                        <TableColumn>FECHA</TableColumn>
+                        <TableColumn>ACCIONES</TableColumn>
+                      </TableHeader>
+                      <TableBody 
+                        emptyContent="No hay ventas registradas"
+                        isLoading={loadingSales}
+                        loadingContent={<Skeleton className="w-full h-12" />}
+                      >
+                        {sales.map((sale) => (
+                          <TableRow key={sale.id}>
+                            <TableCell>
+                              <Chip
+                                color={getSaleTypeColor(sale.sale_type)}
+                                variant="flat"
+                                startContent={getSaleTypeIcon(sale.sale_type)}
+                                size="sm"
+                              >
+                                {sale.sale_type.charAt(0).toUpperCase() + sale.sale_type.slice(1)}
+                              </Chip>
+                            </TableCell>
+                            <TableCell>
+                              <div className="flex items-center gap-2">
+                                <User className="w-4 h-4 text-gray-400" />
+                                <span className={`text-sm ${textColors.primary}`}>{getCustomerName(sale.customer)}</span>
                               </div>
-                            </div>
-                          </TableCell>
-                          <TableCell>
-                            <span className="text-lg font-bold text-green-600">
-                              {formatCurrency(sale.total)}
-                            </span>
-                          </TableCell>
-                          <TableCell>
-                            <Chip
-                              color={getPaymentMethodColor(sale.payment_method)}
-                              variant="flat"
-                              size="sm"
-                            >
-                              {sale.payment_method.charAt(0).toUpperCase() + sale.payment_method.slice(1)}
-                            </Chip>
-                          </TableCell>
-                          <TableCell>
-                            <div>
-                              <p className={`text-sm ${textColors.primary}`}>
-                                {new Date(sale.created_at).toLocaleDateString('es-PE')}
-                              </p>
-                              <p className={`text-xs ${textColors.muted}`}>
-                                {new Date(sale.created_at).toLocaleTimeString('es-PE', { 
-                                  hour: '2-digit', 
-                                  minute: '2-digit' 
-                                })}
-                              </p>
-                            </div>
-                          </TableCell>
-                          <TableCell>
-                            <Tooltip content="Ver detalles de la venta" classNames={{ content: "bg-gray-900 text-white" }}>
-                              <Button isIconOnly variant="flat" size="sm">
-                                <Receipt className="w-5 h-5" />
-                              </Button>
-                            </Tooltip>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
+                            </TableCell>
+                            <TableCell>
+                              <div>
+                                <p className={`text-sm font-medium ${textColors.primary}`}>{sale.seller.name}</p>
+                                <p className={`text-xs ${textColors.muted}`}>{sale.seller.email}</p>
+                              </div>
+                            </TableCell>
+                            <TableCell>
+                              <div>
+                                <p className={`text-sm font-medium ${textColors.primary}`}>
+                                  {sale.sale_items.length} item{sale.sale_items.length !== 1 ? 's' : ''}
+                                </p>
+                                <div className={`text-xs ${textColors.muted} space-y-1`}>
+                                  {sale.sale_items.slice(0, 2).map((item, idx) => (
+                                    <div key={idx}>
+                                      {item.inventory?.name || 'Producto'} x{item.quantity}
+                                    </div>
+                                  ))}
+                                  {sale.sale_items.length > 2 && (
+                                    <div>+{sale.sale_items.length - 2} más...</div>
+                                  )}
+                                </div>
+                              </div>
+                            </TableCell>
+                            <TableCell>
+                              <span className="text-lg font-bold text-green-600">
+                                {formatCurrency(sale.total)}
+                              </span>
+                            </TableCell>
+                            <TableCell>
+                              <Chip
+                                color={getPaymentMethodColor(sale.payment_method)}
+                                variant="flat"
+                                size="sm"
+                              >
+                                {sale.payment_method.charAt(0).toUpperCase() + sale.payment_method.slice(1)}
+                              </Chip>
+                            </TableCell>
+                            <TableCell>
+                              <div>
+                                <p className={`text-sm ${textColors.primary}`}>
+                                  {new Date(sale.created_at).toLocaleDateString('es-PE')}
+                                </p>
+                                <p className={`text-xs ${textColors.muted}`}>
+                                  {new Date(sale.created_at).toLocaleTimeString('es-PE', { 
+                                    hour: '2-digit', 
+                                    minute: '2-digit' 
+                                  })}
+                                </p>
+                              </div>
+                            </TableCell>
+                            <TableCell>
+                              <Tooltip content="Ver detalles de la venta" classNames={{ content: "bg-gray-900 text-white" }}>
+                                <Button isIconOnly variant="flat" size="sm">
+                                  <Receipt className="w-5 h-5" />
+                                </Button>
+                              </Tooltip>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+
+                  {/* Vista Móvil - Cards */}
+                  <div className="lg:hidden">
+                    {loadingSales ? (
+                      <div className="space-y-4 p-4">
+                        {[...Array(5)].map((_, i) => (
+                          <Card key={i} className="shadow-sm">
+                            <CardBody className="p-4">
+                              <div className="space-y-3">
+                                <div className="flex items-center gap-3">
+                                  <Skeleton className="w-10 h-10 rounded-full" />
+                                  <div className="space-y-2 flex-1">
+                                    <Skeleton className="h-4 w-32 rounded" />
+                                    <Skeleton className="h-3 w-24 rounded" />
+                                  </div>
+                                </div>
+                                <Skeleton className="h-16 w-full rounded" />
+                              </div>
+                            </CardBody>
+                          </Card>
+                        ))}
+                      </div>
+                    ) : sales.length === 0 ? (
+                      <div className="text-center py-12 px-4">
+                        <Receipt className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                        <h3 className={`text-lg font-semibold ${textColors.primary} mb-2`}>
+                          No hay ventas
+                        </h3>
+                        <p className={`${textColors.muted} mb-6`}>
+                          No se encontraron ventas con los filtros aplicados
+                        </p>
+                      </div>
+                    ) : (
+                      <div className="space-y-4 p-4">
+                        {sales.map((sale) => (
+                          <Card key={sale.id} className="shadow-sm hover:shadow-md transition-shadow">
+                            <CardBody className="p-4">
+                              {/* Header de la venta */}
+                              <div className="flex items-start justify-between mb-4">
+                                <div className="flex items-center gap-3">
+                                  <div className="p-2 rounded-lg bg-gradient-to-br from-green-100 to-green-200">
+                                    {getSaleTypeIcon(sale.sale_type)}
+                                  </div>
+                                  <div>
+                                    <Chip
+                                      color={getSaleTypeColor(sale.sale_type)}
+                                      variant="flat"
+                                      size="sm"
+                                      className="mb-1"
+                                    >
+                                      {sale.sale_type.charAt(0).toUpperCase() + sale.sale_type.slice(1)}
+                                    </Chip>
+                                    <p className={`text-xs ${textColors.muted}`}>
+                                      {new Date(sale.created_at).toLocaleDateString('es-PE')} - {new Date(sale.created_at).toLocaleTimeString('es-PE', { 
+                                        hour: '2-digit', 
+                                        minute: '2-digit' 
+                                      })}
+                                    </p>
+                                  </div>
+                                </div>
+                                <div className="text-right">
+                                  <p className="text-xl font-bold text-green-600">
+                                    {formatCurrency(sale.total)}
+                                  </p>
+                                  <Chip
+                                    color={getPaymentMethodColor(sale.payment_method)}
+                                    variant="flat"
+                                    size="sm"
+                                  >
+                                    {sale.payment_method.charAt(0).toUpperCase() + sale.payment_method.slice(1)}
+                                  </Chip>
+                                </div>
+                              </div>
+
+                              {/* Información de la venta */}
+                              <div className="grid grid-cols-1 gap-4 mb-4">
+                                {/* Cliente */}
+                                <div className="bg-gray-50 rounded-lg p-3">
+                                  <div className="flex items-center gap-2 mb-2">
+                                    <User className="w-4 h-4 text-gray-600" />
+                                    <p className={`text-xs font-medium ${textColors.tertiary} uppercase tracking-wide`}>
+                                      Cliente
+                                    </p>
+                                  </div>
+                                  <p className={`text-sm font-medium ${textColors.primary}`}>
+                                    {getCustomerName(sale.customer)}
+                                  </p>
+                                </div>
+
+                                {/* Vendedor */}
+                                <div className="bg-gray-50 rounded-lg p-3">
+                                  <p className={`text-xs font-medium ${textColors.tertiary} uppercase tracking-wide mb-2`}>
+                                    Vendedor
+                                  </p>
+                                  <p className={`text-sm font-medium ${textColors.primary}`}>
+                                    {sale.seller.name}
+                                  </p>
+                                  <p className={`text-xs ${textColors.muted}`}>
+                                    {sale.seller.email}
+                                  </p>
+                                </div>
+                              </div>
+
+                              {/* Productos */}
+                              <div className="bg-blue-50 rounded-lg p-3 mb-4">
+                                <p className={`text-xs font-medium ${textColors.tertiary} uppercase tracking-wide mb-2`}>
+                                  Productos ({sale.sale_items.length} item{sale.sale_items.length !== 1 ? 's' : ''})
+                                </p>
+                                <div className="space-y-2">
+                                  {sale.sale_items.slice(0, 3).map((item, idx) => (
+                                    <div key={idx} className="flex justify-between items-center">
+                                      <span className={`text-sm ${textColors.primary}`}>
+                                        {item.inventory?.name || 'Producto'}
+                                      </span>
+                                      <span className={`text-sm ${textColors.secondary}`}>
+                                        x{item.quantity}
+                                      </span>
+                                    </div>
+                                  ))}
+                                  {sale.sale_items.length > 3 && (
+                                    <div className={`text-xs ${textColors.muted} text-center pt-2 border-t border-blue-200`}>
+                                      +{sale.sale_items.length - 3} producto{sale.sale_items.length - 3 !== 1 ? 's' : ''} más
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+
+                              {/* Acciones */}
+                              <div className="flex gap-2">
+                                <Button 
+                                  variant="flat" 
+                                  size="sm" 
+                                  startContent={<Receipt className="w-4 h-4" />}
+                                  className="flex-1"
+                                >
+                                  Ver Detalles
+                                </Button>
+                                <Button 
+                                  variant="flat" 
+                                  size="sm" 
+                                  color="primary"
+                                  startContent={<Eye className="w-4 h-4" />}
+                                  className="flex-1"
+                                >
+                                  Factura
+                                </Button>
+                              </div>
+                            </CardBody>
+                          </Card>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 </CardBody>
               </Card>
 

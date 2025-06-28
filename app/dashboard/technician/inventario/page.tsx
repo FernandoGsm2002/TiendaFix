@@ -319,121 +319,296 @@ export default function TechnicianInventoryPage() {
         {/* Tabla de productos */}
         <Card className="shadow-xl border-0 bg-white">
           <CardBody className="p-0">
-            <Table 
-              aria-label="Tabla de inventario"
-              classNames={{
-                wrapper: "min-h-[400px] shadow-none",
-                th: "bg-gradient-to-r from-gray-50 to-gray-100 text-gray-700 font-bold text-sm border-b border-gray-200",
-                td: "py-5 border-b border-gray-100"
-              }}
-            >
-              <TableHeader>
-                <TableColumn>PRODUCTO & DESCRIPCIÓN</TableColumn>
-                <TableColumn>CATEGORÍA</TableColumn>
-                <TableColumn>MARCA/MODELO</TableColumn>
-                <TableColumn>STOCK ACTUAL</TableColumn>
-                <TableColumn>UBICACIÓN</TableColumn>
-                <TableColumn>PRECIOS</TableColumn>
-                <TableColumn>ESTADO</TableColumn>
-              </TableHeader>
-              <TableBody>
-                {filteredProducts.map((product) => {
-                  const stockStatus = getStockStatus(product.stock_quantity, product.min_stock)
-                  return (
-                    <TableRow key={product.id} className="hover:bg-gray-50/50 transition-colors">
-                      <TableCell>
-                        <div className="flex items-center gap-4">
-                          <Avatar
-                            icon={<ShoppingBag className="w-5 h-5" />}
-                            size="lg"
-                            classNames={{
-                              base: "bg-gradient-to-br from-purple-500 to-indigo-600 shadow-lg",
-                              icon: "text-white"
-                            }}
-                          />
-                          <div>
-                            <p className="font-bold text-gray-900">{product.name}</p>
-                            <p className="text-sm text-gray-600 leading-relaxed">
-                              {product.description}
-                            </p>
-                            <Chip size="sm" color="default" variant="flat" className="mt-1">
-                              SKU: {product.sku}
-                            </Chip>
+            {/* Vista Desktop - Tabla */}
+            <div className="hidden lg:block">
+              <Table 
+                aria-label="Tabla de inventario"
+                classNames={{
+                  wrapper: "min-h-[400px] shadow-none",
+                  th: "bg-gradient-to-r from-gray-50 to-gray-100 text-gray-700 font-bold text-sm border-b border-gray-200",
+                  td: "py-5 border-b border-gray-100"
+                }}
+              >
+                <TableHeader>
+                  <TableColumn>PRODUCTO & DESCRIPCIÓN</TableColumn>
+                  <TableColumn>CATEGORÍA</TableColumn>
+                  <TableColumn>MARCA/MODELO</TableColumn>
+                  <TableColumn>STOCK ACTUAL</TableColumn>
+                  <TableColumn>UBICACIÓN</TableColumn>
+                  <TableColumn>PRECIOS</TableColumn>
+                  <TableColumn>ESTADO</TableColumn>
+                </TableHeader>
+                <TableBody>
+                  {filteredProducts.map((product) => {
+                    const stockStatus = getStockStatus(product.stock_quantity, product.min_stock)
+                    return (
+                      <TableRow key={product.id} className="hover:bg-gray-50/50 transition-colors">
+                        <TableCell>
+                          <div className="flex items-center gap-4">
+                            <Avatar
+                              icon={<ShoppingBag className="w-5 h-5" />}
+                              size="lg"
+                              classNames={{
+                                base: "bg-gradient-to-br from-purple-500 to-indigo-600 shadow-lg",
+                                icon: "text-white"
+                              }}
+                            />
+                            <div>
+                              <p className="font-bold text-gray-900">{product.name}</p>
+                              <p className="text-sm text-gray-600 leading-relaxed">
+                                {product.description}
+                              </p>
+                              <Chip size="sm" color="default" variant="flat" className="mt-1">
+                                SKU: {product.sku}
+                              </Chip>
+                            </div>
                           </div>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <Chip
-                          color="primary"
-                          variant="flat"
-                          size="md"
-                          className="font-semibold"
-                        >
-                          {getCategoryLabel(product.category)}
-                        </Chip>
-                      </TableCell>
-                      <TableCell>
-                                                  <div>
+                        </TableCell>
+                        <TableCell>
+                          <Chip
+                            color="primary"
+                            variant="flat"
+                            size="md"
+                            className="font-semibold"
+                          >
+                            {getCategoryLabel(product.category)}
+                          </Chip>
+                        </TableCell>
+                        <TableCell>
+                          <div>
                             <p className="font-bold text-gray-900">{product.brand}</p>
                             <p className="text-sm text-gray-600">{product.model}</p>
                           </div>
-                      </TableCell>
-                      <TableCell>
-                        <div className="text-center">
-                          <p className="text-xl font-bold text-gray-900">{product.stock_quantity}</p>
-                          <p className="text-xs text-gray-500">
-                            Mínimo: {product.min_stock}
-                          </p>
-                          <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
-                            <div 
-                              className={`h-2 rounded-full ${
-                                product.stock_quantity <= product.min_stock 
-                                  ? 'bg-red-500' 
-                                  : 'bg-green-500'
-                              }`}
-                              style={{
-                                width: `${Math.min((product.stock_quantity / (product.min_stock * 2)) * 100, 100)}%`
+                        </TableCell>
+                        <TableCell>
+                          <div className="text-center">
+                            <p className="text-xl font-bold text-gray-900">{product.stock_quantity}</p>
+                            <p className="text-xs text-gray-500">
+                              Mínimo: {product.min_stock}
+                            </p>
+                            <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
+                              <div 
+                                className={`h-2 rounded-full ${
+                                  product.stock_quantity <= product.min_stock 
+                                    ? 'bg-red-500' 
+                                    : 'bg-green-500'
+                                }`}
+                                style={{
+                                  width: `${Math.min((product.stock_quantity / (product.min_stock * 2)) * 100, 100)}%`
+                                }}
+                              />
+                            </div>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-2">
+                            <MapPin className="w-4 h-4 text-gray-400" />
+                            <p className="text-sm font-medium text-gray-700">
+                              {product.location}
+                            </p>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div>
+                            <p className="font-bold text-green-600">
+                              {formatCurrency(product.enduser_price)}
+                            </p>
+                            <p className="text-sm text-gray-600">
+                              Costo: {formatCurrency(product.unit_cost)}
+                            </p>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <Chip
+                            color={stockStatus.color}
+                            variant="flat"
+                            size="md"
+                            startContent={React.createElement(stockStatus.icon, { className: "w-4 h-4" })}
+                            className="font-semibold"
+                          >
+                            {stockStatus.label}
+                          </Chip>
+                        </TableCell>
+                      </TableRow>
+                    )
+                  })}
+                </TableBody>
+              </Table>
+            </div>
+
+            {/* Vista Móvil - Cards */}
+            <div className="lg:hidden">
+              {loading ? (
+                <div className="space-y-4 p-4">
+                  {[...Array(5)].map((_, i) => (
+                    <Card key={i} className="shadow-sm">
+                      <CardBody className="p-4">
+                        <div className="space-y-3">
+                          <div className="flex items-center gap-3">
+                            <Skeleton className="w-12 h-12 rounded-full" />
+                            <div className="space-y-2 flex-1">
+                              <Skeleton className="h-4 w-32 rounded" />
+                              <Skeleton className="h-3 w-24 rounded" />
+                            </div>
+                          </div>
+                          <Skeleton className="h-16 w-full rounded" />
+                        </div>
+                      </CardBody>
+                    </Card>
+                  ))}
+                </div>
+              ) : filteredProducts.length === 0 ? (
+                <div className="text-center py-12 px-4">
+                  <Package className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                    No se encontraron productos
+                  </h3>
+                  <p className="text-gray-600 mb-6">
+                    {busqueda || filtroCategoria !== 'todos'
+                      ? 'No hay productos que coincidan con los filtros aplicados.'
+                      : 'No hay productos en el inventario.'}
+                  </p>
+                  {(busqueda || filtroCategoria !== 'todos') && (
+                    <Button
+                      color="primary"
+                      variant="flat"
+                      onPress={() => {
+                        setBusqueda('')
+                        setFiltroCategoria('todos')
+                      }}
+                    >
+                      Limpiar filtros
+                    </Button>
+                  )}
+                </div>
+              ) : (
+                <div className="space-y-4 p-4">
+                  {filteredProducts.map((product) => {
+                    const stockStatus = getStockStatus(product.stock_quantity, product.min_stock)
+                    return (
+                      <Card key={product.id} className="shadow-sm hover:shadow-md transition-shadow">
+                        <CardBody className="p-4">
+                          {/* Header del producto */}
+                          <div className="flex items-start gap-3 mb-4">
+                            <Avatar
+                              icon={<ShoppingBag className="w-5 h-5" />}
+                              size="md"
+                              classNames={{
+                                base: "bg-gradient-to-br from-purple-500 to-indigo-600 shadow-lg",
+                                icon: "text-white"
                               }}
                             />
+                            <div className="flex-1 min-w-0">
+                              <h4 className="font-bold text-gray-900 truncate mb-1">
+                                {product.name}
+                              </h4>
+                              <p className="text-sm text-gray-600 line-clamp-2 mb-2">
+                                {product.description}
+                              </p>
+                              <div className="flex gap-2 flex-wrap">
+                                <Chip size="sm" color="default" variant="flat">
+                                  SKU: {product.sku}
+                                </Chip>
+                                <Chip
+                                  color="primary"
+                                  variant="flat"
+                                  size="sm"
+                                >
+                                  {getCategoryLabel(product.category)}
+                                </Chip>
+                              </div>
+                            </div>
+                            <Chip
+                              color={stockStatus.color}
+                              variant="flat"
+                              size="sm"
+                              startContent={React.createElement(stockStatus.icon, { className: "w-3 h-3" })}
+                            >
+                              {stockStatus.label}
+                            </Chip>
                           </div>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-2">
-                          <MapPin className="w-4 h-4 text-gray-400" />
-                          <p className="text-sm font-medium text-gray-700">
-                            {product.location}
-                          </p>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <div>
-                          <p className="font-bold text-green-600">
-                            {formatCurrency(product.enduser_price)}
-                          </p>
-                          <p className="text-sm text-gray-600">
-                            Costo: {formatCurrency(product.unit_cost)}
-                          </p>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <Chip
-                          color={stockStatus.color}
-                          variant="flat"
-                          size="md"
-                          startContent={React.createElement(stockStatus.icon, { className: "w-4 h-4" })}
-                          className="font-semibold"
-                        >
-                          {stockStatus.label}
-                        </Chip>
-                      </TableCell>
-                    </TableRow>
-                  )
-                })}
-              </TableBody>
-            </Table>
-            {filteredProducts.length === 0 && (
-              <div className="text-center py-16">
+
+                          {/* Información del producto */}
+                          <div className="grid grid-cols-2 gap-4 mb-4">
+                            {/* Marca/Modelo */}
+                            <div className="space-y-1">
+                              <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+                                Marca/Modelo
+                              </p>
+                              <p className="font-bold text-gray-900">{product.brand}</p>
+                              <p className="text-sm text-gray-600">{product.model}</p>
+                            </div>
+
+                            {/* Ubicación */}
+                            <div className="space-y-1">
+                              <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+                                Ubicación
+                              </p>
+                              <div className="flex items-center gap-2">
+                                <MapPin className="w-3 h-3 text-gray-500" />
+                                <p className="text-sm font-medium text-gray-700">
+                                  {product.location}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Stock */}
+                          <div className="bg-gray-50 rounded-lg p-3 mb-4">
+                            <div className="flex justify-between items-center mb-2">
+                              <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+                                Stock Actual
+                              </p>
+                              <p className="text-xl font-bold text-gray-900">{product.stock_quantity}</p>
+                            </div>
+                            <p className="text-xs text-gray-500 mb-2">
+                              Mínimo: {product.min_stock}
+                            </p>
+                            <div className="w-full bg-gray-200 rounded-full h-2">
+                              <div 
+                                className={`h-2 rounded-full transition-all duration-300 ${
+                                  product.stock_quantity <= product.min_stock 
+                                    ? 'bg-red-500' 
+                                    : 'bg-green-500'
+                                }`}
+                                style={{
+                                  width: `${Math.min((product.stock_quantity / (product.min_stock * 2)) * 100, 100)}%`
+                                }}
+                              />
+                            </div>
+                          </div>
+
+                          {/* Precios */}
+                          <div className="bg-green-50 rounded-lg p-3">
+                            <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">
+                              Precios
+                            </p>
+                            <div className="grid grid-cols-2 gap-3">
+                              <div>
+                                <p className="text-xs text-gray-600 mb-1">Precio Venta</p>
+                                <p className="font-bold text-green-600">
+                                  {formatCurrency(product.enduser_price)}
+                                </p>
+                              </div>
+                              <div>
+                                <p className="text-xs text-gray-600 mb-1">Costo</p>
+                                <p className="text-sm text-gray-700">
+                                  {formatCurrency(product.unit_cost)}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        </CardBody>
+                      </Card>
+                    )
+                  })}
+                </div>
+              )}
+            </div>
+            
+            {/* Empty state solo para desktop cuando está dentro de la tabla */}
+            {filteredProducts.length === 0 && !loading && (
+              <div className="hidden lg:block text-center py-16">
                 <Package className="w-20 h-20 text-gray-300 mx-auto mb-6" />
                 <h3 className="text-2xl font-bold text-gray-900 mb-3">No se encontraron productos</h3>
                 <p className="text-gray-600 text-lg">

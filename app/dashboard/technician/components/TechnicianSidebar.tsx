@@ -24,6 +24,7 @@ import { useRouter } from 'next/navigation'
 interface TechnicianSidebarProps {
   isCollapsed: boolean
   onToggleCollapse: () => void
+  onMobileMenuClose?: () => void
 }
 
 // Menú limitado para técnicos - no pueden acceder a reportes, crear personal, ni modificar inventario
@@ -87,7 +88,7 @@ const menuItems = [
   }
 ]
 
-export default function TechnicianSidebar({ isCollapsed, onToggleCollapse }: TechnicianSidebarProps) {
+export default function TechnicianSidebar({ isCollapsed, onToggleCollapse, onMobileMenuClose }: TechnicianSidebarProps) {
   const pathname = usePathname()
   const { signOut } = useAuth()
   const router = useRouter()
@@ -95,6 +96,12 @@ export default function TechnicianSidebar({ isCollapsed, onToggleCollapse }: Tec
   const handleSignOut = async () => {
     await signOut()
     router.push('/auth/login')
+  }
+
+  const handleMenuItemClick = () => {
+    if (onMobileMenuClose) {
+      onMobileMenuClose()
+    }
   }
 
   const SidebarMenuItem = ({ item }: { item: typeof menuItems[0] }) => {
@@ -124,6 +131,7 @@ export default function TechnicianSidebar({ isCollapsed, onToggleCollapse }: Tec
                 : 'hover:bg-gradient-to-br hover:from-gray-100 hover:to-gray-200 hover:scale-105'
               }
             `}
+            onClick={handleMenuItemClick}
           >
             <Icon className={`h-5 w-5 ${isActive ? 'text-white' : item.color}`} />
           </Button>
@@ -143,6 +151,7 @@ export default function TechnicianSidebar({ isCollapsed, onToggleCollapse }: Tec
             : 'hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100 hover:shadow-md'
           }
         `}
+        onClick={handleMenuItemClick}
       >
         <div className="flex items-center w-full">
           <div className={`
@@ -257,6 +266,8 @@ export default function TechnicianSidebar({ isCollapsed, onToggleCollapse }: Tec
                 className="w-12 h-12 text-red-500 hover:text-red-600 hover:bg-gradient-to-br hover:from-red-50 hover:to-red-100 transition-all duration-300 rounded-xl shadow-sm hover:shadow-md mx-auto"
                 onPress={handleSignOut}
                 aria-label="Cerrar sesión"
+                autoFocus={false}
+                tabIndex={-1}
               >
                 <LogOut className="h-5 w-5" />
               </Button>
@@ -267,6 +278,9 @@ export default function TechnicianSidebar({ isCollapsed, onToggleCollapse }: Tec
                 variant="light" 
                 className="w-full justify-start text-red-500 hover:text-red-600 hover:bg-gradient-to-r hover:from-red-50 hover:to-red-100 transition-all duration-300 rounded-xl p-4 h-auto"
                 onPress={handleSignOut}
+                autoFocus={false}
+                tabIndex={-1}
+                onFocus={(e) => (e.target as HTMLButtonElement).blur()}
               >
                 <div className="flex items-center w-full">
                   <div className="p-2 rounded-lg bg-gradient-to-br from-red-100 to-red-200 mr-3">
@@ -287,7 +301,6 @@ export default function TechnicianSidebar({ isCollapsed, onToggleCollapse }: Tec
                 <p className="text-xs text-gray-400 font-medium">
                   © TIENDAFIX V2 - 2025
                 </p>
-
               </div>
             </>
           )}

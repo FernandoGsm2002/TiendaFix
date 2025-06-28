@@ -11,11 +11,11 @@ import {
   Select,
   SelectItem,
   Chip,
-  Modal, 
-  ModalContent, 
-  ModalHeader, 
-  ModalBody, 
-  ModalFooter, 
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
   useDisclosure,
   Skeleton,
   Pagination,
@@ -29,8 +29,8 @@ import {
   Filter, 
   Eye, 
   User, 
-  Phone, 
-  Mail, 
+  Phone,
+  Mail,
   Star, 
   TrendingUp,
   Users,
@@ -408,17 +408,17 @@ export default function ClientesPage() {
           <CardBody>
             <div className="flex flex-col md:flex-row gap-4 items-center">
               <div className="flex-1 w-full">
-                <Input
+              <Input
                   placeholder="Buscar por nombre, correo, teléfono o identificador..."
-                  value={busqueda}
-                  onValueChange={handleBusquedaChange}
-                  startContent={<Search className="w-4 h-4 text-gray-400" />}
-                  variant="bordered"
-                  classNames={{
-                    input: "text-gray-900 placeholder:text-gray-500",
-                    inputWrapper: "border-gray-300",
-                  }}
-                />
+                value={busqueda}
+                onValueChange={handleBusquedaChange}
+                startContent={<Search className="w-4 h-4 text-gray-400" />}
+                variant="bordered"
+                classNames={{
+                  input: "text-gray-900 placeholder:text-gray-500",
+                  inputWrapper: "border-gray-300",
+                }}
+              />
               </div>
               <div className="w-full md:w-auto">
                 <Select
@@ -447,18 +447,18 @@ export default function ClientesPage() {
             <Card key={customer.id} className="hover:shadow-xl transition-shadow border-0 shadow-lg">
               <CardBody className="p-6">
                 <div className="flex items-start justify-between mb-4">
-                  <div className="flex items-center gap-3">
-                    <Avatar
+                        <div className="flex items-center gap-3">
+                          <Avatar
                       name={getCustomerDisplayName(customer).charAt(0)}
-                      classNames={{
+                            classNames={{
                         base: customer.is_recurrent 
                           ? "bg-gradient-to-br from-purple-400 to-pink-400" 
                           : "bg-gradient-to-br from-blue-400 to-cyan-400",
                         name: "text-white font-bold"
                       }}
                       size="lg"
-                    />
-                    <div>
+                          />
+                          <div>
                       <h3 className={`text-lg font-semibold ${textColors.primary}`}>
                         {getCustomerDisplayName(customer)}
                       </h3>
@@ -470,58 +470,58 @@ export default function ClientesPage() {
                         {getBadgeLabel(customer.customer_type, customer.is_recurrent)}
                       </Chip>
                     </div>
-                  </div>
-                </div>
+                          </div>
+                        </div>
 
                 <div className="space-y-3 mb-4">
                   {customer.email && (
-                    <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-2">
                       <Mail className="w-4 h-4 text-blue-500" />
-                      <span className={`text-sm ${textColors.secondary}`}>{customer.email}</span>
-                    </div>
+                            <span className={`text-sm ${textColors.secondary}`}>{customer.email}</span>
+                          </div>
                   )}
                   {customer.phone && (
-                    <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-2">
                       <Phone className="w-4 h-4 text-green-500" />
-                      <span className={`text-sm ${textColors.secondary}`}>{customer.phone}</span>
-                    </div>
-                  )}
-                </div>
+                            <span className={`text-sm ${textColors.secondary}`}>{customer.phone}</span>
+                          </div>
+                          )}
+                        </div>
 
                 <div className="bg-gray-50 rounded-lg p-3 space-y-2 mb-4">
                   <div className="flex justify-between items-center">
                     <span className={`text-sm font-medium ${textColors.secondary}`}>Total gastado:</span>
                     <span className={`text-lg font-bold text-green-600`}>
                       {formatCurrency(customer.stats?.totalGastado)}
-                    </span>
-                  </div>
+                              </span>
+                            </div>
                   <div className="flex justify-between items-center">
                     <span className={`text-sm ${textColors.secondary}`}>Servicios totales:</span>
                     <Chip color="primary" size="sm" variant="flat">
                       {customer.stats?.totalReparaciones || 0}
-                    </Chip>
-                  </div>
+                              </Chip>
+                          </div>
                   <Progress 
                     value={Math.min((customer.stats?.totalGastado || 0) / 1000 * 100, 100)} 
                     color="success" 
-                    size="sm"
+                          size="sm"
                     className="mt-2"
                   />
                 </div>
 
                 <div className="flex justify-end">
                   <Tooltip content="Ver detalles completos" classNames={{ content: "bg-gray-900 text-white" }}>
-                    <Button 
+                            <Button 
                       color="primary" 
-                      variant="flat" 
-                      size="sm" 
-                      onPress={() => handleViewDetails(customer)}
+                              variant="flat" 
+                              size="sm" 
+                              onPress={() => handleViewDetails(customer)}
                       startContent={<Eye className="w-4 h-4" />}
-                    >
+                            >
                       Ver Detalles
-                    </Button>
-                  </Tooltip>
-                </div>
+                            </Button>
+                          </Tooltip>
+                        </div>
               </CardBody>
             </Card>
           ))}
@@ -549,8 +549,8 @@ export default function ClientesPage() {
                   }}
                 />
               </div>
-            </CardBody>
-          </Card>
+          </CardBody>
+        </Card>
         )}
 
         {/* Modal de ver detalles - Copia exacta del owner */}
@@ -570,10 +570,10 @@ export default function ClientesPage() {
                   <p className={`text-sm ${textColors.muted}`}>Perfil completo del cliente</p>
                 </div>
               </div>
-            </ModalHeader>
+                </ModalHeader>
             <ModalBody className="p-6">
-              {selectedCustomer && (
-                <div className="space-y-6">
+                  {selectedCustomer && (
+                    <div className="space-y-6">
                   {/* Información básica mejorada */}
                   <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     {/* Información personal */}
@@ -631,7 +631,7 @@ export default function ClientesPage() {
                         <h3 className={`text-lg font-semibold flex items-center gap-2 ${textColors.primary}`}>
                           <Activity className="w-5 h-5 text-green-500" />
                           Estadísticas Básicas
-                        </h3>
+                          </h3>
                       </CardHeader>
                       <CardBody className="pt-0">
                         <div className="grid grid-cols-2 gap-3">
@@ -669,9 +669,9 @@ export default function ClientesPage() {
                             <Skeleton className="h-4 rounded" />
                             <Skeleton className="h-4 rounded" />
                             <Skeleton className="h-4 rounded" />
-                          </div>
+                      </div>
                         ) : customerDetail ? (
-                          <div className="space-y-3">
+                        <div className="space-y-3">
                             <div className="flex justify-between">
                               <span className={`text-sm ${textColors.secondary}`}>Total gastado:</span>
                               <span className="font-semibold text-green-600">
@@ -689,11 +689,11 @@ export default function ClientesPage() {
                               <span className="font-semibold text-blue-600">
                                 {formatCurrency(customerDetail.financialSummary.totalPaid)}
                               </span>
-                            </div>
+                          </div>
                             {customerDetail.financialSummary.lastPayment && (
                               <div className={`pt-2 border-t text-xs ${textColors.muted}`}>
                                 Último pago: {new Date(customerDetail.financialSummary.lastPayment).toLocaleDateString('es-ES')}
-                              </div>
+                        </div>
                             )}
                           </div>
                         ) : (
@@ -701,7 +701,7 @@ export default function ClientesPage() {
                         )}
                       </CardBody>
                     </Card>
-                  </div>
+                      </div>
 
                   {/* Historial de servicios */}
                   <Card>
@@ -766,17 +766,17 @@ export default function ClientesPage() {
                                   <strong>Productos:</strong> {service.items.map(item => 
                                     `${item.name} (${item.quantity}x)`
                                   ).join(', ')}
-                                </div>
+                            </div>
                               )}
                               <div className={`flex justify-between text-xs ${textColors.muted}`}>
                                 <span>Creado: {new Date(service.created_at).toLocaleDateString('es-ES')}</span>
                                 {service.completed_at && (
                                   <span>Completado: {new Date(service.completed_at).toLocaleDateString('es-ES')}</span>
                                 )}
-                              </div>
+                            </div>
                             </div>
                           ))}
-                        </div>
+                          </div>
                       ) : (
                         <div className="text-center py-8">
                           <FileText className="w-12 h-12 text-gray-300 mx-auto mb-3" />
@@ -785,14 +785,14 @@ export default function ClientesPage() {
                       )}
                     </CardBody>
                   </Card>
-                </div>
-              )}
-            </ModalBody>
+                    </div>
+                  )}
+                </ModalBody>
             <ModalFooter className="border-t">
               <Button variant="flat" onPress={onDetailClose}>
-                Cerrar
-              </Button>
-            </ModalFooter>
+                    Cerrar
+                  </Button>
+                </ModalFooter>
           </ModalContent>
         </Modal>
       </div>

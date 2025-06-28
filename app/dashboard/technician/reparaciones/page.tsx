@@ -43,7 +43,8 @@ import {
   User,
   ClipboardList,
   X,
-  AlertTriangle
+  AlertTriangle,
+  Filter
 } from 'lucide-react'
 
 interface Repair {
@@ -553,34 +554,25 @@ export default function TechnicianRepairsPage() {
   if (loading) {
     return (
       <TechnicianDashboardLayout>
-        <div className="max-w-6xl mx-auto space-y-8">
-          <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
-            <div className="space-y-3">
-              <Skeleton className="h-10 w-64 rounded-lg" />
-              <Skeleton className="h-4 w-96 rounded-lg" />
-              <div className="flex items-center gap-4">
-                <Skeleton className="h-6 w-32 rounded-lg" />
-                <Skeleton className="h-6 w-40 rounded-lg" />
-              </div>
-            </div>
-            <Skeleton className="h-12 w-48 rounded-lg" />
+        <div className="space-y-4 md:space-y-6">
+          <Skeleton className="h-6 md:h-8 w-48 rounded-lg" />
+          <div className="flex flex-col sm:flex-row gap-4">
+            <Skeleton className="h-10 w-full sm:w-64 rounded-lg" />
+            <Skeleton className="h-10 w-full sm:w-32 rounded-lg" />
+            <Skeleton className="h-10 w-full sm:w-24 rounded-lg" />
           </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {[...Array(4)].map((_, i) => (
-              <Card key={i} className="shadow-lg">
-                <CardBody className="p-6 space-y-3">
-                  <Skeleton className="h-4 w-20 rounded" />
-                  <Skeleton className="h-8 w-12 rounded" />
-                  <Skeleton className="h-2 w-full rounded" />
+              <Card key={i}>
+                <CardBody className="p-4">
+                  <Skeleton className="h-16 w-full rounded" />
                 </CardBody>
               </Card>
             ))}
           </div>
-          
-          <Card className="shadow-lg">
-            <CardBody className="p-6">
-              <Skeleton className="h-96 w-full rounded" />
+          <Card>
+            <CardBody className="p-4">
+              <Skeleton className="h-64 w-full rounded" />
             </CardBody>
           </Card>
         </div>
@@ -588,227 +580,372 @@ export default function TechnicianRepairsPage() {
     )
   }
 
+  if (error) {
+    return (
+      <TechnicianDashboardLayout>
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <AlertTriangle className="h-12 w-12 text-red-500 mx-auto mb-4" />
+            <p className="text-gray-600">Error al cargar reparaciones: {error}</p>
+          </div>
+        </div>
+      </TechnicianDashboardLayout>
+    )
+  }
+
   return (
     <TechnicianDashboardLayout>
-      <div className="max-w-6xl mx-auto space-y-8 p-6">
+      <div className="space-y-4 md:space-y-6">
         {/* Header */}
-        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
-          <div className="space-y-3">
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div>
+            <h1 className="text-xl md:text-2xl lg:text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
               Mis Reparaciones
             </h1>
-            <p className="text-gray-600 font-medium">
-              Panel de trabajo • Gestión de reparaciones asignadas
-            </p>
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-orange-500 rounded-full animate-pulse"></div>
-                <span className="text-sm text-gray-500 font-medium">Gestión activa</span>
-              </div>
-              <Chip 
-                color="primary" 
-                variant="flat"
-                startContent={<Wrench className="w-4 h-4" />}
-                className="font-semibold"
-              >
-                {stats.total} reparaciones en sistema
-              </Chip>
-            </div>
+            <p className={`text-sm md:text-base ${textColors.secondary} mt-1`}>Gestiona y actualiza tus trabajos asignados</p>
           </div>
-          <div className="flex gap-3">
-            <Button 
-              color="primary" 
-              startContent={<Plus className="w-4 h-4" />}
-              onPress={onCreateOpen}
-              className="bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 font-semibold shadow-lg"
-            >
-              Nueva Reparación
-            </Button>
-          </div>
+          <Button 
+            color="primary" 
+            startContent={<Plus className="h-4 w-4" />}
+            onPress={onCreateOpen}
+            className="w-full sm:w-auto font-semibold"
+            size="lg"
+          >
+            Nueva Reparación
+          </Button>
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <Card className="shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 border-l-4 border-l-blue-500">
-            <CardBody className="p-6">
-              <div className="flex items-center justify-between">
-                <div className="space-y-2">
-                  <p className={`text-sm font-semibold ${textColors.tertiary} uppercase tracking-wide`}>Total</p>
-                  <p className={`text-3xl font-bold ${textColors.primary}`}>{stats.total}</p>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div 
-                      className="bg-gradient-to-r from-blue-500 to-blue-600 h-2 rounded-full transition-all duration-500"
-                      style={{ width: '100%' }}
-                    ></div>
-                  </div>
-                </div>
-                <div className="p-3 bg-gradient-to-br from-blue-100 to-blue-200 rounded-xl">
-                  <Wrench className="w-8 h-8 text-blue-600" />
-                </div>
-              </div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+          <Card className="shadow-lg border-0 bg-white/90 backdrop-blur-sm hover:shadow-xl transition-all">
+            <CardBody className="p-3 md:p-4 text-center">
+              <p className="text-lg md:text-2xl font-bold text-gray-900">{stats.total}</p>
+              <p className={`text-xs md:text-sm ${textColors.secondary} font-medium`}>Total</p>
             </CardBody>
           </Card>
-
-          <Card className="shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 border-l-4 border-l-orange-500">
-            <CardBody className="p-6">
-              <div className="flex items-center justify-between">
-                <div className="space-y-2">
-                  <p className={`text-sm font-semibold ${textColors.tertiary} uppercase tracking-wide`}>Pendientes</p>
-                  <p className="text-3xl font-bold text-orange-600">{stats.received + stats.diagnosed}</p>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div 
-                      className="bg-gradient-to-r from-orange-500 to-orange-600 h-2 rounded-full transition-all duration-500"
-                      style={{ width: stats.total > 0 ? `${((stats.received + stats.diagnosed) / stats.total) * 100}%` : '0%' }}
-                    ></div>
-                  </div>
-                </div>
-                <div className="p-3 bg-gradient-to-br from-orange-100 to-orange-200 rounded-xl">
-                  <Clock className="w-8 h-8 text-orange-600" />
-                </div>
-              </div>
+          <Card className="shadow-lg border-0 bg-orange-50 hover:shadow-xl transition-all">
+            <CardBody className="p-3 md:p-4 text-center">
+              <p className="text-lg md:text-2xl font-bold text-orange-900">{stats.received + stats.diagnosed}</p>
+              <p className="text-xs md:text-sm text-orange-700 font-medium">Pendientes</p>
             </CardBody>
           </Card>
-
-          <Card className="shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 border-l-4 border-l-blue-500">
-            <CardBody className="p-6">
-              <div className="flex items-center justify-between">
-                <div className="space-y-2">
-                  <p className={`text-sm font-semibold ${textColors.tertiary} uppercase tracking-wide`}>En Proceso</p>
-                  <p className="text-3xl font-bold text-blue-600">{stats.inProgress}</p>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div 
-                      className="bg-gradient-to-r from-blue-500 to-blue-600 h-2 rounded-full transition-all duration-500"
-                      style={{ width: stats.total > 0 ? `${(stats.inProgress / stats.total) * 100}%` : '0%' }}
-                    ></div>
-                  </div>
-                </div>
-                <div className="p-3 bg-gradient-to-br from-blue-100 to-blue-200 rounded-xl">
-                  <ClipboardList className="w-8 h-8 text-blue-600" />
-                </div>
-              </div>
+          <Card className="shadow-lg border-0 bg-blue-50 hover:shadow-xl transition-all">
+            <CardBody className="p-3 md:p-4 text-center">
+              <p className="text-lg md:text-2xl font-bold text-blue-900">{stats.inProgress}</p>
+              <p className="text-xs md:text-sm text-blue-700 font-medium">En Proceso</p>
             </CardBody>
           </Card>
-
-          <Card className="shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 border-l-4 border-l-green-500">
-            <CardBody className="p-6">
-              <div className="flex items-center justify-between">
-                <div className="space-y-2">
-                  <p className={`text-sm font-semibold ${textColors.tertiary} uppercase tracking-wide`}>Completadas</p>
-                  <p className="text-3xl font-bold text-green-600">{stats.completed + stats.delivered}</p>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div 
-                      className="bg-gradient-to-r from-green-500 to-green-600 h-2 rounded-full transition-all duration-500"
-                      style={{ width: stats.total > 0 ? `${((stats.completed + stats.delivered) / stats.total) * 100}%` : '0%' }}
-                    ></div>
-                  </div>
-                </div>
-                <div className="p-3 bg-gradient-to-br from-green-100 to-green-200 rounded-xl">
-                  <CheckCircle className="w-8 h-8 text-green-600" />
-                </div>
-              </div>
+          <Card className="shadow-lg border-0 bg-green-50 hover:shadow-xl transition-all">
+            <CardBody className="p-3 md:p-4 text-center">
+              <p className="text-lg md:text-2xl font-bold text-green-900">{stats.completed + stats.delivered}</p>
+              <p className="text-xs md:text-sm text-green-700 font-medium">Completadas</p>
             </CardBody>
           </Card>
         </div>
 
         {/* Filtros */}
-        <Card className="shadow-lg border-0">
-          <CardBody className="p-6">
-            <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
-              <Input
-                placeholder="Buscar reparaciones, clientes, dispositivos..."
-                value={busqueda}
-                onValueChange={setBusqueda}
-                startContent={<Search className="w-5 h-5 text-gray-400" />}
-                className="flex-1 min-w-[300px]"
-                variant="bordered"
-                radius="lg"
-                classNames={{
-                  input: "text-gray-900 placeholder:text-gray-500 font-medium",
-                  inputWrapper: "border-gray-300 hover:border-blue-400 focus-within:border-blue-500 shadow-sm",
-                }}
-              />
+        <Card className="shadow-lg border-0 bg-white/90 backdrop-blur-sm">
+          <CardBody className="p-4 md:p-6">
+            <div className="flex flex-col lg:flex-row gap-4">
+              <div className="flex-1">
+                <Input
+                  placeholder="Buscar por cliente, dispositivo o número de serie..."
+                  value={busqueda}
+                  onChange={(e) => setBusqueda(e.target.value)}
+                  startContent={<Search className="h-4 w-4 text-gray-400" />}
+                  variant="bordered"
+                  size="lg"
+                  className="w-full"
+                  classNames={{
+                    input: "text-sm",
+                    inputWrapper: "border-gray-200 hover:border-gray-300"
+                  }}
+                />
+              </div>
               <Select
                 placeholder="Filtrar por estado"
-                selectedKeys={new Set([filtroEstado])}
+                selectedKeys={[filtroEstado]}
                 onSelectionChange={(keys) => setFiltroEstado(Array.from(keys)[0] as string)}
-                className="w-full sm:w-auto min-w-[200px]"
+                startContent={<Filter className="h-4 w-4 text-gray-400" />}
                 variant="bordered"
-                radius="lg"
-                startContent={<ClipboardList className="w-4 h-4 text-gray-500" />}
+                size="lg"
+                className="w-full lg:w-48"
                 classNames={{
-                  trigger: "text-gray-900 hover:border-blue-400 shadow-sm",
-                  value: "text-gray-900 font-medium",
-                  popoverContent: "bg-white shadow-2xl",
+                  trigger: "border-gray-200 hover:border-gray-300"
                 }}
               >
-                <SelectItem key="todos" className="text-gray-900">Todos los estados</SelectItem>
-                <SelectItem key="received" className="text-gray-900">Recibido</SelectItem>
-                <SelectItem key="diagnosed" className="text-gray-900">Diagnosticado</SelectItem>
-                <SelectItem key="in_progress" className="text-gray-900">En Proceso</SelectItem>
-                <SelectItem key="waiting_parts" className="text-gray-900">Esperando Repuestos</SelectItem>
-                <SelectItem key="completed" className="text-gray-900">Completado</SelectItem>
-                <SelectItem key="delivered" className="text-gray-900">Entregado</SelectItem>
+                <SelectItem key="todos">Todos los estados</SelectItem>
+                <SelectItem key="received">Recibido</SelectItem>
+                <SelectItem key="diagnosed">Diagnosticado</SelectItem>
+                <SelectItem key="in_progress">En Proceso</SelectItem>
+                <SelectItem key="waiting_parts">Esperando Repuestos</SelectItem>
+                <SelectItem key="completed">Completado</SelectItem>
+                <SelectItem key="delivered">Entregado</SelectItem>
+                <SelectItem key="cancelled">Cancelado</SelectItem>
               </Select>
             </div>
           </CardBody>
         </Card>
 
-        {/* Tabla de reparaciones */}
-        <Card className="shadow-lg border-0">
-          <CardBody className="p-0">
-            <Table 
-              aria-label="Tabla de reparaciones"
-              classNames={{
-                wrapper: "shadow-none",
-                th: "bg-gradient-to-r from-gray-50 to-gray-100 text-gray-700 font-semibold border-b border-gray-200",
-                td: "border-b border-gray-100 py-4",
-                tr: "hover:bg-gray-50 transition-colors",
-              }}
-            >
-              <TableHeader columns={columns}>
-                {(column) => (
-                  <TableColumn key={column.uid} align={column.uid === "acciones" ? "center" : "start"}>
-                    {column.name}
-                  </TableColumn>
-                )}
-              </TableHeader>
-              <TableBody items={repairs}>
-                {(item) => (
-                  <TableRow key={item.id}>
-                    {(columnKey) => <TableCell>{renderCell(item, columnKey)}</TableCell>}
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
-            {repairs.length === 0 && (
-              <div className="text-center py-16">
-                <div className="flex flex-col items-center space-y-4">
-                  <div className="p-4 bg-gradient-to-br from-orange-100 to-red-100 rounded-full">
-                    <Wrench className="w-12 h-12 text-orange-500" />
-                  </div>
-                  <div className="space-y-2">
-                    <h3 className="text-xl font-bold text-gray-900">No hay reparaciones</h3>
-                    <p className="text-gray-600 max-w-md">
-                      {busqueda || filtroEstado !== 'todos'
-                        ? 'No se encontraron reparaciones con los filtros aplicados. Prueba ajustando los criterios de búsqueda.'
-                        : 'Aún no tienes reparaciones asignadas. Las nuevas reparaciones aparecerán aquí.'}
-                    </p>
-                  </div>
-                  {!busqueda && filtroEstado === 'todos' && (
-                    <Button 
-                      color="primary" 
-                      startContent={<Plus className="w-4 h-4" />}
-                      onPress={onCreateOpen}
-                      className="bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 font-semibold shadow-lg mt-4"
-                    >
-                      Crear Primera Reparación
-                    </Button>
+        {/* Vista Desktop - Tabla */}
+        <div className="hidden lg:block">
+          <Card className="shadow-lg border-0">
+            <CardBody className="p-0">
+              <Table 
+                aria-label="Tabla de reparaciones"
+                classNames={{
+                  wrapper: "shadow-none",
+                  th: "bg-gradient-to-r from-gray-50 to-gray-100 text-gray-700 font-semibold border-b border-gray-200",
+                  td: "border-b border-gray-100 py-4",
+                  tr: "hover:bg-gray-50 transition-colors",
+                }}
+              >
+                <TableHeader columns={columns}>
+                  {(column) => (
+                    <TableColumn key={column.uid} align={column.uid === "acciones" ? "center" : "start"}>
+                      {column.name}
+                    </TableColumn>
                   )}
+                </TableHeader>
+                <TableBody items={repairs}>
+                  {(item) => (
+                    <TableRow key={item.id}>
+                      {(columnKey) => <TableCell>{renderCell(item, columnKey)}</TableCell>}
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+            </CardBody>
+          </Card>
+        </div>
+
+        {/* Vista Móvil - Cards */}
+        <div className="lg:hidden">
+          {loading ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {[...Array(4)].map((_, i) => (
+                <Card key={i} className="h-48">
+                  <CardBody className="p-4">
+                    <Skeleton className="h-full w-full rounded" />
+                  </CardBody>
+                </Card>
+              ))}
+            </div>
+          ) : repairs.length === 0 ? (
+            <Card className="shadow-lg border-0">
+              <CardBody className="p-8">
+                <div className="text-center">
+                  <div className="flex flex-col items-center space-y-4">
+                    <div className="p-4 bg-gradient-to-br from-orange-100 to-red-100 rounded-full">
+                      <Wrench className="w-12 h-12 text-orange-500" />
+                    </div>
+                    <div className="space-y-2">
+                      <h3 className="text-xl font-bold text-gray-900">No hay reparaciones</h3>
+                      <p className="text-gray-600 max-w-md">
+                        {busqueda || filtroEstado !== 'todos'
+                          ? 'No se encontraron reparaciones con los filtros aplicados. Prueba ajustando los criterios de búsqueda.'
+                          : 'Aún no tienes reparaciones asignadas. Las nuevas reparaciones aparecerán aquí.'}
+                      </p>
+                    </div>
+                    {!busqueda && filtroEstado === 'todos' && (
+                      <Button 
+                        color="primary" 
+                        startContent={<Plus className="w-4 h-4" />}
+                        onPress={onCreateOpen}
+                        className="bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 font-semibold shadow-lg mt-4"
+                      >
+                        Crear Primera Reparación
+                      </Button>
+                    )}
+                  </div>
                 </div>
-              </div>
-            )}
-          </CardBody>
-        </Card>
+              </CardBody>
+            </Card>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {repairs.map((repair) => (
+                <Card key={repair.id} className="shadow-lg hover:shadow-xl transition-shadow">
+                  <CardBody className="p-0">
+                    {/* Header del Card */}
+                    <div className="bg-gradient-to-r from-blue-50 to-purple-50 p-4 border-b">
+                      <div className="flex items-center gap-3 mb-2">
+                        <Avatar
+                          icon={<Wrench className="w-4 h-4" />}
+                          classNames={{
+                            base: "bg-gradient-to-br from-blue-400 to-purple-600",
+                            icon: "text-white"
+                          }}
+                        />
+                        <div className="flex-1">
+                          <h3 className="font-semibold text-gray-900 truncate text-sm md:text-base">
+                            {repair.title}
+                          </h3>
+                          <p className="text-xs text-gray-600">
+                            {formatDate(repair.created_at)}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex gap-2">
+                        <Chip
+                          color={getStatusColor(repair.status)}
+                          variant="flat"
+                          size="sm"
+                        >
+                          {getStatusLabel(repair.status)}
+                        </Chip>
+                        <Chip
+                          color={getPriorityColor(repair.priority)}
+                          variant="flat"
+                          size="sm"
+                        >
+                          {getPriorityLabel(repair.priority)}
+                        </Chip>
+                      </div>
+                    </div>
+
+                    {/* Cliente */}
+                    <div className="bg-green-50 p-3 border-b">
+                      <div className="flex items-center gap-2 mb-1">
+                        <User className="w-4 h-4 text-green-600" />
+                        <span className="text-xs font-medium text-green-800">CLIENTE</span>
+                      </div>
+                      <p className="font-semibold text-gray-900 text-sm">
+                        {getCustomerName(repair.customers, repair.unregistered_customer_name)}
+                      </p>
+                      <p className="text-xs text-gray-600">
+                        {repair.customers?.phone || repair.unregistered_customer_phone || 'Sin contacto'}
+                      </p>
+                    </div>
+
+                    {/* Dispositivo */}
+                    <div className="bg-blue-50 p-3 border-b">
+                      <div className="flex items-center gap-2 mb-1">
+                        <Smartphone className="w-4 h-4 text-blue-600" />
+                        <span className="text-xs font-medium text-blue-800">DISPOSITIVO</span>
+                      </div>
+                      <p className="font-semibold text-gray-900 text-sm">
+                        {repair.devices ? 
+                          `${repair.devices.brand} ${repair.devices.model}` : 
+                          'Dispositivo no registrado'
+                        }
+                      </p>
+                      <p className="text-xs text-gray-600">
+                        {repair.devices ? 
+                          repair.devices.device_type : 
+                          'Ver detalles para más información'
+                        }
+                      </p>
+                    </div>
+
+                    {/* Problema */}
+                    <div className="p-3 border-b">
+                      <div className="flex items-center gap-2 mb-1">
+                        <AlertTriangle className="w-4 h-4 text-orange-600" />
+                        <span className="text-xs font-medium text-orange-800">PROBLEMA</span>
+                      </div>
+                      <p className="text-sm text-gray-900 line-clamp-2">
+                        {repair.problem_description}
+                      </p>
+                    </div>
+
+                    {/* Costo y Creador */}
+                    <div className="bg-gray-50 p-3 border-b">
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <p className="text-xs font-medium text-gray-500">COSTO</p>
+                          <p className="font-bold text-lg text-green-600">
+                            {formatCurrency(repair.cost)}
+                          </p>
+                        </div>
+                        {repair.users && (
+                          <div>
+                            <p className="text-xs font-medium text-gray-500">CREADO POR</p>
+                            <p className="font-semibold text-sm text-gray-900 truncate">
+                              {repair.users.name}
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Acciones */}
+                    <div className="p-3">
+                      <div className="flex gap-2">
+                        <Button 
+                          size="sm" 
+                          variant="flat" 
+                          color="primary"
+                          className="flex-1"
+                          startContent={<Eye className="w-4 h-4" />}
+                          onPress={() => handleViewDetails(repair)}
+                        >
+                          Ver
+                        </Button>
+                        <Button 
+                          size="sm" 
+                          variant="flat" 
+                          color="warning"
+                          className="flex-1"
+                          startContent={<ClipboardList className="w-4 h-4" />}
+                          onPress={() => handleStatusChange(repair)}
+                        >
+                          Estado
+                        </Button>
+                        {repair.status === 'in_progress' && (
+                          <Button 
+                            size="sm" 
+                            variant="flat" 
+                            color="success"
+                            className="flex-1"
+                            startContent={<Check className="w-4 h-4" />}
+                            onPress={() => confirmUpdateStatus('completed')}
+                          >
+                            Completar
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                  </CardBody>
+                </Card>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Empty state para ambas vistas */}
+        {!loading && repairs.length === 0 && (
+          <div className="hidden lg:block">
+            <Card className="shadow-lg border-0">
+              <CardBody className="p-0">
+                <div className="text-center py-16">
+                  <div className="flex flex-col items-center space-y-4">
+                    <div className="p-4 bg-gradient-to-br from-orange-100 to-red-100 rounded-full">
+                      <Wrench className="w-12 h-12 text-orange-500" />
+                    </div>
+                    <div className="space-y-2">
+                      <h3 className="text-xl font-bold text-gray-900">No hay reparaciones</h3>
+                      <p className="text-gray-600 max-w-md">
+                        {busqueda || filtroEstado !== 'todos'
+                          ? 'No se encontraron reparaciones con los filtros aplicados. Prueba ajustando los criterios de búsqueda.'
+                          : 'Aún no tienes reparaciones asignadas. Las nuevas reparaciones aparecerán aquí.'}
+                      </p>
+                    </div>
+                    {!busqueda && filtroEstado === 'todos' && (
+                      <Button 
+                        color="primary" 
+                        startContent={<Plus className="w-4 h-4" />}
+                        onPress={onCreateOpen}
+                        className="bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 font-semibold shadow-lg mt-4"
+                      >
+                        Crear Primera Reparación
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              </CardBody>
+            </Card>
+          </div>
+        )}
 
         {/* Modal para crear nueva reparación */}
         <Modal 

@@ -607,54 +607,277 @@ export default function DesbloqueoPage() {
         {/* Tabla de desbloqueos */}
         <Card>
           <CardBody className="p-0">
-            <Table
-              aria-label="Tabla de desbloqueos"
-              classNames={{
-                wrapper: "min-h-[400px]",
-                th: "bg-gray-50 text-gray-700 font-semibold",
-                td: "py-4"
-              }}
-            >
-              <TableHeader>
-                <TableColumn>TIPO/DISPOSITIVO</TableColumn>
-                <TableColumn>CLIENTE</TableColumn>
-                <TableColumn>IDENTIFICADORES</TableColumn>
-                <TableColumn>ESTADO</TableColumn>
-                <TableColumn>COSTO</TableColumn>
-                <TableColumn>FECHA</TableColumn>
-                <TableColumn>ACCIONES</TableColumn>
-              </TableHeader>
-              <TableBody 
-                emptyContent="No hay desbloqueos registrados"
-                isLoading={loading}
-                loadingContent={<Skeleton className="w-full h-12" />}
+            {/* Vista Desktop - Tabla */}
+            <div className="hidden lg:block">
+              <Table
+                aria-label="Tabla de desbloqueos"
+                classNames={{
+                  wrapper: "min-h-[400px]",
+                  th: "bg-gray-50 text-gray-700 font-semibold",
+                  td: "py-4"
+                }}
               >
-                {unlocks.map((unlock) => (
-                  <TableRow key={unlock.id}>
-                    <TableCell>
-                      <div className="flex items-center gap-3">
-                        <Avatar
-                          icon={getUnlockTypeIcon(unlock.unlock_type)}
-                          classNames={{
-                            base: "bg-gradient-to-br from-cyan-400 to-blue-600",
-                            icon: "text-white"
-                          }}
-                          size="sm"
-                        />
-                        <div>
-                          <p className={`font-semibold ${textColors.primary}`}>
-                            {getUnlockTypeLabel(unlock.unlock_type)}
-                          </p>
-                          <p className={`text-sm ${textColors.secondary}`}>
-                            {unlock.brand} {unlock.model}
-                          </p>
+                <TableHeader>
+                  <TableColumn>TIPO/DISPOSITIVO</TableColumn>
+                  <TableColumn>CLIENTE</TableColumn>
+                  <TableColumn>IDENTIFICADORES</TableColumn>
+                  <TableColumn>ESTADO</TableColumn>
+                  <TableColumn>COSTO</TableColumn>
+                  <TableColumn>FECHA</TableColumn>
+                  <TableColumn>ACCIONES</TableColumn>
+                </TableHeader>
+                <TableBody 
+                  emptyContent="No hay desbloqueos registrados"
+                  isLoading={loading}
+                  loadingContent={<Skeleton className="w-full h-12" />}
+                >
+                  {unlocks.map((unlock) => (
+                    <TableRow key={unlock.id}>
+                      <TableCell>
+                        <div className="flex items-center gap-3">
+                          <Avatar
+                            icon={getUnlockTypeIcon(unlock.unlock_type)}
+                            classNames={{
+                              base: "bg-gradient-to-br from-cyan-400 to-blue-600",
+                              icon: "text-white"
+                            }}
+                            size="sm"
+                          />
+                          <div>
+                            <p className={`font-semibold ${textColors.primary}`}>
+                              {getUnlockTypeLabel(unlock.unlock_type)}
+                            </p>
+                            <p className={`text-sm ${textColors.secondary}`}>
+                              {unlock.brand} {unlock.model}
+                            </p>
+                          </div>
                         </div>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-2">
-                        <User className="w-4 h-4 text-gray-400" />
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          <User className="w-4 h-4 text-gray-400" />
+                          <div>
+                            <p className={`text-sm font-medium ${textColors.primary}`}>
+                              {getCustomerName(unlock.customers)}
+                            </p>
+                            {unlock.customers?.phone && (
+                              <p className={`text-xs ${textColors.muted}`}>
+                                {unlock.customers.phone}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="space-y-1">
+                          {unlock.imei && (
+                            <div className="flex items-center gap-2">
+                              <Smartphone className="w-3 h-3 text-gray-400" />
+                              <span className={`text-xs ${textColors.secondary}`}>
+                                IMEI: {unlock.imei}
+                              </span>
+                            </div>
+                          )}
+                          {unlock.serial_number && (
+                            <div className="flex items-center gap-2">
+                              <Phone className="w-3 h-3 text-gray-400" />
+                              <span className={`text-xs ${textColors.secondary}`}>
+                                SN: {unlock.serial_number}
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <Chip
+                          color={getStatusInfo(unlock.status).color as any}
+                          variant="flat"
+                          startContent={React.createElement(getStatusInfo(unlock.status).icon, { className: "w-4 h-4" })}
+                        >
+                          {getStatusInfo(unlock.status).label}
+                        </Chip>
+                      </TableCell>
+                      <TableCell>
+                        <span className="font-semibold text-green-600">
+                          {formatCurrency(unlock.cost)}
+                        </span>
+                      </TableCell>
+                      <TableCell>
                         <div>
+                          <p className={`text-sm ${textColors.primary}`}>
+                            {formatDate(unlock.created_at)}
+                          </p>
+                          {unlock.completion_time && (
+                            <p className={`text-xs ${textColors.muted}`}>
+                              Completado: {formatDate(unlock.completion_time)}
+                            </p>
+                          )}
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="grid grid-cols-3 gap-1 w-fit">
+                          <Tooltip 
+                            content="Ver detalles"
+                            classNames={{
+                              content: "bg-gray-900 text-white"
+                            }}
+                          >
+                            <Button
+                              isIconOnly
+                              size="sm"
+                              variant="flat"
+                              color="primary"
+                              onPress={() => handleViewDetails(unlock)}
+                            >
+                              <Eye className="w-4 h-4" />
+                            </Button>
+                          </Tooltip>
+                          
+                          <Tooltip 
+                            content="Cambiar estado"
+                            classNames={{
+                              content: "bg-gray-900 text-white"
+                            }}
+                          >
+                            <Button
+                              isIconOnly
+                              size="sm"
+                              variant="flat"
+                              color="warning"
+                              onPress={() => handleStatusChange(unlock)}
+                            >
+                              <Edit className="w-4 h-4" />
+                            </Button>
+                          </Tooltip>
+
+                          {unlock.status === 'pending' ? (
+                            <Tooltip 
+                              content="Marcar como completado"
+                              classNames={{
+                                content: "bg-gray-900 text-white"
+                              }}
+                            >
+                              <Button
+                                isIconOnly
+                                size="sm"
+                                variant="flat"
+                                color="success"
+                                onPress={() => handleCompleteUnlock(unlock.id)}
+                              >
+                                <Check className="w-4 h-4" />
+                              </Button>
+                            </Tooltip>
+                          ) : (
+                            <Tooltip 
+                              content="Eliminar"
+                              classNames={{
+                                content: "bg-gray-900 text-white"
+                              }}
+                            >
+                              <Button
+                                isIconOnly
+                                size="sm"
+                                variant="flat"
+                                color="danger"
+                                onPress={() => handleDeleteUnlock(unlock)}
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            </Tooltip>
+                          )}
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+
+            {/* Vista Móvil - Cards */}
+            <div className="lg:hidden">
+              {loading ? (
+                <div className="space-y-4 p-4">
+                  {[...Array(5)].map((_, i) => (
+                    <Card key={i} className="shadow-sm">
+                      <CardBody className="p-4">
+                        <div className="space-y-3">
+                          <div className="flex items-center gap-3">
+                            <Skeleton className="w-12 h-12 rounded-full" />
+                            <div className="space-y-2 flex-1">
+                              <Skeleton className="h-4 w-32 rounded" />
+                              <Skeleton className="h-3 w-24 rounded" />
+                            </div>
+                          </div>
+                          <Skeleton className="h-16 w-full rounded" />
+                        </div>
+                      </CardBody>
+                    </Card>
+                  ))}
+                </div>
+              ) : unlocks.length === 0 ? (
+                <div className="text-center py-12 px-4">
+                  <Unlock className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                  <h3 className={`text-lg font-semibold ${textColors.primary} mb-2`}>
+                    No hay desbloqueos
+                  </h3>
+                  <p className={`${textColors.muted} mb-6`}>
+                    No se encontraron servicios de desbloqueo con los filtros aplicados
+                  </p>
+                  <Button color="primary" startContent={<Plus className="w-4 h-4" />} onPress={onCreateOpen}>
+                    Nuevo Desbloqueo
+                  </Button>
+                </div>
+              ) : (
+                <div className="space-y-4 p-4">
+                  {unlocks.map((unlock) => (
+                    <Card key={unlock.id} className="shadow-sm hover:shadow-md transition-shadow">
+                      <CardBody className="p-4">
+                        {/* Header del desbloqueo */}
+                        <div className="flex items-start justify-between mb-4">
+                          <div className="flex items-center gap-3">
+                            <Avatar
+                              icon={getUnlockTypeIcon(unlock.unlock_type)}
+                              classNames={{
+                                base: "bg-gradient-to-br from-cyan-400 to-blue-600",
+                                icon: "text-white"
+                              }}
+                              size="md"
+                            />
+                            <div>
+                              <h4 className={`font-semibold ${textColors.primary}`}>
+                                {getUnlockTypeLabel(unlock.unlock_type)}
+                              </h4>
+                              <p className={`text-sm ${textColors.secondary}`}>
+                                {unlock.brand} {unlock.model}
+                              </p>
+                              <p className={`text-xs ${textColors.muted}`}>
+                                {formatDate(unlock.created_at)}
+                              </p>
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <p className="text-lg font-bold text-green-600 mb-1">
+                              {formatCurrency(unlock.cost)}
+                            </p>
+                            <Chip
+                              color={getStatusInfo(unlock.status).color as any}
+                              variant="flat"
+                              size="sm"
+                              startContent={React.createElement(getStatusInfo(unlock.status).icon, { className: "w-3 h-3" })}
+                            >
+                              {getStatusInfo(unlock.status).label}
+                            </Chip>
+                          </div>
+                        </div>
+
+                        {/* Información del cliente */}
+                        <div className="bg-gray-50 rounded-lg p-3 mb-4">
+                          <div className="flex items-center gap-2 mb-2">
+                            <User className="w-4 h-4 text-gray-600" />
+                            <p className={`text-xs font-medium ${textColors.tertiary} uppercase tracking-wide`}>
+                              Cliente
+                            </p>
+                          </div>
                           <p className={`text-sm font-medium ${textColors.primary}`}>
                             {getCustomerName(unlock.customers)}
                           </p>
@@ -664,131 +887,97 @@ export default function DesbloqueoPage() {
                             </p>
                           )}
                         </div>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="space-y-1">
-                        {unlock.imei && (
-                          <div className="flex items-center gap-2">
-                            <Smartphone className="w-3 h-3 text-gray-400" />
-                            <span className={`text-xs ${textColors.secondary}`}>
-                              IMEI: {unlock.imei}
-                            </span>
-                          </div>
-                        )}
-                        {unlock.serial_number && (
-                          <div className="flex items-center gap-2">
-                            <Phone className="w-3 h-3 text-gray-400" />
-                            <span className={`text-xs ${textColors.secondary}`}>
-                              SN: {unlock.serial_number}
-                            </span>
-                          </div>
-                        )}
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <Chip
-                        color={getStatusInfo(unlock.status).color as any}
-                        variant="flat"
-                        startContent={React.createElement(getStatusInfo(unlock.status).icon, { className: "w-4 h-4" })}
-                      >
-                        {getStatusInfo(unlock.status).label}
-                      </Chip>
-                    </TableCell>
-                    <TableCell>
-                      <span className="font-semibold text-green-600">
-                        {formatCurrency(unlock.cost)}
-                      </span>
-                    </TableCell>
-                    <TableCell>
-                      <div>
-                        <p className={`text-sm ${textColors.primary}`}>
-                          {formatDate(unlock.created_at)}
-                        </p>
-                        {unlock.completion_time && (
-                          <p className={`text-xs ${textColors.muted}`}>
-                            Completado: {formatDate(unlock.completion_time)}
-                          </p>
-                        )}
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="grid grid-cols-3 gap-1 w-fit">
-                        <Tooltip 
-                          content="Ver detalles"
-                          classNames={{
-                            content: "bg-gray-900 text-white"
-                          }}
-                        >
-                          <Button
-                            isIconOnly
-                            size="sm"
-                            variant="flat"
-                            color="primary"
-                            onPress={() => handleViewDetails(unlock)}
-                          >
-                            <Eye className="w-4 h-4" />
-                          </Button>
-                        </Tooltip>
-                        
-                        <Tooltip 
-                          content="Cambiar estado"
-                          classNames={{
-                            content: "bg-gray-900 text-white"
-                          }}
-                        >
-                          <Button
-                            isIconOnly
-                            size="sm"
-                            variant="flat"
-                            color="warning"
-                            onPress={() => handleStatusChange(unlock)}
-                          >
-                            <Edit className="w-4 h-4" />
-                          </Button>
-                        </Tooltip>
 
-                        {unlock.status === 'pending' ? (
-                          <Tooltip 
-                            content="Marcar como completado"
-                            classNames={{
-                              content: "bg-gray-900 text-white"
-                            }}
-                          >
-                            <Button
-                              isIconOnly
-                              size="sm"
-                              variant="flat"
-                              color="success"
-                              onPress={() => handleCompleteUnlock(unlock.id)}
-                            >
-                              <Check className="w-4 h-4" />
-                            </Button>
-                          </Tooltip>
-                        ) : (
-                          <Tooltip 
-                            content="Eliminar"
-                            classNames={{
-                              content: "bg-gray-900 text-white"
-                            }}
-                          >
-                            <Button
-                              isIconOnly
-                              size="sm"
-                              variant="flat"
-                              color="danger"
-                              onPress={() => handleDeleteUnlock(unlock)}
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </Button>
-                          </Tooltip>
+                        {/* Identificadores */}
+                        {(unlock.imei || unlock.serial_number) && (
+                          <div className="bg-blue-50 rounded-lg p-3 mb-4">
+                            <p className={`text-xs font-medium ${textColors.tertiary} uppercase tracking-wide mb-2`}>
+                              Identificadores
+                            </p>
+                            <div className="space-y-2">
+                              {unlock.imei && (
+                                <div className="flex items-center gap-2">
+                                  <Smartphone className="w-3 h-3 text-gray-600" />
+                                  <span className={`text-sm ${textColors.primary}`}>
+                                    IMEI: {unlock.imei}
+                                  </span>
+                                </div>
+                              )}
+                              {unlock.serial_number && (
+                                <div className="flex items-center gap-2">
+                                  <Phone className="w-3 h-3 text-gray-600" />
+                                  <span className={`text-sm ${textColors.primary}`}>
+                                    Serial: {unlock.serial_number}
+                                  </span>
+                                </div>
+                              )}
+                            </div>
+                          </div>
                         )}
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+
+                        {/* Información adicional */}
+                        {unlock.completion_time && (
+                          <div className="mb-4">
+                            <p className={`text-xs font-medium ${textColors.tertiary} uppercase tracking-wide mb-1`}>
+                              Fecha de Completado
+                            </p>
+                            <p className={`text-sm ${textColors.primary}`}>
+                              {formatDate(unlock.completion_time)}
+                            </p>
+                          </div>
+                        )}
+
+                        {/* Acciones */}
+                        <div className="flex gap-2">
+                          <Button 
+                            variant="flat" 
+                            size="sm" 
+                            startContent={<Eye className="w-4 h-4" />}
+                            onPress={() => handleViewDetails(unlock)}
+                            className="flex-1"
+                          >
+                            Ver
+                          </Button>
+                          <Button 
+                            variant="flat" 
+                            size="sm" 
+                            color="warning"
+                            startContent={<Edit className="w-4 h-4" />}
+                            onPress={() => handleStatusChange(unlock)}
+                            className="flex-1"
+                          >
+                            Estado
+                          </Button>
+                          {unlock.status === 'pending' ? (
+                            <Button 
+                              variant="flat" 
+                              size="sm" 
+                              color="success"
+                              startContent={<Check className="w-4 h-4" />}
+                              onPress={() => handleCompleteUnlock(unlock.id)}
+                              className="flex-1"
+                            >
+                              Completar
+                            </Button>
+                          ) : (
+                            <Button 
+                              variant="flat" 
+                              size="sm" 
+                              color="danger"
+                              startContent={<Trash2 className="w-4 h-4" />}
+                              onPress={() => handleDeleteUnlock(unlock)}
+                              className="flex-1"
+                            >
+                              Eliminar
+                            </Button>
+                          )}
+                        </div>
+                      </CardBody>
+                    </Card>
+                  ))}
+                </div>
+              )}
+            </div>
           </CardBody>
         </Card>
 

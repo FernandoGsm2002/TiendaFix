@@ -8,7 +8,7 @@ import LanguageCurrencySelector from '@/app/components/LanguageCurrencySelector'
 import { Card, CardBody, CardHeader, Skeleton, Chip, Avatar } from '@heroui/react'
 import { textColors } from '@/lib/utils/colors'
 import { 
-  Users, ShoppingCart, Wrench, DollarSign, Activity
+  Users, ShoppingCart, Wrench, DollarSign, Activity, AlertTriangle
 } from 'lucide-react'
 import { ApexOptions } from 'apexcharts'
 
@@ -78,14 +78,31 @@ export default function DashboardPage() {
   if (loading) {
     return (
       <DashboardLayout>
-        <div className="space-y-6">
-          <div className="flex justify-between items-center"><Skeleton className="h-8 w-48 rounded-lg" /><Skeleton className="h-12 w-32 rounded-lg" /></div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[...Array(4)].map((_, i) => <Card key={i}><CardBody><Skeleton className="h-24 w-full rounded" /></CardBody></Card>)}
+        <div className="space-y-4 md:space-y-6">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <Skeleton className="h-6 md:h-8 w-48 rounded-lg" />
+            <Skeleton className="h-10 md:h-12 w-32 rounded-lg" />
           </div>
-          <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-            <Card className="lg:col-span-3"><CardBody><Skeleton className="h-64 w-full rounded" /></CardBody></Card>
-            <Card className="lg:col-span-2"><CardBody><Skeleton className="h-64 w-full rounded" /></CardBody></Card>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+            {[...Array(4)].map((_, i) => (
+              <Card key={i}>
+                <CardBody className="p-4 md:p-6">
+                  <Skeleton className="h-20 md:h-24 w-full rounded" />
+                </CardBody>
+              </Card>
+            ))}
+          </div>
+          <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 md:gap-6">
+            <Card className="lg:col-span-3">
+              <CardBody className="p-4 md:p-6">
+                <Skeleton className="h-48 md:h-64 w-full rounded" />
+              </CardBody>
+            </Card>
+            <Card className="lg:col-span-2">
+              <CardBody className="p-4 md:p-6">
+                <Skeleton className="h-48 md:h-64 w-full rounded" />
+              </CardBody>
+            </Card>
           </div>
         </div>
       </DashboardLayout>
@@ -93,7 +110,16 @@ export default function DashboardPage() {
   }
 
   if (error || !data) {
-    return <DashboardLayout><div>Error al cargar datos...</div></DashboardLayout>
+    return (
+      <DashboardLayout>
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <AlertTriangle className="h-12 w-12 text-red-500 mx-auto mb-4" />
+            <p className="text-gray-600">Error al cargar datos del dashboard</p>
+          </div>
+        </div>
+      </DashboardLayout>
+    )
   }
   
   const { stats, chartData, recentActivity } = data
@@ -198,72 +224,155 @@ export default function DashboardPage() {
   
   const getActivityIcon = (type: string) => {
     switch(type) {
-      case 'venta': return <ShoppingCart className="w-5 h-5 text-purple-500" />;
-      case 'reparación': return <Wrench className="w-5 h-5 text-orange-500" />;
-      default: return <Activity className="w-5 h-5 text-gray-500" />;
+      case 'venta': return ShoppingCart;
+      case 'reparación': return Wrench;
+      default: return Activity;
+    }
+  }
+
+  const getActivityColor = (type: string) => {
+    switch(type) {
+      case 'venta': return 'purple';
+      case 'reparación': return 'orange';
+      default: return 'gray';
     }
   }
 
   return (
     <DashboardLayout>
-      <div className="space-y-8">
-        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
-          <div className="space-y-2">
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Dashboard TiendaFix</h1>
-            <p className={`${textColors.secondary} text-lg`}>Resumen de actividad y rendimiento.</p>
+      <div className="space-y-4 md:space-y-6">
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div>
+            <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-gray-900">Dashboard Administrativo</h1>
+            <p className={`text-sm md:text-base ${textColors.secondary} mt-1`}>Resumen completo de tu negocio</p>
           </div>
-          <Card className="bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200"><CardBody className="p-4"><LanguageCurrencySelector compact={true} /></CardBody></Card>
+          <div className="flex gap-2">
+            <LanguageCurrencySelector />
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
-          {statsCards.map((card, index) => (
-            <Card key={index} className={`border-0 shadow-lg hover:shadow-xl transition-shadow duration-300 bg-gradient-to-br ${card.bgGradient}`}>
-              <CardBody className="p-6 text-white">
-                <div className="flex items-start justify-between">
-                  <div className="space-y-2">
-                    <p className="text-sm font-medium uppercase tracking-wider opacity-80">{card.title}</p>
-                    <p className="text-4xl font-bold">{card.value}</p>
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 md:gap-6">
+          {statsCards.map((stat, index) => {
+            const Icon = stat.icon
+            return (
+              <Card key={index} className="shadow-lg border-0 bg-white/80 backdrop-blur-sm hover:shadow-xl transition-all duration-300">
+                <CardBody className="p-4 md:p-6">
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1 min-w-0">
+                      <p className={`text-xs md:text-sm font-medium ${textColors.tertiary} uppercase tracking-wide truncate`}>
+                        {stat.title}
+                      </p>
+                      <p className="text-lg md:text-xl lg:text-2xl font-bold text-gray-900 mt-1 truncate">
+                        {stat.value}
+                      </p>
+                      <p className={`text-xs md:text-sm ${textColors.muted} mt-2 line-clamp-2`}>
+                        {stat.description}
+                      </p>
+                    </div>
+                    <div className={`p-2 md:p-3 rounded-xl bg-gradient-to-br ${stat.bgGradient} shadow-lg flex-shrink-0 ml-3`}>
+                      <Icon className="h-5 w-5 md:h-6 md:w-6 text-white" />
+                    </div>
                   </div>
-                  <div className="p-3 bg-white/20 rounded-xl"><card.icon className="w-6 h-6" /></div>
-                  </div>
-                <p className="text-xs opacity-70 mt-4">{card.description}</p>
                 </CardBody>
               </Card>
-          ))}
+            )
+          })}
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-          <Card className="lg:col-span-3">
-            <CardHeader><h3 className={`text-lg font-semibold ${textColors.primary}`}>Ingresos de la Última Semana</h3></CardHeader>
-            <CardBody>
-              <div className="h-72">
-                <Chart options={salesChartOptions} series={salesChartSeries} type="area" height="100%" />
-              </div>
-            </CardBody>
-          </Card>
-          <Card className="lg:col-span-2">
-            <CardHeader><h3 className={`text-lg font-semibold ${textColors.primary}`}>Estado de Reparaciones</h3></CardHeader>
-            <CardBody>
-              <div className="h-72">
-                <Chart options={repairsChartOptions} series={repairsChartSeries} type="donut" height="100%" />
-              </div>
-            </CardBody>
-          </Card>
-        </div>
-
-        <Card>
-          <CardHeader><h3 className={`text-lg font-semibold ${textColors.primary}`}>Actividad Reciente</h3></CardHeader>
-          <CardBody className="space-y-4">
-            {recentActivity.length > 0 ? recentActivity.map((act, i) => (
-              <div key={i} className="flex items-center gap-4 p-3 hover:bg-gray-50 rounded-lg">
-                <Avatar icon={getActivityIcon(act.type)} size="md" />
-                <div className="flex-1">
-                  <p className={`font-medium ${textColors.primary}`}>{act.title}</p>
-                  <p className={`text-sm ${textColors.secondary}`}>{act.customer || 'Sistema'}</p>
+        {/* Charts and Activity */}
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 md:gap-6">
+          {/* Sales Chart */}
+          <Card className="lg:col-span-3 shadow-lg border-0 bg-white/80 backdrop-blur-sm">
+            <CardHeader className="pb-2 md:pb-4">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+                <div>
+                  <h3 className="text-base md:text-lg font-bold text-gray-900">Ingresos de los Últimos 7 Días</h3>
+                  <p className={`text-xs md:text-sm ${textColors.secondary}`}>Evolución de ventas diarias</p>
                 </div>
-                <p className={`text-sm ${textColors.tertiary}`}>{timeAgo(act.time)}</p>
+                <Chip color="primary" variant="flat" size="sm">
+                  {currencyCode}
+                </Chip>
               </div>
-            )) : <p className="text-center text-gray-500 py-4">No hay actividad reciente.</p>}
+            </CardHeader>
+            <CardBody className="pt-0 px-3 md:px-6 pb-4 md:pb-6">
+              <div className="h-48 md:h-64">
+                <Chart
+                  options={salesChartOptions}
+                  series={salesChartSeries}
+                  type="area"
+                  height="100%"
+                />
+              </div>
+            </CardBody>
+          </Card>
+
+          {/* Repairs Status Chart */}
+          <Card className="lg:col-span-2 shadow-lg border-0 bg-white/80 backdrop-blur-sm">
+            <CardHeader className="pb-2 md:pb-4">
+              <div>
+                <h3 className="text-base md:text-lg font-bold text-gray-900">Estado de Reparaciones</h3>
+                <p className={`text-xs md:text-sm ${textColors.secondary}`}>Distribución actual</p>
+              </div>
+            </CardHeader>
+            <CardBody className="pt-0 px-3 md:px-6 pb-4 md:pb-6">
+              <div className="h-48 md:h-64">
+                <Chart
+                  options={repairsChartOptions}
+                  series={repairsChartSeries}
+                  type="donut"
+                  height="100%"
+                />
+              </div>
+            </CardBody>
+          </Card>
+        </div>
+
+        {/* Recent Activity */}
+        <Card className="shadow-lg border-0 bg-white/80 backdrop-blur-sm">
+          <CardHeader className="pb-2 md:pb-4">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+              <div>
+                <h3 className="text-base md:text-lg font-bold text-gray-900">Actividad Reciente</h3>
+                <p className={`text-xs md:text-sm ${textColors.secondary}`}>Últimas acciones en el sistema</p>
+              </div>
+              <Chip color="success" variant="flat" size="sm">
+                {recentActivity.length} eventos
+              </Chip>
+            </div>
+          </CardHeader>
+          <CardBody className="pt-0 px-3 md:px-6 pb-4 md:pb-6">
+            {recentActivity.length > 0 ? (
+              <div className="space-y-3 md:space-y-4">
+                {recentActivity.slice(0, 8).map((activity, index) => {
+                  const Icon = getActivityIcon(activity.type)
+                  const color = getActivityColor(activity.type)
+                  
+                  return (
+                    <div key={index} className="flex items-center space-x-3 md:space-x-4 p-3 md:p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors">
+                      <div className={`p-2 rounded-lg bg-${color}-100 flex-shrink-0`}>
+                        <Icon className={`h-4 w-4 md:h-5 md:w-5 text-${color}-600`} />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm md:text-base font-medium text-gray-900 truncate">{activity.title}</p>
+                        {activity.customer && (
+                          <p className={`text-xs md:text-sm ${textColors.muted} truncate`}>Cliente: {activity.customer}</p>
+                        )}
+                      </div>
+                      <p className={`text-xs md:text-sm ${textColors.tertiary} flex-shrink-0`}>
+                        {timeAgo(activity.time)}
+                      </p>
+                    </div>
+                  )
+                })}
+              </div>
+            ) : (
+              <div className="text-center py-8 md:py-12">
+                <Activity className="h-8 w-8 md:h-12 md:w-12 text-gray-400 mx-auto mb-3 md:mb-4" />
+                <p className={`text-sm md:text-base ${textColors.secondary}`}>No hay actividad reciente</p>
+              </div>
+            )}
           </CardBody>
         </Card>
       </div>

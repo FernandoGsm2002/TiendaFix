@@ -46,17 +46,18 @@ export default function Header() {
   }
 
   return (
-    <header className="bg-white border-b border-gray-200 px-6 py-4">
-      <div className="flex items-center justify-between space-x-4">
+    <header className="bg-white border-b border-gray-200 px-3 md:px-6 py-3 md:py-4 rounded-lg shadow-sm">
+      <div className="flex items-center justify-between space-x-2 md:space-x-4">
         <div className="flex-1 min-w-0">
-          <h1 className="text-2xl font-bold text-gray-900 truncate">
+          <h1 className="text-lg md:text-2xl font-bold text-gray-900 truncate">
             {userProfile?.organization_name || 'Mi Tienda'}
           </h1>
-          <p className={`text-sm ${textColors.secondary}`}>Panel de administración</p>
+          <p className={`text-xs md:text-sm ${textColors.secondary} hidden sm:block`}>Panel de administración</p>
         </div>
 
-        <div className="flex items-center space-x-4">
-          <div className="relative hidden md:block">
+        <div className="flex items-center space-x-2 md:space-x-4">
+          {/* Búsqueda - Solo visible en desktop */}
+          <div className="relative hidden lg:block">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
             <input
               type="text"
@@ -65,6 +66,7 @@ export default function Header() {
             />
           </div>
 
+          {/* Notificaciones */}
           <div className="relative">
             <button 
               onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
@@ -81,11 +83,11 @@ export default function Header() {
               )}
             </button>
             {isNotificationsOpen && (
-              <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
+              <div className="absolute right-0 mt-2 w-72 md:w-80 bg-white rounded-lg shadow-lg border border-gray-200 z-50 max-h-96 overflow-hidden">
                 <div className="px-4 py-3 border-b border-gray-100">
                   <p className="text-sm font-semibold text-gray-900">Notificaciones</p>
                 </div>
-                <div className="py-1 max-h-96 overflow-y-auto">
+                <div className="py-1 max-h-80 overflow-y-auto">
                   {loading ? (
                     <p className={`text-sm ${textColors.secondary} px-4 py-3`}>Cargando...</p>
                   ) : notifications && notifications.totalNotifications > 0 ? (
@@ -100,10 +102,10 @@ export default function Header() {
                               onClick={() => setIsNotificationsOpen(false)}
                               className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50"
                             >
-                              <Package className="w-4 h-4 mr-3 text-amber-500" />
-                              <div>
-                                <p className="font-medium">{item.name}</p>
-                                <p className={`text-xs ${textColors.muted}`}>Stock actual: {item.stock}</p>
+                              <Package className="w-4 h-4 mr-3 text-amber-500 flex-shrink-0" />
+                              <div className="min-w-0 flex-1">
+                                <p className="font-medium truncate">{item.name}</p>
+                                <p className={`text-xs ${textColors.muted}`}>Stock: {item.stock}</p>
                               </div>
                             </Link>
                           ))}
@@ -119,10 +121,10 @@ export default function Header() {
                               onClick={() => setIsNotificationsOpen(false)}
                               className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50"
                             >
-                              <Wrench className="w-4 h-4 mr-3 text-blue-500" />
-                              <div>
+                              <Wrench className="w-4 h-4 mr-3 text-blue-500 flex-shrink-0" />
+                              <div className="min-w-0 flex-1">
                                 <p className="font-medium">Reparación #{item.id}</p>
-                                <p className={`text-xs ${textColors.muted}`}>S/N: {item.serial_number}</p>
+                                <p className={`text-xs ${textColors.muted} truncate`}>S/N: {item.serial_number}</p>
                               </div>
                             </Link>
                           ))}
@@ -138,10 +140,10 @@ export default function Header() {
                                onClick={() => setIsNotificationsOpen(false)}
                                className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50"
                              >
-                               <Unlock className="w-4 h-4 mr-3 text-purple-500" />
-                               <div>
+                               <Unlock className="w-4 h-4 mr-3 text-purple-500 flex-shrink-0" />
+                               <div className="min-w-0 flex-1">
                                  <p className="font-medium">Desbloqueo #{item.id}</p>
-                                 <p className={`text-xs ${textColors.muted}`}>IMEI: {item.imei}</p>
+                                 <p className={`text-xs ${textColors.muted} truncate`}>IMEI: {item.imei}</p>
                                </div>
                              </Link>
                            ))}
@@ -161,10 +163,11 @@ export default function Header() {
             )}
           </div>
 
+          {/* Perfil de usuario */}
           <div className="relative">
             <button
               onClick={() => setIsProfileOpen(!isProfileOpen)}
-              className="flex items-center space-x-3 p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              className="flex items-center space-x-2 md:space-x-3 p-2 hover:bg-gray-100 rounded-lg transition-colors"
             >
               <div className="w-8 h-8 bg-indigo-600 rounded-full flex items-center justify-center">
                 <User className="w-4 h-4 text-white" />
@@ -182,10 +185,10 @@ export default function Header() {
             {isProfileOpen && (
               <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50">
                 <div className="px-4 py-2 border-b border-gray-100">
-                  <p className="text-sm font-medium text-gray-900">
+                  <p className="text-sm font-medium text-gray-900 truncate">
                     {userProfile?.name}
                   </p>
-                  <p className={`text-xs ${textColors.tertiary}`}>{user?.email}</p>
+                  <p className={`text-xs ${textColors.tertiary} truncate`}>{user?.email}</p>
                 </div>
                 
                 <button className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center">
