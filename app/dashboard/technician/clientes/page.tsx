@@ -554,7 +554,20 @@ export default function ClientesPage() {
         )}
 
         {/* Modal de ver detalles - Copia exacta del owner */}
-        <Modal isOpen={isDetailOpen} onClose={onDetailClose} size="5xl" scrollBehavior="inside">
+        <Modal 
+          isOpen={isDetailOpen} 
+          onClose={onDetailClose} 
+          size="4xl" 
+          scrollBehavior="inside"
+          classNames={{
+            wrapper: "z-[1000]",
+            backdrop: "z-[999]",
+            base: "max-h-[95vh] my-2 mx-2 sm:mx-6",
+            body: "max-h-[80vh] overflow-y-auto py-4",
+            header: "border-b border-gray-200 pb-4",
+            footer: "border-t border-gray-200 pt-4"
+          }}
+        >
           <ModalContent>
             <ModalHeader className="border-b">
               <div className="flex items-center gap-3">

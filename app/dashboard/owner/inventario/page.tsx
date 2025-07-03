@@ -880,7 +880,20 @@ export default function InventarioPage() {
         )}
 
         {/* Modal de nuevo producto */}
-        <Modal isOpen={isCreateOpen} onClose={onCreateClose} size="4xl">
+        <Modal 
+          isOpen={isCreateOpen} 
+          onClose={onCreateClose} 
+          size="3xl"
+          scrollBehavior="inside"
+          classNames={{
+            wrapper: "z-[1000]",
+            backdrop: "z-[999]",
+            base: "max-h-[95vh] my-2 mx-2 sm:mx-6",
+            body: "max-h-[75vh] overflow-y-auto py-4",
+            header: "border-b border-gray-200 pb-4",
+            footer: "border-t border-gray-200 pt-4"
+          }}
+        >
           <ModalContent>
             <form onSubmit={handleCreateProduct}>
               <ModalHeader>
@@ -1075,7 +1088,20 @@ export default function InventarioPage() {
         </Modal>
 
         {/* Modal de edición del producto */}
-        <Modal isOpen={isEditOpen} onClose={onEditClose} size="4xl">
+        <Modal 
+          isOpen={isEditOpen} 
+          onClose={onEditClose} 
+          size="3xl"
+          scrollBehavior="inside"
+          classNames={{
+            wrapper: "z-[1000]",
+            backdrop: "z-[999]",
+            base: "max-h-[95vh] my-2 mx-2 sm:mx-6",
+            body: "max-h-[75vh] overflow-y-auto py-4",
+            header: "border-b border-gray-200 pb-4",
+            footer: "border-t border-gray-200 pt-4"
+          }}
+        >
           <ModalContent>
             <form id="edit-item-form" onSubmit={handleUpdateItem}>
               <ModalHeader>

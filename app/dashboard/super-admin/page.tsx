@@ -429,7 +429,20 @@ export default function SuperAdminDashboard() {
       </div>
 
       {/* Modal de detalles de solicitud */}
-      <Modal isOpen={isOpen} onOpenChange={onOpenChange} size="2xl">
+      <Modal 
+        isOpen={isOpen} 
+        onOpenChange={onOpenChange} 
+        size="2xl"
+        scrollBehavior="inside"
+        classNames={{
+          wrapper: "z-[1000]",
+          backdrop: "z-[999]",
+          base: "max-h-[95vh] my-2 mx-2 sm:mx-6",
+          body: "max-h-[75vh] overflow-y-auto py-4",
+          header: "border-b border-gray-200 pb-4",
+          footer: "border-t border-gray-200 pt-4"
+        }}
+      >
         <ModalContent className="bg-white">
           {(onClose) => (
             <>
@@ -525,7 +538,20 @@ export default function SuperAdminDashboard() {
       </Modal>
 
       {/* Modal de datos de acceso después de aprobación */}
-      <Modal isOpen={isApprovedOpen} onOpenChange={onApprovedOpenChange} size="2xl">
+      <Modal 
+        isOpen={isApprovedOpen} 
+        onOpenChange={onApprovedOpenChange} 
+        size="2xl"
+        scrollBehavior="inside"
+        classNames={{
+          wrapper: "z-[1000]",
+          backdrop: "z-[999]",
+          base: "max-h-[95vh] my-2 mx-2 sm:mx-6",
+          body: "max-h-[80vh] overflow-y-auto py-4",
+          header: "border-b border-gray-200 pb-4",
+          footer: "border-t border-gray-200 pt-4"
+        }}
+      >
         <ModalContent className="bg-white">
           {(onClose) => (
             <>
