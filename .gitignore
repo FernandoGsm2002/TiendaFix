@@ -22,6 +22,39 @@
 # Local .env files
 .env*.local
 .env
+.env.production
+.env.development
+
+# Archivos de configuración sensibles
+config.json
+secrets.json
+credentials.json
+*.key
+*.pem
+*.p12
+*.pfx
+
+# Archivos de base de datos locales
+*.db
+*.sqlite
+*.sqlite3
+
+# Logs sensibles
+*.log
+logs/
+*.log.*
+
+# Archivos de backup
+*.backup
+*.bak
+*.tmp
+
+# Archivos del sistema
+Thumbs.db
+*.DS_Store
+*~
+.*.swp
+.*.swo
 
 # Vercel
 .vercel
