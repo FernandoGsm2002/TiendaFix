@@ -40,7 +40,7 @@ language plpgsql
 security definer
 set search_path = public
 as $$
-declare
+DECLARE
   result jsonb;
   v_today_start timestamptz := date_trunc('day', now());
   v_today_end timestamptz := v_today_start + interval '1 day';
@@ -55,12 +55,16 @@ declare
   v_total_devices int := 0;
   v_total_revenue decimal := 0;
   v_today_repairs int := 0;
+  v_daily_revenue decimal := 0;
+  v_total_unlocks int := 0;
+  v_today_unlocks int := 0;
   
   -- Variables para gráficos
   v_weekly_repairs jsonb := '[]';
   v_weekly_revenue jsonb := '[]';
   v_status_distribution jsonb := '{}';
   v_device_types jsonb := '{}';
+  v_recent_activity jsonb := '[]';
   
   -- Variables temporales
   v_day_count int;
@@ -68,91 +72,143 @@ declare
   v_day_repairs int;
   v_day_revenue decimal;
   
-begin
+BEGIN
   -- Validar que el organization_id no sea null
-  if p_org_id is null then
-    return jsonb_build_object(
+  IF p_org_id IS NULL THEN
+    RETURN jsonb_build_object(
       'error', true,
       'message', 'Organization ID is required'
     );
-  end if;
+  END IF;
 
   -- Contadores básicos
-  select count(*) into v_total_repairs 
-  from repairs where organization_id = p_org_id;
+  SELECT count(*) INTO v_total_repairs FROM repairs WHERE organization_id = p_org_id;
+  SELECT count(*) INTO v_pending_repairs FROM repairs WHERE organization_id = p_org_id AND status = 'received';
+  SELECT count(*) INTO v_in_progress_repairs FROM repairs WHERE organization_id = p_org_id AND status IN ('diagnosed', 'in_progress', 'waiting_parts');
+  SELECT count(*) INTO v_completed_repairs FROM repairs WHERE organization_id = p_org_id AND status IN ('completed', 'delivered');
+  SELECT count(*) INTO v_total_customers FROM customers WHERE organization_id = p_org_id;
+  SELECT count(*) INTO v_total_devices FROM devices WHERE organization_id = p_org_id;
   
-  select count(*) into v_pending_repairs 
-  from repairs where organization_id = p_org_id and status = 'received';
+  -- Calcular ingresos totales incluyendo reparaciones, desbloqueos y ventas
+  SELECT 
+    coalesce(
+      (SELECT sum(cost) FROM repairs 
+       WHERE organization_id = p_org_id 
+       AND status IN ('completed', 'delivered') 
+       AND cost IS NOT NULL), 0
+    ) +
+    coalesce(
+      (SELECT sum(cost) FROM unlocks 
+       WHERE organization_id = p_org_id 
+       AND status = 'completed'), 0
+    ) +
+    coalesce(
+      (SELECT sum(total) FROM sales 
+       WHERE organization_id = p_org_id 
+       AND status = 'completed'), 0
+    )
+  INTO v_total_revenue;
   
-  select count(*) into v_in_progress_repairs 
-  from repairs where organization_id = p_org_id and status in ('diagnosed', 'in_progress', 'waiting_parts');
+  SELECT count(*) INTO v_today_repairs FROM repairs WHERE organization_id = p_org_id AND created_at >= v_today_start AND created_at < v_today_end;
   
-  select count(*) into v_completed_repairs 
-  from repairs where organization_id = p_org_id and status in ('completed', 'delivered');
+  -- Calcular ingresos diarios incluyendo reparaciones, desbloqueos y ventas
+  SELECT 
+    coalesce(
+      (SELECT sum(cost) FROM repairs 
+       WHERE organization_id = p_org_id 
+       AND status IN ('completed', 'delivered') 
+       AND updated_at >= v_today_start), 0
+    ) +
+    coalesce(
+      (SELECT sum(cost) FROM unlocks 
+       WHERE organization_id = p_org_id 
+       AND status = 'completed' 
+       AND updated_at >= v_today_start), 0
+    ) +
+    coalesce(
+      (SELECT sum(total) FROM sales 
+       WHERE organization_id = p_org_id 
+       AND status = 'completed' 
+       AND updated_at >= v_today_start), 0
+    )
+  INTO v_daily_revenue;
   
-  select count(*) into v_total_customers 
-  from customers where organization_id = p_org_id;
-  
-  select count(*) into v_total_devices 
-  from devices where organization_id = p_org_id;
-  
-  select coalesce(sum(cost), 0) into v_total_revenue 
-  from repairs where organization_id = p_org_id and status in ('completed', 'delivered') and cost is not null;
-  
-  select count(*) into v_today_repairs 
-  from repairs where organization_id = p_org_id and created_at >= v_today_start and created_at < v_today_end;
+  SELECT count(*) INTO v_total_unlocks FROM unlocks WHERE organization_id = p_org_id;
+  SELECT count(*) INTO v_today_unlocks FROM unlocks WHERE organization_id = p_org_id AND created_at >= v_today_start;
 
   -- Datos semanales de reparaciones
   v_weekly_repairs := '[]'::jsonb;
-  for v_day_count in 0..6 loop
+  FOR v_day_count IN 0..6 LOOP
     v_current_date := (v_seven_days_ago + (v_day_count || ' days')::interval)::date;
-    
-    select count(*) into v_day_repairs
-    from repairs 
-    where organization_id = p_org_id 
-      and created_at::date = v_current_date;
-    
-    v_weekly_repairs := v_weekly_repairs || jsonb_build_object(
-      'date', v_current_date,
-      'count', v_day_repairs
-    );
-  end loop;
+    SELECT count(*) INTO v_day_repairs FROM repairs WHERE organization_id = p_org_id AND created_at::date = v_current_date;
+    v_weekly_repairs := v_weekly_repairs || jsonb_build_object('date', v_current_date, 'count', v_day_repairs);
+  END LOOP;
 
-  -- Datos semanales de ingresos
+  -- Datos semanales de ingresos (incluyendo reparaciones, desbloqueos y ventas)
   v_weekly_revenue := '[]'::jsonb;
-  for v_day_count in 0..6 loop
+  FOR v_day_count IN 0..6 LOOP
     v_current_date := (v_seven_days_ago + (v_day_count || ' days')::interval)::date;
     
-    select coalesce(sum(cost), 0) into v_day_revenue
-    from repairs 
-    where organization_id = p_org_id 
-      and created_at::date = v_current_date
-      and status in ('completed', 'delivered')
-      and cost is not null;
+    SELECT 
+      coalesce(
+        (SELECT sum(cost) FROM repairs 
+         WHERE organization_id = p_org_id 
+         AND created_at::date = v_current_date 
+         AND status IN ('completed', 'delivered') 
+         AND cost IS NOT NULL), 0
+      ) +
+      coalesce(
+        (SELECT sum(cost) FROM unlocks 
+         WHERE organization_id = p_org_id 
+         AND created_at::date = v_current_date 
+         AND status = 'completed'), 0
+      ) +
+      coalesce(
+        (SELECT sum(total) FROM sales 
+         WHERE organization_id = p_org_id 
+         AND created_at::date = v_current_date 
+         AND status = 'completed'), 0
+      )
+    INTO v_day_revenue;
     
-    v_weekly_revenue := v_weekly_revenue || jsonb_build_object(
-      'date', v_current_date,
-      'revenue', v_day_revenue
-    );
-  end loop;
+    v_weekly_revenue := v_weekly_revenue || jsonb_build_object('date', v_current_date, 'revenue', v_day_revenue);
+  END LOOP;
 
   -- Distribución por estado
-  v_status_distribution := jsonb_build_object(
-    'pending', v_pending_repairs,
-    'in_progress', v_in_progress_repairs,
-    'completed', v_completed_repairs
-  );
+  v_status_distribution := jsonb_build_object('pending', v_pending_repairs, 'in_progress', v_in_progress_repairs, 'completed', v_completed_repairs);
 
   -- Distribución por tipo de dispositivo
-  select jsonb_object_agg(device_type, count) into v_device_types
-  from (
-    select device_type, count(*) as count
-    from devices 
-    where organization_id = p_org_id
-    group by device_type
-    order by count desc
-    limit 5
-  ) t;
+  SELECT jsonb_object_agg(device_type, count) INTO v_device_types FROM (SELECT device_type, count(*) AS count FROM devices WHERE organization_id = p_org_id GROUP BY device_type ORDER BY count DESC LIMIT 5) t;
+
+  -- Actividad reciente
+  SELECT jsonb_agg(activity) INTO v_recent_activity FROM (
+    SELECT 
+      'reparacion' AS type, 
+      r.id, 
+      coalesce('Reparación: ' || d.brand || ' ' || d.model, 'Nueva Reparación Registrada') AS title,
+      r.created_at AS "timestamp"
+    FROM repairs r
+    LEFT JOIN devices d ON r.device_id = d.id
+    WHERE r.organization_id = p_org_id
+    UNION ALL
+    SELECT 
+      'desbloqueo' AS type, 
+      id, 
+      'Desbloqueo: ' || brand || ' ' || model AS title, 
+      created_at AS "timestamp" 
+    FROM unlocks 
+    WHERE organization_id = p_org_id
+    UNION ALL
+    SELECT 
+      'venta' AS type, 
+      s.id, 
+      'Venta POS - Total: $' || s.total AS title, 
+      s.created_at AS "timestamp" 
+    FROM sales s
+    WHERE s.organization_id = p_org_id
+    ORDER BY "timestamp" DESC
+    LIMIT 5
+  ) AS activity;
 
   -- Construir resultado final
   result := jsonb_build_object(
@@ -164,25 +220,29 @@ begin
       'totalCustomers', v_total_customers,
       'totalDevices', v_total_devices,
       'totalRevenue', v_total_revenue,
-      'todayRepairs', v_today_repairs
+      'todayRepairs', v_today_repairs,
+      'dailyRevenue', v_daily_revenue,
+      'totalUnlocks', v_total_unlocks,
+      'todayUnlocks', v_today_unlocks
     ),
     'charts', jsonb_build_object(
       'weeklyRepairs', v_weekly_repairs,
       'weeklyRevenue', v_weekly_revenue,
       'statusDistribution', v_status_distribution,
       'deviceTypes', coalesce(v_device_types, '{}'::jsonb)
-    )
+    ),
+    'recentActivity', coalesce(v_recent_activity, '[]'::jsonb)
   );
 
-  return result;
+  RETURN result;
 
-exception
-  when others then
-    return jsonb_build_object(
+EXCEPTION
+  WHEN OTHERS THEN
+    RETURN jsonb_build_object(
       'error', true,
       'message', 'Error getting dashboard stats: ' || SQLERRM
     );
-end;
+END;
 $$;
 
 create or replace function get_reports_data(p_org_id uuid, p_start_date timestamptz, p_end_date timestamptz)
@@ -298,6 +358,46 @@ begin
       where s.organization_id = p_org_id
       and s.created_at between p_start_date and p_end_date
       group by i.category
+    ),
+    activity_calc as (
+      select
+        jsonb_agg(
+          jsonb_build_object(
+            'type', a.type,
+            'title', a.title,
+            'created_at', a.created_at,
+            'customer', a.customer
+          ) order by a.created_at desc
+        ) as "recentActivity"
+      from (
+        (
+          select
+            'venta' as type,
+            i.name as title,
+            s.created_at,
+            c.name as customer
+          from sales s
+          join sale_items si on s.id = si.sale_id
+          join inventory i on si.inventory_id = i.id
+          left join customers c on s.customer_id = c.id
+          where s.organization_id = p_org_id
+          order by s.created_at desc
+          limit 3
+        )
+        union all
+        (
+          select
+            'reparación' as type,
+            r.title,
+            r.created_at,
+            coalesce(c.name, r.unregistered_customer_name) as customer
+          from repairs r
+          left join customers c on r.customer_id = c.id
+          where r.organization_id = p_org_id
+          order by r.created_at desc
+          limit 3
+        )
+      ) as a
     )
   -- Construir el resultado final
   select jsonb_build_object(
@@ -365,6 +465,9 @@ begin
         )
       )
       from sales_by_category
+    ),
+    'recentActivity', (
+      select "recentActivity" from activity_calc
     )
   ) into result;
 

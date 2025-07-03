@@ -29,7 +29,7 @@ import {
   Switch
 } from '@heroui/react'
 import { textColors } from '@/lib/utils/colors'
-import { formatCurrency } from '@/lib/utils/currency'
+import { useCurrency } from '@/lib/contexts/TranslationContext'
 import { 
   Search, 
   Plus, 
@@ -44,7 +44,8 @@ import {
   ClipboardList,
   X,
   AlertTriangle,
-  Filter
+  Filter,
+  Printer
 } from 'lucide-react'
 
 interface Repair {
@@ -78,7 +79,7 @@ interface Repair {
     serial_number: string | null
     imei: string | null
   } | null
-  users: {
+  technician: {
     id: string
     name: string
     email: string
@@ -119,6 +120,7 @@ interface NewRepairForm {
 }
 
 export default function TechnicianRepairsPage() {
+  const { formatCurrency } = useCurrency()
   const [repairs, setRepairs] = useState<Repair[]>([])
   const [customers, setCustomers] = useState<Customer[]>([])
   // Eliminado: Ya no necesitamos gestionar dispositivos por separado
@@ -404,6 +406,232 @@ export default function TechnicianRepairsPage() {
     }
   }
 
+  // Estado para loading de impresión
+  const [printLoading, setPrintLoading] = useState(false)
+
+  // Obtener información de la organización
+  const fetchOrganizationInfo = async () => {
+    try {
+      // Primero obtenemos el organization_id del usuario actual
+      const userResponse = await fetch('/api/user/profile')
+      const userData = await userResponse.json()
+      
+      if (!userData.success) {
+        throw new Error('No se pudo obtener el perfil del usuario')
+      }
+
+      const organizationId = userData.data.organization_id
+      
+      // Luego obtenemos la información de la organización
+      const orgResponse = await fetch(`/api/organizations/${organizationId}`)
+      const orgData = await orgResponse.json()
+      
+      if (!orgData.success) {
+        throw new Error('No se pudo obtener la información de la organización')
+      }
+
+      return orgData.data
+    } catch (error) {
+      console.error('Error fetching organization info:', error)
+      throw error
+    }
+  }
+
+  // Generar el ticket de impresión en formato térmico
+  const generateThermalTicket = (repair: Repair, organizationInfo: any) => {
+    const currentDate = new Date().toLocaleString('es-ES', {
+      day: '2-digit',
+      month: '2-digit', 
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    })
+
+    const customerName = getCustomerName(repair.customers, repair.unregistered_customer_name)
+    const deviceName = getDeviceName(repair.devices, repair.unregistered_device_info)
+    const customerPhone = repair.customers?.phone || repair.unregistered_customer_phone || 'No disponible'
+
+    // HTML para ticket térmico (ancho 80mm)
+    const ticketHTML = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="UTF-8">
+        <style>
+          @page {
+            size: 80mm auto;
+            margin: 0;
+          }
+          body {
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            line-height: 1.2;
+            margin: 0;
+            padding: 5mm;
+            width: 70mm;
+            color: black;
+          }
+          .center { text-align: center; }
+          .left { text-align: left; }
+          .right { text-align: right; }
+          .bold { font-weight: bold; }
+          .large { font-size: 14px; }
+          .border-top { border-top: 1px dashed black; margin: 8px 0; padding-top: 8px; }
+          .border-bottom { border-bottom: 1px dashed black; margin: 8px 0; padding-bottom: 8px; }
+          .space { margin: 8px 0; }
+          .flex-row { display: flex; justify-content: space-between; }
+          .break { page-break-inside: avoid; }
+        </style>
+      </head>
+      <body>
+        <div class="center bold large">
+          ${organizationInfo.name || 'TIENDA DE REPARACIONES'}
+        </div>
+        
+        ${organizationInfo.address ? `<div class="center">${organizationInfo.address}</div>` : ''}
+        ${organizationInfo.phone ? `<div class="center">Tel: ${organizationInfo.phone}</div>` : ''}
+        ${organizationInfo.email ? `<div class="center">${organizationInfo.email}</div>` : ''}
+        
+        <div class="border-top"></div>
+        
+        <div class="center bold large">TICKET DE REPARACIÓN</div>
+        <div class="center">No. ${repair.id.slice(0, 8).toUpperCase()}</div>
+        
+        <div class="border-top"></div>
+        
+        <div class="space">
+          <div class="bold">FECHA DE RECEPCIÓN:</div>
+          <div>${formatDate(repair.created_at)}</div>
+        </div>
+        
+        <div class="space">
+          <div class="bold">CLIENTE:</div>
+          <div>${customerName}</div>
+          <div>Tel: ${customerPhone}</div>
+        </div>
+        
+        <div class="space">
+          <div class="bold">DISPOSITIVO:</div>
+          <div>${deviceName}</div>
+          ${repair.devices?.serial_number ? `<div>S/N: ${repair.devices.serial_number}</div>` : ''}
+          ${repair.devices?.imei ? `<div>IMEI: ${repair.devices.imei}</div>` : ''}
+        </div>
+        
+        <div class="space">
+          <div class="bold">PROBLEMA REPORTADO:</div>
+          <div>${repair.problem_description}</div>
+        </div>
+        
+        ${repair.solution_description ? `
+        <div class="space">
+          <div class="bold">SOLUCIÓN APLICADA:</div>
+          <div>${repair.solution_description}</div>
+        </div>
+        ` : ''}
+        
+        <div class="space">
+          <div class="bold">ESTADO:</div>
+          <div>${getStatusLabel(repair.status)}</div>
+        </div>
+        
+        <div class="space">
+          <div class="bold">PRIORIDAD:</div>
+          <div>${getPriorityLabel(repair.priority)}</div>
+        </div>
+        
+        <div class="border-top"></div>
+        
+        <div class="flex-row space">
+          <div class="bold">COSTO:</div>
+          <div class="bold">${formatCurrency(repair.cost)}</div>
+        </div>
+        
+        <div class="border-top"></div>
+        
+        <div class="center">
+          <div>Fecha de impresión: ${currentDate}</div>
+          <div class="space">¡Gracias por confiar en nosotros!</div>
+        </div>
+        
+        <div class="border-bottom"></div>
+        
+        <div class="center small">
+          <div>Conserve este ticket como comprobante</div>
+          <div>de su reparación</div>
+        </div>
+      </body>
+      </html>
+    `
+
+    return ticketHTML
+  }
+
+  // Función para imprimir el ticket
+  const handlePrintTicket = async (repair: Repair) => {
+    setPrintLoading(true)
+    try {
+      // Obtener información de la organización
+      const organizationInfo = await fetchOrganizationInfo()
+      
+      // Generar el HTML del ticket
+      const ticketHTML = generateThermalTicket(repair, organizationInfo)
+      
+      // Crear un iframe oculto para la impresión (mejor compatibilidad)
+      const iframe = document.createElement('iframe')
+      iframe.style.position = 'absolute'
+      iframe.style.top = '-1000px'
+      iframe.style.left = '-1000px'
+      iframe.style.width = '300px'
+      iframe.style.height = '600px'
+      
+      document.body.appendChild(iframe)
+      
+      const iframeDoc = iframe.contentDocument || iframe.contentWindow?.document
+      if (iframeDoc) {
+        iframeDoc.write(ticketHTML)
+        iframeDoc.close()
+        
+        // Esperar que el contenido se cargue y luego imprimir
+        setTimeout(() => {
+          try {
+            iframe.contentWindow?.print()
+            setTimeout(() => {
+              document.body.removeChild(iframe)
+            }, 1000)
+          } catch (printError) {
+            console.error('Error al imprimir:', printError)
+            // Fallback: descargar como archivo
+            downloadTicketAsFile(ticketHTML, repair.id)
+            document.body.removeChild(iframe)
+          }
+        }, 500)
+      } else {
+        // Fallback si no se puede crear el iframe
+        downloadTicketAsFile(ticketHTML, repair.id)
+        document.body.removeChild(iframe)
+      }
+      
+    } catch (error) {
+      console.error('Error printing ticket:', error)
+      setError('Error al generar el ticket de impresión')
+    } finally {
+      setPrintLoading(false)
+    }
+  }
+
+  // Función auxiliar para descargar el ticket como archivo
+  const downloadTicketAsFile = (ticketHTML: string, repairId: string) => {
+    const blob = new Blob([ticketHTML], { type: 'text/html' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `ticket-reparacion-${repairId.slice(0, 8)}.html`
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    URL.revokeObjectURL(url)
+  }
+
   const renderCell = React.useCallback((repair: Repair, columnKey: React.Key) => {
     switch (columnKey) {
       case "dispositivo":
@@ -506,6 +734,19 @@ export default function TechnicianRepairsPage() {
                 onPress={() => handleViewDetails(repair)}
               >
                 <Eye className="w-4 h-4" />
+              </Button>
+            </Tooltip>
+            <Tooltip content="Imprimir ticket" classNames={{ content: "bg-gray-900 text-white" }}>
+              <Button 
+                isIconOnly 
+                variant="flat" 
+                color="secondary" 
+                size="sm" 
+                aria-label="Imprimir ticket de reparación"
+                onPress={() => handlePrintTicket(repair)}
+                isLoading={printLoading}
+              >
+                <Printer className="w-4 h-4" />
               </Button>
             </Tooltip>
             <Tooltip content="Cambiar estado" classNames={{ content: "bg-gray-900 text-white" }}>
@@ -857,11 +1098,11 @@ export default function TechnicianRepairsPage() {
                             {formatCurrency(repair.cost)}
                           </p>
                         </div>
-                        {repair.users && (
+                        {repair.technician && (
                           <div>
                             <p className="text-xs font-medium text-gray-500">CREADO POR</p>
                             <p className="font-semibold text-sm text-gray-900 truncate">
-                              {repair.users.name}
+                              {repair.technician.name}
                             </p>
                           </div>
                         )}
@@ -870,12 +1111,12 @@ export default function TechnicianRepairsPage() {
 
                     {/* Acciones */}
                     <div className="p-3">
-                      <div className="flex gap-2">
+                      <div className="flex gap-2 flex-wrap">
                         <Button 
                           size="sm" 
                           variant="flat" 
                           color="primary"
-                          className="flex-1"
+                          className="flex-1 min-w-0"
                           startContent={<Eye className="w-4 h-4" />}
                           onPress={() => handleViewDetails(repair)}
                         >
@@ -884,8 +1125,19 @@ export default function TechnicianRepairsPage() {
                         <Button 
                           size="sm" 
                           variant="flat" 
+                          color="secondary"
+                          className="flex-1 min-w-0"
+                          startContent={<Printer className="w-4 h-4" />}
+                          onPress={() => handlePrintTicket(repair)}
+                          isLoading={printLoading}
+                        >
+                          Ticket
+                        </Button>
+                        <Button 
+                          size="sm" 
+                          variant="flat" 
                           color="warning"
-                          className="flex-1"
+                          className="flex-1 min-w-0"
                           startContent={<ClipboardList className="w-4 h-4" />}
                           onPress={() => handleStatusChange(repair)}
                         >
@@ -896,7 +1148,7 @@ export default function TechnicianRepairsPage() {
                             size="sm" 
                             variant="flat" 
                             color="success"
-                            className="flex-1"
+                            className="flex-1 min-w-0"
                             startContent={<Check className="w-4 h-4" />}
                             onPress={() => confirmUpdateStatus('completed')}
                           >
@@ -951,8 +1203,6 @@ export default function TechnicianRepairsPage() {
         <Modal 
           isOpen={isCreateOpen} 
           onClose={onCreateClose}
-          size="3xl"
-          scrollBehavior="inside"
         >
           <ModalContent>
             <form onSubmit={handleCreateRepair}>
@@ -1216,7 +1466,7 @@ export default function TechnicianRepairsPage() {
                  </div>
 
                  {/* Información del creador */}
-                 {selectedRepair.users && (
+                 {selectedRepair.technician && (
                    <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
                      <div className="flex items-center gap-3">
                        <div className="p-2 bg-blue-100 rounded-full">
@@ -1225,10 +1475,10 @@ export default function TechnicianRepairsPage() {
                        <div className="flex-1">
                          <p className="text-sm font-medium text-blue-800">Creado por</p>
                          <p className="text-base font-semibold text-blue-900">
-                           {selectedRepair.users.name}
+                           {selectedRepair.technician.name}
                          </p>
                          <p className="text-xs text-blue-600">
-                           {selectedRepair.users.email}
+                           {selectedRepair.technician.email}
                          </p>
                          <p className="text-xs text-blue-500 mt-1">
                            {new Date(selectedRepair.created_at).toLocaleString('es-ES', {
@@ -1298,6 +1548,17 @@ export default function TechnicianRepairsPage() {
               <Button color="default" variant="light" onPress={onDetailClose}>
                 Cerrar
               </Button>
+              {selectedRepair && (
+                <Button 
+                  color="secondary" 
+                  variant="flat"
+                  startContent={<Printer className="w-4 h-4" />}
+                  onPress={() => handlePrintTicket(selectedRepair)}
+                  isLoading={printLoading}
+                >
+                  Imprimir Ticket
+                </Button>
+              )}
             </ModalFooter>
           </ModalContent>
         </Modal>

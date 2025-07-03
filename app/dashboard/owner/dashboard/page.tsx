@@ -3,54 +3,65 @@
 import { useEffect, useState } from 'react'
 import dynamic from 'next/dynamic'
 import DashboardLayout from '../components/DashboardLayout'
-import { useCurrency } from '@/lib/utils/currency'
-import LanguageCurrencySelector from '@/app/components/LanguageCurrencySelector'
-import { Card, CardBody, CardHeader, Skeleton, Chip, Avatar } from '@heroui/react'
-import { textColors } from '@/lib/utils/colors'
+import { useCurrency } from '@/lib/contexts/TranslationContext'
+import { useTranslations } from '@/lib/contexts/TranslationContext'
+import { Card, CardBody, CardHeader, Skeleton } from '@heroui/react'
 import { 
-  Users, ShoppingCart, Wrench, DollarSign, Activity, AlertTriangle
+  Users, Wrench, DollarSign, Package, Clock, CheckCircle, Smartphone, TrendingUp, BarChart, PieChart, AlertTriangle, Activity
 } from 'lucide-react'
 import { ApexOptions } from 'apexcharts'
 
 const Chart = dynamic(() => import('react-apexcharts'), { ssr: false })
 
-interface Stats {
-  customers: number
-  devices: number
-  repairs: number
-  potentialRevenue: number
-  inventory: number
-  unlocks: number
-  dailySales: number
-  dailyRevenue: number
+// Interfaces
+interface Counters {
+  todayRepairs: number;
+  totalDevices: number;
+  totalRepairs: number;
+  totalRevenue: number;
+  pendingRepairs: number;
+  totalCustomers: number;
+  completedRepairs: number;
+  inProgressRepairs: number;
+  dailyRevenue: number; 
+  totalUnlocks: number; 
+  todayUnlocks: number;
 }
 
-interface ChartData {
-  repairsByStatus: Record<string, number>
-  salesLast7Days: { day: string; total: number }[]
+interface Charts {
+  deviceTypes: Record<string, number>;
+  weeklyRepairs: { date: string; count: number }[];
+  weeklyRevenue: { date: string; revenue: number }[];
+  statusDistribution: Record<string, number>;
 }
 
 interface Activity {
-  type: string
-  title: string
-  time: string
-  customer?: string
+  id: string;
+  type: 'reparacion' | 'desbloqueo';
+  title: string;
+  timestamp: string;
 }
 
 interface DashboardData {
-  stats: Stats
-  chartData: ChartData
-  recentActivity: Activity[]
+  counters: Counters;
+  charts: Charts;
+  recentActivity: Activity[];
 }
 
 export default function DashboardPage() {
+  const { t } = useTranslations()
   const [data, setData] = useState<DashboardData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const { format, currencyCode, symbol } = useCurrency()
-
+  const { format, currencyCode } = useCurrency()
   const [refreshKey, setRefreshKey] = useState(0)
-  
+
+  const compactFormatter = new Intl.NumberFormat(undefined, {
+    style: 'currency',
+    currency: currencyCode,
+    notation: 'compact'
+  });
+
   useEffect(() => {
     const handleStorageChange = () => setRefreshKey(prev => prev + 1)
     window.addEventListener('storage', handleStorageChange)
@@ -59,16 +70,31 @@ export default function DashboardPage() {
 
   useEffect(() => {
     fetchStats()
-  }, [refreshKey])
+  }, [])
 
   const fetchStats = async () => {
     try {
       setLoading(true)
       const response = await fetch('/api/dashboard/stats')
-      if (!response.ok) throw new Error('Error al cargar estadísticas')
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Error al cargar estadísticas')
+      }
       const result = await response.json()
-      setData(result.data)
+      console.log('📊 Dashboard response:', result)
+      
+      // Validar estructura de datos
+      if (!result.success || !result.data) {
+        throw new Error('Respuesta inválida del servidor')
+      }
+      
+      if (!result.data.counters) {
+        throw new Error('Datos de contadores no disponibles')
+      }
+      
+      setData(result.data) 
     } catch (err) {
+      console.error('Error fetching dashboard stats:', err)
       setError(err instanceof Error ? err.message : 'Error desconocido')
     } finally {
       setLoading(false)
@@ -78,31 +104,16 @@ export default function DashboardPage() {
   if (loading) {
     return (
       <DashboardLayout>
-        <div className="space-y-4 md:space-y-6">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-            <Skeleton className="h-6 md:h-8 w-48 rounded-lg" />
-            <Skeleton className="h-10 md:h-12 w-32 rounded-lg" />
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-            {[...Array(4)].map((_, i) => (
-              <Card key={i}>
-                <CardBody className="p-4 md:p-6">
-                  <Skeleton className="h-20 md:h-24 w-full rounded" />
-                </CardBody>
-              </Card>
+        <div className="p-4 md:p-6 space-y-6">
+          <Skeleton className="h-10 w-1/2 rounded-lg" />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[...Array(6)].map((_, i) => (
+              <Card key={i}><CardBody><Skeleton className="h-28 w-full rounded-lg" /></CardBody></Card>
             ))}
           </div>
-          <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 md:gap-6">
-            <Card className="lg:col-span-3">
-              <CardBody className="p-4 md:p-6">
-                <Skeleton className="h-48 md:h-64 w-full rounded" />
-              </CardBody>
-            </Card>
-            <Card className="lg:col-span-2">
-              <CardBody className="p-4 md:p-6">
-                <Skeleton className="h-48 md:h-64 w-full rounded" />
-              </CardBody>
-            </Card>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <Card><CardBody><Skeleton className="h-72 w-full rounded-lg" /></CardBody></Card>
+            <Card><CardBody><Skeleton className="h-72 w-full rounded-lg" /></CardBody></Card>
           </div>
         </div>
       </DashboardLayout>
@@ -112,27 +123,69 @@ export default function DashboardPage() {
   if (error || !data) {
     return (
       <DashboardLayout>
-        <div className="flex items-center justify-center h-64">
-          <div className="text-center">
-            <AlertTriangle className="h-12 w-12 text-red-500 mx-auto mb-4" />
-            <p className="text-gray-600">Error al cargar datos del dashboard</p>
-          </div>
+        <div className="flex items-center justify-center h-full p-4">
+          <Card className="max-w-md w-full">
+            <CardBody className="text-center p-8">
+              <AlertTriangle className="h-16 w-16 text-red-500 mx-auto mb-4" />
+              <h2 className="text-xl font-bold text-gray-800 mb-2">Error al Cargar el Dashboard</h2>
+              <p className="text-gray-600 mb-6">{error || 'No se pudieron obtener los datos. Inténtalo de nuevo más tarde.'}</p>
+              <button
+                onClick={fetchStats}
+                className="bg-primary-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-primary-700 transition-colors duration-300"
+              >
+                Reintentar
+              </button>
+            </CardBody>
+          </Card>
         </div>
       </DashboardLayout>
     )
   }
-  
-  const { stats, chartData, recentActivity } = data
+
+  const { counters, charts, recentActivity } = data
+
+  // Validación adicional para prevenir errores
+  if (!counters) {
+    return (
+      <DashboardLayout>
+        <div className="flex items-center justify-center h-full p-4">
+          <Card className="max-w-md w-full">
+            <CardBody className="text-center p-8">
+              <AlertTriangle className="h-16 w-16 text-red-500 mx-auto mb-4" />
+              <h2 className="text-xl font-bold text-gray-800 mb-2">Datos Incompletos</h2>
+              <p className="text-gray-600 mb-6">Los datos del dashboard no están disponibles. Inténtalo de nuevo.</p>
+              <button
+                onClick={fetchStats}
+                className="bg-primary-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-primary-700 transition-colors duration-300"
+              >
+                Reintentar
+              </button>
+            </CardBody>
+          </Card>
+        </div>
+      </DashboardLayout>
+    )
+  }
 
   const statsCards = [
-    { title: 'Clientes', value: stats.customers, icon: Users, bgGradient: 'from-blue-400 to-blue-600', description: 'Total de clientes registrados.' },
-    { title: 'Ventas de Hoy', value: stats.dailySales, icon: ShoppingCart, bgGradient: 'from-purple-400 to-purple-600', description: 'Número de ventas realizadas hoy.' },
-    { title: 'Ingresos de Hoy', value: format(stats.dailyRevenue), icon: DollarSign, bgGradient: 'from-emerald-400 to-green-600', description: `Total ingresado hoy en ${currencyCode}.` },
-    { title: 'Ingresos Pendientes', value: format(stats.potentialRevenue), icon: Wrench, bgGradient: 'from-orange-400 to-red-500', description: 'Valor estimado de reparaciones activas.' },
-    { title: 'Reparaciones Activas', value: stats.repairs, icon: Wrench, bgGradient: 'from-indigo-400 to-purple-500', description: 'Reparaciones pendientes o en proceso.' },
+    { title: t('dashboard.dailyRevenue'), value: format(counters.dailyRevenue || 0), icon: DollarSign, bg: 'bg-gradient-to-br from-green-400 to-green-600' },
+    { title: t('dashboard.todayRepairs'), value: counters.todayRepairs || 0, icon: Wrench, bg: 'bg-gradient-to-br from-blue-400 to-blue-600' },
+    { title: t('dashboard.todayUnlocks'), value: counters.todayUnlocks || 0, icon: Package, bg: 'bg-gradient-to-br from-purple-400 to-purple-600' },
+    { title: t('dashboard.pendingRepairs'), value: counters.pendingRepairs || 0, icon: Clock, bg: 'bg-gradient-to-br from-orange-400 to-orange-600' },
+    { title: t('dashboard.inProgressRepairs'), value: counters.inProgressRepairs || 0, icon: Wrench, bg: 'bg-gradient-to-br from-yellow-400 to-yellow-600' },
+    { title: t('dashboard.totalCustomers'), value: counters.totalCustomers || 0, icon: Users, bg: 'bg-gradient-to-br from-pink-400 to-pink-600' },
   ]
   
-  const statusLabels: Record<string, string> = { 'received': 'Recibido', 'diagnosed': 'Diagnosticado', 'in_progress': 'En Proceso', 'waiting_parts': 'Esperando Repuestos', 'completed': 'Completado', 'delivered': 'Entregado', 'cancelled': 'Cancelado' }
+  const statusLabels: Record<string, string> = { 
+    'pending': t('repairs.status.pending'), 
+    'in_progress': t('repairs.status.in_progress'), 
+    'completed': t('repairs.status.completed'), 
+    'delivered': t('repairs.status.delivered'),
+    'cancelled': t('repairs.status.cancelled'),
+    'diagnosed': t('repairs.status.diagnosed'),
+    'received': t('repairs.status.received'),
+    'waiting_parts': t('repairs.status.waiting_parts')
+  };
 
   const baseChartOptions: ApexOptions = {
     chart: {
@@ -141,36 +194,45 @@ export default function DashboardPage() {
       fontFamily: 'inherit',
     },
     dataLabels: { enabled: false },
-    stroke: { curve: 'smooth', width: 2 },
-    legend: { position: 'bottom', horizontalAlign: 'center', offsetY: 10, labels: { colors: '#6b7280' } },
+    stroke: { curve: 'smooth', width: 3 },
     grid: {
+      show: true,
       borderColor: '#e5e7eb',
       strokeDashArray: 4,
+      padding: { left: 10, right: 10, top: 10 }
     },
     tooltip: {
-      theme: 'dark',
-      x: { show: false }
+      theme: 'dark'
+    },
+    legend: {
+      position: 'bottom',
+      horizontalAlign: 'center',
+      offsetY: 10,
+      labels: {
+        colors: '#4b5563' 
+      },
+      itemMargin: { horizontal: 10 }
     }
   }
 
-  const salesChartSeries = [{
-    name: `Ingresos (${currencyCode})`,
-    data: chartData.salesLast7Days.map(d => d.total),
+  const revenueChartSeries = [{
+    name: `${t('dashboard.weeklyRevenue')} (${currencyCode})`,
+    data: (charts?.weeklyRevenue || []).map(d => d.revenue || 0),
   }]
   
-  const salesChartOptions: ApexOptions = {
+  const revenueChartOptions: ApexOptions = {
     ...baseChartOptions,
     chart: { ...baseChartOptions.chart, type: 'area' },
     xaxis: {
-      categories: chartData.salesLast7Days.map(d => d.day),
-      labels: { style: { colors: '#6b7280' } },
+      categories: (charts?.weeklyRevenue || []).map(d => new Date(d.date).toLocaleDateString(undefined, { weekday: 'short', day: 'numeric'})),
+      labels: { style: { colors: '#6b7280', fontWeight: 600 } },
       axisBorder: { show: false },
-      axisTicks: { show: false }
+      axisTicks: { show: false },
     },
     yaxis: {
       labels: {
-        style: { colors: '#6b7280' },
-        formatter: (val) => format(val)
+        style: { colors: '#6b7280', fontWeight: 600 },
+        formatter: (val) => compactFormatter.format(val)
       }
     },
     fill: {
@@ -179,202 +241,217 @@ export default function DashboardPage() {
         shadeIntensity: 1,
         opacityFrom: 0.7,
         opacityTo: 0.2,
-        stops: [0, 90, 100]
+        stops: [0, 90, 100],
+        colorStops: [
+            {
+              offset: 0,
+              color: 'rgba(52, 211, 153, 0.4)',
+              opacity: 1
+            },
+            {
+              offset: 100,
+              color: 'rgba(52, 211, 153, 0)',
+              opacity: 1
+            }
+        ]
       }
     },
-    colors: ['#4f46e5'],
-    stroke: { width: 2, curve: 'smooth' },
+    colors: ['#34D399'],
+    stroke: { width: 3, curve: 'smooth' },
+    tooltip: { ...baseChartOptions.tooltip, y: { formatter: val => format(val) }}
   }
+  
+  const repairsChartSeries = [{
+    name: t('dashboard.weeklyRepairs'),
+    data: (charts?.weeklyRepairs || []).map(d => d.count || 0),
+  }]
 
-  const repairsChartSeries = Object.values(chartData.repairsByStatus)
   const repairsChartOptions: ApexOptions = {
     ...baseChartOptions,
+    chart: { ...baseChartOptions.chart, type: 'bar' },
+    xaxis: {
+      categories: (charts?.weeklyRepairs || []).map(d => new Date(d.date).toLocaleDateString(undefined, { weekday: 'short', day: 'numeric'})),
+      labels: { style: { colors: '#6b7280', fontWeight: 600 } },
+      axisBorder: { show: false },
+      axisTicks: { show: false },
+    },
+    yaxis: {
+      labels: {
+        style: { colors: '#6b7280', fontWeight: 600 },
+        formatter: (val) => String(Math.round(val))
+      }
+    },
+    plotOptions: { bar: { columnWidth: '45%', borderRadius: 6, distributed: true }},
+    colors: ['#60a5fa', '#818cf8', '#a78bfa', '#f472b6', '#fb923c', '#facc15', '#4ade80'],
+    tooltip: { ...baseChartOptions.tooltip, y: { formatter: val => `${Math.round(val)} Reparaciones` }}
+  }
+
+  const statusChartSeries = Object.values(charts?.statusDistribution || {});
+  const statusChartLabels = Object.keys(charts?.statusDistribution || {}).map(s => statusLabels[s] || s);
+
+  const statusChartOptions: ApexOptions = {
+    ...baseChartOptions,
     chart: { ...baseChartOptions.chart, type: 'donut' },
-    labels: Object.keys(chartData.repairsByStatus).map(s => statusLabels[s] || s),
-    colors: ['#6b7280', '#f59e0b', '#3b82f6', '#f97316', '#10b981', '#22c55e', '#ef4444'],
+    labels: statusChartLabels,
+    colors: ['#f97316', '#eab308', '#22c55e'],
     plotOptions: {
       pie: {
         donut: {
           size: '75%',
+          background: 'transparent',
           labels: {
             show: true,
             total: {
               show: true,
-              label: 'Total',
-              color: '#6b7280',
+              showAlways: true,
+              label: t('common.total'),
+              fontSize: '18px',
+              fontWeight: 600,
+              color: '#374151',
               formatter: (w) => w.globals.seriesTotals.reduce((a: number, b: number) => a + b, 0).toString()
             }
           }
         }
       }
-    }
-  }
+    },
+    stroke: { width: 0 },
+    tooltip: { ...baseChartOptions.tooltip, y: { formatter: (val) => String(val), title: { formatter: (seriesName) => seriesName } } },
+  };
+  
+  const deviceTypesSeries = Object.values(charts?.deviceTypes || {});
+  const deviceTypesLabels = Object.keys(charts?.deviceTypes || {}).map(type => t(`devices.${type}`) || type);
+
+  const deviceTypesChartOptions: ApexOptions = {
+      ...baseChartOptions,
+      chart: { ...baseChartOptions.chart, type: 'pie' },
+      labels: deviceTypesLabels,
+      colors: ['#38bdf8', '#a78bfa', '#f472b6', '#34d399', '#fbbf24'],
+      stroke: { width: 0 },
+      plotOptions: { pie: {
+        dataLabels: {
+          offset: -15,
+        }
+      } },
+      tooltip: { ...baseChartOptions.tooltip, y: { formatter: (val) => String(val) } },
+  };
 
   const timeAgo = (date: string) => {
     const seconds = Math.floor((new Date().getTime() - new Date(date).getTime()) / 1000);
-    if (seconds > 86400 * 30) return `${new Date(date).toLocaleDateString()}`;
+    if (seconds > 86400 * 30) return new Date(date).toLocaleDateString();
     let interval = seconds / 86400;
-    if (interval > 1) return `hace ${Math.floor(interval)}d`;
+    if (interval > 1) return t('time.daysAgo', { count: Math.floor(interval) });
     interval = seconds / 3600;
-    if (interval > 1) return `hace ${Math.floor(interval)}h`;
+    if (interval > 1) return t('time.hoursAgo', { count: Math.floor(interval) });
     interval = seconds / 60;
-    if (interval > 1) return `hace ${Math.floor(interval)}m`;
-    return `hace ${Math.floor(seconds)}s`;
+    if (interval > 1) return t('time.minutesAgo', { count: Math.floor(interval) });
+    return t('time.secondsAgo', { count: Math.floor(seconds) });
   }
   
   const getActivityIcon = (type: string) => {
     switch(type) {
-      case 'venta': return ShoppingCart;
-      case 'reparación': return Wrench;
-      default: return Activity;
+      case 'reparacion': return <Wrench className="h-5 w-5 text-white" />;
+      case 'desbloqueo': return <Package className="h-5 w-5 text-white" />;
+      default: return <Activity className="h-5 w-5 text-white" />;
     }
   }
 
   const getActivityColor = (type: string) => {
     switch(type) {
-      case 'venta': return 'purple';
-      case 'reparación': return 'orange';
-      default: return 'gray';
+      case 'reparacion': return 'bg-blue-500';
+      case 'desbloqueo': return 'bg-purple-500';
+      default: return 'bg-gray-500';
     }
   }
 
   return (
     <DashboardLayout>
-      <div className="space-y-4 md:space-y-6">
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          <div>
-            <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-gray-900">Dashboard Administrativo</h1>
-            <p className={`text-sm md:text-base ${textColors.secondary} mt-1`}>Resumen completo de tu negocio</p>
-          </div>
-          <div className="flex gap-2">
-            <LanguageCurrencySelector />
-          </div>
+      <div className="p-4 md:p-6 lg:p-8 space-y-8">
+        <div>
+          <h1 className="text-3xl md:text-4xl font-bold text-gray-800 tracking-tight">{t('dashboard.title')}</h1>
+          <p className="text-gray-500 mt-2 text-lg">{t('dashboard.subtitle')}</p>
         </div>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 md:gap-6">
-          {statsCards.map((stat, index) => {
-            const Icon = stat.icon
-            return (
-              <Card key={index} className="shadow-lg border-0 bg-white/80 backdrop-blur-sm hover:shadow-xl transition-all duration-300">
-                <CardBody className="p-4 md:p-6">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1 min-w-0">
-                      <p className={`text-xs md:text-sm font-medium ${textColors.tertiary} uppercase tracking-wide truncate`}>
-                        {stat.title}
-                      </p>
-                      <p className="text-lg md:text-xl lg:text-2xl font-bold text-gray-900 mt-1 truncate">
-                        {stat.value}
-                      </p>
-                      <p className={`text-xs md:text-sm ${textColors.muted} mt-2 line-clamp-2`}>
-                        {stat.description}
-                      </p>
-                    </div>
-                    <div className={`p-2 md:p-3 rounded-xl bg-gradient-to-br ${stat.bgGradient} shadow-lg flex-shrink-0 ml-3`}>
-                      <Icon className="h-5 w-5 md:h-6 md:w-6 text-white" />
-                    </div>
-                  </div>
-                </CardBody>
-              </Card>
-            )
-          })}
-        </div>
-
-        {/* Charts and Activity */}
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 md:gap-6">
-          {/* Sales Chart */}
-          <Card className="lg:col-span-3 shadow-lg border-0 bg-white/80 backdrop-blur-sm">
-            <CardHeader className="pb-2 md:pb-4">
-              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
-                <div>
-                  <h3 className="text-base md:text-lg font-bold text-gray-900">Ingresos de los Últimos 7 Días</h3>
-                  <p className={`text-xs md:text-sm ${textColors.secondary}`}>Evolución de ventas diarias</p>
+        {/* Stat Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {statsCards.map((stat) => (
+            <Card key={stat.title} className={`${stat.bg} text-white shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300`}>
+              <CardBody className="flex items-center p-6">
+                <div className="flex-shrink-0 mr-4">
+                   <stat.icon className="h-10 w-10" />
                 </div>
-                <Chip color="primary" variant="flat" size="sm">
-                  {currencyCode}
-                </Chip>
-              </div>
+                <div>
+                   <p className="text-4xl font-bold">{stat.value}</p>
+                   <p className="text-sm font-medium opacity-80 uppercase tracking-wider">{stat.title}</p>
+                </div>
+              </CardBody>
+            </Card>
+          ))}
+        </div>
+        
+        {/* Main Charts */}
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+          <Card className="lg:col-span-3 shadow-sm hover:shadow-md transition-shadow duration-300">
+            <CardHeader className="flex items-center gap-2">
+                <TrendingUp className="h-6 w-6 text-primary-600"/>
+                <h2 className="text-xl font-bold text-gray-700">{t('dashboard.weeklyRevenue')}</h2>
             </CardHeader>
-            <CardBody className="pt-0 px-3 md:px-6 pb-4 md:pb-6">
-              <div className="h-48 md:h-64">
-                <Chart
-                  options={salesChartOptions}
-                  series={salesChartSeries}
-                  type="area"
-                  height="100%"
-                />
-              </div>
+            <CardBody>
+              <Chart options={revenueChartOptions} series={revenueChartSeries} type="area" height={300} />
             </CardBody>
           </Card>
-
-          {/* Repairs Status Chart */}
-          <Card className="lg:col-span-2 shadow-lg border-0 bg-white/80 backdrop-blur-sm">
-            <CardHeader className="pb-2 md:pb-4">
-              <div>
-                <h3 className="text-base md:text-lg font-bold text-gray-900">Estado de Reparaciones</h3>
-                <p className={`text-xs md:text-sm ${textColors.secondary}`}>Distribución actual</p>
-              </div>
+          <Card className="lg:col-span-2 shadow-sm hover:shadow-md transition-shadow duration-300">
+            <CardHeader className="flex items-center gap-2">
+                <BarChart className="h-6 w-6 text-primary-600"/>
+                <h2 className="text-xl font-bold text-gray-700">{t('dashboard.weeklyRepairs')}</h2>
             </CardHeader>
-            <CardBody className="pt-0 px-3 md:px-6 pb-4 md:pb-6">
-              <div className="h-48 md:h-64">
-                <Chart
-                  options={repairsChartOptions}
-                  series={repairsChartSeries}
-                  type="donut"
-                  height="100%"
-                />
-              </div>
+            <CardBody>
+              <Chart options={repairsChartOptions} series={repairsChartSeries} type="bar" height={300} />
             </CardBody>
           </Card>
         </div>
 
-        {/* Recent Activity */}
-        <Card className="shadow-lg border-0 bg-white/80 backdrop-blur-sm">
-          <CardHeader className="pb-2 md:pb-4">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
-              <div>
-                <h3 className="text-base md:text-lg font-bold text-gray-900">Actividad Reciente</h3>
-                <p className={`text-xs md:text-sm ${textColors.secondary}`}>Últimas acciones en el sistema</p>
+        {/* Donut & Pie Charts */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <Card className="shadow-sm hover:shadow-md transition-shadow duration-300">
+            <CardHeader className="flex items-center gap-2">
+                <PieChart className="h-6 w-6 text-primary-600"/>
+                <h2 className="text-xl font-bold text-gray-700">{t('dashboard.statusDistribution')}</h2>
+            </CardHeader>
+            <CardBody className="flex justify-center items-center">
+              <div className="w-full max-w-xs">
+                 <Chart options={statusChartOptions} series={statusChartSeries} type="donut" height={350} />
               </div>
-              <Chip color="success" variant="flat" size="sm">
-                {recentActivity.length} eventos
-              </Chip>
-            </div>
-          </CardHeader>
-          <CardBody className="pt-0 px-3 md:px-6 pb-4 md:pb-6">
-            {recentActivity.length > 0 ? (
-              <div className="space-y-3 md:space-y-4">
-                {recentActivity.slice(0, 8).map((activity, index) => {
-                  const Icon = getActivityIcon(activity.type)
-                  const color = getActivityColor(activity.type)
-                  
-                  return (
-                    <div key={index} className="flex items-center space-x-3 md:space-x-4 p-3 md:p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors">
-                      <div className={`p-2 rounded-lg bg-${color}-100 flex-shrink-0`}>
-                        <Icon className={`h-4 w-4 md:h-5 md:w-5 text-${color}-600`} />
+            </CardBody>
+          </Card>
+          <Card className="shadow-sm hover:shadow-md transition-shadow duration-300">
+            <CardHeader className="flex items-center gap-2">
+                <BarChart className="h-6 w-6 text-primary-600"/>
+                <h2 className="text-xl font-bold text-gray-700">{t('dashboard.recentActivity')}</h2>
+            </CardHeader>
+            <CardBody>
+              {recentActivity && recentActivity.length > 0 ? (
+                <ul className="space-y-4">
+                  {recentActivity.map((activity) => (
+                    <li key={activity.id} className="flex items-center space-x-4">
+                      <div className={`p-3 rounded-full ${getActivityColor(activity.type)}`}>
+                        {getActivityIcon(activity.type)}
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm md:text-base font-medium text-gray-900 truncate">{activity.title}</p>
-                        {activity.customer && (
-                          <p className={`text-xs md:text-sm ${textColors.muted} truncate`}>Cliente: {activity.customer}</p>
-                        )}
+                      <div className="flex-1">
+                        <p className="font-semibold text-gray-800 text-sm">{activity.title}</p>
+                        <p className="text-xs text-gray-500">{timeAgo(activity.timestamp)}</p>
                       </div>
-                      <p className={`text-xs md:text-sm ${textColors.tertiary} flex-shrink-0`}>
-                        {timeAgo(activity.time)}
-                      </p>
-                    </div>
-                  )
-                })}
-              </div>
-            ) : (
-              <div className="text-center py-8 md:py-12">
-                <Activity className="h-8 w-8 md:h-12 md:w-12 text-gray-400 mx-auto mb-3 md:mb-4" />
-                <p className={`text-sm md:text-base ${textColors.secondary}`}>No hay actividad reciente</p>
-              </div>
-            )}
-          </CardBody>
-        </Card>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <div className="flex flex-col items-center justify-center h-full text-center text-gray-500">
+                   <Activity className="h-12 w-12 mb-2"/>
+                   <p>{t('dashboard.noRecentActivity')}</p>
+                </div>
+              )}
+            </CardBody>
+          </Card>
+        </div>
       </div>
     </DashboardLayout>
   )

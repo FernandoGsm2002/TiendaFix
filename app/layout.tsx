@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google'
 import './globals.css'
 import { AuthProvider } from '@/lib/auth/auth-context'
 import { HeroUIProvider } from '@/lib/providers/heroui-provider'
+import { TranslationProvider } from '@/lib/contexts/TranslationContext'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -20,9 +21,11 @@ export default function RootLayout({
     <html lang="es">
       <body className={inter.className}>
         <HeroUIProvider>
-          <AuthProvider>
-            {children}
-          </AuthProvider>
+          <TranslationProvider>
+            <AuthProvider>
+              {children}
+            </AuthProvider>
+          </TranslationProvider>
         </HeroUIProvider>
       </body>
     </html>

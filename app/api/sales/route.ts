@@ -30,7 +30,28 @@ export async function GET(request: NextRequest) {
     const paymentMethod = searchParams.get('payment_method')
     
     const offset = (page - 1) * limit
-    const organizationId = '873d8154-8b40-4b8a-8d03-431bf9f697e6' // ID de Fernando
+
+    // Obtener el usuario autenticado y su organización
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    if (authError || !user) {
+      console.error('❌ Usuario no autenticado:', authError)
+      return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
+    }
+
+    // Obtener la organización del usuario
+    const { data: userProfile, error: profileError } = await supabase
+      .from('users')
+      .select('organization_id')
+      .eq('auth_user_id', user.id)
+      .single()
+
+    if (profileError || !userProfile?.organization_id) {
+      console.error('❌ Error obteniendo organización del usuario:', profileError)
+      return NextResponse.json({ error: 'Organización no encontrada' }, { status: 403 })
+    }
+
+    const organizationId = userProfile.organization_id
+    console.log('✅ Sales API - Organization ID:', organizationId)
 
     try {
       let query = supabase

@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react'
 import DashboardLayout from '../components/DashboardLayout'
+import { useTranslations } from '@/lib/contexts/TranslationContext'
 import { 
   Card, 
   CardBody, 
@@ -32,7 +33,7 @@ import {
 } from '@heroui/react'
 import FormField from '@/app/components/ui/FormField'
 import { textColors } from '@/lib/utils/colors'
-import { formatCurrency } from '@/lib/utils/currency'
+import { useCurrency } from '@/lib/contexts/TranslationContext'
 import { 
   Unlock, 
   Plus, 
@@ -84,7 +85,7 @@ interface UnlockItem {
   created_at: string
   updated_at: string
   customers: Customer | null
-  users: {
+  technician: {
     id: string
     name: string
     email: string
@@ -99,6 +100,8 @@ interface PaginationInfo {
 }
 
 export default function DesbloqueoPage() {
+  const { t } = useTranslations()
+  const { formatCurrency } = useCurrency()
   const [unlocks, setUnlocks] = useState<UnlockItem[]>([])
   const [customers, setCustomers] = useState<Customer[]>([])
   const [loading, setLoading] = useState(true)
@@ -1301,7 +1304,7 @@ export default function DesbloqueoPage() {
                   <div className="bg-cyan-50 p-4 rounded-lg border border-cyan-200">
                     <div className="flex items-center gap-3">
                       <div className="p-2 bg-cyan-100 rounded-full">
-                        {selectedUnlock.users?.email.includes('admin') || selectedUnlock.users?.name?.toLowerCase().includes('admin') ? (
+                        {selectedUnlock.technician?.email.includes('admin') || selectedUnlock.technician?.name?.toLowerCase().includes('admin') ? (
                           <Shield className="w-4 h-4 text-cyan-600" />
                         ) : (
                           <User className="w-4 h-4 text-cyan-600" />
@@ -1310,10 +1313,10 @@ export default function DesbloqueoPage() {
                       <div className="flex-1">
                         <p className="text-sm font-medium text-cyan-800">Creado por</p>
                         <p className="text-base font-semibold text-cyan-900">
-                          {selectedUnlock.users ? selectedUnlock.users.name : 'Usuario desconocido'}
+                          {selectedUnlock.technician ? selectedUnlock.technician.name : 'Usuario desconocido'}
                         </p>
                         <p className="text-xs text-cyan-600">
-                          {selectedUnlock.users ? selectedUnlock.users.email : 'Sin información de contacto'}
+                          {selectedUnlock.technician ? selectedUnlock.technician.email : 'Sin información de contacto'}
                         </p>
                         <p className="text-xs text-cyan-500 mt-1">
                           {new Date(selectedUnlock.created_at).toLocaleString('es-ES', {
@@ -1327,15 +1330,15 @@ export default function DesbloqueoPage() {
                       </div>
                       <div className="ml-auto">
                         <Chip 
-                          color={selectedUnlock.users?.email.includes('admin') || selectedUnlock.users?.name?.toLowerCase().includes('admin') ? 'warning' : 'primary'}
+                          color={selectedUnlock.technician?.email.includes('admin') || selectedUnlock.technician?.name?.toLowerCase().includes('admin') ? 'warning' : 'primary'}
                           variant="flat" 
                           size="sm"
-                          startContent={selectedUnlock.users?.email.includes('admin') || selectedUnlock.users?.name?.toLowerCase().includes('admin') ? 
+                          startContent={selectedUnlock.technician?.email.includes('admin') || selectedUnlock.technician?.name?.toLowerCase().includes('admin') ? 
                             <Shield className="w-3 h-3" /> : 
                             <User className="w-3 h-3" />
                           }
                         >
-                          {selectedUnlock.users?.email.includes('admin') || selectedUnlock.users?.name?.toLowerCase().includes('admin') ? 
+                          {selectedUnlock.technician?.email.includes('admin') || selectedUnlock.technician?.name?.toLowerCase().includes('admin') ? 
                             'Administrador' : 
                             'Técnico'
                           }

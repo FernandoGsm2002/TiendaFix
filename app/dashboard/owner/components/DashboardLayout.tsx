@@ -6,6 +6,7 @@ import Sidebar from './Sidebar'
 import Header from './Header'
 import { Spinner, Card, CardBody, Button } from '@heroui/react'
 import { Menu, X } from 'lucide-react'
+import { useTranslations } from '@/lib/contexts/TranslationContext'
 
 interface DashboardLayoutProps {
   children: React.ReactNode
@@ -15,6 +16,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const { loading, isOwner } = useAuth()
+  const { t } = useTranslations()
 
   const handleToggleSidebar = () => {
     setSidebarCollapsed(!sidebarCollapsed)
@@ -34,7 +36,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         <Card className="w-full max-w-sm">
           <CardBody className="text-center p-8">
             <Spinner size="lg" color="primary" />
-            <p className="mt-4 text-gray-600 font-medium">Cargando dashboard...</p>
+            <p className="mt-4 text-gray-600 font-medium">{t('common.loading')}</p>
           </CardBody>
         </Card>
       </div>

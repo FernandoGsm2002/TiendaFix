@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import DashboardLayout from '../components/DashboardLayout'
+import { useTranslations, useCurrency } from '@/lib/contexts/TranslationContext'
 import { 
   Card, 
   CardBody, 
@@ -97,6 +98,8 @@ interface NewProductForm {
 }
 
 export default function InventarioPage() {
+  const { t } = useTranslations()
+  const { formatCurrency } = useCurrency()
   const [items, setItems] = useState<InventoryItem[]>([])
   const [stats, setStats] = useState<InventoryStats>({
     totalItems: 0,
@@ -245,9 +248,9 @@ export default function InventarioPage() {
   }
 
   const getStatusLabel = (item: InventoryItem) => {
-    if (item.stock_quantity === 0) return 'Agotado'
-    if (item.stock_quantity <= item.min_stock) return 'Stock Bajo'
-    return 'Disponible'
+    if (item.stock_quantity === 0) return t('inventory.outOfStockStatus')
+    if (item.stock_quantity <= item.min_stock) return t('inventory.lowStock')
+    return t('inventory.available')
   }
 
   const getCategoryColor = (category: string): "primary" | "secondary" | "success" | "warning" | "danger" | "default" => {
@@ -264,10 +267,7 @@ export default function InventarioPage() {
     return colors[category] || 'default'
   }
 
-  const formatCurrency = (amount: number | null) => {
-    if (!amount) return 'S/ 0.00'
-    return `S/ ${amount.toLocaleString('es-PE', { minimumFractionDigits: 2 })}`
-  }
+
 
   const calculateMargin = (cost: number | null, price: number | null) => {
     if (!cost || !price || cost === 0) return '0%'
@@ -386,10 +386,10 @@ export default function InventarioPage() {
         <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
           <div className="space-y-2">
             <h1 className={`text-4xl font-bold bg-gradient-to-r from-emerald-600 to-blue-600 bg-clip-text text-transparent`}>
-              Gestión de Inventario
+              {t('inventory.title')}
             </h1>
             <p className={`${textColors.secondary} text-lg`}>
-              Control de stock y productos de tu tienda
+              {t('inventory.description')}
             </p>
           </div>
           
@@ -400,7 +400,7 @@ export default function InventarioPage() {
             onPress={onCreateOpen}
             className="shadow-lg"
           >
-            Agregar Producto
+            {t('inventory.newProduct')}
           </Button>
         </div>
 
@@ -415,7 +415,7 @@ export default function InventarioPage() {
                 <Chip color="primary" variant="flat">Total</Chip>
               </div>
               <div className="space-y-2">
-                <p className={`text-sm font-medium ${textColors.tertiary}`}>Total Productos</p>
+                <p className={`text-sm font-medium ${textColors.tertiary}`}>{t('inventory.totalProducts')}</p>
                 <p className={`text-3xl font-bold ${textColors.primary}`}>{stats.totalItems}</p>
                 <Progress value={100} color="primary" size="sm" />
               </div>
@@ -431,7 +431,7 @@ export default function InventarioPage() {
                 <Chip color="success" variant="flat">Disponibles</Chip>
               </div>
               <div className="space-y-2">
-                <p className={`text-sm font-medium ${textColors.tertiary}`}>Disponibles</p>
+                <p className={`text-sm font-medium ${textColors.tertiary}`}>{t('inventory.availableProducts')}</p>
                 <p className={`text-3xl font-bold text-green-600`}>{stats.totalItems - stats.stockBajo - stats.agotados}</p>
                 <Progress value={((stats.totalItems - stats.stockBajo - stats.agotados) / Math.max(stats.totalItems, 1)) * 100} color="success" size="sm" />
               </div>
@@ -447,7 +447,7 @@ export default function InventarioPage() {
                 <Chip color="warning" variant="flat">Bajo</Chip>
               </div>
               <div className="space-y-2">
-                <p className={`text-sm font-medium ${textColors.tertiary}`}>Stock Bajo</p>
+                <p className={`text-sm font-medium ${textColors.tertiary}`}>{t('inventory.lowStock')}</p>
                 <p className={`text-3xl font-bold text-yellow-600`}>{stats.stockBajo}</p>
                 <Progress value={(stats.stockBajo / Math.max(stats.totalItems, 1)) * 100} color="warning" size="sm" />
               </div>
@@ -463,7 +463,7 @@ export default function InventarioPage() {
                 <Chip color="danger" variant="flat">Agotados</Chip>
               </div>
               <div className="space-y-2">
-                <p className={`text-sm font-medium ${textColors.tertiary}`}>Agotados</p>
+                <p className={`text-sm font-medium ${textColors.tertiary}`}>{t('inventory.outOfStock')}</p>
                 <p className={`text-3xl font-bold text-red-600`}>{stats.agotados}</p>
                 <Progress value={(stats.agotados / Math.max(stats.totalItems, 1)) * 100} color="danger" size="sm" />
               </div>
@@ -479,7 +479,7 @@ export default function InventarioPage() {
                 <Chip color="secondary" variant="flat">Valor</Chip>
               </div>
               <div className="space-y-2">
-                <p className={`text-sm font-medium ${textColors.tertiary}`}>Valor Total</p>
+                <p className={`text-sm font-medium ${textColors.tertiary}`}>{t('inventory.totalValue')}</p>
                 <p className={`text-lg font-bold text-purple-600`}>{formatCurrency(stats.valorTotal)}</p>
                 <p className={`text-xs ${textColors.muted}`}>Venta: {formatCurrency(stats.valorVenta)}</p>
               </div>
@@ -492,7 +492,7 @@ export default function InventarioPage() {
           <CardBody className="p-6">
             <div className="flex flex-col md:flex-row gap-4">
               <Input
-                placeholder="Buscar por nombre, SKU, marca..."
+                placeholder={t('inventory.searchPlaceholder')}
                 value={busqueda}
                 onValueChange={handleBusquedaChange}
                 startContent={<Search className="w-4 h-4 text-gray-400" />}
@@ -515,7 +515,7 @@ export default function InventarioPage() {
                   popoverContent: "bg-white",
                 }}
               >
-                <SelectItem key="todas" className="text-gray-900">Todas las categorías</SelectItem>
+                                  <SelectItem key="todas" className="text-gray-900">{t('inventory.allCategories')}</SelectItem>
                 <SelectItem key="Repuestos" className="text-gray-900">Repuestos</SelectItem>
                 <SelectItem key="Accesorios" className="text-gray-900">Accesorios</SelectItem>
                 <SelectItem key="Dispositivos" className="text-gray-900">Dispositivos</SelectItem>
@@ -533,10 +533,10 @@ export default function InventarioPage() {
                   popoverContent: "bg-white",
                 }}
               >
-                <SelectItem key="todos" className="text-gray-900">Todos los estados</SelectItem>
-                <SelectItem key="disponible" className="text-gray-900">Disponible</SelectItem>
-                <SelectItem key="stock_bajo" className="text-gray-900">Stock Bajo</SelectItem>
-                <SelectItem key="agotado" className="text-gray-900">Agotado</SelectItem>
+                                  <SelectItem key="todos" className="text-gray-900">{t('inventory.allStates')}</SelectItem>
+                                  <SelectItem key="disponible" className="text-gray-900">{t('inventory.available')}</SelectItem>
+                                  <SelectItem key="stock_bajo" className="text-gray-900">{t('inventory.lowStock')}</SelectItem>
+                                  <SelectItem key="agotado" className="text-gray-900">{t('inventory.outOfStockStatus')}</SelectItem>
               </Select>
             </div>
           </CardBody>
@@ -709,7 +709,7 @@ export default function InventarioPage() {
                     No se encontraron productos en el inventario
                   </p>
                   <Button color="primary" startContent={<Plus className="w-4 h-4" />} onPress={onCreateOpen}>
-                    Agregar Producto
+                    {t('inventory.newProduct')}
                   </Button>
                 </div>
               ) : (
@@ -783,10 +783,10 @@ export default function InventarioPage() {
                           {/* Ubicación */}
                           <div className="space-y-1">
                             <p className={`text-xs font-medium ${textColors.tertiary} uppercase tracking-wide`}>
-                              Ubicación
+                              {t('inventory.location')}
                             </p>
                             <p className={`text-sm ${textColors.primary}`}>
-                              {item.location || 'Sin ubicación'}
+                              {item.location || t('inventory.location')}
                             </p>
                             {item.supplier && (
                               <p className={`text-xs ${textColors.muted}`}>
@@ -801,7 +801,7 @@ export default function InventarioPage() {
                           <div className="grid grid-cols-2 gap-3">
                             <div>
                               <p className={`text-xs font-medium ${textColors.tertiary} mb-1`}>
-                                Costo
+                                {t('inventory.unitCost')}
                               </p>
                               <p className="text-sm font-medium">
                                 {formatCurrency(item.unit_cost)}
@@ -809,7 +809,7 @@ export default function InventarioPage() {
                             </div>
                             <div>
                               <p className={`text-xs font-medium ${textColors.tertiary} mb-1`}>
-                                Precio Venta
+                                {t('inventory.endUserPrice')}
                               </p>
                               <p className="text-sm font-medium text-green-600">
                                 {formatCurrency(item.enduser_price)}
@@ -819,7 +819,7 @@ export default function InventarioPage() {
                           {item.unit_cost && item.enduser_price && (
                             <div className="mt-3">
                               <Chip size="sm" color="success" variant="flat">
-                                Margen: {calculateMargin(item.unit_cost, item.enduser_price)}
+                                {t('inventory.margin')}: {calculateMargin(item.unit_cost, item.enduser_price)}
                               </Chip>
                             </div>
                           )}
@@ -834,7 +834,7 @@ export default function InventarioPage() {
                             onPress={() => handleViewDetails(item)}
                             className="flex-1"
                           >
-                            Ver
+                            {t('common.view')}
                           </Button>
                           <Button 
                             variant="flat" 
@@ -843,7 +843,7 @@ export default function InventarioPage() {
                             onPress={() => handleEditItem(item)}
                             className="flex-1"
                           >
-                            Editar
+                            {t('common.edit')}
                           </Button>
                           <Button 
                             variant="flat" 
@@ -853,7 +853,7 @@ export default function InventarioPage() {
                             onPress={() => handleDeleteItem(item)}
                             className="flex-1"
                           >
-                            Eliminar
+                            {t('common.delete')}
                           </Button>
                         </div>
                       </CardBody>
@@ -884,7 +884,7 @@ export default function InventarioPage() {
           <ModalContent>
             <form onSubmit={handleCreateProduct}>
               <ModalHeader>
-                <h2 className="text-xl font-bold">Agregar Nuevo Producto</h2>
+                <h2 className={`text-xl font-bold ${textColors.primary}`}>{t('inventory.createTitle')}</h2>
               </ModalHeader>
               <ModalBody className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1009,8 +1009,8 @@ export default function InventarioPage() {
                     onChange={(value) => setNewProduct(prev => ({ ...prev, supplier: value }))}
                     placeholder="Nombre del proveedor"
                   />
-                  <FormField
-                    label="Ubicación"
+                  <                    FormField
+                      label={t('inventory.location')}
                     name="location"
                     value={newProduct.location}
                     onChange={(value) => setNewProduct(prev => ({ ...prev, location: value }))}
@@ -1019,14 +1019,14 @@ export default function InventarioPage() {
                 </div>
               </ModalBody>
               <ModalFooter>
-                <Button variant="flat" onPress={onCreateClose}>Cancelar</Button>
+                <Button variant="flat" onPress={onCreateClose}>{t('common.cancel')}</Button>
                 <Button 
                   type="submit" 
                   color="primary" 
                   isLoading={createLoading}
                   startContent={!createLoading ? <Plus className="w-4 h-4" /> : null}
                 >
-                  Agregar Producto
+                  {t('inventory.newProduct')}
                 </Button>
               </ModalFooter>
             </form>
@@ -1067,7 +1067,7 @@ export default function InventarioPage() {
                   </div>
                 </ModalBody>
                 <ModalFooter>
-                  <Button variant="flat" onPress={onDetailClose}>Cerrar</Button>
+                  <Button variant="flat" onPress={onDetailClose}>{t('common.close')}</Button>
                 </ModalFooter>
               </>
             )}
@@ -1079,7 +1079,7 @@ export default function InventarioPage() {
           <ModalContent>
             <form id="edit-item-form" onSubmit={handleUpdateItem}>
               <ModalHeader>
-                <h2 className={`text-xl font-bold ${textColors.primary}`}>Editar Producto</h2>
+                <h2 className={`text-xl font-bold ${textColors.primary}`}>{t('inventory.editTitle')}</h2>
               </ModalHeader>
               {editingItem && (
                 <ModalBody className="space-y-6">
@@ -1142,7 +1142,7 @@ export default function InventarioPage() {
                 </ModalBody>
               )}
               <ModalFooter>
-                <Button variant="flat" onPress={onEditClose}>Cancelar</Button>
+                <Button variant="flat" onPress={onEditClose}>{t('common.cancel')}</Button>
                 <Button 
                   type="submit" 
                   form="edit-item-form"
@@ -1150,7 +1150,7 @@ export default function InventarioPage() {
                   isLoading={updateLoading}
                   startContent={!updateLoading ? <Plus className="w-4 h-4" /> : null}
                 >
-                  Actualizar Producto
+                  {t('common.update')} {t('common.name').toLowerCase()}
                 </Button>
               </ModalFooter>
             </form>
@@ -1161,14 +1161,14 @@ export default function InventarioPage() {
         <Modal isOpen={isDeleteOpen} onClose={onDeleteClose} size="lg">
           <ModalContent>
             <ModalHeader>
-              <h2 className={`text-xl font-bold ${textColors.primary}`}>Eliminar Producto</h2>
+              <h2 className={`text-xl font-bold ${textColors.primary}`}>{t('inventory.deleteTitle')}</h2>
             </ModalHeader>
             <ModalBody className="space-y-6">
-              <p className={textColors.secondary}>¿Estás seguro de que quieres eliminar este producto?</p>
+              <p className={textColors.secondary}>{t('inventory.deleteMessage')}</p>
               {selectedItem && <p className={`font-bold ${textColors.primary}`}>{selectedItem.name}</p>}
             </ModalBody>
             <ModalFooter>
-              <Button variant="flat" onPress={onDeleteClose}>Cancelar</Button>
+              <Button variant="flat" onPress={onDeleteClose}>{t('common.cancel')}</Button>
               <Button 
                 color="danger" 
                 isLoading={deleteLoading}

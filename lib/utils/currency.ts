@@ -14,6 +14,13 @@ export const CURRENCIES: Record<string, Currency> = {
     locale: 'es-PE',
     decimals: 2
   },
+  CLP: {
+    code: 'CLP',
+    symbol: '$',
+    name: 'Peso Chileno',
+    locale: 'es-CL',
+    decimals: 0 // CLP generalmente no usa decimales
+  },
   COP: {
     code: 'COP',
     symbol: '$',
@@ -109,6 +116,7 @@ export function getCurrencyName(currencyCode?: string, locale: string = 'es'): s
   const translations: Record<string, Record<string, string>> = {
     es: {
       PEN: 'Sol Peruano',
+      CLP: 'Peso Chileno',
       COP: 'Peso Colombiano', 
       BRL: 'Real Brasileño',
       MXN: 'Peso Mexicano',
@@ -116,6 +124,7 @@ export function getCurrencyName(currencyCode?: string, locale: string = 'es'): s
     },
     en: {
       PEN: 'Peruvian Sol',
+      CLP: 'Chilean Peso',
       COP: 'Colombian Peso',
       BRL: 'Brazilian Real', 
       MXN: 'Mexican Peso',
@@ -123,6 +132,7 @@ export function getCurrencyName(currencyCode?: string, locale: string = 'es'): s
     },
     pt: {
       PEN: 'Sol Peruano',
+      CLP: 'Peso Chileno',
       COP: 'Peso Colombiano',
       BRL: 'Real Brasileiro',
       MXN: 'Peso Mexicano', 

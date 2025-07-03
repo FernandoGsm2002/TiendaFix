@@ -20,6 +20,7 @@ import {
 } from 'lucide-react'
 import { useAuth } from '@/lib/auth/auth-context'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from '@/lib/contexts/TranslationContext'
 
 interface SidebarProps {
   isCollapsed: boolean
@@ -27,11 +28,11 @@ interface SidebarProps {
   onMobileMenuClose?: () => void
 }
 
-// Menú completo para owners - acceso total al sistema
-const menuItems = [
+// Función para obtener los elementos del menú con traducciones
+const getMenuItems = (t: (key: string) => string) => [
   {
     id: 'dashboard',
-    label: 'Dashboard',
+    label: t('navigation.dashboard'),
     href: '/dashboard/owner/dashboard',
     icon: BarChart3,
     color: 'text-blue-600',
@@ -39,7 +40,7 @@ const menuItems = [
   },
   {
     id: 'reparaciones',
-    label: 'Reparaciones',
+    label: t('navigation.repairs'),
     href: '/dashboard/owner/reparaciones',
     icon: Wrench,
     color: 'text-orange-600',
@@ -47,7 +48,7 @@ const menuItems = [
   },
   {
     id: 'clientes',
-    label: 'Clientes',
+    label: t('navigation.customers'),
     href: '/dashboard/owner/clientes',
     icon: Users,
     color: 'text-green-600',
@@ -56,7 +57,7 @@ const menuItems = [
   // TEMPORALMENTE OCULTO - Apartado de dispositivos será eliminado en el nuevo flujo
   // {
   //   id: 'dispositivos',
-  //   label: 'Dispositivos',
+  //   label: t('navigation.devices'),
   //   href: '/dashboard/owner/dispositivos',
   //   icon: Smartphone,
   //   color: 'text-purple-600',
@@ -64,7 +65,7 @@ const menuItems = [
   // },
   {
     id: 'inventario',
-    label: 'Inventario',
+    label: t('navigation.inventory'),
     href: '/dashboard/owner/inventario',
     icon: Package,
     color: 'text-amber-600',
@@ -72,7 +73,7 @@ const menuItems = [
   },
   {
     id: 'ventas',
-    label: 'Ventas/POS',
+    label: t('navigation.pos'),
     href: '/dashboard/owner/ventas',
     icon: ShoppingCart,
     color: 'text-emerald-600',
@@ -80,7 +81,7 @@ const menuItems = [
   },
   {
     id: 'desbloqueos',
-    label: 'Desbloqueos',
+    label: t('navigation.unlocks'),
     href: '/dashboard/owner/desbloqueos',
     icon: Unlock,
     color: 'text-cyan-600',
@@ -88,7 +89,7 @@ const menuItems = [
   },
   {
     id: 'personal',
-    label: 'Personal',
+    label: t('navigation.staff'),
     href: '/dashboard/owner/personal',
     icon: UserCheck,
     color: 'text-indigo-600',
@@ -96,7 +97,7 @@ const menuItems = [
   },
   {
     id: 'reportes',
-    label: 'Reportes',
+    label: t('navigation.reports'),
     href: '/dashboard/owner/reportes',
     icon: FileBarChart,
     color: 'text-pink-600',
@@ -104,7 +105,7 @@ const menuItems = [
   },
   {
     id: 'configuracion',
-    label: 'Configuración',
+    label: t('navigation.settings'),
     href: '/dashboard/owner/configuracion',
     icon: Settings,
     color: 'text-gray-600',
@@ -116,6 +117,9 @@ export default function Sidebar({ isCollapsed, onToggleCollapse, onMobileMenuClo
   const pathname = usePathname()
   const { signOut } = useAuth()
   const router = useRouter()
+  const { t } = useTranslations()
+  
+  const menuItems = getMenuItems(t)
 
   const handleSignOut = async () => {
     await signOut()

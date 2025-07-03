@@ -37,11 +37,26 @@ export async function GET(request: NextRequest) {
     
     const organizationId = userProfile.organization_id;
 
+    console.log('🔍 Calling get_dashboard_stats with org_id:', organizationId)
     const { data, error } = await supabase.rpc('get_dashboard_stats', { p_org_id: organizationId })
 
     if (error) {
       console.error('🚨 Database function error:', error)
       return NextResponse.json({ error: 'Error al consultar las estadísticas del dashboard', details: error.message }, { status: 500 })
+    }
+
+    console.log('📊 Dashboard stats response:', JSON.stringify(data, null, 2))
+
+    // Verificar si la respuesta tiene error
+    if (data && data.error) {
+      console.error('🚨 Function returned error:', data.message)
+      return NextResponse.json({ error: data.message || 'Error en la función del dashboard' }, { status: 500 })
+    }
+
+    // Verificar estructura de datos
+    if (!data || !data.counters) {
+      console.error('🚨 Invalid data structure:', data)
+      return NextResponse.json({ error: 'Estructura de datos inválida' }, { status: 500 })
     }
 
     // The function now returns data in the exact shape the frontend needs.
@@ -59,7 +74,6 @@ export async function GET(request: NextRequest) {
     if (data.chartData && !data.chartData.repairsByStatus) {
       data.chartData.repairsByStatus = {};
     }
-
 
     return NextResponse.json({
       success: true,

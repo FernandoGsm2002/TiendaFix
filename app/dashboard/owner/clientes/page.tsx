@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import DashboardLayout from '../components/DashboardLayout'
+import { useTranslations, useCurrency } from '@/lib/contexts/TranslationContext'
 import { 
   Card, 
   CardBody, 
@@ -61,17 +62,16 @@ interface Customer {
   phone: string | null
   address: string | null
   customer_type: string
-  is_recurrent: boolean
   anonymous_identifier: string | null
-  notes: string | null
   created_at: string
   updated_at: string
+  is_recurrent: boolean
   stats: {
-    totalReparaciones: number
-    pendientes: number
-    completadas: number
-    entregadas: number
     totalGastado: number
+    totalReparaciones: number
+    reparaciones: number
+    desbloqueos: number
+    ventas: number
   }
 }
 
@@ -119,6 +119,8 @@ interface NewCustomerForm {
 }
 
 export default function ClientesPage() {
+  const { t } = useTranslations()
+  const { formatCurrency } = useCurrency()
   const [customers, setCustomers] = useState<Customer[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -349,21 +351,18 @@ export default function ClientesPage() {
   }
 
   const getBadgeLabel = (type: string, isRecurrent: boolean) => {
-    if (isRecurrent) return 'Cliente VIP'
+          if (isRecurrent) return t('customers.vipClients')
     switch (type) {
-      case 'identified': return 'Registrado'
-      case 'anonymous': return 'Anónimo'
+              case 'identified': return t('customers.identified')
+      case 'anonymous': return t('customers.anonymous')
       default: return type
     }
   }
 
-  const formatCurrency = (amount: number | undefined | null) => {
-    if (!amount || amount === 0) return 'S/ 0.00'
-    return `S/ ${amount.toLocaleString('es-PE', { minimumFractionDigits: 2 })}`
-  }
+
 
   const getCustomerDisplayName = (customer: Customer) => {
-    return customer.name || customer.anonymous_identifier || 'Cliente Anónimo'
+          return customer.name || customer.anonymous_identifier || t('customers.anonymous')
   }
 
   const getServiceTypeLabel = (type: string) => {
@@ -461,10 +460,10 @@ export default function ClientesPage() {
         <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
           <div className="space-y-2">
             <h1 className={`text-4xl font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent`}>
-              Gestión de Clientes
+              {t('customers.title')}
             </h1>
             <p className={`${textColors.secondary} text-lg`}>
-              Administra tu base de clientes y sus datos
+              {t('customers.description')}
             </p>
           </div>
           
@@ -475,7 +474,7 @@ export default function ClientesPage() {
             onPress={onCreateOpen}
             className="shadow-lg"
           >
-            Nuevo Cliente
+            {t('customers.new')}
           </Button>
         </div>
 
@@ -490,7 +489,7 @@ export default function ClientesPage() {
                 <Chip color="primary" variant="flat">Total</Chip>
               </div>
               <div className="space-y-2">
-                <p className={`text-sm font-medium ${textColors.tertiary}`}>Total de Clientes</p>
+                <p className={`text-sm font-medium ${textColors.tertiary}`}>{t('customers.totalClients')}</p>
                 <p className={`text-3xl font-bold ${textColors.primary}`}>{stats.total}</p>
                 <Progress value={100} color="primary" size="sm" />
               </div>
@@ -506,7 +505,7 @@ export default function ClientesPage() {
                 <Chip color="success" variant="flat">Registrados</Chip>
               </div>
               <div className="space-y-2">
-                <p className={`text-sm font-medium ${textColors.tertiary}`}>Clientes Registrados</p>
+                <p className={`text-sm font-medium ${textColors.tertiary}`}>{t('customers.registeredClients')}</p>
                 <p className={`text-3xl font-bold text-green-600`}>{stats.identificados}</p>
                 <Progress value={(stats.identificados / Math.max(stats.total, 1)) * 100} color="success" size="sm" />
               </div>
@@ -522,7 +521,7 @@ export default function ClientesPage() {
                 <Chip color="secondary" variant="flat">VIP</Chip>
               </div>
               <div className="space-y-2">
-                <p className={`text-sm font-medium ${textColors.tertiary}`}>Clientes VIP</p>
+                <p className={`text-sm font-medium ${textColors.tertiary}`}>{t('customers.vipClients')}</p>
                 <p className={`text-3xl font-bold text-purple-600`}>{stats.vip}</p>
                 <Progress value={(stats.vip / Math.max(stats.total, 1)) * 100} color="secondary" size="sm" />
               </div>
@@ -538,7 +537,7 @@ export default function ClientesPage() {
                 <Chip color="warning" variant="flat">Anónimos</Chip>
               </div>
               <div className="space-y-2">
-                <p className={`text-sm font-medium ${textColors.tertiary}`}>Clientes Anónimos</p>
+                <p className={`text-sm font-medium ${textColors.tertiary}`}>{t('customers.anonymousClients')}</p>
                 <p className={`text-3xl font-bold text-orange-600`}>{stats.anonimos}</p>
                 <Progress value={(stats.anonimos / Math.max(stats.total, 1)) * 100} color="warning" size="sm" />
               </div>
@@ -552,7 +551,7 @@ export default function ClientesPage() {
             <div className="flex flex-col md:flex-row gap-4 items-center">
               <div className="flex-1 w-full">
                 <Input
-                  placeholder="Buscar por nombre, correo, teléfono o identificador..."
+                  placeholder={t('customers.searchPlaceholder')}
                   value={busqueda}
                   onValueChange={handleBusquedaChange}
                   startContent={<Search className="w-4 h-4 text-gray-400" />}
@@ -565,7 +564,7 @@ export default function ClientesPage() {
               </div>
               <div className="w-full md:w-auto">
                 <Select
-                  placeholder="Filtrar por tipo"
+                  placeholder={t('customers.customerType')}
                   selectedKeys={new Set([filtroTipo])}
                   onSelectionChange={handleTipoChange}
                   variant="bordered"
@@ -575,10 +574,10 @@ export default function ClientesPage() {
                     popoverContent: "bg-white",
                   }}
                 >
-                  <SelectItem key="todos" className="text-gray-900">Todos los tipos</SelectItem>
-                  <SelectItem key="identified" className="text-gray-900">Identificado</SelectItem>
-                  <SelectItem key="anonymous" className="text-gray-900">Anónimo</SelectItem>
-                  <SelectItem key="recurrent" className="text-gray-900">Recurrente</SelectItem>
+                  <SelectItem key="todos" className="text-gray-900">{t('customers.allTypes')}</SelectItem>
+                                      <SelectItem key="identified" className="text-gray-900">{t('customers.identified')}</SelectItem>
+                                      <SelectItem key="anonymous" className="text-gray-900">{t('customers.anonymous')}</SelectItem>
+                                      <SelectItem key="recurrent" className="text-gray-900">{t('customers.recurrent')}</SelectItem>
                 </Select>
               </div>
             </div>
@@ -648,17 +647,17 @@ export default function ClientesPage() {
                 </div>
 
                 <div className="flex justify-end gap-2 mt-4">
-                  <Tooltip content="Ver detalles" classNames={{ content: "bg-gray-900 text-white" }}>
+                  <Tooltip content={t('common.view') + " " + t('common.details')} classNames={{ content: "bg-gray-900 text-white" }}>
                     <Button isIconOnly variant="flat" size="sm" onPress={() => handleViewDetails(customer)}>
                       <Eye className="w-5 h-5" />
                     </Button>
                   </Tooltip>
-                  <Tooltip content="Editar cliente" classNames={{ content: "bg-gray-900 text-white" }}>
+                  <Tooltip content={t('common.edit') + " " + t('common.customer')} classNames={{ content: "bg-gray-900 text-white" }}>
                     <Button isIconOnly variant="flat" size="sm" onPress={() => handleEditCustomer(customer)}>
                       <Edit className="w-5 h-5" />
                     </Button>
                   </Tooltip>
-                  <Tooltip content="Eliminar cliente" classNames={{ content: "bg-gray-900 text-white" }}>
+                                      <Tooltip content={t('common.delete') + " " + t('common.customer')} classNames={{ content: "bg-gray-900 text-white" }}>
                     <Button isIconOnly variant="flat" size="sm" color="danger" onPress={() => handleDeleteCustomer(customer)}>
                       <Trash2 className="w-5 h-5" />
                     </Button>
@@ -688,7 +687,7 @@ export default function ClientesPage() {
           <ModalContent>
             <form onSubmit={handleCreateCustomer}>
               <ModalHeader>
-                <h2 className="text-xl font-bold">Crear Nuevo Cliente</h2>
+                <h2 className={`text-xl font-bold ${textColors.primary}`}>{t('customers.createTitle')}</h2>
               </ModalHeader>
               <ModalBody className="space-y-4">
                 <FormField
@@ -729,8 +728,8 @@ export default function ClientesPage() {
                   value={newCustomer.customer_type}
                   onChange={(value) => setNewCustomer(prev => ({ ...prev, customer_type: value }))}
                   options={[
-                    { value: 'identified', label: 'Cliente Registrado' },
-                    { value: 'anonymous', label: 'Cliente Anónimo' }
+                    { value: 'identified', label: t('customers.identified') },
+                    { value: 'anonymous', label: t('customers.anonymous') }
                   ]}
                 />
               </ModalBody>
@@ -742,7 +741,7 @@ export default function ClientesPage() {
                   isLoading={createLoading}
                   startContent={!createLoading ? <Plus className="w-4 h-4" /> : null}
                 >
-                  Crear Cliente
+                  {t('customers.new')}
                 </Button>
               </ModalFooter>
             </form>
@@ -832,19 +831,27 @@ export default function ClientesPage() {
                       <CardBody className="pt-0">
                         <div className="grid grid-cols-2 gap-3">
                           <div className="text-center p-3 bg-blue-50 rounded-lg">
-                            <p className="text-xl font-bold text-blue-600">{selectedCustomer.stats.totalReparaciones}</p>
+                            <p className="text-xl font-bold text-blue-600">
+                              {customerDetail?.services?.length || 0}
+                            </p>
                             <p className="text-xs text-gray-600">Total Servicios</p>
                           </div>
                           <div className="text-center p-3 bg-green-50 rounded-lg">
-                            <p className="text-xl font-bold text-green-600">{formatCurrency(selectedCustomer.stats.totalGastado)}</p>
+                            <p className="text-xl font-bold text-green-600">
+                              {formatCurrency(customerDetail?.financialSummary?.totalSpent || 0)}
+                            </p>
                             <p className="text-xs text-gray-600">Total Gastado</p>
                           </div>
                           <div className="text-center p-3 bg-orange-50 rounded-lg">
-                            <p className="text-xl font-bold text-orange-600">{selectedCustomer.stats.pendientes}</p>
+                            <p className="text-xl font-bold text-orange-600">
+                              {customerDetail?.services?.filter(s => ['pending', 'received', 'diagnosed', 'in_progress'].includes(s.status)).length || 0}
+                            </p>
                             <p className="text-xs text-gray-600">Pendientes</p>
                           </div>
                           <div className="text-center p-3 bg-purple-50 rounded-lg">
-                            <p className="text-xl font-bold text-purple-600">{selectedCustomer.stats.completadas}</p>
+                            <p className="text-xl font-bold text-purple-600">
+                              {customerDetail?.services?.filter(s => ['completed', 'delivered'].includes(s.status)).length || 0}
+                            </p>
                             <p className="text-xs text-gray-600">Completadas</p>
                           </div>
                         </div>
@@ -1009,7 +1016,7 @@ export default function ClientesPage() {
           <ModalContent>
             <form onSubmit={handleUpdateCustomer}>
               <ModalHeader>
-                <h2 className={`text-xl font-bold ${textColors.primary}`}>Editar Cliente</h2>
+                <h2 className={`text-xl font-bold ${textColors.primary}`}>{t('customers.editTitle')}</h2>
               </ModalHeader>
               <ModalBody className="space-y-4">
                 {editingCustomer && (
@@ -1108,7 +1115,7 @@ export default function ClientesPage() {
                 onPress={confirmDeleteCustomer}
                 startContent={!deleteLoading ? <Trash2 className="w-4 h-4" /> : null}
               >
-                Eliminar Cliente
+                {t('customers.deleteTitle')}
               </Button>
             </ModalFooter>
           </ModalContent>

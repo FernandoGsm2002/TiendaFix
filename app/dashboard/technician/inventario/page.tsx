@@ -20,7 +20,7 @@ import {
   Alert,
   Button
 } from '@heroui/react'
-import { formatCurrency } from '@/lib/utils/currency'
+import { useCurrency } from '@/lib/contexts/TranslationContext'
 import { 
   Search, 
   Package, 
@@ -55,6 +55,7 @@ interface Product {
 }
 
 export default function TechnicianInventoryPage() {
+  const { formatCurrency } = useCurrency()
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
   const [busqueda, setBusqueda] = useState('')

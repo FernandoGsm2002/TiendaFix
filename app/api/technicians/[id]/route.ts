@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createServerClient } from '@/lib/supabase/server'
+import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
+import { cookies } from 'next/headers'
 
 // GET - Obtener técnico por ID
 export async function GET(
@@ -9,9 +10,29 @@ export async function GET(
   try {
     console.log('🔧 Getting technician by ID:', params.id)
     
-    const supabase = createServerClient()
+    const supabase = createRouteHandlerClient({ cookies })
     const technicianId = params.id
-    const organizationId = '873d8154-8b40-4b8a-8d03-431bf9f697e6'
+
+    // Verificar autenticación
+    const { data: { session }, error: authError } = await supabase.auth.getSession()
+    if (authError || !session) {
+      console.error('❌ Usuario no autenticado:', authError)
+      return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
+    }
+
+    // Obtener la organización del usuario
+    const { data: userProfile, error: profileError } = await supabase
+      .from('users')
+      .select('organization_id')
+      .eq('auth_user_id', session.user.id)
+      .single()
+
+    if (profileError || !userProfile?.organization_id) {
+      console.error('❌ Error obteniendo organización del usuario:', profileError)
+      return NextResponse.json({ error: 'Organización no encontrada' }, { status: 403 })
+    }
+
+    const organizationId = userProfile.organization_id
 
     const { data: technician, error } = await supabase
       .from('users')
@@ -53,10 +74,30 @@ export async function PUT(
   try {
     console.log('🔧 Updating technician:', params.id)
     
-    const supabase = createServerClient()
+    const supabase = createRouteHandlerClient({ cookies })
     const body = await request.json()
     const technicianId = params.id
-    const organizationId = '873d8154-8b40-4b8a-8d03-431bf9f697e6'
+
+    // Verificar autenticación
+    const { data: { session }, error: authError } = await supabase.auth.getSession()
+    if (authError || !session) {
+      console.error('❌ Usuario no autenticado:', authError)
+      return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
+    }
+
+    // Obtener la organización del usuario
+    const { data: userProfile, error: profileError } = await supabase
+      .from('users')
+      .select('organization_id')
+      .eq('auth_user_id', session.user.id)
+      .single()
+
+    if (profileError || !userProfile?.organization_id) {
+      console.error('❌ Error obteniendo organización del usuario:', profileError)
+      return NextResponse.json({ error: 'Organización no encontrada' }, { status: 403 })
+    }
+
+    const organizationId = userProfile.organization_id
 
     // Validaciones
     if (!body.name || !body.email) {
@@ -122,9 +163,29 @@ export async function DELETE(
   try {
     console.log('🔧 Deleting technician:', params.id)
     
-    const supabase = createServerClient()
+    const supabase = createRouteHandlerClient({ cookies })
     const technicianId = params.id
-    const organizationId = '873d8154-8b40-4b8a-8d03-431bf9f697e6'
+
+    // Verificar autenticación
+    const { data: { session }, error: authError } = await supabase.auth.getSession()
+    if (authError || !session) {
+      console.error('❌ Usuario no autenticado:', authError)
+      return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
+    }
+
+    // Obtener la organización del usuario
+    const { data: userProfile, error: profileError } = await supabase
+      .from('users')
+      .select('organization_id')
+      .eq('auth_user_id', session.user.id)
+      .single()
+
+    if (profileError || !userProfile?.organization_id) {
+      console.error('❌ Error obteniendo organización del usuario:', profileError)
+      return NextResponse.json({ error: 'Organización no encontrada' }, { status: 403 })
+    }
+
+    const organizationId = userProfile.organization_id
 
     // Verificar si el técnico tiene reparaciones asignadas
     const { data: repairs } = await supabase

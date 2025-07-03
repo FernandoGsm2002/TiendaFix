@@ -57,15 +57,15 @@ interface Customer {
   customer_type: string
   is_recurrent: boolean
   anonymous_identifier: string | null
-  notes: string | null
+  notes?: string | null
   created_at: string
   updated_at: string
   stats: {
-    totalReparaciones: number
-    pendientes: number
-    completadas: number
-    entregadas: number
     totalGastado: number
+    totalReparaciones: number
+    reparaciones: number
+    desbloqueos: number
+    ventas: number
   }
 }
 
@@ -636,19 +636,27 @@ export default function ClientesPage() {
                       <CardBody className="pt-0">
                         <div className="grid grid-cols-2 gap-3">
                           <div className="text-center p-3 bg-blue-50 rounded-lg">
-                            <p className="text-xl font-bold text-blue-600">{selectedCustomer.stats.totalReparaciones}</p>
+                            <p className="text-xl font-bold text-blue-600">
+                              {customerDetail?.services?.length || selectedCustomer.stats.totalReparaciones}
+                            </p>
                             <p className="text-xs text-gray-600">Total Servicios</p>
                           </div>
                           <div className="text-center p-3 bg-green-50 rounded-lg">
-                            <p className="text-xl font-bold text-green-600">{formatCurrency(selectedCustomer.stats.totalGastado)}</p>
+                            <p className="text-xl font-bold text-green-600">
+                              {formatCurrency(customerDetail?.financialSummary?.totalSpent || selectedCustomer.stats.totalGastado)}
+                            </p>
                             <p className="text-xs text-gray-600">Total Gastado</p>
                           </div>
                           <div className="text-center p-3 bg-orange-50 rounded-lg">
-                            <p className="text-xl font-bold text-orange-600">{selectedCustomer.stats.pendientes}</p>
+                            <p className="text-xl font-bold text-orange-600">
+                              {customerDetail?.services?.filter(s => ['pending', 'received', 'diagnosed', 'in_progress'].includes(s.status)).length || 0}
+                            </p>
                             <p className="text-xs text-gray-600">Pendientes</p>
                           </div>
                           <div className="text-center p-3 bg-purple-50 rounded-lg">
-                            <p className="text-xl font-bold text-purple-600">{selectedCustomer.stats.completadas}</p>
+                            <p className="text-xl font-bold text-purple-600">
+                              {customerDetail?.services?.filter(s => ['completed', 'delivered'].includes(s.status)).length || 0}
+                            </p>
                             <p className="text-xs text-gray-600">Completadas</p>
                           </div>
                         </div>

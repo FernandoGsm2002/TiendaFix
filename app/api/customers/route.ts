@@ -1,229 +1,239 @@
 ﻿import { NextRequest, NextResponse } from 'next/server'
-import { createServerClient } from '@/lib/supabase/server'
+import { cookies } from 'next/headers'
+import { validateMultiTenantAccess, logApiCall } from '@/lib/utils/multi-tenant'
+
+export const dynamic = 'force-dynamic'
 
 export async function GET(request: NextRequest) {
+  const cookieStore = cookies()
+  
   try {
-    console.log('🔧 Customers API called - getting real data')
+    // 1. Validar acceso multi-tenant
+    const validation = await validateMultiTenantAccess(cookieStore)
     
-    const supabase = createServerClient()
+    if (!validation.success) {
+      return validation.response
+    }
+
+    const { userProfile, organizationId, supabase } = validation.context
+    
+    logApiCall('Customers', organizationId, { 
+      userRole: userProfile.role,
+      userId: userProfile.id 
+    })
+
+    // 2. Extraer parámetros de consulta
     const { searchParams } = new URL(request.url)
-    
-    // Parámetros de consulta
-    const page = parseInt(searchParams.get('page') || '1')
-    const limit = parseInt(searchParams.get('limit') || '12')
-    const search = searchParams.get('search') || ''
-    const type = searchParams.get('type') || 'todos'
-    
+    const page = Math.max(1, parseInt(searchParams.get('page') || '1'))
+    const limit = Math.min(100, Math.max(1, parseInt(searchParams.get('limit') || '10')))
+    const search = searchParams.get('search')
+    const customerType = searchParams.get('customer_type')
     const offset = (page - 1) * limit
-    
-    // UUID válido de Fernando (organización real)
-    const organizationId = '873d8154-8b40-4b8a-8d03-431bf9f697e6'
 
-    try {
-      let query = supabase
-        .from('customers')
-        .select(`
-          id, name, email, phone, address, customer_type,
-          anonymous_identifier, is_recurrent, notes,
-          created_at, updated_at
-        `)
-        .eq('organization_id', organizationId)
-        .order('created_at', { ascending: false })
+    // 3. Construir query optimizada
+    let query = supabase
+      .from('customers')
+      .select(`
+        id,
+        name,
+        phone,
+        email,
+        address,
+        anonymous_identifier,
+        customer_type,
+        created_at,
+        updated_at
+      `, { count: 'exact' })
+      .eq('organization_id', organizationId)
 
-      // Filtrar por tipo si no es 'todos'
-      if (type !== 'todos') {
-        query = query.eq('customer_type', type)
-      }
+    // 4. Aplicar filtros
+    if (search) {
+      query = query.or(`name.ilike.%${search}%,phone.ilike.%${search}%,email.ilike.%${search}%`)
+    }
 
-      // Filtrar por búsqueda si se proporciona
-      if (search) {
-        const searchConditions = [
-          `name.ilike.%${search}%`,
-          `email.ilike.%${search}%`,
-          `phone.ilike.%${search}%`,
-          `anonymous_identifier.ilike.%${search}%`
-        ].join(',')
+    if (customerType && customerType !== 'todos' && customerType !== 'recurrent') {
+      query = query.eq('customer_type', customerType)
+    }
 
-        query = query.or(searchConditions)
-      }
+    // 5. Ejecutar query con paginación
+    const { data: customers, error, count } = await query
+      .order('created_at', { ascending: false })
+      .range(offset, offset + limit - 1)
 
-      // Obtener datos con paginación
-      const { data: customers, error, count } = await query
-        .range(offset, offset + limit - 1)
+    if (error) {
+      console.error('❌ Database error:', error)
+      throw error
+    }
 
-      if (error) {
-        console.error('🚨 Error fetching customers:', error)
-        throw error
-      }
+    console.log(`✅ Fetched ${customers?.length || 0} customers from database`)
 
-      // Obtener estadísticas completas para cada cliente (reparaciones + desbloqueos + ventas)
-      const customersWithStats = await Promise.all(
-        (customers || []).map(async (customer) => {
-          // Obtener reparaciones
+    // 6. Calcular estadísticas por cliente
+    const customersWithStats = await Promise.all(
+      (customers || []).map(async (customer: any) => {
+        try {
+          // Calcular estadísticas de reparaciones
           const { data: repairs, error: repairsError } = await supabase
             .from('repairs')
-            .select('id, status, cost')
+            .select('cost')
             .eq('customer_id', customer.id)
             .eq('organization_id', organizationId)
 
-          // Obtener desbloqueos
+          // Calcular estadísticas de desbloqueos
           const { data: unlocks, error: unlocksError } = await supabase
             .from('unlocks')
-            .select('id, status, cost')
+            .select('cost')
             .eq('customer_id', customer.id)
             .eq('organization_id', organizationId)
 
-          // Obtener ventas
+          // Calcular estadísticas de ventas
           const { data: sales, error: salesError } = await supabase
             .from('sales')
-            .select('id, status, total_amount')
+            .select('total')
             .eq('customer_id', customer.id)
             .eq('organization_id', organizationId)
 
-          if (repairsError) {
-            console.warn(`Error fetching repairs for customer ${customer.id}:`, repairsError)
-          }
-          if (unlocksError) {
-            console.warn(`Error fetching unlocks for customer ${customer.id}:`, unlocksError)
-          }
-          if (salesError) {
-            console.warn(`Error fetching sales for customer ${customer.id}:`, salesError)
-          }
+          // Log para debugging
+          console.log(`📊 Customer ${customer.id} data:`, {
+            repairs: repairs?.length || 0,
+            unlocks: unlocks?.length || 0,
+            sales: sales?.length || 0,
+            repairsData: repairs,
+            unlocksData: unlocks,
+            salesData: sales,
+            errors: { repairsError, unlocksError, salesError }
+          })
 
-          const repairsList = repairs || []
-          const unlocksList = unlocks || []
-          const salesList = sales || []
+          // Calcular totales
+          const totalGastadoReparaciones = repairs?.reduce((sum: number, repair: any) => sum + (repair.cost || 0), 0) || 0
+          const totalGastadoDesbloqueos = unlocks?.reduce((sum: number, unlock: any) => sum + (unlock.cost || 0), 0) || 0
+          const totalGastadoVentas = sales?.reduce((sum: number, sale: any) => sum + (sale.total || 0), 0) || 0
+          
+          const totalGastado = totalGastadoReparaciones + totalGastadoDesbloqueos + totalGastadoVentas
+          const totalReparaciones = (repairs?.length || 0) + (unlocks?.length || 0) + (sales?.length || 0)
 
-          // Calcular totales combinados
-          const totalReparaciones = repairsList.length
-          const totalDesbloqueos = unlocksList.length
-          const totalVentas = salesList.length
-          const totalServicios = totalReparaciones + totalDesbloqueos + totalVentas
+          // Log de totales calculados
+          console.log(`💰 Customer ${customer.id} totals:`, {
+            totalGastadoReparaciones,
+            totalGastadoDesbloqueos,
+            totalGastadoVentas,
+            totalGastado,
+            totalReparaciones
+          })
 
-          // Calcular totales gastados
-          const repairsSpent = repairsList.filter(r => r.cost).reduce((sum, r) => sum + (r.cost || 0), 0)
-          const unlocksSpent = unlocksList.filter(u => u.cost).reduce((sum, u) => sum + (u.cost || 0), 0)
-          const salesSpent = salesList.filter(s => s.total_amount).reduce((sum, s) => sum + (s.total_amount || 0), 0)
-          const totalGastado = repairsSpent + unlocksSpent + salesSpent
-
-          // Calcular estados (considerando reparaciones y desbloqueos principalmente)
-          const pendientes = repairsList.filter(r => r.status === 'received').length + 
-                            unlocksList.filter(u => u.status === 'pending').length
-          const completadas = repairsList.filter(r => r.status === 'completed').length + 
-                             unlocksList.filter(u => u.status === 'completed').length + 
-                             salesList.length // Las ventas se consideran completadas
-          const entregadas = repairsList.filter(r => r.status === 'delivered').length
+          // Determinar si es cliente recurrente (más de 2 servicios)
+          const isRecurrent = totalReparaciones > 2
 
           return {
             ...customer,
+            is_recurrent: isRecurrent,
             stats: {
-              totalReparaciones: totalServicios, // Ahora incluye todos los servicios
-              pendientes,
-              completadas,
-              entregadas,
-              totalGastado
+              totalGastado,
+              totalReparaciones,
+              reparaciones: repairs?.length || 0,
+              desbloqueos: unlocks?.length || 0,
+              ventas: sales?.length || 0
             }
           }
-        })
-      )
-
-      console.log(`✅ Fetched ${customers?.length || 0} customers from database`)
-
-      return NextResponse.json({
-        success: true,
-        data: customersWithStats,
-        pagination: {
-          page,
-          limit,
-          total: count || 0,
-          totalPages: Math.ceil((count || 0) / limit)
+        } catch (statsError) {
+          console.error(`❌ Error calculating stats for customer ${customer.id}:`, statsError)
+          return {
+            ...customer,
+            is_recurrent: false,
+            stats: {
+              totalGastado: 0,
+              totalReparaciones: 0,
+              reparaciones: 0,
+              desbloqueos: 0,
+              ventas: 0
+            }
+          }
         }
       })
+    )
 
-    } catch (dbError) {
-      console.error('🚨 Database query error:', dbError)
-      
-      // Devolver estructura vacía si falla la BD
-      return NextResponse.json({
-        success: true,
-        data: [],
-        pagination: {
-          page: 1,
-          limit: 12,
-          total: 0,
-          totalPages: 0
-        }
-      })
+    // 7. Filtrar clientes recurrentes si es necesario
+    let finalCustomers = customersWithStats
+    if (customerType === 'recurrent') {
+      finalCustomers = customersWithStats.filter(c => c.is_recurrent)
     }
+
+    // 8. Calcular estadísticas generales
+    const { data: statsData } = await supabase
+      .from('customers')
+      .select('customer_type')
+      .eq('organization_id', organizationId)
+
+    const recurrentCount = customersWithStats.filter(c => c.is_recurrent).length
+
+    const stats = {
+      total: count || 0,
+      registered: statsData?.filter((c: { customer_type: string }) => c.customer_type === 'identified').length || 0,
+      anonymous: statsData?.filter((c: { customer_type: string }) => c.customer_type === 'anonymous').length || 0,
+      recurrent: recurrentCount
+    }
+
+    console.log('📊 Customer stats calculated:', stats)
+
+    return NextResponse.json({
+      success: true,
+      data: finalCustomers,
+      pagination: {
+        page,
+        limit,
+        total: customerType === 'recurrent' ? finalCustomers.length : (count || 0),
+        totalPages: Math.ceil((customerType === 'recurrent' ? finalCustomers.length : (count || 0)) / limit)
+      },
+      stats
+    })
 
   } catch (error) {
     console.error('🚨 Customers API error:', error)
     return NextResponse.json(
-      { error: 'Error interno del servidor', details: error instanceof Error ? error.message : 'Unknown error' },
+      { 
+        error: 'Error interno del servidor',
+        message: error instanceof Error ? error.message : 'Unknown error'
+      },
       { status: 500 }
     )
   }
 }
 
 export async function POST(request: NextRequest) {
+  const cookieStore = cookies()
+  
   try {
-    console.log('🔧 Creating new customer...')
+    const validation = await validateMultiTenantAccess(cookieStore)
     
-    const supabase = createServerClient()
+    if (!validation.success) {
+      return validation.response
+    }
+
+    const { userProfile, organizationId, supabase } = validation.context
+    
+    logApiCall('Customers POST', organizationId, { 
+      userRole: userProfile.role,
+      userId: userProfile.id 
+    })
+
     const body = await request.json()
-    
-    // UUID válido de Fernando (organización real)
-    const organizationId = '873d8154-8b40-4b8a-8d03-431bf9f697e6'
 
-    // Validar tipo de cliente
-    if (!['identified', 'anonymous'].includes(body.customer_type)) {
-      return NextResponse.json(
-        { error: 'Tipo de cliente inválido' },
-        { status: 400 }
-      )
-    }
-
-    const newCustomer = {
+    // Crear customer con organización
+    const customerData = {
+      ...body,
       organization_id: organizationId,
-      customer_type: body.customer_type,
-      name: body.name || null,
-      email: body.email || null,
-      phone: body.phone || null,
-      address: body.address || null,
-      anonymous_identifier: body.anonymous_identifier || null,
-      is_recurrent: body.is_recurrent || false,
-      notes: body.notes || null
-    }
-
-    // Validaciones específicas por tipo
-    if (body.customer_type === 'identified') {
-      if (!body.name || !body.phone) {
-        return NextResponse.json(
-          { error: 'Nombre y teléfono son obligatorios para clientes identificados' },
-          { status: 400 }
-        )
-      }
-    } else if (body.customer_type === 'anonymous') {
-      if (!body.anonymous_identifier) {
-        return NextResponse.json(
-          { error: 'Identificador anónimo es obligatorio para clientes anónimos' },
-          { status: 400 }
-        )
-      }
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
     }
 
     const { data: customer, error } = await supabase
       .from('customers')
-      .insert(newCustomer)
+      .insert(customerData)
       .select()
       .single()
 
     if (error) {
-      console.error('🚨 Error creating customer:', error)
-      return NextResponse.json(
-        { error: 'Error al crear el cliente', details: error.message },
-        { status: 500 }
-      )
+      console.error('❌ Error creating customer:', error)
+      throw error
     }
 
     console.log('✅ Customer created successfully:', customer.id)
@@ -234,9 +244,12 @@ export async function POST(request: NextRequest) {
     })
 
   } catch (error) {
-    console.error('🚨 Create customer error:', error)
+    console.error('🚨 Customers POST error:', error)
     return NextResponse.json(
-      { error: 'Error interno del servidor', details: error instanceof Error ? error.message : 'Unknown error' },
+      { 
+        error: 'Error interno del servidor',
+        message: error instanceof Error ? error.message : 'Unknown error'
+      },
       { status: 500 }
     )
   }

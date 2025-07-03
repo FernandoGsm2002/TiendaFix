@@ -29,7 +29,7 @@ import {
 } from '@heroui/react'
 import FormField from '@/app/components/ui/FormField'
 import { textColors } from '@/lib/utils/colors'
-import { formatCurrency } from '@/lib/utils/currency'
+import { useCurrency } from '@/lib/contexts/TranslationContext'
 import { 
   Search, 
   Eye, 
@@ -79,6 +79,7 @@ interface UnlockService {
 }
 
 export default function TechnicianUnlocksPage() {
+  const { formatCurrency } = useCurrency()
   const [unlocks, setUnlocks] = useState<UnlockService[]>([])
   const [customers, setCustomers] = useState<Customer[]>([])
   const [loading, setLoading] = useState(true)

@@ -19,7 +19,6 @@ SELECT
   r.delivered_date,
   r.warranty_days,
   r.internal_notes,
-  r-internal_porcobrar,
   r.customer_notes,
   r.created_at,
   r.updated_at,

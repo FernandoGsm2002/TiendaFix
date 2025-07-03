@@ -7,49 +7,32 @@ import {
   Card, 
   CardBody, 
   CardHeader,
-  Button,
-  Switch,
   Avatar,
   Divider,
   Chip,
-  Tabs,
-  Tab,
-  Progress,
-  Skeleton
+  Skeleton,
+  Select,
+  SelectItem,
+  Button,
+  Input
 } from '@heroui/react'
 import { textColors } from '@/lib/utils/colors'
-import FormField from '@/app/components/ui/FormField'
-import LanguageCurrencySelector from '@/app/components/LanguageCurrencySelector'
+import { SUPPORTED_LOCALES, LOCALE_NAMES, type Locale } from '@/lib/utils/i18n'
+import { CURRENCIES, getCurrencyName } from '@/lib/utils/currency'
+import { useTranslations } from '@/lib/contexts/TranslationContext'
 import { 
-  Settings, 
   Building, 
   User, 
-  Bell, 
-  Shield, 
-  Save,
-  Edit,
-  Lock,
   Globe,
   CreditCard,
   Mail,
-  Phone,
-  MapPin,
-  Monitor,
-  Smartphone,
-  Database,
-  Cloud,
-  Download,
-  Upload,
-  Clock,
   CheckCircle,
   AlertTriangle,
-  Activity,
-  HardDrive,
-  Users,
-  Wrench,
-  Package,
-  TrendingUp,
-  Calendar
+  Calendar,
+  DollarSign,
+  Shield,
+  Eye,
+  EyeOff
 } from 'lucide-react'
 
 interface OrganizationData {
@@ -61,36 +44,67 @@ interface OrganizationData {
   address: string | null
   subscription_plan: string
   subscription_status: string
+  subscription_start_date: string | null
+  subscription_end_date: string | null
   max_users: number
   max_devices: number
   created_at: string
-}
-
-interface SystemStats {
-  totalUsers: number
-  totalCustomers: number
-  totalDevices: number
-  totalRepairs: number
-  totalInventory: number
-  storageUsed: number
-  storageLimit: number
+  updated_at: string
 }
 
 export default function ConfiguracionPage() {
   const { userProfile } = useAuth()
-  const [loading, setLoading] = useState(false)
+  const { t, locale, currency, changeLanguage, changeCurrency } = useTranslations()
   const [dataLoading, setDataLoading] = useState(true)
   const [organizationData, setOrganizationData] = useState<OrganizationData | null>(null)
-  const [systemStats, setSystemStats] = useState<SystemStats | null>(null)
   const [error, setError] = useState<string | null>(null)
-
-  const [notifications, setNotifications] = useState({
-    lowStock: true,
-    expiredRepairs: true,
-    newCustomers: false,
-    salesReports: true,
-    systemUpdates: true
+  const [passwordData, setPasswordData] = useState({
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: ''
   })
+  const [showPasswords, setShowPasswords] = useState({
+    current: false,
+    new: false,
+    confirm: false
+  })
+  const [passwordLoading, setPasswordLoading] = useState(false)
+  const [passwordError, setPasswordError] = useState<string | null>(null)
+  const [passwordSuccess, setPasswordSuccess] = useState<string | null>(null)
+
+  // Debug logging
+  console.log('🔍 ConfiguracionPage - userProfile:', userProfile)
+  console.log('🔍 ConfiguracionPage - organization_id:', userProfile?.organization_id)
+  console.log('🔍 ConfiguracionPage - currency:', currency)
+  console.log('🔍 ConfiguracionPage - locale:', locale)
+
+  // Función para forzar recarga del perfil
+  const forceProfileReload = async () => {
+    try {
+      console.log('🔄 Forzando recarga del perfil...')
+      const response = await fetch('/api/user/profile', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({})
+      })
+
+      const result = await response.json()
+      console.log('🔍 Profile reload result:', result)
+      
+      if (result.success) {
+        console.log('✅ Profile reloaded, refreshing page...')
+        window.location.reload()
+      } else {
+        console.error('❌ Profile reload failed:', result.error)
+        alert('Error al recargar perfil: ' + result.error)
+      }
+    } catch (error) {
+      console.error('❌ Error in profile reload:', error)
+      alert('Error al recargar perfil: ' + error)
+    }
+  }
 
   // Función para cargar datos de la organización
   const fetchOrganizationData = async () => {
@@ -98,36 +112,30 @@ export default function ConfiguracionPage() {
       setDataLoading(true)
       setError(null)
 
-      // Por ahora usar datos simulados para la organización hasta crear el API
-      const simulatedOrgData: OrganizationData = {
-        id: userProfile?.organization_id || 'demo-org',
-        name: 'TiendaFix Central',
-        slug: 'tiendafix-central',
-        email: 'info@tiendafix.com',
-        phone: '+51 987 654 321',
-        address: 'Av. Principal 123, Lima, Perú',
-        subscription_plan: 'yearly',
-        subscription_status: 'active',
-        max_users: 10,
-        max_devices: 500,
-        created_at: '2024-01-01T00:00:00Z'
+      console.log('🔍 UserProfile:', userProfile)
+      console.log('🔍 Organization ID:', userProfile?.organization_id)
+
+      if (!userProfile?.organization_id) {
+        throw new Error(`No se encontró ID de organización para el usuario ${userProfile?.email || 'desconocido'}. Contacte al administrador.`)
       }
 
-      // Obtener estadísticas del sistema
-      const statsResponse = await fetch('/api/dashboard/stats')
-      if (!statsResponse.ok) throw new Error('Error al cargar estadísticas')
-      const statsData = await statsResponse.json()
+      // Obtener datos reales de la organización
+      const response = await fetch(`/api/organizations/${userProfile.organization_id}`)
+      
+      if (!response.ok) {
+        const errorText = await response.text()
+        console.error('❌ API Error:', response.status, errorText)
+        throw new Error(`Error al cargar datos de la organización (${response.status})`)
+      }
 
-      setOrganizationData(simulatedOrgData)
-      setSystemStats({
-        totalUsers: statsData.data?.counters?.totalUsers || 0,
-        totalCustomers: statsData.data?.counters?.totalCustomers || 0,
-        totalDevices: statsData.data?.counters?.totalDevices || 0,
-        totalRepairs: statsData.data?.counters?.totalRepairs || 0,
-        totalInventory: statsData.data?.counters?.totalInventory || 0,
-        storageUsed: 2.5, // GB simulado
-        storageLimit: 10 // GB simulado
-      })
+      const result = await response.json()
+      
+      if (!result.success) {
+        throw new Error(result.error || 'Error al cargar datos')
+      }
+
+      console.log('✅ Organization data loaded:', result.data)
+      setOrganizationData(result.data)
     } catch (err) {
       console.error('Error loading configuration data:', err)
       setError(err instanceof Error ? err.message : 'Error desconocido')
@@ -137,30 +145,71 @@ export default function ConfiguracionPage() {
   }
 
   useEffect(() => {
-    fetchOrganizationData()
-  }, [])
+    if (userProfile) {
+      fetchOrganizationData()
+    }
+  }, [userProfile])
 
-  const handleSaveShopConfig = async () => {
-    if (!organizationData) return
+  const handleLanguageChange = async (newLocale: Locale) => {
+    await changeLanguage(newLocale)
+  }
+
+  const handleCurrencyChange = (newCurrency: string) => {
+    changeCurrency(newCurrency)
+  }
+
+  const handlePasswordChange = async (e: React.FormEvent) => {
+    e.preventDefault()
     
-    setLoading(true)
+    // Validaciones
+    if (!passwordData.newPassword || passwordData.newPassword.length < 6) {
+      setPasswordError('La nueva contraseña debe tener al menos 6 caracteres')
+      return
+    }
+    
+    if (passwordData.newPassword !== passwordData.confirmPassword) {
+      setPasswordError('Las contraseñas no coinciden')
+      return
+    }
+    
+    setPasswordLoading(true)
+    setPasswordError(null)
+    setPasswordSuccess(null)
+    
     try {
-      // Simular guardado (implementar API más tarde)
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      
-      console.log('Configuración a guardar:', {
-        name: organizationData.name,
-        email: organizationData.email,
-        phone: organizationData.phone,
-        address: organizationData.address
+      const response = await fetch('/api/user/profile', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          newPassword: passwordData.newPassword
+        })
       })
       
-      alert('Configuración guardada exitosamente (modo demo)')
+      const result = await response.json()
+      
+      if (!response.ok) {
+        throw new Error(result.error || 'Error al cambiar la contraseña')
+      }
+      
+      setPasswordSuccess('Contraseña cambiada exitosamente')
+      setPasswordData({
+        currentPassword: '',
+        newPassword: '',
+        confirmPassword: ''
+      })
+      
+      // Limpiar mensaje de éxito después de 5 segundos
+      setTimeout(() => {
+        setPasswordSuccess(null)
+      }, 5000)
+      
     } catch (error) {
-      console.error('Error:', error)
-      alert('Error al guardar la configuración')
+      console.error('Error changing password:', error)
+      setPasswordError(error instanceof Error ? error.message : 'Error al cambiar la contraseña')
     } finally {
-      setLoading(false)
+      setPasswordLoading(false)
     }
   }
 
@@ -194,572 +243,477 @@ export default function ConfiguracionPage() {
 
   return (
     <DashboardLayout>
-      <div className="max-w-6xl mx-auto space-y-8">
-        {/* Header moderno */}
-        <div className="relative overflow-hidden bg-gradient-to-br from-slate-50 via-white to-gray-100 rounded-2xl p-8 border border-gray-200 shadow-sm">
-          {/* Elementos de fondo */}
-          <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-purple-500/5"></div>
-          <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-blue-400/10 to-purple-500/10 rounded-full blur-3xl"></div>
-          <div className="absolute bottom-0 left-0 w-48 h-48 bg-gradient-to-tr from-green-400/10 to-blue-500/10 rounded-full blur-2xl"></div>
-          
-          <div className="relative flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
-            <div className="space-y-3">
-              <div className="flex items-center gap-3">
-                <div className="p-3 bg-gradient-to-br from-slate-500 to-gray-600 rounded-xl shadow-lg">
-                  <Settings className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                  <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-800 to-slate-600 bg-clip-text text-transparent">
-                    Configuración del Sistema
-            </h1>
-                  <p className="text-gray-600 text-base mt-1">
-                    Gestiona todos los aspectos de tu tienda desde un solo lugar
-                  </p>
-                </div>
-              </div>
-              
-              {organizationData && !dataLoading && (
-                <div className="flex items-center gap-4 mt-4">
-                  <Chip 
-                    color="success" 
-                    variant="flat" 
-                    startContent={<CheckCircle className="w-3 h-3" />}
-                    size="sm"
-                  >
-                    Sistema Activo
-                  </Chip>
-                  <Chip 
-                    color="primary" 
-                    variant="flat"
-                    size="sm"
-                  >
-                    {getSubscriptionLabel(organizationData.subscription_plan)}
-                  </Chip>
-                </div>
-              )}
-          </div>
-          
-          <div className="flex gap-3">
-            <Button
-              variant="bordered"
-              startContent={<Download className="w-4 h-4" />}
-                className="bg-white/50 backdrop-blur-sm border-gray-300"
-            >
-              Exportar Config
-            </Button>
-            <Button
-              color="primary"
-              onPress={handleSaveShopConfig}
-              isLoading={loading}
-              startContent={<Save className="w-4 h-4" />}
-                className="shadow-lg bg-gradient-to-r from-blue-600 to-purple-600 text-white"
-            >
-                {loading ? 'Guardando...' : 'Guardar Todo'}
-            </Button>
-            </div>
+      <div className="max-w-4xl mx-auto space-y-6">
+        {/* Header simplificado */}
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div>
+            <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-gray-900">{t('settings.title')}</h1>
+            <p className={`text-sm md:text-base ${textColors.secondary} mt-1`}>{t('settings.description')}</p>
           </div>
         </div>
 
-        {/* Tabs principales */}
-        <Tabs variant="bordered" size="lg" defaultSelectedKey="general">
-          <Tab key="general" title={
-            <div className="flex items-center space-x-2">
-              <Building className="w-4 h-4" />
-              <span>General</span>
-            </div>
-          }>
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-6">
-              {/* Panel izquierdo */}
-              <div className="lg:col-span-2 space-y-6">
-                {/* Información de la tienda */}
-                <Card>
-                  <CardHeader>
-                    <div className="flex items-center gap-2">
-                      <Building className="w-5 h-5 text-blue-500" />
-                      <h3 className={`text-lg font-semibold ${textColors.primary}`}>
-                        Información de la Tienda
-                      </h3>
+        {/* Error Message */}
+        {error && (
+          <Card className="shadow-sm border-2 border-danger-200 bg-danger-50/30">
+            <CardBody className="py-3">
+              <div className="flex items-center gap-2">
+                <AlertTriangle className="w-4 h-4 text-danger-600" />
+                <span className="text-sm font-medium text-danger-700">Error de Configuración</span>
+              </div>
+              <div className="mt-2 text-xs text-danger-600">
+                {error}
+              </div>
+                             <div className="mt-2 text-xs text-danger-500">
+                 <strong>Información de depuración:</strong><br/>
+                 Usuario: {userProfile?.email || 'No disponible'}<br/>
+                 Rol: {userProfile?.role || 'No disponible'}<br/>
+                 Organization ID: {userProfile?.organization_id || 'No asignado'}
+               </div>
+               <div className="mt-3 flex gap-2">
+                 <Button
+                   size="sm"
+                   color="primary"
+                   variant="flat"
+                   onClick={forceProfileReload}
+                 >
+                   Recargar Perfil
+                 </Button>
+                 <Button
+                   size="sm"
+                   color="danger"
+                   variant="flat"
+                   onClick={() => {
+                     if (confirm('¿Desea cerrar sesión y volver a iniciar?')) {
+                       window.location.href = '/auth/login'
+                     }
+                   }}
+                 >
+                   Reiniciar Sesión
+                 </Button>
+               </div>
+            </CardBody>
+          </Card>
+        )}
+
+        {/* Contenido compacto */}
+        <div className="space-y-6">
+          {/* Configuraciones de Usuario */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Idioma */}
+            <Card className="shadow-lg border-0 bg-gradient-to-br from-gray-50 to-gray-100">
+              <CardBody className="p-6">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-blue-100">
+                      <Globe className="w-5 h-5 text-blue-600" />
                     </div>
-                  </CardHeader>
-                  <CardBody className="space-y-4">
-                    {dataLoading ? (
-                      <div className="space-y-4">
-                        <Skeleton className="h-4 w-3/4 rounded" />
-                        <Skeleton className="h-10 w-full rounded" />
-                        <Skeleton className="h-4 w-3/4 rounded" />
-                        <Skeleton className="h-20 w-full rounded" />
-                        <Skeleton className="h-4 w-3/4 rounded" />
-                        <Skeleton className="h-10 w-full rounded" />
-                        <div className="grid grid-cols-2 gap-4">
-                          <Skeleton className="h-10 w-full rounded" />
-                          <Skeleton className="h-10 w-full rounded" />
-                        </div>
-                      </div>
-                    ) : organizationData ? (
-                      <>
-                    <FormField
-                      label="Nombre de la Tienda"
-                      name="name"
-                          value={organizationData.name}
-                          onChange={(value) => setOrganizationData(prev => prev ? { ...prev, name: value } : null)}
-                      required
-                    />
-                    
-                    <FormField
-                          label="Identificador único"
-                          name="slug"
-                          value={organizationData.slug}
-                          onChange={(value) => setOrganizationData(prev => prev ? { ...prev, slug: value } : null)}
-                          disabled
-                          helpText="Este es tu identificador único en el sistema"
-                    />
-
-                    <FormField
-                      label="Dirección"
-                      name="address"
-                          value={organizationData.address || ''}
-                          onChange={(value) => setOrganizationData(prev => prev ? { ...prev, address: value } : null)}
-                    />
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <FormField
-                        label="Teléfono"
-                        name="phone"
-                            value={organizationData.phone || ''}
-                            onChange={(value) => setOrganizationData(prev => prev ? { ...prev, phone: value } : null)}
-                      />
-                      <FormField
-                        label="Email"
-                        name="email"
-                        type="email"
-                            value={organizationData.email}
-                            onChange={(value) => setOrganizationData(prev => prev ? { ...prev, email: value } : null)}
-                            required
-                      />
+                    <div>
+                      <h3 className="text-lg font-semibold text-gray-800">{t('settings.language')}</h3>
+                      <p className="text-sm text-gray-500">Idioma de la interfaz</p>
                     </div>
-
-                        {/* Información de suscripción */}
-                        <Divider />
-                        <div className="space-y-3">
-                          <h4 className="text-md font-semibold text-gray-800">Información de Suscripción</h4>
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div className="flex justify-between items-center">
-                              <span className="text-sm text-gray-600">Plan:</span>
-                              <Chip 
-                                color="primary" 
-                                variant="flat"
-                                size="sm"
-                              >
-                                {getSubscriptionLabel(organizationData.subscription_plan)}
-                              </Chip>
-                            </div>
-                            <div className="flex justify-between items-center">
-                              <span className="text-sm text-gray-600">Estado:</span>
-                              <Chip 
-                                color={getSubscriptionColor(organizationData.subscription_status) as any} 
-                                variant="flat"
-                                size="sm"
-                              >
-                                {organizationData.subscription_status === 'active' ? 'Activo' : 
-                                 organizationData.subscription_status === 'inactive' ? 'Inactivo' : 'Expirado'}
-                              </Chip>
-                            </div>
-                          </div>
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div className="flex justify-between items-center">
-                              <span className="text-sm text-gray-600">Usuarios máximos:</span>
-                              <span className="text-sm font-semibold text-gray-900">{organizationData.max_users}</span>
-                            </div>
-                            <div className="flex justify-between items-center">
-                              <span className="text-sm text-gray-600">Dispositivos máximos:</span>
-                              <span className="text-sm font-semibold text-gray-900">{organizationData.max_devices}</span>
-                            </div>
-                          </div>
-                        </div>
-                      </>
-                    ) : error ? (
-                      <div className="text-center py-8">
-                        <AlertTriangle className="w-12 h-12 text-red-500 mx-auto mb-4" />
-                        <p className="text-red-600">{error}</p>
-                        <Button 
-                          color="primary" 
-                          variant="flat" 
-                          onPress={fetchOrganizationData}
-                          className="mt-4"
+                  </div>
+                  <div className="min-w-[140px]">
+                    <Select
+                      size="md"
+                      variant="bordered"
+                      selectedKeys={[locale]}
+                      onSelectionChange={(keys) => {
+                        const selectedKey = Array.from(keys)[0] as Locale
+                        if (selectedKey) handleLanguageChange(selectedKey)
+                      }}
+                      classNames={{
+                        trigger: "border-gray-300 bg-white hover:border-gray-400 focus:border-blue-500",
+                        value: "text-gray-700 font-medium",
+                        listbox: "bg-white shadow-lg",
+                        popoverContent: "bg-white shadow-xl border border-gray-200"
+                      }}
+                    >
+                      {SUPPORTED_LOCALES.map(locale => (
+                        <SelectItem 
+                          key={locale}
+                          className="text-gray-700 hover:bg-gray-50"
                         >
-                          Reintentar
-                        </Button>
-                      </div>
-                    ) : null}
-                  </CardBody>
-                </Card>
+                          {LOCALE_NAMES[locale].native}
+                        </SelectItem>
+                      ))}
+                    </Select>
+                  </div>
+                </div>
+              </CardBody>
+            </Card>
 
-                {/* Configuración de idioma y moneda */}
-                <Card>
-                  <CardHeader>
-                    <div className="flex items-center gap-2">
-                      <Globe className="w-5 h-5 text-green-500" />
-                      <h3 className={`text-lg font-semibold ${textColors.primary}`}>
-                        Idioma y Moneda
-                      </h3>
+            {/* Moneda */}
+            <Card className="shadow-lg border-0 bg-gradient-to-br from-gray-50 to-gray-100">
+              <CardBody className="p-6">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-green-100">
+                      <DollarSign className="w-5 h-5 text-green-600" />
                     </div>
-                  </CardHeader>
-                  <CardBody>
-                    <LanguageCurrencySelector />
-                  </CardBody>
-                </Card>
-
-                {/* Notificaciones */}
-                <Card>
-                  <CardHeader>
-                    <div className="flex items-center gap-2">
-                      <Bell className="w-5 h-5 text-orange-500" />
-                      <h3 className={`text-lg font-semibold ${textColors.primary}`}>
-                        Notificaciones
-                      </h3>
+                    <div>
+                      <h3 className="text-lg font-semibold text-gray-800">{t('settings.currency')}</h3>
+                      <p className="text-sm text-gray-500">Moneda predeterminada</p>
                     </div>
-                  </CardHeader>
-                  <CardBody className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className={`font-medium ${textColors.primary}`}>Alertas de stock bajo</p>
-                        <p className={`text-sm ${textColors.muted}`}>Recibir notificaciones cuando el stock esté bajo</p>
-                      </div>
-                      <Switch 
-                        isSelected={notifications.lowStock}
-                        onValueChange={(value) => setNotifications(prev => ({ ...prev, lowStock: value }))}
-                      />
-                    </div>
+                  </div>
+                  <div className="min-w-[140px]">
+                    <Select
+                      size="md"
+                      variant="bordered"
+                      selectedKeys={currency ? [currency] : ['PEN']}
+                      defaultSelectedKeys={['PEN']}
+                      placeholder="Seleccionar moneda"
+                      onSelectionChange={(keys) => {
+                        const selectedKey = Array.from(keys)[0] as string
+                        console.log('🔄 Currency changed to:', selectedKey)
+                        if (selectedKey) handleCurrencyChange(selectedKey)
+                      }}
+                      classNames={{
+                        trigger: "border-gray-300 bg-white hover:border-gray-400 focus:border-green-500 min-h-[40px]",
+                        value: "text-gray-700 font-medium",
+                        listbox: "bg-white shadow-lg",
+                        popoverContent: "bg-white shadow-xl border border-gray-200 rounded-lg",
+                        innerWrapper: "text-gray-700"
+                      }}
+                    >
+                      {Object.entries(CURRENCIES).map(([code, currencyInfo]) => (
+                        <SelectItem 
+                          key={code}
+                          className="text-gray-700 hover:bg-gray-50 data-[hover=true]:bg-gray-50"
+                          textValue={`${getCurrencyName(code, locale)} (${code})`}
+                        >
+                          <div className="flex items-center gap-2">
+                            <span className="font-bold text-green-600">{currencyInfo.symbol}</span>
+                            <span>{getCurrencyName(code, locale)} ({code})</span>
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </Select>
+                  </div>
+                </div>
+              </CardBody>
+            </Card>
+          </div>
 
-                    <Divider />
-
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className={`font-medium ${textColors.primary}`}>Reparaciones vencidas</p>
-                        <p className={`text-sm ${textColors.muted}`}>Alertas sobre reparaciones que han superado el tiempo estimado</p>
-                      </div>
-                      <Switch 
-                        isSelected={notifications.expiredRepairs}
-                        onValueChange={(value) => setNotifications(prev => ({ ...prev, expiredRepairs: value }))}
-                      />
-                    </div>
-
-                    <Divider />
-
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className={`font-medium ${textColors.primary}`}>Nuevos clientes</p>
-                        <p className={`text-sm ${textColors.muted}`}>Notificaciones cuando se registre un nuevo cliente</p>
-                      </div>
-                      <Switch 
-                        isSelected={notifications.newCustomers}
-                        onValueChange={(value) => setNotifications(prev => ({ ...prev, newCustomers: value }))}
-                      />
-                    </div>
-
-                    <Divider />
-
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className={`font-medium ${textColors.primary}`}>Reportes de ventas</p>
-                        <p className={`text-sm ${textColors.muted}`}>Resúmenes automáticos de ventas diarias/semanales</p>
-                      </div>
-                      <Switch 
-                        isSelected={notifications.salesReports}
-                        onValueChange={(value) => setNotifications(prev => ({ ...prev, salesReports: value }))}
-                      />
-                    </div>
-
-                    <Divider />
-
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className={`font-medium ${textColors.primary}`}>Actualizaciones del sistema</p>
-                        <p className={`text-sm ${textColors.muted}`}>Notificaciones sobre nuevas versiones y mejoras</p>
-                      </div>
-                      <Switch 
-                        isSelected={notifications.systemUpdates}
-                        onValueChange={(value) => setNotifications(prev => ({ ...prev, systemUpdates: value }))}
-                      />
-                    </div>
-                  </CardBody>
-                </Card>
+          {/* Seguridad - Cambio de Contraseña */}
+          <Card className="shadow-lg border-0 bg-gradient-to-br from-white to-gray-50">
+            <CardBody className="p-6">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="p-2 rounded-lg bg-red-100">
+                  <Shield className="w-5 h-5 text-red-600" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-semibold text-gray-800">Seguridad</h3>
+                  <p className="text-sm text-gray-500">Cambiar contraseña de acceso</p>
+                </div>
               </div>
 
-              {/* Panel derecho */}
-              <div className="space-y-6">
-                {/* Perfil del propietario */}
-                <Card>
-                  <CardHeader>
+              <form onSubmit={handlePasswordChange} className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <Input
+                    label="Nueva Contraseña"
+                    placeholder="Ingresa tu nueva contraseña"
+                    type={showPasswords.new ? "text" : "password"}
+                    value={passwordData.newPassword}
+                    onChange={(e) => setPasswordData(prev => ({ ...prev, newPassword: e.target.value }))}
+                    variant="bordered"
+                    isRequired
+                    minLength={6}
+                    classNames={{
+                      label: "text-gray-700",
+                      input: "text-gray-900",
+                      inputWrapper: "border-gray-300 hover:border-gray-400 focus-within:border-red-500"
+                    }}
+                    endContent={
+                      <button
+                        type="button"
+                        onClick={() => setShowPasswords(prev => ({ ...prev, new: !prev.new }))}
+                        className="focus:outline-none"
+                      >
+                        {showPasswords.new ? (
+                          <EyeOff className="w-4 h-4 text-gray-400 hover:text-gray-600" />
+                        ) : (
+                          <Eye className="w-4 h-4 text-gray-400 hover:text-gray-600" />
+                        )}
+                      </button>
+                    }
+                  />
+                  
+                  <Input
+                    label="Confirmar Contraseña"
+                    placeholder="Confirma tu nueva contraseña"
+                    type={showPasswords.confirm ? "text" : "password"}
+                    value={passwordData.confirmPassword}
+                    onChange={(e) => setPasswordData(prev => ({ ...prev, confirmPassword: e.target.value }))}
+                    variant="bordered"
+                    isRequired
+                    minLength={6}
+                    classNames={{
+                      label: "text-gray-700",
+                      input: "text-gray-900",
+                      inputWrapper: "border-gray-300 hover:border-gray-400 focus-within:border-red-500"
+                    }}
+                    endContent={
+                      <button
+                        type="button"
+                        onClick={() => setShowPasswords(prev => ({ ...prev, confirm: !prev.confirm }))}
+                        className="focus:outline-none"
+                      >
+                        {showPasswords.confirm ? (
+                          <EyeOff className="w-4 h-4 text-gray-400 hover:text-gray-600" />
+                        ) : (
+                          <Eye className="w-4 h-4 text-gray-400 hover:text-gray-600" />
+                        )}
+                      </button>
+                    }
+                  />
+                </div>
+
+                {/* Mensajes de error y éxito */}
+                {passwordError && (
+                  <div className="bg-red-50 border border-red-200 rounded-lg p-3">
                     <div className="flex items-center gap-2">
-                      <User className="w-5 h-5 text-purple-500" />
-                      <h3 className={`text-lg font-semibold ${textColors.primary}`}>
-                        Perfil del Propietario
-                      </h3>
+                      <AlertTriangle className="w-4 h-4 text-red-600" />
+                      <span className="text-sm font-medium text-red-800">Error</span>
                     </div>
-                  </CardHeader>
-                  <CardBody className="space-y-4">
-                    {dataLoading ? (
-                      <div className="space-y-4">
-                        <div className="text-center">
-                          <Skeleton className="w-16 h-16 rounded-full mx-auto mb-4" />
-                          <Skeleton className="h-4 w-24 rounded mx-auto mb-2" />
-                          <Skeleton className="h-6 w-20 rounded mx-auto" />
-                        </div>
-                        <Skeleton className="h-px w-full" />
-                        <div className="space-y-3">
-                          <Skeleton className="h-4 w-full rounded" />
-                          <Skeleton className="h-4 w-3/4 rounded" />
-                        </div>
-                        <Skeleton className="h-10 w-full rounded" />
+                    <p className="text-sm text-red-700 mt-1">{passwordError}</p>
+                  </div>
+                )}
+
+                {passwordSuccess && (
+                  <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className="w-4 h-4 text-green-600" />
+                      <span className="text-sm font-medium text-green-800">Éxito</span>
+                    </div>
+                    <p className="text-sm text-green-700 mt-1">{passwordSuccess}</p>
+                  </div>
+                )}
+
+                <div className="flex flex-col sm:flex-row gap-3 pt-2">
+                  <Button
+                    type="submit"
+                    color="danger"
+                    variant="solid"
+                    isLoading={passwordLoading}
+                    startContent={!passwordLoading ? <Shield className="w-4 h-4" /> : undefined}
+                    className="bg-red-600 hover:bg-red-700"
+                  >
+                    {passwordLoading ? 'Cambiando...' : 'Cambiar Contraseña'}
+                  </Button>
+                  
+                  <Button
+                    type="button"
+                    variant="light"
+                    onClick={() => {
+                      setPasswordData({
+                        currentPassword: '',
+                        newPassword: '',
+                        confirmPassword: ''
+                      })
+                      setPasswordError(null)
+                      setPasswordSuccess(null)
+                    }}
+                    className="text-gray-600 hover:text-gray-800"
+                  >
+                    Limpiar
+                  </Button>
+                </div>
+
+                <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
+                  <div className="flex items-start gap-2">
+                    <AlertTriangle className="w-4 h-4 text-amber-600 mt-0.5" />
+                    <div className="text-sm text-amber-800">
+                      <p className="font-medium mb-1">Recomendaciones de seguridad:</p>
+                      <ul className="text-xs space-y-1">
+                        <li>• Usa al menos 8 caracteres</li>
+                        <li>• Incluye números y símbolos</li>
+                        <li>• No uses información personal</li>
+                        <li>• Cambia tu contraseña regularmente</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </form>
+            </CardBody>
+          </Card>
+
+          {/* Información de la Organización */}
+          <Card className="shadow-lg border-0 bg-gradient-to-br from-white to-gray-50">
+            <CardBody className="p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="p-2 rounded-lg bg-purple-100">
+                  <Building className="w-5 h-5 text-purple-600" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-semibold text-gray-800">{t('settings.organization')}</h3>
+                  {dataLoading ? (
+                    <Skeleton className="h-4 w-32 rounded mt-1" />
+                  ) : organizationData ? (
+                    <p className="text-sm text-gray-500">{organizationData.name}</p>
+                  ) : null}
+                </div>
+              </div>
+              
+              {!dataLoading && organizationData && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-2">
+                      <Mail className="w-4 h-4 text-gray-400" />
+                      <span className="text-sm text-gray-600">
+                        <span className="font-medium">Email:</span> {organizationData.email}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="w-4 h-4 text-gray-400">📞</span>
+                      <span className="text-sm text-gray-600">
+                        <span className="font-medium">Teléfono:</span> {organizationData.phone || 'No especificado'}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="space-y-3">
+                    <div className="flex items-start gap-2">
+                      <span className="w-4 h-4 text-gray-400 mt-0.5">📍</span>
+                      <span className="text-sm text-gray-600">
+                        <span className="font-medium">Dirección:</span> {organizationData.address || 'No especificada'}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Calendar className="w-4 h-4 text-gray-400" />
+                      <span className="text-sm text-gray-600">
+                        <span className="font-medium">Registro:</span> {formatDate(organizationData.created_at).split(',')[0]}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </CardBody>
+          </Card>
+
+          {/* Información de Suscripción */}
+          <Card className="shadow-lg border-0 bg-gradient-to-br from-white to-gray-50">
+            <CardBody className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 rounded-lg bg-orange-100">
+                    <CreditCard className="w-5 h-5 text-orange-600" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-semibold text-gray-800">{t('settings.subscription')}</h3>
+                    <p className="text-sm text-gray-500">Plan y estado de suscripción</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  {dataLoading ? (
+                    <div className="flex items-center gap-2">
+                      <Skeleton className="h-6 w-20 rounded-full" />
+                      <Skeleton className="h-6 w-24 rounded-full" />
+                    </div>
+                  ) : organizationData ? (
+                    <>
+                      <Chip 
+                        color={getSubscriptionColor(organizationData.subscription_status) as any} 
+                        variant="flat"
+                        size="md"
+                        className="font-medium"
+                      >
+                        {organizationData.subscription_status === 'active' ? t('settings.active') : 
+                         organizationData.subscription_status === 'inactive' ? t('settings.inactive') : t('settings.expired')}
+                      </Chip>
+                      <Chip 
+                        color="primary" 
+                        variant="solid"
+                        size="md"
+                        className="font-medium text-white bg-blue-600 border-blue-600"
+                      >
+                        {getSubscriptionLabel(organizationData.subscription_plan)}
+                      </Chip>
+                    </>
+                  ) : error ? (
+                    <AlertTriangle className="w-5 h-5 text-red-500" />
+                  ) : null}
+                </div>
+              </div>
+              
+              {!dataLoading && organizationData && (
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <div className="bg-blue-50 p-3 rounded-lg">
+                    <div className="text-xs text-blue-600 font-medium uppercase tracking-wide">Usuarios</div>
+                    <div className="text-lg font-semibold text-blue-700">{organizationData.max_users}</div>
+                    <div className="text-xs text-blue-500">Máximo permitido</div>
+                  </div>
+                  <div className="bg-green-50 p-3 rounded-lg">
+                    <div className="text-xs text-green-600 font-medium uppercase tracking-wide">Dispositivos</div>
+                    <div className="text-lg font-semibold text-green-700">{organizationData.max_devices}</div>
+                    <div className="text-xs text-green-500">Máximo permitido</div>
+                  </div>
+                  <div className="bg-purple-50 p-3 rounded-lg">
+                    <div className="text-xs text-purple-600 font-medium uppercase tracking-wide">Inicio</div>
+                    <div className="text-sm font-semibold text-purple-700">
+                      {organizationData.subscription_start_date ? formatDate(organizationData.subscription_start_date).split(',')[0] : 'No configurado'}
+                    </div>
+                  </div>
+                  <div className="bg-orange-50 p-3 rounded-lg">
+                    <div className="text-xs text-orange-600 font-medium uppercase tracking-wide">Vencimiento</div>
+                    <div className="text-sm font-semibold text-orange-700">
+                      {organizationData.subscription_end_date ? formatDate(organizationData.subscription_end_date).split(',')[0] : 'No configurado'}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </CardBody>
+          </Card>
+
+          {/* Perfil del Propietario */}
+          <Card className="shadow-lg border-0 bg-gradient-to-br from-white to-gray-50">
+            <CardBody className="p-6">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 rounded-lg bg-indigo-100">
+                    <User className="w-5 h-5 text-indigo-600" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-semibold text-gray-800">{t('settings.ownerProfile')}</h3>
+                    <p className="text-sm text-gray-500">Información del propietario</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-4">
+                  {dataLoading ? (
+                    <div className="flex items-center gap-3">
+                      <Skeleton className="w-10 h-10 rounded-full" />
+                      <Skeleton className="h-4 w-24 rounded" />
+                    </div>
+                  ) : userProfile ? (
+                    <>
+                      <div className="text-right">
+                        <div className="text-lg font-semibold text-gray-800">{userProfile.name}</div>
+                        <div className="text-sm text-gray-500">{userProfile.email}</div>
                       </div>
-                    ) : userProfile ? (
-                      <>
-                    <div className="text-center">
                       <Avatar
-                            name={userProfile.name}
+                        name={userProfile.name}
                         size="lg"
                         classNames={{
-                          base: "bg-gradient-to-br from-purple-400 to-purple-600",
+                          base: "bg-gradient-to-br from-indigo-400 to-purple-600 text-white",
                           icon: "text-white"
                         }}
-                        className="mx-auto mb-4"
                       />
-                          <h4 className={`text-lg font-semibold ${textColors.primary}`}>{userProfile.name}</h4>
-                      <Chip color="secondary" variant="flat" size="sm">
-                            {userProfile.role === 'owner' ? 'Propietario' : 
-                             userProfile.role === 'technician' ? 'Técnico' : userProfile.role}
+                      <Chip 
+                        color="secondary" 
+                        variant="flat" 
+                        size="md"
+                        className="font-medium"
+                      >
+                        {userProfile.role === 'owner' ? t('settings.owner') : 
+                         userProfile.role === 'technician' ? t('settings.technician') : userProfile.role}
                       </Chip>
-                    </div>
-
-                    <Divider />
-
-                    <div className="space-y-3">
-                      <div className="flex items-center gap-2">
-                        <Mail className="w-4 h-4 text-gray-400" />
-                            <span className={`text-sm ${textColors.secondary}`}>{userProfile.email}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                            <Building className="w-4 h-4 text-gray-400" />
-                            <span className={`text-sm ${textColors.secondary}`}>
-                              ID: {userProfile.organization_id?.slice(0, 8)}...
-                            </span>
-                          </div>
-                          {organizationData && (
-                            <div className="flex items-center gap-2">
-                              <Calendar className="w-4 h-4 text-gray-400" />
-                        <span className={`text-sm ${textColors.secondary}`}>
-                                Registrado: {formatDate(organizationData.created_at)}
-                        </span>
-                      </div>
-                          )}
-                    </div>
-
-                    <Button
-                      variant="flat"
-                      color="primary"
-                      startContent={<Edit className="w-4 h-4" />}
-                      className="w-full"
-                    >
-                      Editar Perfil
-                    </Button>
-                      </>
-                    ) : (
-                      <div className="text-center py-4">
-                        <User className="w-12 h-12 text-gray-400 mx-auto mb-2" />
-                        <p className={textColors.secondary}>Cargando perfil...</p>
-                      </div>
-                    )}
-                  </CardBody>
-                </Card>
-
-                {/* Seguridad */}
-                <Card>
-                  <CardHeader>
-                    <div className="flex items-center gap-2">
-                      <Shield className="w-5 h-5 text-red-500" />
-                      <h3 className={`text-lg font-semibold ${textColors.primary}`}>
-                        Seguridad
-                      </h3>
-                    </div>
-                  </CardHeader>
-                  <CardBody className="space-y-3">
-                    <Button
-                      variant="flat"
-                      startContent={<Lock className="w-4 h-4" />}
-                      className="w-full justify-start"
-                    >
-                      Cambiar Contraseña
-                    </Button>
-                    <Button
-                      variant="flat"
-                      startContent={<Monitor className="w-4 h-4" />}
-                      className="w-full justify-start"
-                    >
-                      Sesiones Activas
-                    </Button>
-                    <Button
-                      variant="flat"
-                      startContent={<Shield className="w-4 h-4" />}
-                      className="w-full justify-start"
-                    >
-                      Configurar 2FA
-                    </Button>
-                  </CardBody>
-                </Card>
-
-                {/* Estadísticas del sistema */}
-                <Card>
-                  <CardHeader>
-                    <div className="flex items-center gap-2">
-                      <Activity className="w-5 h-5 text-indigo-500" />
-                      <h3 className={`text-lg font-semibold ${textColors.primary}`}>
-                        Estadísticas del Sistema
-                      </h3>
-                    </div>
-                  </CardHeader>
-                  <CardBody className="space-y-4">
-                    {dataLoading ? (
-                      <div className="space-y-3">
-                        {[...Array(6)].map((_, i) => (
-                          <div key={i} className="flex justify-between items-center">
-                            <Skeleton className="h-4 w-1/3 rounded" />
-                            <Skeleton className="h-6 w-16 rounded" />
-                          </div>
-                        ))}
-                      </div>
-                    ) : systemStats ? (
-                      <>
-                        <div className="grid grid-cols-2 gap-4">
-                          <div className="text-center">
-                            <div className="flex items-center justify-center w-12 h-12 mx-auto mb-2 bg-blue-100 rounded-full">
-                              <Users className="w-6 h-6 text-blue-600" />
-                            </div>
-                            <p className="text-2xl font-bold text-gray-900">{systemStats.totalUsers}</p>
-                            <p className="text-sm text-gray-600">Usuarios</p>
-                          </div>
-                          <div className="text-center">
-                            <div className="flex items-center justify-center w-12 h-12 mx-auto mb-2 bg-green-100 rounded-full">
-                              <User className="w-6 h-6 text-green-600" />
-                            </div>
-                            <p className="text-2xl font-bold text-gray-900">{systemStats.totalCustomers}</p>
-                            <p className="text-sm text-gray-600">Clientes</p>
-                          </div>
-                        </div>
-
-                        <div className="grid grid-cols-2 gap-4">
-                          <div className="text-center">
-                            <div className="flex items-center justify-center w-12 h-12 mx-auto mb-2 bg-purple-100 rounded-full">
-                              <Smartphone className="w-6 h-6 text-purple-600" />
-                            </div>
-                            <p className="text-2xl font-bold text-gray-900">{systemStats.totalDevices}</p>
-                            <p className="text-sm text-gray-600">Dispositivos</p>
-                          </div>
-                          <div className="text-center">
-                            <div className="flex items-center justify-center w-12 h-12 mx-auto mb-2 bg-orange-100 rounded-full">
-                              <Wrench className="w-6 h-6 text-orange-600" />
-                            </div>
-                            <p className="text-2xl font-bold text-gray-900">{systemStats.totalRepairs}</p>
-                            <p className="text-sm text-gray-600">Reparaciones</p>
-                          </div>
-                        </div>
-
-                        <div className="text-center">
-                          <div className="flex items-center justify-center w-12 h-12 mx-auto mb-2 bg-indigo-100 rounded-full">
-                            <Package className="w-6 h-6 text-indigo-600" />
-                          </div>
-                          <p className="text-2xl font-bold text-gray-900">{systemStats.totalInventory}</p>
-                          <p className="text-sm text-gray-600">Items en Inventario</p>
-                        </div>
-
-                        <Divider />
-
-                        {/* Uso de almacenamiento */}
-                        <div className="space-y-2">
-                          <div className="flex justify-between items-center">
-                            <span className="text-sm text-gray-600">Almacenamiento</span>
-                            <span className="text-sm font-medium text-gray-900">
-                              {systemStats.storageUsed} GB / {systemStats.storageLimit} GB
-                            </span>
-                          </div>
-                          <Progress 
-                            value={(systemStats.storageUsed / systemStats.storageLimit) * 100}
-                            color="primary"
-                            className="w-full"
-                          />
-                          <p className={`text-xs ${textColors.muted}`}>
-                            {((systemStats.storageUsed / systemStats.storageLimit) * 100).toFixed(1)}% utilizado
-                          </p>
-                        </div>
-                      </>
-                    ) : (
-                      <div className="text-center py-4">
-                        <Database className="w-12 h-12 text-gray-400 mx-auto mb-2" />
-                        <p className={textColors.secondary}>No se pudieron cargar las estadísticas</p>
-                      </div>
-                    )}
-                  </CardBody>
-                </Card>
-
-                {/* Información del sistema técnico */}
-                <Card>
-                  <CardHeader>
-                    <div className="flex items-center gap-2">
-                      <Database className="w-5 h-5 text-indigo-500" />
-                      <h3 className={`text-lg font-semibold ${textColors.primary}`}>
-                        Sistema Técnico
-                      </h3>
-                    </div>
-                  </CardHeader>
-                  <CardBody className="space-y-3">
-                    <div className="space-y-3 text-sm">
-                      <div className="flex justify-between items-center">
-                        <span className={textColors.secondary}>Versión:</span>
-                        <Chip size="sm" variant="flat" color="primary">v1.3.0</Chip>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className={textColors.secondary}>Base de datos:</span>
-                        <span className={`font-medium ${textColors.primary}`}>PostgreSQL 15</span>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className={textColors.secondary}>Estado:</span>
-                        <Chip size="sm" variant="flat" color="success">
-                          <CheckCircle className="w-3 h-3 mr-1" />
-                          Operativo
-                        </Chip>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className={textColors.secondary}>Último backup:</span>
-                        <span className={`font-medium ${textColors.primary}`}>Hoy</span>
-                      </div>
-                    </div>
-
-                    <Divider />
-
-                    <div className="space-y-2">
-                      <Button
-                        variant="flat"
-                        startContent={<Cloud className="w-4 h-4" />}
-                        size="sm"
-                        className="w-full justify-start"
-                      >
-                        Crear Backup
-                      </Button>
-                      <Button
-                        variant="flat"
-                        startContent={<Upload className="w-4 h-4" />}
-                        size="sm"
-                        className="w-full justify-start"
-                      >
-                        Restaurar Backup
-                      </Button>
-                    </div>
-                  </CardBody>
-                </Card>
+                    </>
+                  ) : (
+                    <User className="w-6 h-6 text-gray-400" />
+                  )}
+                </div>
               </div>
-            </div>
-          </Tab>
-        </Tabs>
+            </CardBody>
+          </Card>
+        </div>
       </div>
     </DashboardLayout>
   )

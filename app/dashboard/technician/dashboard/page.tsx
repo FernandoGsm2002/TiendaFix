@@ -3,11 +3,11 @@
 import { useEffect, useState } from 'react'
 import dynamic from 'next/dynamic'
 import TechnicianDashboardLayout from '../components/TechnicianDashboardLayout'
-import { useCurrency } from '@/lib/utils/currency'
+import { useCurrency } from '@/lib/contexts/TranslationContext'
 import { Card, CardBody, CardHeader, Skeleton, Chip, Avatar, Progress } from '@heroui/react'
 import { textColors } from '@/lib/utils/colors'
 import { 
-  Wrench, Clock, CheckCircle, AlertTriangle, TrendingUp, Activity, Target, Calendar, DollarSign
+  Wrench, Clock, CheckCircle, AlertTriangle, TrendingUp, Activity, Target, Calendar, DollarSign, ShoppingCart
 } from 'lucide-react'
 import { ApexOptions } from 'apexcharts'
 
@@ -22,10 +22,13 @@ interface TechnicianStats {
   completedUnlocks: number
   inProgressUnlocks: number
   pendingUnlocks: number
+  totalSales: number
+  completedSales: number
   weeklyEfficiency: number
   monthlyRevenue: number
   totalRepairRevenue: number
   totalUnlockRevenue: number
+  totalSalesRevenue: number
   todayTasks: number
 }
 
@@ -38,6 +41,7 @@ interface ChartData {
 interface Activity {
   type: string
   title: string
+  description?: string
   time: string
   customer?: string
   repairId?: string
@@ -60,10 +64,13 @@ const defaultData: TechnicianDashboardData = {
     completedUnlocks: 0,
     inProgressUnlocks: 0,
     pendingUnlocks: 0,
+    totalSales: 0,
+    completedSales: 0,
     weeklyEfficiency: 0,
     monthlyRevenue: 0,
     totalRepairRevenue: 0,
     totalUnlockRevenue: 0,
+    totalSalesRevenue: 0,
     todayTasks: 0
   },
   chartData: {
@@ -178,18 +185,18 @@ export default function TechnicianDashboardPage() {
       description: 'Trabajos actuales'
     },
     { 
-      title: 'Completadas Este Mes', 
-      value: stats.completedRepairs, 
-      icon: CheckCircle, 
-      bgGradient: 'from-green-400 to-green-600', 
-      description: 'Reparaciones finalizadas'
+      title: 'Ventas del Mes', 
+      value: stats.completedSales, 
+      icon: ShoppingCart, 
+      bgGradient: 'from-orange-400 to-orange-600', 
+      description: 'Productos vendidos'
     },
     { 
       title: 'Ingresos del Mes', 
       value: format(stats.monthlyRevenue), 
       icon: DollarSign, 
       bgGradient: 'from-emerald-400 to-emerald-600', 
-      description: 'Reparaciones + Desbloqueos'
+      description: 'Reparaciones + Desbloqueos + Ventas'
     },
     { 
       title: 'Eficiencia Semanal', 
@@ -340,6 +347,7 @@ export default function TechnicianDashboardPage() {
       case 'unlock_completed': return CheckCircle;
       case 'unlock_started': return Activity;
       case 'unlock_received': return Clock;
+      case 'sale_completed': return ShoppingCart;
       default: return Clock;
     }
   }
@@ -352,6 +360,7 @@ export default function TechnicianDashboardPage() {
       case 'unlock_completed': return 'emerald';
       case 'unlock_started': return 'purple';
       case 'unlock_received': return 'yellow';
+      case 'sale_completed': return 'orange';
       default: return 'gray';
     }
   }
@@ -408,7 +417,7 @@ export default function TechnicianDashboardPage() {
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
                 <div>
                   <h3 className="text-base md:text-lg font-bold text-gray-900">Completadas Esta Semana</h3>
-                  <p className={`text-xs md:text-sm ${textColors.secondary}`}>Reparaciones finalizadas por día</p>
+                  <p className={`text-xs md:text-sm ${textColors.secondary}`}>Reparaciones, desbloqueos y ventas por día</p>
                 </div>
                 <Chip color="success" variant="flat" size="sm">
                   Semanal
@@ -498,14 +507,18 @@ export default function TechnicianDashboardPage() {
                   </p>
                   <p className={`text-xs md:text-sm ${textColors.muted}`}>Total generado este mes</p>
                 </div>
-                <div className="grid grid-cols-2 gap-4 pt-2">
+                <div className="grid grid-cols-3 gap-2 pt-2">
                   <div className="text-center">
-                    <p className="text-xs md:text-sm text-gray-500">Reparaciones</p>
-                    <p className="text-sm md:text-base font-bold text-blue-600">{format(stats.totalRepairRevenue)}</p>
+                    <p className="text-xs text-gray-500">Reparaciones</p>
+                    <p className="text-sm font-bold text-blue-600">{format(stats.totalRepairRevenue)}</p>
                   </div>
                   <div className="text-center">
-                    <p className="text-xs md:text-sm text-gray-500">Desbloqueos</p>
-                    <p className="text-sm md:text-base font-bold text-purple-600">{format(stats.totalUnlockRevenue)}</p>
+                    <p className="text-xs text-gray-500">Desbloqueos</p>
+                    <p className="text-sm font-bold text-purple-600">{format(stats.totalUnlockRevenue)}</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-xs text-gray-500">Ventas</p>
+                    <p className="text-sm font-bold text-orange-600">{format(stats.totalSalesRevenue)}</p>
                   </div>
                 </div>
               </div>
@@ -540,11 +553,11 @@ export default function TechnicianDashboardPage() {
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm md:text-base font-medium text-gray-900 truncate">{activity.title}</p>
+                        {activity.description && (
+                          <p className={`text-xs md:text-sm ${textColors.secondary} truncate`}>{activity.description}</p>
+                        )}
                         {activity.customer && (
                           <p className={`text-xs md:text-sm ${textColors.muted} truncate`}>Cliente: {activity.customer}</p>
-                        )}
-                        {activity.repairId && (
-                          <p className={`text-xs md:text-sm ${textColors.muted}`}>Reparación #{activity.repairId}</p>
                         )}
                       </div>
                       <p className={`text-xs md:text-sm ${textColors.tertiary} flex-shrink-0`}>

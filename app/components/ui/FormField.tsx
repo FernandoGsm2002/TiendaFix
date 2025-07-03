@@ -72,12 +72,26 @@ export default function FormField({
     }
 
     if (type === 'select' && options.length > 0) {
+      const currentValue = String(value).trim();
+      const hasValue = currentValue !== '';
+      const selectedOption = options.find(opt => opt.value === currentValue);
+      
+      console.log('FormField Select Debug:', {
+        name,
+        value,
+        currentValue,
+        hasValue,
+        selectedOption,
+        options: options.slice(0, 3) // Solo primeras 3 para no llenar console
+      });
+
       return (
         <Select
           name={name}
-          selectedKeys={value ? [String(value)] : []}
+          selectedKeys={hasValue ? [currentValue] : []}
           onSelectionChange={(keys) => {
             const selectedValue = Array.from(keys)[0] as string
+            console.log('Selection changed:', selectedValue);
             onChange(selectedValue || '')
           }}
           placeholder={placeholder}
@@ -87,18 +101,41 @@ export default function FormField({
           errorMessage={error}
           description={helpText}
           variant="bordered"
+          color="primary"
           classNames={{
-            trigger: "border-gray-300 text-gray-900",
-            value: "text-gray-900 font-medium",
+            trigger: [
+              "border-gray-300",
+              "text-gray-900",
+              "data-[open=true]:border-primary-500",
+              "data-[focus=true]:border-primary-500",
+              "data-[hover=true]:border-primary-400",
+              "transition-colors"
+            ].join(" "),
+            value: [
+              "text-gray-900",
+              "font-medium",
+              hasValue ? "text-primary-700" : "text-gray-500"
+            ].join(" "),
             label: "text-gray-800 font-medium",
             description: "text-gray-600",
-            errorMessage: "text-red-700 font-medium"
+            errorMessage: "text-red-700 font-medium",
+            popoverContent: [
+              "bg-white",
+              "border-gray-200",
+              "shadow-lg"
+            ].join(" "),
+            listbox: "bg-white",
+            selectorIcon: "text-primary-500"
           }}
           className={className}
         >
           {options.map((option) => (
-            <SelectItem key={option.value} className="text-gray-900">
-              {option.label}
+            <SelectItem 
+              key={option.value} 
+              className="text-gray-900 data-[selected=true]:bg-primary-50 data-[selected=true]:text-primary-700 data-[hover=true]:bg-primary-100 data-[focus=true]:bg-primary-100"
+              textValue={option.label}
+            >
+              <span className="font-medium">{option.label}</span>
             </SelectItem>
           ))}
         </Select>

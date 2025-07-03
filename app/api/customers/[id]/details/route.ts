@@ -30,7 +30,7 @@ export async function GET(
 
     // Obtener historial de reparaciones
     const { data: repairs, error: repairsError } = await supabase
-      .from('repairs_view')
+      .from('repairs')
       .select(`
         id,
         title,
@@ -40,7 +40,7 @@ export async function GET(
         created_at,
         actual_completion_date,
         unregistered_device_info,
-        devices (
+        devices!device_id (
           brand,
           model,
           device_type
@@ -62,7 +62,7 @@ export async function GET(
         created_at,
         completion_time,
         notes,
-        devices (
+        devices!device_id (
           brand,
           model,
           device_type
@@ -78,15 +78,17 @@ export async function GET(
       .from('sales')
       .select(`
         id,
-        total_amount,
+        total,
         payment_method,
-        status,
+        payment_status,
         created_at,
-        customer_name,
         sale_items (
-          product_name,
           quantity,
-          price
+          unit_price,
+          total_price,
+          inventory (
+            name
+          )
         )
       `)
       .eq('customer_id', customerId)
@@ -97,11 +99,12 @@ export async function GET(
 
     // Agregar reparaciones
     if (repairs && !repairsError) {
+      console.log(`✅ Processing ${repairs.length} repairs for customer ${customerId}`)
       repairs.forEach((repair: any) => {
         const deviceInfo = repair.unregistered_device_info || 
-          (repair.devices && repair.devices.length > 0 ? `${repair.devices[0].brand} ${repair.devices[0].model}` : 'Dispositivo no especificado')
+          (repair.devices ? `${repair.devices.brand} ${repair.devices.model}` : 'Dispositivo no especificado')
         
-        services.push({
+        const repairService = {
           id: repair.id,
           type: 'repair',
           title: repair.title,
@@ -111,8 +114,15 @@ export async function GET(
           created_at: repair.created_at,
           completed_at: repair.actual_completion_date,
           device_info: deviceInfo
-        })
+        }
+        
+        console.log('🔧 Adding repair service:', repairService)
+        services.push(repairService)
       })
+    } else if (repairsError) {
+      console.error('❌ Error fetching repairs:', repairsError)
+    } else {
+      console.log('ℹ️ No repairs found for customer', customerId)
     }
 
     // Agregar desbloqueos
@@ -120,8 +130,8 @@ export async function GET(
       console.log(`✅ Processing ${unlocks.length} unlocks for customer ${customerId}`)
       unlocks.forEach((unlock: any) => {
         // Priorizar la información del dispositivo relacionado, luego la información directa del unlock
-        const deviceInfo = (unlock.devices && unlock.devices.length > 0) 
-          ? `${unlock.devices[0].brand} ${unlock.devices[0].model}` 
+        const deviceInfo = unlock.devices 
+          ? `${unlock.devices.brand} ${unlock.devices.model}` 
           : `${unlock.brand} ${unlock.model}`
         
         const unlockService = {
@@ -147,26 +157,34 @@ export async function GET(
 
     // Agregar ventas
     if (sales && !salesError) {
+      console.log(`✅ Processing ${sales.length} sales for customer ${customerId}`)
       sales.forEach((sale: any) => {
         const items = sale.sale_items || []
-        const itemsText = items.map((item: any) => `${item.product_name} (${item.quantity}x)`).join(', ')
+        const itemsText = items.map((item: any) => `${item.inventory?.name || 'Producto'} (${item.quantity}x)`).join(', ')
         
-        services.push({
+        const saleService = {
           id: sale.id,
           type: 'sale',
           title: `Venta - ${sale.payment_method}`,
           description: `Productos: ${itemsText}`,
-          status: sale.status || 'completed',
-          cost: sale.total_amount || 0,
+          status: sale.payment_status || 'completed',
+          cost: sale.total || 0,
           created_at: sale.created_at,
           completed_at: sale.created_at,
           items: items.map((item: any) => ({
-            name: item.product_name,
+            name: item.inventory?.name || 'Producto',
             quantity: item.quantity,
-            price: item.price
+            price: item.unit_price
           }))
-        })
+        }
+        
+        console.log('🛒 Adding sale service:', saleService)
+        services.push(saleService)
       })
+    } else if (salesError) {
+      console.error('❌ Error fetching sales:', salesError)
+    } else {
+      console.log('ℹ️ No sales found for customer', customerId)
     }
 
     // Calcular resumen financiero

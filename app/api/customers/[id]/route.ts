@@ -1,5 +1,26 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createServerClient } from '@/lib/supabase/server'
+import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
+import { cookies } from 'next/headers'
+
+// Helper function to get authenticated user's organization
+async function getAuthenticatedUserOrganization(supabase: any) {
+  const { data: { session }, error: authError } = await supabase.auth.getSession()
+  if (authError || !session) {
+    throw new Error('No autorizado')
+  }
+
+  const { data: userProfile, error: profileError } = await supabase
+    .from('users')
+    .select('organization_id')
+    .eq('auth_user_id', session.user.id)
+    .single()
+
+  if (profileError || !userProfile?.organization_id) {
+    throw new Error('Organización no encontrada')
+  }
+
+  return userProfile.organization_id
+}
 
 // GET - Obtener cliente por ID
 export async function GET(
@@ -9,9 +30,10 @@ export async function GET(
   try {
     console.log('🔧 Getting customer by ID:', params.id)
     
-    const supabase = createServerClient()
+    const supabase = createRouteHandlerClient({ cookies })
     const customerId = params.id
-    const organizationId = '873d8154-8b40-4b8a-8d03-431bf9f697e6'
+
+    const organizationId = await getAuthenticatedUserOrganization(supabase)
 
     const { data: customer, error } = await supabase
       .from('customers')
@@ -39,9 +61,11 @@ export async function GET(
 
   } catch (error) {
     console.error('🚨 Get customer error:', error)
+    const status = error instanceof Error && error.message === 'No autorizado' ? 401 : 
+                   error instanceof Error && error.message === 'Organización no encontrada' ? 403 : 500
     return NextResponse.json(
-      { error: 'Error interno del servidor', details: error instanceof Error ? error.message : 'Unknown error' },
-      { status: 500 }
+      { error: error instanceof Error ? error.message : 'Error interno del servidor' },
+      { status }
     )
   }
 }
@@ -54,10 +78,11 @@ export async function PUT(
   try {
     console.log('🔧 Updating customer:', params.id)
     
-    const supabase = createServerClient()
+    const supabase = createRouteHandlerClient({ cookies })
     const body = await request.json()
     const customerId = params.id
-    const organizationId = '873d8154-8b40-4b8a-8d03-431bf9f697e6'
+
+    const organizationId = await getAuthenticatedUserOrganization(supabase)
 
     // Validaciones
     if (body.customer_type && !['identified', 'anonymous'].includes(body.customer_type)) {
@@ -104,9 +129,11 @@ export async function PUT(
 
   } catch (error) {
     console.error('🚨 Update customer error:', error)
+    const status = error instanceof Error && error.message === 'No autorizado' ? 401 : 
+                   error instanceof Error && error.message === 'Organización no encontrada' ? 403 : 500
     return NextResponse.json(
-      { error: 'Error interno del servidor', details: error instanceof Error ? error.message : 'Unknown error' },
-      { status: 500 }
+      { error: error instanceof Error ? error.message : 'Error interno del servidor' },
+      { status }
     )
   }
 }
@@ -119,9 +146,10 @@ export async function DELETE(
   try {
     console.log('🔧 Deleting customer:', params.id)
     
-    const supabase = createServerClient()
+    const supabase = createRouteHandlerClient({ cookies })
     const customerId = params.id
-    const organizationId = '873d8154-8b40-4b8a-8d03-431bf9f697e6'
+
+    const organizationId = await getAuthenticatedUserOrganization(supabase)
 
     // Verificar si el cliente tiene reparaciones o dispositivos asociados
     const { data: repairs } = await supabase
@@ -166,9 +194,11 @@ export async function DELETE(
 
   } catch (error) {
     console.error('🚨 Delete customer error:', error)
+    const status = error instanceof Error && error.message === 'No autorizado' ? 401 : 
+                   error instanceof Error && error.message === 'Organización no encontrada' ? 403 : 500
     return NextResponse.json(
-      { error: 'Error interno del servidor', details: error instanceof Error ? error.message : 'Unknown error' },
-      { status: 500 }
+      { error: error instanceof Error ? error.message : 'Error interno del servidor' },
+      { status }
     )
   }
 } 

@@ -1,5 +1,26 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createServerClient } from '@/lib/supabase/server'
+import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
+import { cookies } from 'next/headers'
+
+// Helper function to get authenticated user's organization
+async function getAuthenticatedUserOrganization(supabase: any) {
+  const { data: { session }, error: authError } = await supabase.auth.getSession()
+  if (authError || !session) {
+    throw new Error('No autorizado')
+  }
+
+  const { data: userProfile, error: profileError } = await supabase
+    .from('users')
+    .select('organization_id')
+    .eq('auth_user_id', session.user.id)
+    .single()
+
+  if (profileError || !userProfile?.organization_id) {
+    throw new Error('Organización no encontrada')
+  }
+
+  return userProfile.organization_id
+}
 
 // GET - Obtener producto por ID
 export async function GET(
@@ -9,9 +30,10 @@ export async function GET(
   try {
     console.log('🔧 Getting inventory item by ID:', params.id)
     
-    const supabase = createServerClient()
+    const supabase = createRouteHandlerClient({ cookies })
     const itemId = params.id
-    const organizationId = '873d8154-8b40-4b8a-8d03-431bf9f697e6'
+
+    const organizationId = await getAuthenticatedUserOrganization(supabase)
 
     const { data: item, error } = await supabase
       .from('inventory')
@@ -55,10 +77,11 @@ export async function PUT(
   try {
     console.log('🔧 Updating inventory item:', params.id)
     
-    const supabase = createServerClient()
+    const supabase = createRouteHandlerClient({ cookies })
     const body = await request.json()
     const itemId = params.id
-    const organizationId = '873d8154-8b40-4b8a-8d03-431bf9f697e6'
+
+    const organizationId = await getAuthenticatedUserOrganization(supabase)
 
     // Validaciones básicas
     if (!body.name || !body.category) {
@@ -125,9 +148,10 @@ export async function DELETE(
   try {
     console.log('🔧 Deleting inventory item:', params.id)
     
-    const supabase = createServerClient()
+    const supabase = createRouteHandlerClient({ cookies })
     const itemId = params.id
-    const organizationId = '873d8154-8b40-4b8a-8d03-431bf9f697e6'
+
+    const organizationId = await getAuthenticatedUserOrganization(supabase)
 
     // Verificar si el producto tiene ventas asociadas
     const { data: sales } = await supabase

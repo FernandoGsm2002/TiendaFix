@@ -31,6 +31,7 @@ import {
 import FormField from '@/app/components/ui/FormField'
 import { textColors } from '@/lib/utils/colors'
 import { formatCurrency } from '@/lib/utils/currency'
+import { useTranslations } from '@/lib/contexts/TranslationContext'
 import { 
   Search, 
   Filter, 
@@ -89,6 +90,7 @@ interface NewTechnicianForm {
 }
 
 export default function PersonalPage() {
+  const { t } = useTranslations()
   const [technicians, setTechnicians] = useState<Technician[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -216,7 +218,7 @@ export default function PersonalPage() {
     if (daysDiff <= 1) return { label: 'Hoy', color: 'success' }
     if (daysDiff <= 7) return { label: 'Esta semana', color: 'primary' }
     if (daysDiff <= 30) return { label: 'Este mes', color: 'warning' }
-    return { label: 'Inactivo', color: 'danger' }
+          return { label: t('common.inactive'), color: 'danger' }
   }
 
   const getEfficiencyColor = (efficiency: number) => {
@@ -227,8 +229,8 @@ export default function PersonalPage() {
 
   const getRoleLabel = (role: string) => {
     switch (role) {
-      case 'owner': return 'Propietario'
-      case 'technician': return 'Técnico'
+              case 'owner': return t('staff.owner')
+      case 'technician': return t('staff.technician')
       default: return role
     }
   }
@@ -422,7 +424,7 @@ export default function PersonalPage() {
                 <Chip color="success" variant="flat">Activos</Chip>
               </div>
               <div className="space-y-2">
-                <p className={`text-sm font-medium ${textColors.tertiary}`}>Personal Activo</p>
+                <p className={`text-sm font-medium ${textColors.tertiary}`}>{t('staff.activeTechnicians')}</p>
                 <p className={`text-3xl font-bold text-green-600`}>{stats.activos}</p>
               </div>
             </CardBody>
@@ -437,7 +439,7 @@ export default function PersonalPage() {
                 <Chip color="secondary" variant="flat">Técnicos</Chip>
               </div>
               <div className="space-y-2">
-                <p className={`text-sm font-medium ${textColors.tertiary}`}>Técnicos</p>
+                <p className={`text-sm font-medium ${textColors.tertiary}`}>{t('staff.technician')}</p>
                 <p className={`text-3xl font-bold text-purple-600`}>{stats.tecnicos}</p>
               </div>
             </CardBody>
@@ -504,8 +506,8 @@ export default function PersonalPage() {
                 }}
               >
                 <SelectItem key="todos" className="text-gray-900">Todos los estados</SelectItem>
-                <SelectItem key="active" className="text-gray-900">Activo</SelectItem>
-                <SelectItem key="inactive" className="text-gray-900">Inactivo</SelectItem>
+                                  <SelectItem key="active" className="text-gray-900">{t('common.active')}</SelectItem>
+                                  <SelectItem key="inactive" className="text-gray-900">{t('common.inactive')}</SelectItem>
               </Select>
             </div>
           </CardBody>

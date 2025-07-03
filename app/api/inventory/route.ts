@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createServerClient } from '@/lib/supabase/server'
+import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
+import { cookies } from 'next/headers'
 
 export async function GET(request: NextRequest) {
   try {
     console.log('🔧 Inventory API called - getting real data')
     
-    const supabase = createServerClient()
+    const supabase = createRouteHandlerClient({ cookies })
     const { searchParams } = new URL(request.url)
     
     // Parámetros de consulta
@@ -16,7 +17,28 @@ export async function GET(request: NextRequest) {
     const stockStatus = searchParams.get('stockStatus') || 'todos'
     
     const offset = (page - 1) * limit
-    const organizationId = '873d8154-8b40-4b8a-8d03-431bf9f697e6' // ID de Fernando
+
+    // Verificar autenticación
+    const { data: { session }, error: authError } = await supabase.auth.getSession()
+    if (authError || !session) {
+      console.error('❌ Usuario no autenticado:', authError)
+      return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
+    }
+
+    // Obtener la organización del usuario
+    const { data: userProfile, error: profileError } = await supabase
+      .from('users')
+      .select('organization_id')
+      .eq('auth_user_id', session.user.id)
+      .single()
+
+    if (profileError || !userProfile?.organization_id) {
+      console.error('❌ Error obteniendo organización del usuario:', profileError)
+      return NextResponse.json({ error: 'Organización no encontrada' }, { status: 403 })
+    }
+
+    const organizationId = userProfile.organization_id
+    console.log('✅ Inventory API - Organization ID:', organizationId)
 
     try {
       let query = supabase
@@ -134,10 +156,30 @@ export async function POST(request: NextRequest) {
   try {
     console.log('🔧 Creating new inventory item...')
     
-    const supabase = createServerClient()
+    const supabase = createRouteHandlerClient({ cookies })
     const body = await request.json()
     
-    const organizationId = '873d8154-8b40-4b8a-8d03-431bf9f697e6' // ID de Fernando
+    // Verificar autenticación
+    const { data: { session }, error: authError } = await supabase.auth.getSession()
+    if (authError || !session) {
+      console.error('❌ Usuario no autenticado:', authError)
+      return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
+    }
+
+    // Obtener la organización del usuario
+    const { data: userProfile, error: profileError } = await supabase
+      .from('users')
+      .select('organization_id, id')
+      .eq('auth_user_id', session.user.id)
+      .single()
+
+    if (profileError || !userProfile?.organization_id) {
+      console.error('❌ Error obteniendo organización del usuario:', profileError)
+      return NextResponse.json({ error: 'Organización no encontrada' }, { status: 403 })
+    }
+
+    const organizationId = userProfile.organization_id
+    console.log('✅ Creating inventory for organization:', organizationId)
 
     const newItem = {
       organization_id: organizationId,
@@ -153,7 +195,8 @@ export async function POST(request: NextRequest) {
       supplier: body.supplier || '',
       sku: body.sku || '',
       location: body.location || '',
-      is_active: true
+      is_active: true,
+      created_by: userProfile.id
     }
 
     const { data: item, error } = await supabase

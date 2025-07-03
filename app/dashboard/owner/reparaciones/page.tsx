@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import debounce from 'lodash.debounce'
 import DashboardLayout from '../components/DashboardLayout'
+import { useTranslations, useCurrency } from '@/lib/contexts/TranslationContext'
 import { 
   Card, 
   CardBody, 
@@ -38,7 +39,6 @@ import {
   Filter, 
   Plus, 
   Eye, 
-  Edit, 
   Trash2, 
   Calendar, 
   User, 
@@ -52,7 +52,8 @@ import {
   DollarSign,
   ClipboardList,
   Shield,
-  Settings
+  Settings,
+  Printer
 } from 'lucide-react'
 
 interface Repair {
@@ -93,7 +94,7 @@ interface Repair {
     serial_number: string | null
     imei: string | null
   } | null
-  users: {
+  technician: {
     id: string
     name: string
     email: string
@@ -152,15 +153,20 @@ interface RepairStats {
 }
 
 export default function ReparacionesPage() {
+  const { t } = useTranslations()
+  const { formatCurrency } = useCurrency()
   const [repairs, setRepairs] = useState<Repair[]>([])
   const [customers, setCustomers] = useState<Customer[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [filtroEstado, setFiltroEstado] = useState('todos')
   const [busqueda, setBusqueda] = useState('')
+  const [fechaInicio, setFechaInicio] = useState('')
+  const [fechaFin, setFechaFin] = useState('')
   const [createLoading, setCreateLoading] = useState(false)
   const [updateLoading, setUpdateLoading] = useState(false)
   const [deleteLoading, setDeleteLoading] = useState(false)
+  const [printLoading, setPrintLoading] = useState(false)
   const [pagination, setPagination] = useState<PaginationInfo>({
     page: 1,
     limit: 10,
@@ -193,15 +199,15 @@ export default function ReparacionesPage() {
   })
 
   const [selectedRepair, setSelectedRepair] = useState<Repair | null>(null)
-  const [editingRepair, setEditingRepair] = useState<Repair | null>(null)
+
 
   const { isOpen: isCreateOpen, onOpen: onCreateOpen, onClose: onCreateClose } = useDisclosure()
   const { isOpen: isDetailOpen, onOpen: onDetailOpen, onClose: onDetailClose } = useDisclosure()
-  const { isOpen: isEditOpen, onOpen: onEditOpen, onClose: onEditClose } = useDisclosure()
+
   const { isOpen: isDeleteOpen, onOpen: onDeleteOpen, onClose: onDeleteClose } = useDisclosure()
   const { isOpen: isStatusOpen, onOpen: onStatusOpen, onClose: onStatusClose } = useDisclosure()
 
-  const fetchRepairs = async (page = 1, estado = filtroEstado, search = busqueda) => {
+  const fetchRepairs = async (page = 1, estado = filtroEstado, search = busqueda, startDate = fechaInicio, endDate = fechaFin) => {
     try {
       setLoading(true)
       const params = new URLSearchParams({
@@ -211,6 +217,10 @@ export default function ReparacionesPage() {
       
       if (estado !== 'todos') params.append('status', estado)
       if (search.trim()) params.append('search', search.trim())
+      if (startDate) params.append('start_date', startDate)
+      if (endDate) params.append('end_date', endDate)
+
+
 
       const response = await fetch(`/api/repairs?${params}`)
       
@@ -232,15 +242,19 @@ export default function ReparacionesPage() {
     }
   }
 
-  const debouncedFetch = useCallback(debounce(fetchRepairs, 300), []);
+  const debouncedFetch = useCallback(debounce(() => {
+    fetchRepairs(1, filtroEstado, busqueda, fechaInicio, fechaFin);
+  }, 300), [filtroEstado, busqueda, fechaInicio, fechaFin]);
 
   useEffect(() => {
-    fetchRepairs(1, filtroEstado, '');
-  }, [filtroEstado]);
+    fetchRepairs(1, filtroEstado, busqueda, fechaInicio, fechaFin);
+  }, [filtroEstado, fechaInicio, fechaFin]);
 
   useEffect(() => {
-    debouncedFetch(1, filtroEstado, busqueda);
-  }, [busqueda, filtroEstado, debouncedFetch]);
+    if (busqueda.trim() || busqueda === '') {
+      debouncedFetch();
+    }
+  }, [busqueda, debouncedFetch]);
 
   const fetchCustomers = async () => {
     try {
@@ -266,6 +280,8 @@ export default function ReparacionesPage() {
   const handleBusquedaChange = (search: string) => {
     setBusqueda(search)
   }
+
+
 
   const handleCreateRepair = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -326,7 +342,7 @@ export default function ReparacionesPage() {
         throw new Error(errorData.error || 'Error al crear la reparación')
       }
 
-      await fetchRepairs()
+      await fetchRepairs(1, filtroEstado, busqueda, fechaInicio, fechaFin)
       onCreateClose()
       setNewRepair({
         customer_id: '',
@@ -387,10 +403,17 @@ export default function ReparacionesPage() {
     }
   }
 
-  const formatCurrency = (amount: number | null) => {
-    if (!amount) return 'S/ 0.00'
-    return `S/ ${amount.toLocaleString('es-PE', { minimumFractionDigits: 2 })}`
+  const getPriorityLabel = (priority: string) => {
+    switch (priority) {
+      case 'low': return 'Baja'
+      case 'medium': return 'Media'
+      case 'high': return 'Alta'
+      case 'urgent': return 'Urgente'
+      default: return priority
+    }
   }
+
+
 
   const getCustomerName = (customer: Repair['customers'], unregisteredName?: string | null) => {
     if (!customer && unregisteredName) return unregisteredName
@@ -410,39 +433,7 @@ export default function ReparacionesPage() {
     onDetailOpen()
   }
 
-  const handleEditRepair = (repair: Repair) => {
-    setEditingRepair(repair)
-    onEditOpen()
-  }
 
-  const handleUpdateRepair = async (updateData: any) => {
-    if (!editingRepair) return
-    
-    setUpdateLoading(true)
-    try {
-      const response = await fetch(`/api/repairs/${editingRepair.id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(updateData),
-      })
-
-      if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.error || 'Error al actualizar la reparación')
-      }
-
-      onEditClose()
-      fetchRepairs()
-      alert('Reparación actualizada exitosamente')
-    } catch (err) {
-      console.error('Error updating repair:', err)
-      alert(err instanceof Error ? err.message : 'Error al actualizar la reparación')
-    } finally {
-      setUpdateLoading(false)
-    }
-  }
 
   const handleStatusChange = (repair: Repair) => {
     setSelectedRepair(repair)
@@ -469,7 +460,7 @@ export default function ReparacionesPage() {
       }
       
       onStatusClose();
-      fetchRepairs(); // Recargar para ver el cambio
+      fetchRepairs(1, filtroEstado, busqueda, fechaInicio, fechaFin); // Recargar para ver el cambio
     } catch (error) {
       console.error("Failed to update status", error);
       alert(error instanceof Error ? error.message : 'Error desconocido');
@@ -498,7 +489,7 @@ export default function ReparacionesPage() {
       }
 
       onDeleteClose()
-      fetchRepairs()
+      fetchRepairs(1, filtroEstado, busqueda, fechaInicio, fechaFin)
       alert('Reparación eliminada exitosamente')
     } catch (err) {
       console.error('Error deleting repair:', err)
@@ -506,6 +497,243 @@ export default function ReparacionesPage() {
     } finally {
       setDeleteLoading(false)
     }
+  }
+
+  // Obtener información de la organización
+  const fetchOrganizationInfo = async () => {
+    try {
+      // Primero obtenemos el organization_id del usuario actual
+      const userResponse = await fetch('/api/user/profile')
+      const userData = await userResponse.json()
+      
+      if (!userData.success) {
+        throw new Error('No se pudo obtener el perfil del usuario')
+      }
+
+      const organizationId = userData.data.organization_id
+      
+      // Luego obtenemos la información de la organización
+      const orgResponse = await fetch(`/api/organizations/${organizationId}`)
+      const orgData = await orgResponse.json()
+      
+      if (!orgData.success) {
+        throw new Error('No se pudo obtener la información de la organización')
+      }
+
+      return orgData.data
+    } catch (error) {
+      console.error('Error fetching organization info:', error)
+      throw error
+    }
+  }
+
+  // Generar el ticket de impresión en formato térmico
+  const generateThermalTicket = (repair: Repair, organizationInfo: any) => {
+    const currentDate = new Date().toLocaleString('es-ES', {
+      day: '2-digit',
+      month: '2-digit', 
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    })
+
+    const customerName = getCustomerName(repair.customers, repair.unregistered_customer_name)
+    const deviceName = getDeviceName(repair.devices, repair.unregistered_device_info)
+    const customerPhone = repair.customers?.phone || repair.unregistered_customer_phone || 'No disponible'
+
+    // HTML para ticket térmico (ancho 80mm)
+    const ticketHTML = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="UTF-8">
+        <style>
+          @page {
+            size: 80mm auto;
+            margin: 0;
+          }
+          body {
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            line-height: 1.2;
+            margin: 0;
+            padding: 5mm;
+            width: 70mm;
+            color: black;
+          }
+          .center { text-align: center; }
+          .left { text-align: left; }
+          .right { text-align: right; }
+          .bold { font-weight: bold; }
+          .large { font-size: 14px; }
+          .border-top { border-top: 1px dashed black; margin: 8px 0; padding-top: 8px; }
+          .border-bottom { border-bottom: 1px dashed black; margin: 8px 0; padding-bottom: 8px; }
+          .space { margin: 8px 0; }
+          .flex-row { display: flex; justify-content: space-between; }
+          .break { page-break-inside: avoid; }
+        </style>
+      </head>
+      <body>
+        <div class="center bold large">
+          ${organizationInfo.name || 'TIENDA DE REPARACIONES'}
+        </div>
+        
+        ${organizationInfo.address ? `<div class="center">${organizationInfo.address}</div>` : ''}
+        ${organizationInfo.phone ? `<div class="center">Tel: ${organizationInfo.phone}</div>` : ''}
+        ${organizationInfo.email ? `<div class="center">${organizationInfo.email}</div>` : ''}
+        
+        <div class="border-top"></div>
+        
+        <div class="center bold large">TICKET DE REPARACIÓN</div>
+        <div class="center">No. ${repair.id.slice(0, 8).toUpperCase()}</div>
+        
+        <div class="border-top"></div>
+        
+        <div class="space">
+          <div class="bold">FECHA DE RECEPCIÓN:</div>
+          <div>${new Date(repair.received_date).toLocaleDateString('es-ES')}</div>
+        </div>
+        
+        <div class="space">
+          <div class="bold">CLIENTE:</div>
+          <div>${customerName}</div>
+          <div>Tel: ${customerPhone}</div>
+        </div>
+        
+        <div class="space">
+          <div class="bold">DISPOSITIVO:</div>
+          <div>${deviceName}</div>
+          ${repair.devices?.serial_number ? `<div>S/N: ${repair.devices.serial_number}</div>` : ''}
+          ${repair.devices?.imei ? `<div>IMEI: ${repair.devices.imei}</div>` : ''}
+        </div>
+        
+        <div class="space">
+          <div class="bold">PROBLEMA REPORTADO:</div>
+          <div>${repair.problem_description}</div>
+        </div>
+        
+        ${repair.solution_description ? `
+        <div class="space">
+          <div class="bold">SOLUCIÓN APLICADA:</div>
+          <div>${repair.solution_description}</div>
+        </div>
+        ` : ''}
+        
+        <div class="space">
+          <div class="bold">ESTADO:</div>
+          <div>${getStatusLabel(repair.status)}</div>
+        </div>
+        
+        <div class="space">
+          <div class="bold">PRIORIDAD:</div>
+          <div>${getPriorityLabel(repair.priority)}</div>
+        </div>
+        
+        <div class="border-top"></div>
+        
+        <div class="flex-row space">
+          <div class="bold">COSTO:</div>
+          <div class="bold">${formatCurrency(repair.cost)}</div>
+        </div>
+        
+        ${repair.warranty_days > 0 ? `
+        <div class="space">
+          <div class="bold">GARANTÍA:</div>
+          <div>${repair.warranty_days} días</div>
+        </div>
+        ` : ''}
+        
+        ${repair.internal_notes ? `
+        <div class="space">
+          <div class="bold">NOTAS INTERNAS:</div>
+          <div>${repair.internal_notes}</div>
+        </div>
+        ` : ''}
+        
+        <div class="border-top"></div>
+        
+        <div class="center">
+          <div>Fecha de impresión: ${currentDate}</div>
+          <div class="space">¡Gracias por confiar en nosotros!</div>
+        </div>
+        
+        <div class="border-bottom"></div>
+        
+        <div class="center small">
+          <div>Conserve este ticket como comprobante</div>
+          <div>de su reparación</div>
+        </div>
+      </body>
+      </html>
+    `
+
+    return ticketHTML
+  }
+
+  // Función para imprimir el ticket
+  const handlePrintTicket = async (repair: Repair) => {
+    setPrintLoading(true)
+    try {
+      // Obtener información de la organización
+      const organizationInfo = await fetchOrganizationInfo()
+      
+      // Generar el HTML del ticket
+      const ticketHTML = generateThermalTicket(repair, organizationInfo)
+      
+      // Crear un iframe oculto para la impresión (mejor compatibilidad)
+      const iframe = document.createElement('iframe')
+      iframe.style.position = 'absolute'
+      iframe.style.top = '-1000px'
+      iframe.style.left = '-1000px'
+      iframe.style.width = '300px'
+      iframe.style.height = '600px'
+      
+      document.body.appendChild(iframe)
+      
+      const iframeDoc = iframe.contentDocument || iframe.contentWindow?.document
+      if (iframeDoc) {
+        iframeDoc.write(ticketHTML)
+        iframeDoc.close()
+        
+        // Esperar que el contenido se cargue y luego imprimir
+        setTimeout(() => {
+          try {
+            iframe.contentWindow?.print()
+            setTimeout(() => {
+              document.body.removeChild(iframe)
+            }, 1000)
+          } catch (printError) {
+            console.error('Error al imprimir:', printError)
+            // Fallback: descargar como archivo
+            downloadTicketAsFile(ticketHTML, repair.id)
+            document.body.removeChild(iframe)
+          }
+        }, 500)
+      } else {
+        // Fallback si no se puede crear el iframe
+        downloadTicketAsFile(ticketHTML, repair.id)
+        document.body.removeChild(iframe)
+      }
+      
+    } catch (error) {
+      console.error('Error printing ticket:', error)
+      setError('Error al generar el ticket de impresión')
+    } finally {
+      setPrintLoading(false)
+    }
+  }
+
+  // Función auxiliar para descargar el ticket como archivo
+  const downloadTicketAsFile = (ticketHTML: string, repairId: string) => {
+    const blob = new Blob([ticketHTML], { type: 'text/html' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `ticket-reparacion-${repairId.slice(0, 8)}.html`
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    URL.revokeObjectURL(url)
   }
 
   const allStats = {
@@ -587,25 +815,49 @@ export default function ReparacionesPage() {
         );
       case 'acciones':
         return (
-          <div className="relative flex items-center gap-2">
-            <Tooltip content="Cambiar estado" classNames={{ content: "bg-gray-900 text-white" }}>
-              <Button isIconOnly variant="light" size="sm" onPress={() => handleStatusChange(repair)}>
-                <ClipboardList className="h-5 w-5 text-gray-600 dark:text-gray-300" />
+          <div className="flex gap-1">
+            <Tooltip content={t('common.view') + " " + t('common.details')} classNames={{ content: "bg-gray-900 text-white border-gray-700" }}>
+              <Button
+                isIconOnly
+                variant="light"
+                size="sm"
+                onPress={() => handleViewDetails(repair)}
+              >
+                <Eye className="h-4 w-4" />
               </Button>
             </Tooltip>
-            <Tooltip content="Ver detalles" classNames={{ content: "bg-gray-900 text-white" }}>
-              <Button isIconOnly variant="light" size="sm" onPress={() => handleViewDetails(repair)}>
-                <Eye className="h-5 w-5 text-gray-600 dark:text-gray-300" />
+            <Tooltip content="Cambiar estado" classNames={{ content: "bg-gray-900 text-white border-gray-700" }}>
+              <Button
+                isIconOnly
+                variant="light"
+                size="sm"
+                color="warning"
+                onPress={() => handleStatusChange(repair)}
+              >
+                <ClipboardList className="h-4 w-4" />
               </Button>
             </Tooltip>
-            <Tooltip content="Editar" classNames={{ content: "bg-gray-900 text-white" }}>
-              <Button isIconOnly variant="light" size="sm" onPress={() => handleEditRepair(repair)}>
-                <Edit className="h-5 w-5 text-gray-600 dark:text-gray-300" />
+            <Tooltip content="Imprimir Ticket" classNames={{ content: "bg-gray-900 text-white border-gray-700" }}>
+              <Button
+                isIconOnly
+                variant="light"
+                size="sm"
+                color="secondary"
+                onPress={() => handlePrintTicket(repair)}
+                isLoading={printLoading}
+              >
+                <Printer className="h-4 w-4" />
               </Button>
             </Tooltip>
-            <Tooltip content="Eliminar" classNames={{ content: "bg-gray-900 text-white" }}>
-              <Button isIconOnly variant="light" size="sm" color="danger" onPress={() => handleDeleteRepair(repair)}>
-                <Trash2 className="h-5 w-5" />
+            <Tooltip content="Eliminar" classNames={{ content: "bg-red-600 text-white border-red-500" }}>
+              <Button
+                isIconOnly
+                variant="light"
+                size="sm"
+                color="danger"
+                onPress={() => handleDeleteRepair(repair)}
+              >
+                <Trash2 className="h-4 w-4" />
               </Button>
             </Tooltip>
           </div>
@@ -659,7 +911,7 @@ export default function ReparacionesPage() {
         <div className="flex items-center justify-center h-64">
           <div className="text-center">
             <AlertTriangle className="h-12 w-12 text-red-500 mx-auto mb-4" />
-            <p className="text-gray-600">Error al cargar reparaciones: {error}</p>
+            <p className="text-gray-600">{t('common.error')}: {error}</p>
           </div>
         </div>
       </DashboardLayout>
@@ -672,8 +924,8 @@ export default function ReparacionesPage() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-gray-900">Gestión de Reparaciones</h1>
-            <p className={`text-sm md:text-base ${textColors.secondary} mt-1`}>Administra todas las reparaciones del taller</p>
+                      <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-gray-900">{t('repairs.title')}</h1>
+          <p className={`text-sm md:text-base ${textColors.secondary} mt-1`}>{t('repairs.description')}</p>
           </div>
           <Button 
             color="primary" 
@@ -690,9 +942,9 @@ export default function ReparacionesPage() {
         <Card className="shadow-lg border-0 bg-white/80 backdrop-blur-sm">
           <CardBody className="p-4 md:p-6">
             <div className="flex flex-col lg:flex-row gap-4">
-              <div className="flex-1">
+              <div className="flex-1 lg:flex-none lg:w-96">
                 <Input
-                  placeholder="Buscar por cliente, dispositivo o número de serie..."
+                  placeholder="Buscar por cliente, dispositivo..."
                   value={busqueda}
                   onChange={(e) => handleBusquedaChange(e.target.value)}
                   startContent={<Search className="h-4 w-4 text-gray-400" />}
@@ -705,27 +957,60 @@ export default function ReparacionesPage() {
                   }}
                 />
               </div>
-              <Select
-                placeholder="Filtrar por estado"
-                selectedKeys={[filtroEstado]}
-                onSelectionChange={handleFiltroChange}
-                startContent={<Filter className="h-4 w-4 text-gray-400" />}
-                variant="bordered"
-                size="lg"
-                className="w-full lg:w-48"
-                classNames={{
-                  trigger: "border-gray-200 hover:border-gray-300"
-                }}
-              >
-                <SelectItem key="todos">Todos los estados</SelectItem>
-                <SelectItem key="received">Recibido</SelectItem>
-                <SelectItem key="diagnosed">Diagnosticado</SelectItem>
-                <SelectItem key="in_progress">En Proceso</SelectItem>
-                <SelectItem key="waiting_parts">Esperando Repuestos</SelectItem>
-                <SelectItem key="completed">Completado</SelectItem>
-                <SelectItem key="delivered">Entregado</SelectItem>
-                <SelectItem key="cancelled">Cancelado</SelectItem>
-              </Select>
+              <div className="flex flex-col sm:flex-row gap-4 lg:flex-1">
+                <div className="flex gap-2">
+                  <Input
+                    type="date"
+                    label={t('repairs.filters.from')}
+                    value={fechaInicio}
+                    onChange={(e) => setFechaInicio(e.target.value)}
+                    variant="bordered"
+                    size="lg"
+                    className="w-40"
+                    classNames={{
+                      input: "text-sm text-gray-900",
+                      inputWrapper: "border-gray-200 hover:border-gray-300",
+                      label: "text-gray-700 font-medium"
+                    }}
+                  />
+                  <Input
+                    type="date"
+                    label={t('repairs.filters.to')}
+                    value={fechaFin}
+                    onChange={(e) => setFechaFin(e.target.value)}
+                    variant="bordered"
+                    size="lg"
+                    className="w-40"
+                    classNames={{
+                      input: "text-sm text-gray-900",
+                      inputWrapper: "border-gray-200 hover:border-gray-300",
+                      label: "text-gray-700 font-medium"
+                    }}
+                  />
+                </div>
+                <Select
+                  placeholder="Estado"
+                  selectedKeys={[filtroEstado]}
+                  onSelectionChange={handleFiltroChange}
+                  startContent={<Filter className="h-4 w-4 text-gray-400" />}
+                  variant="bordered"
+                  size="lg"
+                  className="w-full sm:w-48"
+                  classNames={{
+                    trigger: "border-gray-200 hover:border-gray-300",
+                    value: "text-gray-900"
+                  }}
+                >
+                  <SelectItem key="todos" className="text-gray-900">Todos</SelectItem>
+                  <SelectItem key="received" className="text-gray-900">Recibido</SelectItem>
+                  <SelectItem key="diagnosed" className="text-gray-900">Diagnosticado</SelectItem>
+                  <SelectItem key="in_progress" className="text-gray-900">En Proceso</SelectItem>
+                  <SelectItem key="waiting_parts" className="text-gray-900">Esperando Repuestos</SelectItem>
+                  <SelectItem key="completed" className="text-gray-900">Completado</SelectItem>
+                  <SelectItem key="delivered" className="text-gray-900">Entregado</SelectItem>
+                  <SelectItem key="cancelled" className="text-gray-900">Cancelado</SelectItem>
+                </Select>
+              </div>
             </div>
           </CardBody>
         </Card>
@@ -741,7 +1026,7 @@ export default function ReparacionesPage() {
                 <Chip color="primary" variant="flat" className="font-semibold">Total</Chip>
               </div>
               <div className="space-y-2">
-                <p className="text-sm font-medium text-blue-700">Total Reparaciones</p>
+                <p className="text-sm font-medium text-blue-700">{t('repairs.total')}</p>
                 <p className="text-2xl font-bold text-blue-800">{stats.total}</p>
               </div>
             </CardBody>
@@ -856,8 +1141,11 @@ export default function ReparacionesPage() {
                           variant="dot" 
                           size="sm"
                           className="font-medium"
+                          classNames={{
+                            content: "text-gray-900 font-semibold"
+                          }}
                         >
-                          {repair.priority}
+                          {getPriorityLabel(repair.priority)}
                         </Chip>
                       </TableCell>
                       <TableCell>
@@ -868,7 +1156,7 @@ export default function ReparacionesPage() {
                       </TableCell>
                       <TableCell>
                         <div className="flex gap-1">
-                          <Tooltip content="Ver detalles">
+                          <Tooltip content={t('common.view') + " " + t('common.details')} classNames={{ content: "bg-gray-900 text-white border-gray-700" }}>
                             <Button
                               isIconOnly
                               variant="light"
@@ -878,17 +1166,19 @@ export default function ReparacionesPage() {
                               <Eye className="h-4 w-4" />
                             </Button>
                           </Tooltip>
-                          <Tooltip content="Editar">
+                          <Tooltip content="Cambiar estado" classNames={{ content: "bg-gray-900 text-white border-gray-700" }}>
                             <Button
                               isIconOnly
                               variant="light"
                               size="sm"
-                              onPress={() => handleEditRepair(repair)}
+                              color="warning"
+                              onPress={() => handleStatusChange(repair)}
                             >
-                              <Edit className="h-4 w-4" />
+                              <ClipboardList className="h-4 w-4" />
                             </Button>
                           </Tooltip>
-                          <Tooltip content="Eliminar">
+
+                          <Tooltip content="Eliminar" classNames={{ content: "bg-red-600 text-white border-red-500" }}>
                             <Button
                               isIconOnly
                               variant="light"
@@ -958,8 +1248,11 @@ export default function ReparacionesPage() {
                             color={getPriorityColor(repair.priority)} 
                             variant="dot" 
                             size="sm"
+                            classNames={{
+                              content: "text-gray-900 font-semibold"
+                            }}
                           >
-                            {repair.priority}
+                            {getPriorityLabel(repair.priority)}
                           </Chip>
                           <p className="text-sm font-semibold text-gray-900">{formatCurrency(repair.cost)}</p>
                         </div>
@@ -976,9 +1269,20 @@ export default function ReparacionesPage() {
                             isIconOnly
                             variant="light"
                             size="sm"
-                            onPress={() => handleEditRepair(repair)}
+                            color="warning"
+                            onPress={() => handleStatusChange(repair)}
                           >
-                            <Edit className="h-4 w-4" />
+                            <ClipboardList className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            isIconOnly
+                            variant="light"
+                            size="sm"
+                            color="secondary"
+                            onPress={() => handlePrintTicket(repair)}
+                            isLoading={printLoading}
+                          >
+                            <Printer className="h-4 w-4" />
                           </Button>
                           <Button
                             isIconOnly
@@ -1001,7 +1305,7 @@ export default function ReparacionesPage() {
             {repairs.length === 0 && (
               <div className="text-center py-12">
                 <Wrench className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">No hay reparaciones</h3>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">{t('repairs.noRepairs')}</h3>
                 <p className="text-gray-600 mb-6">Comienza creando tu primera reparación</p>
                 <Button 
                   color="primary" 
@@ -1034,7 +1338,7 @@ export default function ReparacionesPage() {
         <Modal isOpen={isCreateOpen} onClose={onCreateClose}>
           <ModalContent>
             <ModalHeader>
-              <h2 className={`text-xl font-bold ${textColors.primary}`}>Nueva Reparación</h2>
+                              <h2 className={`text-xl font-bold ${textColors.primary}`}>{t('repairs.createTitle')}</h2>
             </ModalHeader>
             <ModalBody>
               <form onSubmit={handleCreateRepair} className="space-y-4">
@@ -1178,7 +1482,7 @@ export default function ReparacionesPage() {
                      <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
                        <div className="flex items-center gap-3">
                          <div className="p-2 bg-blue-100 rounded-full">
-                           {selectedRepair.users?.email.includes('admin') || selectedRepair.users?.name?.toLowerCase().includes('admin') ? (
+                           {selectedRepair.technician?.email.includes('admin') || selectedRepair.technician?.name?.toLowerCase().includes('admin') ? (
                              <Shield className="w-4 h-4 text-blue-600" />
                            ) : (
                              <User className="w-4 h-4 text-blue-600" />
@@ -1187,10 +1491,10 @@ export default function ReparacionesPage() {
                          <div className="flex-1">
                            <p className="text-sm font-medium text-blue-800">Creado por</p>
                            <p className="text-base font-semibold text-blue-900">
-                             {selectedRepair.users ? selectedRepair.users.name : 'Usuario desconocido'}
+                             {selectedRepair.technician ? selectedRepair.technician.name : 'Usuario desconocido'}
                            </p>
                            <p className="text-xs text-blue-600">
-                             {selectedRepair.users ? selectedRepair.users.email : 'Sin información de contacto'}
+                             {selectedRepair.technician ? selectedRepair.technician.email : 'Sin información de contacto'}
                            </p>
                            <p className="text-xs text-blue-500 mt-1">
                              {new Date(selectedRepair.created_at).toLocaleString('es-ES', {
@@ -1204,15 +1508,15 @@ export default function ReparacionesPage() {
                          </div>
                          <div className="ml-auto">
                            <Chip 
-                             color={selectedRepair.users?.email.includes('admin') || selectedRepair.users?.name?.toLowerCase().includes('admin') ? 'warning' : 'primary'}
+                             color={selectedRepair.technician?.email.includes('admin') || selectedRepair.technician?.name?.toLowerCase().includes('admin') ? 'warning' : 'primary'}
                              variant="flat" 
                              size="sm"
-                             startContent={selectedRepair.users?.email.includes('admin') || selectedRepair.users?.name?.toLowerCase().includes('admin') ? 
+                             startContent={selectedRepair.technician?.email.includes('admin') || selectedRepair.technician?.name?.toLowerCase().includes('admin') ? 
                                <Shield className="w-3 h-3" /> : 
                                <User className="w-3 h-3" />
                              }
                            >
-                             {selectedRepair.users?.email.includes('admin') || selectedRepair.users?.name?.toLowerCase().includes('admin') ? 
+                             {selectedRepair.technician?.email.includes('admin') || selectedRepair.technician?.name?.toLowerCase().includes('admin') ? 
                                'Administrador' : 
                                'Técnico'
                              }
@@ -1260,6 +1564,14 @@ export default function ReparacionesPage() {
                   <Button color="default" variant="light" onPress={onDetailClose}>
                     Cerrar
                   </Button>
+                  <Button 
+                    color="secondary" 
+                    startContent={<Printer className="h-4 w-4" />}
+                    onPress={() => selectedRepair && handlePrintTicket(selectedRepair)}
+                    isLoading={printLoading}
+                  >
+                    Imprimir Ticket
+                  </Button>
                 </ModalFooter>
               </>
             )}
@@ -1275,7 +1587,7 @@ export default function ReparacionesPage() {
             <ModalBody>
               {selectedRepair && (
                 <div className="space-y-4">
-                  <p className={textColors.secondary}>¿Estás seguro de que deseas eliminar esta reparación?</p>
+                  <p className={textColors.secondary}>{t('repairs.deleteMessage')}</p>
                   <div className="bg-red-50 p-4 rounded-lg">
                     <p className={`font-medium ${textColors.primary}`}>{selectedRepair.title}</p>
                     <p className={`text-sm ${textColors.secondary}`}>Cliente: {getCustomerName(selectedRepair.customers, selectedRepair.unregistered_customer_name)}</p>
@@ -1294,7 +1606,7 @@ export default function ReparacionesPage() {
                 onPress={confirmDeleteRepair}
                 isLoading={deleteLoading}
               >
-                Eliminar
+                                  {t('common.delete')}
               </Button>
             </ModalFooter>
           </ModalContent>

@@ -27,7 +27,7 @@ import {
   Avatar
 } from '@heroui/react'
 import { textColors } from '@/lib/utils/colors'
-import { formatCurrency } from '@/lib/utils/currency'
+import { useCurrency } from '@/lib/contexts/TranslationContext'
 import { 
   ShoppingCart, 
   Plus, 
@@ -39,7 +39,9 @@ import {
   Package,
   User,
   Search,
-  Receipt
+  Receipt,
+  Printer,
+  AlertTriangle
 } from 'lucide-react'
 
 interface Product {
@@ -75,6 +77,7 @@ interface Customer {
 }
 
 export default function TechnicianSalesPage() {
+  const { formatCurrency } = useCurrency()
   const [products, setProducts] = useState<Product[]>([])
   const [customers, setCustomers] = useState<Customer[]>([])
   const [cart, setCart] = useState<CartItem[]>([])
@@ -83,9 +86,13 @@ export default function TechnicianSalesPage() {
   const [busquedaCliente, setBusquedaCliente] = useState('')
   const [paymentMethod, setPaymentMethod] = useState('cash')
   const [loading, setLoading] = useState(false)
+  const [printLoading, setPrintLoading] = useState(false)
+  const [pendingSaleData, setPendingSaleData] = useState<any>(null)
 
   const { isOpen: isCustomerModalOpen, onOpen: onCustomerModalOpen, onClose: onCustomerModalClose } = useDisclosure()
   const { isOpen: isCheckoutModalOpen, onOpen: onCheckoutModalOpen, onClose: onCheckoutModalClose } = useDisclosure()
+  const { isOpen: isWarningOpen, onOpen: onWarningOpen, onClose: onWarningClose } = useDisclosure()
+  const { isOpen: isConfirmOpen, onOpen: onConfirmOpen, onClose: onConfirmClose } = useDisclosure()
 
   // Cargar productos del inventario
   useEffect(() => {
@@ -189,26 +196,43 @@ export default function TechnicianSalesPage() {
       return
     }
 
+    // Preparar datos de la venta
+    const saleData = {
+      customer_id: selectedCustomer?.id || null,
+      customer_name: selectedCustomer?.name || 'Cliente de mostrador',
+      items: cart.map(item => ({
+        product_id: item.product.id,
+        quantity: item.quantity,
+        price: item.product.enduser_price
+      })),
+      payment_method: paymentMethod,
+      notes: `Venta realizada por técnico. ${selectedCustomer ? 'Cliente: ' + selectedCustomer.name : 'Venta de mostrador'}`
+    }
+
+    // Guardar los datos y mostrar modal de advertencia primero
+    setPendingSaleData(saleData)
+    onCheckoutModalClose()
+    onWarningOpen()
+  }
+
+  // Función para proceder después de confirmar la advertencia
+  const proceedToTicketConfirmation = () => {
+    onWarningClose()
+    onConfirmOpen()
+  }
+
+  // Función para procesar la venta sin comprobante
+  const processSaleWithoutTicket = async () => {
+    if (!pendingSaleData) return
+
     setLoading(true)
     try {
-      const saleData = {
-        customer_id: selectedCustomer?.id || null,
-        customer_name: selectedCustomer?.name || 'Cliente de mostrador',
-        items: cart.map(item => ({
-          product_id: item.product.id,
-          quantity: item.quantity,
-          price: item.product.enduser_price
-        })),
-        payment_method: paymentMethod,
-        notes: `Venta realizada por técnico. ${selectedCustomer ? 'Cliente: ' + selectedCustomer.name : 'Venta de mostrador'}`
-      }
-
       const response = await fetch('/api/sales/technician', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(saleData),
+        body: JSON.stringify(pendingSaleData),
       })
 
       if (!response.ok) {
@@ -219,7 +243,8 @@ export default function TechnicianSalesPage() {
       const result = await response.json()
       alert(`¡Venta procesada exitosamente! ID: ${result.data.sale_id}`)
       clearCart()
-      onCheckoutModalClose()
+      onConfirmClose()
+      setPendingSaleData(null)
       
       // Recargar productos para actualizar stock
       fetchProducts()
@@ -231,14 +256,150 @@ export default function TechnicianSalesPage() {
     }
   }
 
+  // Función para procesar la venta con comprobante
+  const processSaleWithTicket = async () => {
+    if (!pendingSaleData) return
+
+    setLoading(true)
+    try {
+      const response = await fetch('/api/sales/technician', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(pendingSaleData),
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Error al procesar la venta')
+      }
+
+      const result = await response.json()
+      
+      // Imprimir comprobante (función simplificada)
+      await handlePrintSaleTicket()
+      
+      alert(`¡Venta procesada exitosamente y comprobante impreso! ID: ${result.data.sale_id}`)
+      clearCart()
+      onConfirmClose()
+      setPendingSaleData(null)
+      
+      // Recargar productos para actualizar stock
+      fetchProducts()
+    } catch (error) {
+      console.error('Error processing sale:', error)
+      alert(error instanceof Error ? error.message : 'Error al procesar la venta')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  // Función simplificada para imprimir ticket
+  const handlePrintSaleTicket = async () => {
+    try {
+      setPrintLoading(true)
+      
+      const customerName = selectedCustomer?.name || 'Cliente de mostrador'
+      const currentDate = new Date().toLocaleString('es-ES')
+      
+      // Generar ticket simplificado
+      const ticketHTML = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="UTF-8">
+          <style>
+            @page { size: 80mm auto; margin: 0; }
+            body { font-family: 'Courier New', monospace; font-size: 12px; margin: 0; padding: 5mm; width: 70mm; }
+            .center { text-align: center; }
+            .bold { font-weight: bold; }
+            .large { font-size: 14px; }
+            .border-top { border-top: 1px dashed black; margin: 8px 0; padding-top: 8px; }
+            .space { margin: 8px 0; }
+            .item-row { display: flex; justify-content: space-between; margin: 4px 0; }
+          </style>
+        </head>
+        <body>
+          <div class="center bold large">COMPROBANTE DE VENTA</div>
+          <div class="center">TÉCNICO</div>
+          <div class="border-top"></div>
+          <div class="space">
+            <div class="bold">FECHA:</div>
+            <div>${currentDate}</div>
+          </div>
+          <div class="space">
+            <div class="bold">CLIENTE:</div>
+            <div>${customerName}</div>
+          </div>
+          <div class="space">
+            <div class="bold">MÉTODO DE PAGO:</div>
+            <div>${paymentMethod.toUpperCase()}</div>
+          </div>
+          <div class="border-top"></div>
+          <div class="bold">PRODUCTOS:</div>
+          ${cart.map(item => `
+            <div class="item-row">
+              <div>${item.product.name}</div>
+            </div>
+            <div class="item-row">
+              <div>${item.quantity} x ${formatCurrency(item.product.enduser_price)}</div>
+              <div>${formatCurrency(item.subtotal)}</div>
+            </div>
+          `).join('')}
+          <div class="border-top"></div>
+          <div class="space">
+            <div class="item-row bold large">
+              <div>TOTAL:</div>
+              <div>${formatCurrency(total)}</div>
+            </div>
+          </div>
+          <div class="border-top"></div>
+          <div class="center space">
+            <div>¡Gracias por su compra!</div>
+            <div>Técnico de servicio</div>
+          </div>
+        </body>
+        </html>
+      `
+      
+      // Crear iframe para impresión
+      const printFrame = document.createElement('iframe')
+      printFrame.style.position = 'fixed'
+      printFrame.style.top = '-1000px'
+      
+      document.body.appendChild(printFrame)
+      const frameDoc = printFrame.contentDocument || printFrame.contentWindow?.document
+      
+      if (frameDoc) {
+        frameDoc.open()
+        frameDoc.write(ticketHTML)
+        frameDoc.close()
+        
+        await new Promise(resolve => setTimeout(resolve, 1000))
+        printFrame.contentWindow?.print()
+        
+        setTimeout(() => {
+          document.body.removeChild(printFrame)
+        }, 1000)
+      }
+      
+    } catch (error) {
+      console.error('Error printing ticket:', error)
+      alert('Error al imprimir el comprobante')
+    } finally {
+      setPrintLoading(false)
+    }
+  }
+
   return (
     <TechnicianDashboardLayout>
       <div className="max-w-7xl mx-auto space-y-6 p-4">
         {/* Header */}
         <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-4">
           <div>
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-emerald-600 to-green-600 bg-clip-text text-transparent mb-1">
-              Punto de Venta
+            <h1 className="text-2xl font-bold bg-gradient-to-r from-primary-600 to-primary-800 bg-clip-text text-transparent mb-1">
+              🛒 Punto de Venta
             </h1>
             <p className="text-gray-600 text-sm">
               Sistema de ventas integrado
@@ -453,7 +614,7 @@ export default function TechnicianSalesPage() {
 
             {/* Total y checkout */}
             {cart.length > 0 && (
-              <Card className="shadow-xl border-0 bg-gradient-to-br from-green-50 to-emerald-50 sticky top-4">
+              <Card className="shadow-xl border-0 bg-gradient-to-br from-primary-50 to-blue-50 sticky top-4">
                 <CardBody className="p-4">
                   <div className="space-y-3">
                     <div className="flex justify-between items-center text-sm">
@@ -464,17 +625,17 @@ export default function TechnicianSalesPage() {
                       <span className="text-gray-700 font-medium">IGV (18%):</span>
                       <span className="font-bold">{formatCurrency(igv)}</span>
                     </div>
-                    <Divider className="bg-gradient-to-r from-transparent via-gray-300 to-transparent" />
+                    <Divider className="bg-gradient-to-r from-transparent via-primary-300 to-transparent" />
                     <div className="flex justify-between items-center text-xl">
                       <span className="font-bold text-gray-900">Total:</span>
-                      <span className="font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+                      <span className="font-bold bg-gradient-to-r from-primary-600 to-primary-700 bg-clip-text text-transparent">
                         {formatCurrency(total)}
                       </span>
                     </div>
                     <Button
-                      color="success"
+                      color="primary"
                       size="lg"
-                      className="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 font-bold shadow-xl h-12"
+                      className="w-full bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 font-bold shadow-xl h-12"
                       startContent={<CreditCard className="w-5 h-5" />}
                       onPress={onCheckoutModalOpen}
                     >
@@ -492,45 +653,84 @@ export default function TechnicianSalesPage() {
           <ModalContent>
             {(onClose) => (
               <>
-                <ModalHeader>Seleccionar Cliente</ModalHeader>
+                <ModalHeader className="flex flex-col gap-1">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-primary-100 rounded-xl">
+                      <User className="w-6 h-6 text-primary-600" />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-bold text-primary-700">Seleccionar Cliente</h3>
+                      <p className="text-sm text-gray-600">Busca y selecciona un cliente</p>
+                    </div>
+                  </div>
+                </ModalHeader>
                 <ModalBody>
                   <Input
                     placeholder="Buscar cliente..."
                     value={busquedaCliente}
                     onValueChange={setBusquedaCliente}
-                    startContent={<Search className="w-4 h-4 text-gray-400" />}
+                    startContent={<Search className="w-4 h-4 text-primary-400" />}
                     className="mb-4"
+                    color="primary"
+                    variant="bordered"
+                    classNames={{
+                      input: "text-gray-800",
+                      inputWrapper: "border-primary-200 hover:border-primary-300 focus-within:border-primary-500"
+                    }}
                   />
-                  <div className="space-y-2 max-h-60 overflow-y-auto">
+                  <div className="space-y-3 max-h-60 overflow-y-auto">
                     <div 
-                      className="p-3 border rounded-lg cursor-pointer hover:bg-gray-50"
+                      className="p-4 border border-primary-200 rounded-xl cursor-pointer hover:bg-primary-50 hover:border-primary-300 transition-all duration-200"
                       onClick={() => {
                         setSelectedCustomer(null)
                         onClose()
                       }}
                     >
-                      <p className="font-medium">Cliente de mostrador</p>
-                      <p className="text-sm text-gray-500">Sin datos de cliente</p>
+                      <div className="flex items-center gap-3">
+                        <Avatar 
+                          name="?" 
+                          className="bg-gray-400 text-white"
+                          size="md"
+                        />
+                        <div>
+                          <p className="font-semibold text-gray-800">Cliente de mostrador</p>
+                          <p className="text-sm text-gray-500">Sin datos de cliente</p>
+                        </div>
+                      </div>
                     </div>
                     {filteredCustomers.map((customer) => (
                       <div
                         key={customer.id}
-                        className="p-3 border rounded-lg cursor-pointer hover:bg-gray-50"
+                        className="p-4 border border-primary-200 rounded-xl cursor-pointer hover:bg-primary-50 hover:border-primary-300 transition-all duration-200"
                         onClick={() => {
                           setSelectedCustomer(customer)
                           onClose()
                         }}
                       >
-                        <p className="font-medium">{customer.name}</p>
-                        <p className="text-sm text-gray-500">
-                          {customer.phone} • {customer.email}
-                        </p>
+                        <div className="flex items-center gap-3">
+                          <Avatar 
+                            name={customer.name.charAt(0)} 
+                            className="bg-primary-500 text-white"
+                            size="md"
+                          />
+                          <div>
+                            <p className="font-semibold text-gray-800">{customer.name}</p>
+                            <p className="text-sm text-gray-500">
+                              {customer.phone} • {customer.email}
+                            </p>
+                          </div>
+                        </div>
                       </div>
                     ))}
                   </div>
                 </ModalBody>
-                <ModalFooter>
-                  <Button variant="flat" onPress={onClose}>
+                <ModalFooter className="gap-3">
+                  <Button 
+                    variant="flat" 
+                    onPress={onClose}
+                    size="lg"
+                    className="font-medium"
+                  >
                     Cancelar
                   </Button>
                 </ModalFooter>
@@ -544,44 +744,71 @@ export default function TechnicianSalesPage() {
           <ModalContent>
             {(onClose) => (
               <>
-                <ModalHeader>Procesar Venta</ModalHeader>
-                <ModalBody>
-                  <div className="space-y-4">
+                <ModalHeader className="flex flex-col gap-1">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-primary-100 rounded-xl">
+                      <Receipt className="w-6 h-6 text-primary-600" />
+                    </div>
                     <div>
-                      <h4 className="font-semibold mb-2">Resumen de la venta</h4>
-                      <div className="bg-gray-50 p-3 rounded-lg space-y-2">
+                      <h3 className="text-xl font-bold text-primary-700">Procesar Venta</h3>
+                      <p className="text-sm text-gray-600">Confirma los detalles de la venta</p>
+                    </div>
+                  </div>
+                </ModalHeader>
+                <ModalBody>
+                  <div className="space-y-6">
+                    <div>
+                      <h4 className="font-semibold mb-3 text-gray-800 flex items-center gap-2">
+                        <Calculator className="w-4 h-4 text-primary-600" />
+                        Resumen de la venta
+                      </h4>
+                      <div className="bg-gradient-to-br from-primary-50 to-blue-50 p-4 rounded-xl border border-primary-100 space-y-3">
                         {cart.map((item) => (
-                          <div key={item.product.id} className="flex justify-between">
-                            <span>{item.product.name} x{item.quantity}</span>
-                            <span>{formatCurrency(item.subtotal)}</span>
+                          <div key={item.product.id} className="flex justify-between items-center">
+                            <div className="flex-1">
+                              <span className="font-medium text-gray-800">{item.product.name}</span>
+                              <span className="text-primary-600 ml-2">x{item.quantity}</span>
+                            </div>
+                            <span className="font-semibold text-gray-800">{formatCurrency(item.subtotal)}</span>
                           </div>
                         ))}
-                        <Divider />
-                        <div className="flex justify-between text-sm">
+                        <Divider className="bg-primary-200" />
+                        <div className="flex justify-between text-sm text-gray-700">
                           <span>Subtotal:</span>
-                          <span>{formatCurrency(subtotalSinIGV)}</span>
+                          <span className="font-medium">{formatCurrency(subtotalSinIGV)}</span>
                         </div>
-                        <div className="flex justify-between text-sm">
+                        <div className="flex justify-between text-sm text-gray-700">
                           <span>IGV (18%):</span>
-                          <span>{formatCurrency(igv)}</span>
+                          <span className="font-medium">{formatCurrency(igv)}</span>
                         </div>
-                        <div className="flex justify-between font-bold">
-                          <span>Total:</span>
-                          <span>{formatCurrency(total)}</span>
+                        <div className="flex justify-between text-lg font-bold">
+                          <span className="text-gray-800">Total:</span>
+                          <span className="text-primary-600 text-xl">{formatCurrency(total)}</span>
                         </div>
                       </div>
                     </div>
 
                     <div>
-                      <h4 className="font-semibold mb-2">Cliente</h4>
+                      <h4 className="font-semibold mb-3 text-gray-800 flex items-center gap-2">
+                        <User className="w-4 h-4 text-primary-600" />
+                        Cliente
+                      </h4>
                       {selectedCustomer ? (
-                        <div className="bg-gray-50 p-3 rounded-lg flex justify-between items-center">
-                          <div>
-                            <p className="font-medium">{selectedCustomer.name}</p>
-                            <p className="text-sm text-gray-600">{selectedCustomer.phone}</p>
+                        <div className="bg-gradient-to-br from-primary-50 to-blue-50 p-4 rounded-xl border border-primary-100 flex justify-between items-center">
+                          <div className="flex items-center gap-3">
+                            <Avatar 
+                              name={selectedCustomer.name.charAt(0)} 
+                              className="bg-primary-500 text-white"
+                              size="md"
+                            />
+                            <div>
+                              <p className="font-semibold text-gray-800">{selectedCustomer.name}</p>
+                              <p className="text-sm text-gray-600">{selectedCustomer.phone}</p>
+                            </div>
                           </div>
                           <Button
                             size="sm"
+                            color="primary"
                             variant="light"
                             onPress={() => setSelectedCustomer(null)}
                           >
@@ -592,7 +819,7 @@ export default function TechnicianSalesPage() {
                         <Button
                           color="primary"
                           variant="flat"
-                          className="w-full"
+                          className="w-full h-12"
                           startContent={<User className="w-4 h-4" />}
                           onPress={onCustomerModalOpen}
                         >
@@ -602,38 +829,210 @@ export default function TechnicianSalesPage() {
                     </div>
 
                     <div>
-                      <h4 className="font-semibold mb-2">Método de pago</h4>
+                      <h4 className="font-semibold mb-3 text-gray-800 flex items-center gap-2">
+                        <CreditCard className="w-4 h-4 text-primary-600" />
+                        Método de pago
+                      </h4>
                       <Select
                         placeholder="Seleccionar método de pago"
                         selectedKeys={new Set([paymentMethod])}
                         onSelectionChange={(keys) => setPaymentMethod(Array.from(keys)[0] as string)}
                         variant="bordered"
+                        color="primary"
+                        size="lg"
+                        classNames={{
+                          trigger: "border-primary-200 hover:border-primary-300 focus:border-primary-500",
+                          value: "text-primary-700 font-medium",
+                          listbox: "bg-white",
+                          popoverContent: "bg-white border border-primary-200 shadow-xl rounded-xl",
+                          innerWrapper: "text-primary-600",
+                        }}
                       >
-                        <SelectItem key="cash">Efectivo</SelectItem>
-                        <SelectItem key="card">Tarjeta</SelectItem>
-                        <SelectItem key="transfer">Transferencia</SelectItem>
-                        <SelectItem key="yape">Yape/Plin</SelectItem>
+                        <SelectItem 
+                          key="cash" 
+                          classNames={{
+                            base: "hover:bg-primary-50 focus:bg-primary-100 data-[selected=true]:bg-primary-100",
+                            title: "text-gray-800 font-medium",
+                          }}
+                        >
+                          💵 Efectivo
+                        </SelectItem>
+                        <SelectItem 
+                          key="card"
+                          classNames={{
+                            base: "hover:bg-primary-50 focus:bg-primary-100 data-[selected=true]:bg-primary-100",
+                            title: "text-gray-800 font-medium",
+                          }}
+                        >
+                          💳 Tarjeta
+                        </SelectItem>
+                        <SelectItem 
+                          key="transfer"
+                          classNames={{
+                            base: "hover:bg-primary-50 focus:bg-primary-100 data-[selected=true]:bg-primary-100",
+                            title: "text-gray-800 font-medium",
+                          }}
+                        >
+                          🏦 Transferencia
+                        </SelectItem>
+                        <SelectItem 
+                          key="yape"
+                          classNames={{
+                            base: "hover:bg-primary-50 focus:bg-primary-100 data-[selected=true]:bg-primary-100",
+                            title: "text-gray-800 font-medium",
+                          }}
+                        >
+                          📱 Yape/Plin
+                        </SelectItem>
                       </Select>
                     </div>
-
-
                   </div>
                 </ModalBody>
-                <ModalFooter>
-                  <Button variant="flat" onPress={onClose}>
+                <ModalFooter className="gap-3">
+                  <Button 
+                    variant="flat" 
+                    onPress={onClose}
+                    size="lg"
+                    className="font-medium"
+                  >
                     Cancelar
                   </Button>
                   <Button 
-                    color="success" 
+                    color="primary" 
                     onPress={processSale}
                     isLoading={loading}
                     startContent={!loading && <Receipt className="w-4 h-4" />}
+                    size="lg"
+                    className="font-bold px-8 bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700"
                   >
                     {loading ? 'Procesando...' : 'Confirmar Venta'}
                   </Button>
                 </ModalFooter>
               </>
             )}
+          </ModalContent>
+        </Modal>
+
+        {/* Modal de advertencia inicial */}
+        <Modal isOpen={isWarningOpen} onClose={onWarningClose} size="md">
+          <ModalContent>
+            <ModalHeader>
+              <h2 className={`text-xl font-bold ${textColors.primary} flex items-center gap-2`}>
+                <AlertTriangle className="w-6 h-6 text-orange-500" />
+                Confirmar Venta
+              </h2>
+            </ModalHeader>
+            <ModalBody>
+              <div className="space-y-4">
+                <p className={`text-lg ${textColors.primary}`}>
+                  ¿Estás seguro de que deseas procesar esta venta?
+                </p>
+                
+                <div className="bg-orange-50 rounded-lg p-4 border border-orange-200">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className={`font-medium ${textColors.secondary}`}>Total a cobrar:</span>
+                    <span className="text-2xl font-bold text-orange-600">
+                      {formatCurrency(total)}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center mb-2">
+                    <span className={`${textColors.secondary}`}>Productos:</span>
+                    <span className={`font-medium ${textColors.primary}`}>
+                      {cart.length} item{cart.length !== 1 ? 's' : ''}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className={`${textColors.secondary}`}>Método de pago:</span>
+                    <span className={`font-medium ${textColors.primary}`}>
+                      {paymentMethod.charAt(0).toUpperCase() + paymentMethod.slice(1)}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 p-3 bg-orange-50 rounded-lg border border-orange-200">
+                  <AlertTriangle className="w-5 h-5 text-orange-600" />
+                  <p className={`text-sm ${textColors.secondary}`}>
+                    Una vez procesada, esta venta no se puede deshacer. Verifica que todos los datos sean correctos.
+                  </p>
+                </div>
+              </div>
+            </ModalBody>
+            <ModalFooter>
+              <Button
+                variant="light"
+                onPress={onWarningClose}
+                className="font-medium"
+              >
+                No, cancelar
+              </Button>
+              <Button
+                color="warning"
+                onPress={proceedToTicketConfirmation}
+                className="font-medium"
+                startContent={<Receipt className="w-4 h-4" />}
+              >
+                Sí, continuar
+              </Button>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
+
+        {/* Modal de confirmación para comprobante */}
+        <Modal isOpen={isConfirmOpen} onClose={onConfirmClose} size="md">
+          <ModalContent>
+            <ModalHeader>
+              <h2 className={`text-xl font-bold ${textColors.primary} flex items-center gap-2`}>
+                <Receipt className="w-6 h-6" />
+                Confirmar Venta
+              </h2>
+            </ModalHeader>
+            <ModalBody>
+              <div className="space-y-4">
+                <p className={`text-lg ${textColors.primary}`}>
+                  ¿Desea imprimir un comprobante de esta venta?
+                </p>
+                
+                <div className="bg-gray-50 rounded-lg p-4">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className={`font-medium ${textColors.secondary}`}>Total de la venta:</span>
+                    <span className="text-xl font-bold text-green-600">
+                      {formatCurrency(total)}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className={`${textColors.secondary}`}>Método de pago:</span>
+                    <span className={`font-medium ${textColors.primary}`}>
+                      {paymentMethod.charAt(0).toUpperCase() + paymentMethod.slice(1)}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 p-3 bg-blue-50 rounded-lg">
+                  <Printer className="w-5 h-5 text-blue-600" />
+                  <p className={`text-sm ${textColors.secondary}`}>
+                    El comprobante será enviado a la impresora predeterminada en formato de ticket térmico (80mm).
+                  </p>
+                </div>
+              </div>
+            </ModalBody>
+            <ModalFooter>
+              <Button
+                variant="light"
+                onPress={processSaleWithoutTicket}
+                isLoading={loading}
+                disabled={printLoading}
+              >
+                No, solo procesar venta
+              </Button>
+              <Button
+                color="primary"
+                onPress={processSaleWithTicket}
+                isLoading={loading || printLoading}
+                startContent={<Printer className="w-4 h-4" />}
+              >
+                Sí, imprimir comprobante
+              </Button>
+            </ModalFooter>
           </ModalContent>
         </Modal>
       </div>

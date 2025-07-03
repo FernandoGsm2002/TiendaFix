@@ -91,10 +91,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({
-          authUserId: userId,
-          email: email
-        })
+        body: JSON.stringify({})
       })
 
       const result = await response.json()
@@ -105,6 +102,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
 
       console.log('✅ Profile loaded:', result.data.role)
+      console.log('🔍 Full profile data:', result.data)
+      console.log('🔍 Organization ID from API:', result.data.organization_id)
       setUserProfile(result.data)
 
     } catch (error) {

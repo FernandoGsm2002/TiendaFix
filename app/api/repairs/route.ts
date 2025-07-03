@@ -1,46 +1,42 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
 import { cookies } from 'next/headers'
+import { validateMultiTenantAccess, logApiCall } from '@/lib/utils/multi-tenant'
+
+export const dynamic = 'force-dynamic'
 
 export async function GET(request: NextRequest) {
+  const cookieStore = cookies()
+  
   try {
-    console.log('🔧 Repairs API called - getting real data')
+    // 1. Validar acceso multi-tenant
+    const validation = await validateMultiTenantAccess(cookieStore)
     
-    const supabase = createRouteHandlerClient({ cookies })
-    
-    // Verificar autenticación
-    const { data: { session }, error: authError } = await supabase.auth.getSession()
-    if (authError || !session) {
-      console.log('❌ No session found')
-      return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
+    if (!validation.success) {
+      return validation.response
     }
 
-    console.log('✅ Session found:', session.user.email)
+    const { userProfile, organizationId, supabase } = validation.context
+    
+    logApiCall('Repairs', organizationId, { 
+      userRole: userProfile.role,
+      userId: userProfile.id 
+    })
 
-    // Obtener perfil del usuario - CORREGIDO: usar tabla 'users'
-    const { data: userProfile } = await supabase
-      .from('users')
-      .select('role, id, organization_id')
-      .eq('email', session.user.email)
-      .single()
-
-    if (!userProfile) {
-      console.log('❌ User profile not found')
-      return NextResponse.json({ error: 'Perfil de usuario no encontrado' }, { status: 404 })
-    }
-
-    console.log('✅ User profile found:', { role: userProfile.role, id: userProfile.id })
-
+    // 2. Extraer parámetros de consulta
     const { searchParams } = new URL(request.url)
-    const page = parseInt(searchParams.get('page') || '1')
-    const limit = parseInt(searchParams.get('limit') || '10')
+    const page = Math.max(1, parseInt(searchParams.get('page') || '1'))
+    const limit = Math.min(100, Math.max(1, parseInt(searchParams.get('limit') || '10')))
     const status = searchParams.get('status')
     const search = searchParams.get('search')
+    const startDate = searchParams.get('start_date')
+    const endDate = searchParams.get('end_date')
     const offset = (page - 1) * limit
 
-    // Construir query base
+    console.log('📅 Date filters received:', { startDate, endDate })
+
+    // 3. Construir query base optimizada
     let query = supabase
-      .from('repairs_view')
+      .from('repairs')
       .select(`
         id,
         title,
@@ -62,7 +58,7 @@ export async function GET(request: NextRequest) {
         unregistered_customer_name,
         unregistered_customer_phone,
         unregistered_device_info,
-        customers (
+        customers!left (
           id,
           name,
           phone,
@@ -70,7 +66,7 @@ export async function GET(request: NextRequest) {
           anonymous_identifier,
           customer_type
         ),
-        devices (
+        devices!left (
           id,
           brand,
           model,
@@ -79,23 +75,23 @@ export async function GET(request: NextRequest) {
           serial_number,
           imei
         ),
-        users (
+        users!repairs_created_by_fkey (
           id,
           name,
           email
         )
       `, { count: 'exact' })
 
-    // Filtrar por organización
-    query = query.eq('organization_id', userProfile.organization_id)
+    // 4. Aplicar filtros de organización y rol
+    query = query.eq('organization_id', organizationId)
 
-    // FILTRO POR ROL: Técnicos solo ven SUS reparaciones
+    // Técnicos solo ven SUS reparaciones
     if (userProfile.role === 'technician') {
       console.log('🔍 Filtering repairs for technician:', userProfile.id)
       query = query.eq('created_by', userProfile.id)
     }
 
-    // Aplicar filtros adicionales
+    // 5. Aplicar filtros adicionales
     if (status && status !== 'todos') {
       query = query.eq('status', status)
     }
@@ -104,7 +100,18 @@ export async function GET(request: NextRequest) {
       query = query.or(`title.ilike.%${search}%,description.ilike.%${search}%,problem_description.ilike.%${search}%`)
     }
 
-    // Ejecutar query con paginación
+    // Filtros de fecha
+    if (startDate) {
+      console.log('🗓️ Applying start date filter:', startDate)
+      query = query.gte('created_at', `${startDate}T00:00:00.000Z`)
+    }
+
+    if (endDate) {
+      console.log('🗓️ Applying end date filter:', endDate)
+      query = query.lte('created_at', `${endDate}T23:59:59.999Z`)
+    }
+
+    // 6. Ejecutar query con paginación
     const { data: repairs, error, count } = await query
       .order('created_at', { ascending: false })
       .range(offset, offset + limit - 1)
@@ -116,21 +123,36 @@ export async function GET(request: NextRequest) {
 
     console.log(`✅ Fetched ${repairs?.length || 0} repairs from database`)
 
-    // Calcular estadísticas
-    const statsQuery = supabase
-      .from('repairs_view')
-      .select('status', { count: 'exact' })
-      .eq('organization_id', userProfile.organization_id)
+    // 7. Calcular estadísticas de forma paralela
+    let statsQuery = supabase
+      .from('repairs')
+      .select('status')
+      .eq('organization_id', organizationId)
 
     // Filtrar estadísticas por técnico si aplica
     if (userProfile.role === 'technician') {
-      statsQuery.eq('created_by', userProfile.id)
+      statsQuery = statsQuery.eq('created_by', userProfile.id)
+    }
+
+    // Aplicar filtros de fecha a las estadísticas
+    if (startDate) {
+      statsQuery = statsQuery.gte('created_at', `${startDate}T00:00:00.000Z`)
+    }
+
+    if (endDate) {
+      statsQuery = statsQuery.lte('created_at', `${endDate}T23:59:59.999Z`)
+    }
+
+    // Aplicar filtro de estado a las estadísticas
+    if (status && status !== 'todos') {
+      statsQuery = statsQuery.eq('status', status)
     }
 
     const { data: statsData, error: statsError } = await statsQuery
 
-    let stats = {
-      total: 0,
+    // 8. Procesar estadísticas de forma segura
+    const stats = {
+      total: count || 0,
       received: 0,
       diagnosed: 0,
       inProgress: 0,
@@ -140,22 +162,69 @@ export async function GET(request: NextRequest) {
     }
 
     if (!statsError && statsData) {
-      stats = {
-        total: count || 0,
-        received: statsData.filter(r => r.status === 'received').length,
-        diagnosed: statsData.filter(r => r.status === 'diagnosed').length,
-        inProgress: statsData.filter(r => r.status === 'in_progress').length,
-        completed: statsData.filter(r => r.status === 'completed').length,
-        delivered: statsData.filter(r => r.status === 'delivered').length,
-        cancelled: statsData.filter(r => r.status === 'cancelled').length,
-      }
+      statsData.forEach((repair: { status: string }) => {
+        switch (repair.status) {
+          case 'received': stats.received++; break
+          case 'diagnosed': stats.diagnosed++; break
+          case 'in_progress': stats.inProgress++; break
+          case 'completed': stats.completed++; break
+          case 'delivered': stats.delivered++; break
+          case 'cancelled': stats.cancelled++; break
+        }
+      })
     }
 
     console.log('📊 Stats calculated:', stats)
 
+    // 9. Serializar datos de forma segura
+    const serializedRepairs = repairs?.map((repair: any) => ({
+      id: repair.id,
+      title: repair.title,
+      description: repair.description,
+      problem_description: repair.problem_description,
+      solution_description: repair.solution_description,
+      status: repair.status,
+      priority: repair.priority,
+      cost: repair.cost ? parseFloat(repair.cost.toString()) : null,
+      estimated_completion_date: repair.estimated_completion_date,
+      actual_completion_date: repair.actual_completion_date,
+      received_date: repair.received_date,
+      delivered_date: repair.delivered_date,
+      warranty_days: repair.warranty_days,
+      internal_notes: repair.internal_notes,
+      customer_notes: repair.customer_notes,
+      created_at: repair.created_at,
+      updated_at: repair.updated_at,
+      unregistered_customer_name: repair.unregistered_customer_name,
+      unregistered_customer_phone: repair.unregistered_customer_phone,
+      unregistered_device_info: repair.unregistered_device_info,
+      customer: repair.customers ? {
+        id: repair.customers.id,
+        name: repair.customers.name,
+        phone: repair.customers.phone,
+        email: repair.customers.email,
+        anonymous_identifier: repair.customers.anonymous_identifier,
+        customer_type: repair.customers.customer_type
+      } : null,
+      device: repair.devices ? {
+        id: repair.devices.id,
+        brand: repair.devices.brand,
+        model: repair.devices.model,
+        device_type: repair.devices.device_type,
+        color: repair.devices.color,
+        serial_number: repair.devices.serial_number,
+        imei: repair.devices.imei
+      } : null,
+      technician: repair.users ? {
+        id: repair.users.id,
+        name: repair.users.name,
+        email: repair.users.email
+      } : null
+    })) || []
+
     return NextResponse.json({
       success: true,
-      data: repairs || [],
+      data: serializedRepairs,
       pagination: {
         page,
         limit,
@@ -168,54 +237,67 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('🚨 Repairs API error:', error)
     return NextResponse.json(
-      { error: 'Error interno del servidor' },
+      { 
+        error: 'Error interno del servidor',
+        message: error instanceof Error ? error.message : 'Unknown error'
+      },
       { status: 500 }
     )
   }
 }
 
+// POST method remains similar but with multi-tenant validation
 export async function POST(request: NextRequest) {
+  const cookieStore = cookies()
+  
   try {
-    const supabase = createRouteHandlerClient({ cookies })
+    const validation = await validateMultiTenantAccess(cookieStore)
     
-    // Verificar autenticación
-    const { data: { session }, error: authError } = await supabase.auth.getSession()
-    if (authError || !session) {
-      return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
+    if (!validation.success) {
+      return validation.response
     }
 
-    // Obtener perfil del usuario - CORREGIDO: usar tabla 'users'
-    const { data: userProfile } = await supabase
-      .from('users')
-      .select('role, id, organization_id')
-      .eq('email', session.user.email)
-      .single()
-
-    if (!userProfile) {
-      return NextResponse.json({ error: 'Perfil de usuario no encontrado' }, { status: 404 })
-    }
+    const { userProfile, organizationId, supabase } = validation.context
+    
+    logApiCall('Repairs POST', organizationId, { 
+      userRole: userProfile.role,
+      userId: userProfile.id 
+    })
 
     const body = await request.json()
 
-    // Preparar datos de la reparación
+    // Validar que los datos pertenecen a la organización
+    if (body.customer_id) {
+      const { data: customer } = await supabase
+        .from('customers')
+        .select('organization_id')
+        .eq('id', body.customer_id)
+        .single()
+      
+      if (!customer || customer.organization_id !== organizationId) {
+        return NextResponse.json({ error: 'Customer not found' }, { status: 404 })
+      }
+    }
+
+    if (body.device_id) {
+      const { data: device } = await supabase
+        .from('devices')
+        .select('organization_id')
+        .eq('id', body.device_id)
+        .single()
+      
+      if (!device || device.organization_id !== organizationId) {
+        return NextResponse.json({ error: 'Device not found' }, { status: 404 })
+      }
+    }
+
+    // Crear reparación con organización
     const repairData = {
-      organization_id: userProfile.organization_id,
-      customer_id: body.customer_id || null,
-      device_id: body.device_id || null,
-      title: body.title,
-      description: body.description,
-      problem_description: body.problem_description,
-      priority: body.priority || 'medium',
-      cost: body.cost || 0,
-      internal_notes: body.internal_notes,
+      ...body,
+      organization_id: organizationId,
       created_by: userProfile.id,
-      status: 'received',
-      received_date: new Date().toISOString(),
-      warranty_days: 30,
-      // Campos para clientes no registrados
-      unregistered_customer_name: body.unregistered_customer_name || null,
-      unregistered_customer_phone: body.unregistered_customer_phone || null,
-      unregistered_device_info: body.unregistered_device_info || null
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
     }
 
     const { data: repair, error } = await supabase
@@ -225,9 +307,11 @@ export async function POST(request: NextRequest) {
       .single()
 
     if (error) {
-      console.error('Error creating repair:', error)
+      console.error('❌ Error creating repair:', error)
       throw error
     }
+
+    console.log('✅ Repair created successfully:', repair.id)
 
     return NextResponse.json({
       success: true,
@@ -235,9 +319,12 @@ export async function POST(request: NextRequest) {
     })
 
   } catch (error) {
-    console.error('Error in POST /api/repairs:', error)
+    console.error('🚨 Repairs POST error:', error)
     return NextResponse.json(
-      { error: 'Error interno del servidor' },
+      { 
+        error: 'Error interno del servidor',
+        message: error instanceof Error ? error.message : 'Unknown error'
+      },
       { status: 500 }
     )
   }

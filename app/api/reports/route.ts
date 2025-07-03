@@ -2,9 +2,12 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
 import { cookies } from 'next/headers'
 
-export async function GET(request: Request) {
+// Forzar el renderizado dinámico para esta ruta
+export const dynamic = 'force-dynamic'
+
+export async function GET(request: NextRequest) {
   try {
-    const searchParams = new URL(request.url).searchParams
+    const searchParams = request.nextUrl.searchParams
     const startDate = searchParams.get('start_date')
     const endDate = searchParams.get('end_date')
 
@@ -64,7 +67,7 @@ export async function GET(request: Request) {
       endDate
     })
 
-    // Llamar a la función get_reports_data
+    // Llamar a la función get_reports_data (la versión única y corregida)
     const { data, error } = await supabase.rpc('get_reports_data', {
       p_org_id: userData.organization_id,
       p_start_date: startDate,

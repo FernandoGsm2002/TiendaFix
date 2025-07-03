@@ -2,6 +2,9 @@ import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
 import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
 
+// Forzar el renderizado dinámico para esta ruta
+export const dynamic = 'force-dynamic'
+
 export async function GET() {
   try {
     const supabase = createRouteHandlerClient({ cookies })
@@ -40,12 +43,15 @@ export async function GET() {
       todayTasks,
       unlocksResult,
       currentMonthUnlocks,
-      unlockRevenueData
+      unlockRevenueData,
+      salesResult,
+      currentMonthSales,
+      salesRevenueData
     ] = await Promise.all([
-      // Reparaciones creadas por el técnico
+      // Reparaciones creadas por el técnico con información del dispositivo
       supabase
         .from('repairs')
-        .select('id, status, cost, created_at, updated_at')
+        .select('id, status, cost, created_at, updated_at, title, problem_description')
         .eq('organization_id', organizationId)
         .eq('created_by', technicianId),
       
@@ -92,10 +98,10 @@ export async function GET() {
         .in('status', ['received', 'diagnosed', 'in_progress'])
         .gte('created_at', new Date().toISOString().split('T')[0]),
 
-      // Desbloqueos creados por el técnico
+      // Desbloqueos creados por el técnico con información del dispositivo
       supabase
         .from('unlocks')
-        .select('id, status, cost, created_at, updated_at')
+        .select('id, status, cost, created_at, updated_at, brand, model')
         .eq('organization_id', organizationId)
         .eq('created_by', technicianId),
 
@@ -114,7 +120,30 @@ export async function GET() {
         .eq('organization_id', organizationId)
         .eq('created_by', technicianId)
         .eq('status', 'completed')
-        .gte('updated_at', new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString())
+        .gte('updated_at', new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString()),
+
+      // Ventas creadas por el técnico con información de productos
+      supabase
+        .from('sales')
+        .select('id, total, created_at, payment_method')
+        .eq('organization_id', organizationId)
+        .eq('created_by', technicianId),
+
+      // Ventas del mes actual
+      supabase
+        .from('sales')
+        .select('id, total, created_at')
+        .eq('organization_id', organizationId)
+        .eq('created_by', technicianId)
+        .gte('created_at', new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString()),
+
+      // Ingresos generados por el técnico (ventas)
+      supabase
+        .from('sales')
+        .select('total, created_at')
+        .eq('organization_id', organizationId)
+        .eq('created_by', technicianId)
+        .gte('created_at', new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString())
     ])
 
     if (repairsResult.error) {
@@ -130,6 +159,9 @@ export async function GET() {
     const unlocks = unlocksResult.data || []
     const currentMonthUnlocksData = currentMonthUnlocks.data || []
     const unlockRevenue = unlockRevenueData.data || []
+    const sales = salesResult.data || []
+    const currentMonthSalesData = currentMonthSales.data || []
+    const salesRevenue = salesRevenueData.data || []
 
     // Calcular estadísticas de reparaciones
     const myRepairs = repairs.filter(r => ['received', 'diagnosed', 'in_progress', 'waiting_parts'].includes(r.status)).length
@@ -143,23 +175,29 @@ export async function GET() {
     const inProgressUnlocks = unlocks.filter(u => u.status === 'in_progress').length
     const pendingUnlocks = unlocks.filter(u => u.status === 'pending').length
     
+    // Calcular estadísticas de ventas
+    const totalSales = sales.length
+    const completedSales = currentMonthSalesData.length
+    
     // Tiempo promedio removido - no se necesita
 
     // Calcular eficiencia semanal (% de trabajos completados vs iniciados)
-    const totalCurrentMonth = currentMonth.length + currentMonthUnlocksData.length
-    const totalCompleted = completedRepairs + completedUnlocks
+    const totalCurrentMonth = currentMonth.length + currentMonthUnlocksData.length + currentMonthSalesData.length
+    const totalCompleted = completedRepairs + completedUnlocks + completedSales
     const weeklyEfficiency = totalCurrentMonth > 0
       ? Math.round((totalCompleted / totalCurrentMonth) * 100)
       : 0
 
-    // Calcular ingresos mensuales combinados (reparaciones + desbloqueos)
+    // Calcular ingresos mensuales combinados (reparaciones + desbloqueos + ventas)
     const repairRevenue = revenue.reduce((sum, repair) => sum + (repair.cost || 0), 0)
     const unlockRevenueAmount = unlockRevenue.reduce((sum, unlock) => sum + (unlock.cost || 0), 0)
-    const monthlyRevenue = repairRevenue + unlockRevenueAmount
+    const salesRevenueAmount = salesRevenue.reduce((sum, sale) => sum + (sale.total || 0), 0)
+    const monthlyRevenue = repairRevenue + unlockRevenueAmount + salesRevenueAmount
 
     // Calcular ingresos totales por tipo
     const totalRepairRevenue = repairRevenue
     const totalUnlockRevenue = unlockRevenueAmount
+    const totalSalesRevenue = salesRevenueAmount
 
     // Preparar datos para gráficos
     const repairsByStatus = repairs.reduce((acc, repair) => {
@@ -187,32 +225,67 @@ export async function GET() {
       })
     }
 
-    // Actividad reciente combinada (reparaciones + desbloqueos)
+    // Actividad reciente combinada (reparaciones + desbloqueos + ventas)
     const repairActivity = repairs
       .filter(r => r.updated_at)
-      .map(repair => ({
-        type: repair.status === 'completed' ? 'repair_completed' : 
-              repair.status === 'in_progress' ? 'repair_started' : 'repair_diagnosed',
-        title: repair.status === 'completed' ? 'Reparación completada' :
-               repair.status === 'in_progress' ? 'Reparación en progreso' : 'Diagnóstico actualizado',
-        time: repair.updated_at,
-        repairId: repair.id,
-        itemType: 'repair'
-      }))
+      .map(repair => {
+        const deviceInfo = 'Dispositivo'
+        const customerName = 'Cliente'
+        const issueShort = repair.problem_description ? 
+          (repair.problem_description.length > 30 ? 
+            repair.problem_description.substring(0, 30) + '...' : 
+            repair.problem_description) : repair.title || 'Problema no especificado'
+        
+        return {
+          type: repair.status === 'completed' ? 'repair_completed' : 
+                repair.status === 'in_progress' ? 'repair_started' : 'repair_diagnosed',
+          title: repair.status === 'completed' ? 'Reparación completada' :
+                 repair.status === 'in_progress' ? 'Reparación en progreso' : 'Diagnóstico actualizado',
+          description: `${deviceInfo} - ${issueShort}`,
+          customer: customerName,
+          time: repair.updated_at,
+          repairId: repair.id,
+          itemType: 'repair'
+        }
+      })
 
     const unlockActivity = unlocks
       .filter(u => u.updated_at)
-      .map(unlock => ({
-        type: unlock.status === 'completed' ? 'unlock_completed' : 
-              unlock.status === 'in_progress' ? 'unlock_started' : 'unlock_received',
-        title: unlock.status === 'completed' ? 'Desbloqueo completado' :
-               unlock.status === 'in_progress' ? 'Desbloqueo en progreso' : 'Nuevo desbloqueo recibido',
-        time: unlock.updated_at,
-        repairId: unlock.id,
-        itemType: 'unlock'
-      }))
+      .map(unlock => {
+        const deviceInfo = unlock.brand && unlock.model ? `${unlock.brand} ${unlock.model}` : 'Dispositivo'
+        const customerName = 'Cliente'
+        
+        return {
+          type: unlock.status === 'completed' ? 'unlock_completed' : 
+                unlock.status === 'in_progress' ? 'unlock_started' : 'unlock_received',
+          title: unlock.status === 'completed' ? 'Desbloqueo completado' :
+                 unlock.status === 'in_progress' ? 'Desbloqueo en progreso' : 'Nuevo desbloqueo recibido',
+          description: deviceInfo,
+          customer: customerName,
+          time: unlock.updated_at,
+          repairId: unlock.id,
+          itemType: 'unlock'
+        }
+      })
 
-    const recentActivity = [...repairActivity, ...unlockActivity]
+    const salesActivity = sales
+      .filter(s => s.created_at)
+      .map(sale => {
+        const customerName = 'Cliente de mostrador'
+        const productDescription = `Venta por S/ ${sale.total}`
+        
+        return {
+          type: 'sale_completed',
+          title: 'Venta procesada',
+          description: productDescription,
+          customer: customerName,
+          time: sale.created_at,
+          repairId: sale.id,
+          itemType: 'sale'
+        }
+      })
+
+    const recentActivity = [...repairActivity, ...unlockActivity, ...salesActivity]
       .sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime())
       .slice(0, 5)
 
@@ -225,10 +298,13 @@ export async function GET() {
       completedUnlocks,
       inProgressUnlocks,
       pendingUnlocks,
+      totalSales,
+      completedSales,
       weeklyEfficiency,
       monthlyRevenue,
       totalRepairRevenue,
       totalUnlockRevenue,
+      totalSalesRevenue,
       todayTasks: today.length
     }
 
@@ -256,9 +332,15 @@ export async function GET() {
         new Date(u.updated_at) < dayEnd
       ).length
       
+      const salesCompleted = sales.filter(s => 
+        s.created_at &&
+        new Date(s.created_at) >= dayStart && 
+        new Date(s.created_at) < dayEnd
+      ).length
+      
       completionTimeline.push({
         day: dayNames[date.getDay()],
-        completed: repairsCompleted + unlocksCompleted
+        completed: repairsCompleted + unlocksCompleted + salesCompleted
       })
     }
 

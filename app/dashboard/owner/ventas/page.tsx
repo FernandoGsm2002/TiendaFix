@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import DashboardLayout from '../components/DashboardLayout'
-import { formatCurrency } from '@/lib/utils/currency'
+import { useTranslations } from '@/lib/contexts/TranslationContext'
+import { useCurrency } from '@/lib/contexts/TranslationContext'
 import { textColors } from '@/lib/utils/colors'
 import { 
   Card, 
@@ -24,14 +25,20 @@ import {
   TableBody,
   TableRow,
   TableCell,
-  Divider
+  Divider,
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  useDisclosure
 } from '@heroui/react'
 import FormField from '@/app/components/ui/FormField'
 import { 
   ShoppingCart, Plus, Minus, Search, Filter, CreditCard, 
   Calculator, Trash2, Receipt, Clock, DollarSign, TrendingUp,
   AlertTriangle, Package, Wrench, Unlock, X, User, Calendar,
-  Camera, Eye
+  Camera, Eye, Printer
 } from 'lucide-react'
 import { useZxing } from 'react-zxing';
 import { Result, Exception } from '@zxing/library';
@@ -118,6 +125,8 @@ const BarcodeScannerComponent = ({ onScan }: { onScan: (result: string) => void 
 };
 
 export default function VentasPage() {
+  const { t } = useTranslations()
+  const { formatCurrency } = useCurrency()
   const [activeTab, setActiveTab] = useState<'pos' | 'ventas'>('pos')
   const [products, setProducts] = useState<Product[]>([])
   const [customers, setCustomers] = useState<Customer[]>([])
@@ -139,6 +148,10 @@ export default function VentasPage() {
     total: 0,
     totalPages: 0
   })
+  const [printLoading, setPrintLoading] = useState(false)
+  const [pendingSaleData, setPendingSaleData] = useState<any>(null)
+  const { isOpen: isWarningOpen, onOpen: onWarningOpen, onClose: onWarningClose } = useDisclosure()
+  const { isOpen: isConfirmOpen, onOpen: onConfirmOpen, onClose: onConfirmClose } = useDisclosure()
 
   const fetchProducts = async () => {
     try {
@@ -277,31 +290,47 @@ export default function VentasPage() {
       return
     }
 
+    // Preparar datos de la venta
+    const items = cart.map(item => ({
+      inventory_id: item.product_id,
+      quantity: item.quantity,
+      unit_price: item.price,
+      item_name: item.name,
+      item_type: 'product'
+    }))
+
+    const saleData = {
+      sale_type: 'product',
+      items,
+      payment_method: paymentMethod,
+      customer_id: selectedCustomer || null,
+      total: getTotal()
+    }
+
+    // Guardar los datos y mostrar modal de advertencia primero
+    setPendingSaleData(saleData)
+    onWarningOpen()
+  }
+
+  // Función para proceder después de confirmar la advertencia
+  const proceedToTicketConfirmation = () => {
+    onWarningClose()
+    onConfirmOpen()
+  }
+
+  // Función para procesar la venta sin comprobante
+  const processSaleWithoutTicket = async () => {
+    if (!pendingSaleData) return
+
     try {
       setLoading(true)
       
-      const items = cart.map(item => ({
-        inventory_id: item.product_id,
-        quantity: item.quantity,
-        unit_price: item.price,
-        item_name: item.name,
-        item_type: 'product'
-      }))
-
-      const saleData = {
-        sale_type: 'product',
-        items,
-        payment_method: paymentMethod,
-        customer_id: selectedCustomer || null,
-        total: getTotal()
-      }
-
       const response = await fetch('/api/sales', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(saleData)
+        body: JSON.stringify(pendingSaleData)
       })
 
       if (response.ok) {
@@ -311,6 +340,46 @@ export default function VentasPage() {
         if (activeTab === 'ventas') {
           fetchSales() // Actualizar lista de ventas
         }
+        onConfirmClose()
+        setPendingSaleData(null)
+      } else {
+        throw new Error('Error al procesar la venta')
+      }
+    } catch (err) {
+      console.error('Error:', err)
+      alert(err instanceof Error ? err.message : 'Error al procesar la venta')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  // Función para procesar la venta con comprobante
+  const processSaleWithTicket = async () => {
+    if (!pendingSaleData) return
+
+    try {
+      setLoading(true)
+      
+      const response = await fetch('/api/sales', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(pendingSaleData)
+      })
+
+      if (response.ok) {
+        // Imprimir comprobante
+        await handlePrintSaleTicket(pendingSaleData)
+        
+        alert('¡Venta procesada exitosamente y comprobante impreso!')
+        clearCart()
+        fetchProducts() // Actualizar stock
+        if (activeTab === 'ventas') {
+          fetchSales() // Actualizar lista de ventas
+        }
+        onConfirmClose()
+        setPendingSaleData(null)
       } else {
         throw new Error('Error al procesar la venta')
       }
@@ -328,7 +397,7 @@ export default function VentasPage() {
   }
 
   const getCustomerName = (customer: Sale['customer']) => {
-    if (!customer) return 'Cliente General'
+    if (!customer) return t('sales.generalCustomer')
     return customer.name || customer.anonymous_identifier || 'Cliente Anónimo'
   }
 
@@ -382,6 +451,227 @@ export default function VentasPage() {
     }
   }
 
+  // Obtener información de la organización
+  const fetchOrganizationInfo = async () => {
+    try {
+      // Primero obtenemos el organization_id del usuario actual
+      const userResponse = await fetch('/api/user/profile')
+      const userData = await userResponse.json()
+      
+      if (!userData.success) {
+        throw new Error('No se pudo obtener el perfil del usuario')
+      }
+
+      const organizationId = userData.data.organization_id
+      
+      // Luego obtenemos la información de la organización
+      const orgResponse = await fetch(`/api/organizations/${organizationId}`)
+      const orgData = await orgResponse.json()
+      
+      if (!orgData.success) {
+        throw new Error('No se pudo obtener la información de la organización')
+      }
+
+      return orgData.data
+    } catch (error) {
+      console.error('Error fetching organization info:', error)
+      throw error
+    }
+  }
+
+  // Generar el ticket de venta en formato térmico
+  const generateSaleTicket = (saleData: any, organizationInfo: any) => {
+    const currentDate = new Date().toLocaleString('es-ES', {
+      day: '2-digit',
+      month: '2-digit', 
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    })
+
+    const customerName = selectedCustomer ? 
+      customers.find(c => c.id === selectedCustomer)?.name || 'Cliente General' : 
+      'Cliente General'
+
+    // HTML para ticket térmico (ancho 80mm)
+    const ticketHTML = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="UTF-8">
+        <style>
+          @page {
+            size: 80mm auto;
+            margin: 0;
+          }
+          body {
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            line-height: 1.2;
+            margin: 0;
+            padding: 5mm;
+            width: 70mm;
+            color: black;
+          }
+          .center { text-align: center; }
+          .left { text-align: left; }
+          .right { text-align: right; }
+          .bold { font-weight: bold; }
+          .large { font-size: 14px; }
+          .border-top { border-top: 1px dashed black; margin: 8px 0; padding-top: 8px; }
+          .border-bottom { border-bottom: 1px dashed black; margin: 8px 0; padding-bottom: 8px; }
+          .space { margin: 8px 0; }
+          .flex-row { display: flex; justify-content: space-between; }
+          .item-row { display: flex; justify-content: space-between; margin: 4px 0; }
+        </style>
+      </head>
+      <body>
+        <div class="center bold large">
+          ${organizationInfo.name || 'TIENDA DE VENTAS'}
+        </div>
+        
+        ${organizationInfo.address ? `<div class="center">${organizationInfo.address}</div>` : ''}
+        ${organizationInfo.phone ? `<div class="center">Tel: ${organizationInfo.phone}</div>` : ''}
+        ${organizationInfo.email ? `<div class="center">${organizationInfo.email}</div>` : ''}
+        
+        <div class="border-top"></div>
+        
+        <div class="center bold large">COMPROBANTE DE VENTA</div>
+        <div class="center">No. ${Date.now().toString().slice(-8)}</div>
+        
+        <div class="border-top"></div>
+        
+        <div class="space">
+          <div class="bold">FECHA:</div>
+          <div>${currentDate}</div>
+        </div>
+        
+        <div class="space">
+          <div class="bold">CLIENTE:</div>
+          <div>${customerName}</div>
+        </div>
+        
+        <div class="space">
+          <div class="bold">MÉTODO DE PAGO:</div>
+          <div>${paymentMethod.toUpperCase()}</div>
+        </div>
+        
+        <div class="border-top"></div>
+        
+        <div class="bold">PRODUCTOS:</div>
+        ${cart.map(item => `
+          <div class="item-row">
+            <div>${item.name}</div>
+          </div>
+          <div class="item-row">
+            <div>${item.quantity} x ${formatCurrency(item.price)}</div>
+            <div>${formatCurrency(item.quantity * item.price)}</div>
+          </div>
+        `).join('')}
+        
+        <div class="border-top"></div>
+        
+        <div class="space">
+          <div class="flex-row">
+            <div class="bold">SUBTOTAL:</div>
+            <div class="bold">${formatCurrency(getSubtotal())}</div>
+          </div>
+        </div>
+        
+        <div class="space">
+          <div class="flex-row bold large">
+            <div>TOTAL:</div>
+            <div>${formatCurrency(getTotal())}</div>
+          </div>
+        </div>
+        
+        <div class="border-top"></div>
+        
+        <div class="center space">
+          <div>¡Gracias por su compra!</div>
+          <div>Conserve este comprobante</div>
+          ${organizationInfo.phone ? `<div>Consultas: ${organizationInfo.phone}</div>` : ''}
+        </div>
+        
+        <div class="border-top"></div>
+        
+        <div class="center">
+          <div>Fecha de impresión: ${currentDate}</div>
+        </div>
+      </body>
+      </html>
+    `
+
+    return ticketHTML
+  }
+
+  // Función para imprimir ticket de venta
+  const handlePrintSaleTicket = async (saleData: any) => {
+    try {
+      setPrintLoading(true)
+      
+      // Obtener información de la organización
+      const organizationInfo = await fetchOrganizationInfo()
+      
+      // Generar el HTML del ticket
+      const ticketHTML = generateSaleTicket(saleData, organizationInfo)
+      
+      // Crear iframe para impresión
+      const printFrame = document.createElement('iframe')
+      printFrame.style.position = 'fixed'
+      printFrame.style.top = '-1000px'
+      printFrame.style.left = '-1000px'
+      
+      document.body.appendChild(printFrame)
+      
+      const frameDoc = printFrame.contentDocument || printFrame.contentWindow?.document
+      if (frameDoc) {
+        frameDoc.open()
+        frameDoc.write(ticketHTML)
+        frameDoc.close()
+        
+        // Esperar a que cargue el contenido
+        await new Promise(resolve => setTimeout(resolve, 1000))
+        
+        // Imprimir
+        printFrame.contentWindow?.print()
+        
+        // Limpiar después de un tiempo
+        setTimeout(() => {
+          document.body.removeChild(printFrame)
+        }, 1000)
+      }
+      
+    } catch (error) {
+      console.error('Error printing sale ticket:', error)
+      
+      // Fallback: descargar como archivo
+      try {
+        const organizationInfo = await fetchOrganizationInfo()
+        const ticketHTML = generateSaleTicket(saleData, organizationInfo)
+        downloadTicketAsFile(ticketHTML, 'venta')
+      } catch (fallbackError) {
+        console.error('Error in fallback download:', fallbackError)
+        alert('Error al imprimir el comprobante. Por favor, intente nuevamente.')
+      }
+    } finally {
+      setPrintLoading(false)
+    }
+  }
+
+  // Descargar ticket como archivo HTML
+  const downloadTicketAsFile = (ticketHTML: string, prefix: string) => {
+    const blob = new Blob([ticketHTML], { type: 'text/html' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `${prefix}_${Date.now()}.html`
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    URL.revokeObjectURL(url)
+  }
+
   const filteredProducts = products.filter(product =>
     product.name.toLowerCase().includes(searchProducts.toLowerCase()) ||
     (product.brand && product.brand.toLowerCase().includes(searchProducts.toLowerCase())) ||
@@ -433,7 +723,7 @@ export default function VentasPage() {
             title={
               <div className="flex items-center space-x-2">
                 <ShoppingCart className="w-5 h-5" />
-                <span>Punto de Venta</span>
+                <span>{t('sales.title')}</span>
               </div>
             }
           >
@@ -442,12 +732,12 @@ export default function VentasPage() {
               <div className="lg:col-span-3 space-y-6">
                 <Card>
                   <CardBody className="p-6">
-                    <h3 className={`text-xl font-bold ${textColors.primary} mb-4`}>Buscar Productos</h3>
+                    <h3 className={`text-xl font-bold ${textColors.primary} mb-4`}>{t('sales.searchProducts')}</h3>
                     <div className="flex items-center">
                       <div className="flex-grow">
                         <Input
                           name="search"
-                          placeholder="Buscar por nombre, marca, modelo o SKU..."
+                          placeholder={t('inventory.searchPlaceholder')}
                           value={searchProducts}
                           onValueChange={setSearchProducts}
                           startContent={<Search className="w-5 h-5 text-gray-400" />}
@@ -514,7 +804,7 @@ export default function VentasPage() {
                 <Card>
                   <CardBody className="p-6">
                     <div className="flex items-center justify-between mb-4">
-                      <h3 className={`text-xl font-bold ${textColors.primary}`}>Carrito</h3>
+                      <h3 className={`text-xl font-bold ${textColors.primary}`}>{t('sales.cart')}</h3>
                       {cart.length > 0 && (
                         <Button
                           variant="flat"
@@ -592,8 +882,9 @@ export default function VentasPage() {
                         type="select"
                         value={selectedCustomer}
                         onChange={setSelectedCustomer}
+                        placeholder="Seleccionar cliente..."
                         options={[
-                          { value: '', label: 'Cliente General' },
+                          { value: '', label: t('sales.generalCustomer') },
                           ...customers.map(customer => ({
                             value: customer.id,
                             label: customer.name || customer.anonymous_identifier || 'Cliente Anónimo'
@@ -608,11 +899,11 @@ export default function VentasPage() {
                         value={paymentMethod}
                         onChange={setPaymentMethod}
                         options={[
-                          { value: 'efectivo', label: 'Efectivo' },
-                          { value: 'tarjeta', label: 'Tarjeta' },
-                          { value: 'yape', label: 'Yape' },
-                          { value: 'plin', label: 'Plin' },
-                          { value: 'transferencia', label: 'Transferencia' }
+                          { value: 'efectivo', label: t('sales.cash') },
+                          { value: 'tarjeta', label: t('sales.card') },
+                          { value: 'yape', label: t('sales.yape') },
+                          { value: 'plin', label: t('sales.plin') },
+                          { value: 'transferencia', label: t('sales.transfer') }
                         ]}
                       />
 
@@ -621,7 +912,7 @@ export default function VentasPage() {
                       {/* Resumen de totales */}
                       <div className="space-y-2">
                         <div className="flex justify-between">
-                          <span className={textColors.secondary}>Subtotal:</span>
+                          <span className={textColors.secondary}>{t('sales.subtotal')}:</span>
                           <span className={`font-medium ${textColors.primary}`}>{formatCurrency(getSubtotal())}</span>
                         </div>
                         <div className="flex justify-between text-lg font-bold">
@@ -638,7 +929,7 @@ export default function VentasPage() {
                         onPress={processSale}
                         isLoading={loading}
                       >
-                        Procesar Venta
+                        {t('sales.checkout')}
                       </Button>
                     </CardBody>
                   </Card>
@@ -668,7 +959,7 @@ export default function VentasPage() {
                       <Chip color="primary" variant="flat">Total</Chip>
                     </div>
                     <div className="space-y-2">
-                      <p className={`text-sm font-medium ${textColors.tertiary}`}>Total Ventas</p>
+                      <p className={`text-sm font-medium ${textColors.tertiary}`}>{t('sales.salesHistory')}</p>
                       <p className={`text-3xl font-bold ${textColors.primary}`}>{salesStats.total}</p>
                     </div>
                   </CardBody>
@@ -751,10 +1042,10 @@ export default function VentasPage() {
                         popoverContent: "bg-white",
                       }}
                     >
-                      <SelectItem key="todos" className="text-gray-900">Todos los métodos</SelectItem>
-                      <SelectItem key="efectivo" className="text-gray-900">Efectivo</SelectItem>
-                      <SelectItem key="tarjeta" className="text-gray-900">Tarjeta</SelectItem>
-                      <SelectItem key="transferencia" className="text-gray-900">Transferencia</SelectItem>
+                      <SelectItem key="todos" className="text-gray-900">{t('sales.allPaymentMethods')}</SelectItem>
+                      <SelectItem key="efectivo" className="text-gray-900">{t('sales.cash')}</SelectItem>
+                      <SelectItem key="tarjeta" className="text-gray-900">{t('sales.card')}</SelectItem>
+                      <SelectItem key="transferencia" className="text-gray-900">{t('sales.transfer')}</SelectItem>
                     </Select>
                     <Input
                       type="date"
@@ -1081,6 +1372,129 @@ export default function VentasPage() {
           </div>
         </div>
       )}
+
+      {/* Modal de advertencia inicial */}
+      <Modal isOpen={isWarningOpen} onClose={onWarningClose} size="md">
+        <ModalContent>
+          <ModalHeader>
+            <h2 className={`text-xl font-bold ${textColors.primary} flex items-center gap-2`}>
+              <AlertTriangle className="w-6 h-6 text-orange-500" />
+              Confirmar Venta
+            </h2>
+          </ModalHeader>
+          <ModalBody>
+            <div className="space-y-4">
+              <p className={`text-lg ${textColors.primary}`}>
+                ¿Estás seguro de que deseas procesar esta venta?
+              </p>
+              
+              <div className="bg-orange-50 rounded-lg p-4 border border-orange-200">
+                <div className="flex justify-between items-center mb-2">
+                  <span className={`font-medium ${textColors.secondary}`}>Total a cobrar:</span>
+                  <span className="text-2xl font-bold text-orange-600">
+                    {formatCurrency(getTotal())}
+                  </span>
+                </div>
+                <div className="flex justify-between items-center mb-2">
+                  <span className={`${textColors.secondary}`}>Productos:</span>
+                  <span className={`font-medium ${textColors.primary}`}>
+                    {cart.length} item{cart.length !== 1 ? 's' : ''}
+                  </span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className={`${textColors.secondary}`}>Método de pago:</span>
+                  <span className={`font-medium ${textColors.primary}`}>
+                    {paymentMethod.charAt(0).toUpperCase() + paymentMethod.slice(1)}
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 p-3 bg-orange-50 rounded-lg border border-orange-200">
+                <AlertTriangle className="w-5 h-5 text-orange-600" />
+                <p className={`text-sm ${textColors.secondary}`}>
+                  Una vez procesada, esta venta no se puede deshacer. Verifica que todos los datos sean correctos.
+                </p>
+              </div>
+            </div>
+          </ModalBody>
+          <ModalFooter>
+            <Button
+              variant="light"
+              onPress={onWarningClose}
+              className="font-medium"
+            >
+              No, cancelar
+            </Button>
+            <Button
+              color="warning"
+              onPress={proceedToTicketConfirmation}
+              className="font-medium"
+              startContent={<Receipt className="w-4 h-4" />}
+            >
+              Sí, continuar
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+
+      {/* Modal de confirmación para comprobante */}
+      <Modal isOpen={isConfirmOpen} onClose={onConfirmClose} size="md">
+        <ModalContent>
+          <ModalHeader>
+            <h2 className={`text-xl font-bold ${textColors.primary} flex items-center gap-2`}>
+              <Receipt className="w-6 h-6" />
+              Confirmar Venta
+            </h2>
+          </ModalHeader>
+          <ModalBody>
+            <div className="space-y-4">
+              <p className={`text-lg ${textColors.primary}`}>
+                ¿Desea imprimir un comprobante de esta venta?
+              </p>
+              
+              <div className="bg-gray-50 rounded-lg p-4">
+                <div className="flex justify-between items-center mb-2">
+                  <span className={`font-medium ${textColors.secondary}`}>Total de la venta:</span>
+                  <span className="text-xl font-bold text-green-600">
+                    {formatCurrency(getTotal())}
+                  </span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className={`${textColors.secondary}`}>Método de pago:</span>
+                  <span className={`font-medium ${textColors.primary}`}>
+                    {paymentMethod.charAt(0).toUpperCase() + paymentMethod.slice(1)}
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 p-3 bg-blue-50 rounded-lg">
+                <Printer className="w-5 h-5 text-blue-600" />
+                <p className={`text-sm ${textColors.secondary}`}>
+                  El comprobante será enviado a la impresora predeterminada en formato de ticket térmico (80mm).
+                </p>
+              </div>
+            </div>
+          </ModalBody>
+          <ModalFooter>
+            <Button
+              variant="light"
+              onPress={processSaleWithoutTicket}
+              isLoading={loading}
+              disabled={printLoading}
+            >
+              No, solo procesar venta
+            </Button>
+            <Button
+              color="primary"
+              onPress={processSaleWithTicket}
+              isLoading={loading || printLoading}
+              startContent={<Printer className="w-4 h-4" />}
+            >
+              Sí, imprimir comprobante
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </DashboardLayout>
   )
 } 
