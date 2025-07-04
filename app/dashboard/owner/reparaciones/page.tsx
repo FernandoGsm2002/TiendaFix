@@ -1605,7 +1605,20 @@ export default function ReparacionesPage() {
         </Modal>
 
         {/* Modal de eliminación */}
-        <Modal isOpen={isDeleteOpen} onClose={onDeleteClose}>
+        <Modal 
+          isOpen={isDeleteOpen} 
+          onClose={onDeleteClose}
+          size="md"
+          scrollBehavior="inside"
+          classNames={{
+            wrapper: "z-[1000]",
+            backdrop: "z-[999]",
+            base: "max-h-[95vh] my-2 mx-2 sm:mx-6",
+            body: "max-h-[60vh] overflow-y-auto py-4",
+            header: "border-b border-gray-200 pb-4",
+            footer: "border-t border-gray-200 pt-4"
+          }}
+        >
           <ModalContent>
             <ModalHeader>
               <h3 className={`text-xl font-bold ${textColors.primary}`}>Confirmar Eliminación</h3>
@@ -1639,7 +1652,20 @@ export default function ReparacionesPage() {
         </Modal>
 
         {/* Modal para cambiar estado */}
-        <Modal isOpen={isStatusOpen} onClose={onStatusClose}>
+        <Modal 
+          isOpen={isStatusOpen} 
+          onClose={onStatusClose}
+          size="lg"
+          scrollBehavior="inside"
+          classNames={{
+            wrapper: "z-[1000]",
+            backdrop: "z-[999]",
+            base: "max-h-[95vh] my-2 mx-2 sm:mx-6",
+            body: "max-h-[70vh] overflow-y-auto py-4",
+            header: "border-b border-gray-200 pb-4",
+            footer: "border-t border-gray-200 pt-4"
+          }}
+        >
           <ModalContent>
             <ModalHeader>
               <h2 className={`text-xl font-bold ${textColors.primary}`}>Actualizar Estado de la Reparación</h2>

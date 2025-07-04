@@ -1587,7 +1587,20 @@ export default function TechnicianRepairsPage() {
         </Modal>
 
         {/* Modal para cambiar estado */}
-        <Modal isOpen={isStatusOpen} onClose={onStatusClose}>
+        <Modal 
+          isOpen={isStatusOpen} 
+          onClose={onStatusClose}
+          size="lg"
+          scrollBehavior="inside"
+          classNames={{
+            wrapper: "z-[1000]",
+            backdrop: "z-[999]",
+            base: "max-h-[95vh] my-2 mx-2 sm:mx-6",
+            body: "max-h-[70vh] overflow-y-auto py-4",
+            header: "border-b border-gray-200 pb-4",
+            footer: "border-t border-gray-200 pt-4"
+          }}
+        >
           <ModalContent>
             <ModalHeader className="text-gray-900 dark:text-white">Actualizar Estado de la Reparación</ModalHeader>
             <ModalBody>

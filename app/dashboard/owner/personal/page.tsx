@@ -852,7 +852,20 @@ export default function PersonalPage() {
         </Card>
 
         {/* Modal para crear nuevo técnico */}
-        <Modal isOpen={isCreateOpen} onOpenChange={onCreateOpenChange} size="2xl">
+        <Modal 
+          isOpen={isCreateOpen} 
+          onOpenChange={onCreateOpenChange} 
+          size="2xl"
+          scrollBehavior="inside"
+          classNames={{
+            wrapper: "z-[1000]",
+            backdrop: "z-[999]",
+            base: "max-h-[95vh] my-2 mx-2 sm:mx-6",
+            body: "max-h-[70vh] overflow-y-auto py-4",
+            header: "border-b border-gray-200 pb-4",
+            footer: "border-t border-gray-200 pt-4"
+          }}
+        >
           <ModalContent>
             {(onClose) => (
               <>
@@ -923,7 +936,20 @@ export default function PersonalPage() {
         </Modal>
 
         {/* Modal para ver detalles del técnico */}
-        <Modal isOpen={isDetailOpen} onOpenChange={onDetailClose} size="2xl">
+        <Modal 
+          isOpen={isDetailOpen} 
+          onOpenChange={onDetailClose} 
+          size="2xl"
+          scrollBehavior="inside"
+          classNames={{
+            wrapper: "z-[1000]",
+            backdrop: "z-[999]",
+            base: "max-h-[95vh] my-2 mx-2 sm:mx-6",
+            body: "max-h-[75vh] overflow-y-auto py-4",
+            header: "border-b border-gray-200 pb-4",
+            footer: "border-t border-gray-200 pt-4"
+          }}
+        >
           <ModalContent>
             {(onClose) => (
               <>
@@ -1023,7 +1049,20 @@ export default function PersonalPage() {
         </Modal>
 
         {/* Modal para editar técnico */}
-        <Modal isOpen={isEditOpen} onOpenChange={onEditClose} size="2xl">
+        <Modal 
+          isOpen={isEditOpen} 
+          onOpenChange={onEditClose} 
+          size="2xl"
+          scrollBehavior="inside"
+          classNames={{
+            wrapper: "z-[1000]",
+            backdrop: "z-[999]",
+            base: "max-h-[95vh] my-2 mx-2 sm:mx-6",
+            body: "max-h-[70vh] overflow-y-auto py-4",
+            header: "border-b border-gray-200 pb-4",
+            footer: "border-t border-gray-200 pt-4"
+          }}
+        >
           <ModalContent>
             {(onClose) => (
               <>
@@ -1088,7 +1127,20 @@ export default function PersonalPage() {
         </Modal>
 
         {/* Modal para confirmar eliminación del técnico */}
-        <Modal isOpen={isDeleteOpen} onOpenChange={onDeleteClose} size="2xl">
+        <Modal 
+          isOpen={isDeleteOpen} 
+          onOpenChange={onDeleteClose} 
+          size="md"
+          scrollBehavior="inside"
+          classNames={{
+            wrapper: "z-[1000]",
+            backdrop: "z-[999]",
+            base: "max-h-[95vh] my-2 mx-2 sm:mx-6",
+            body: "max-h-[60vh] overflow-y-auto py-4",
+            header: "border-b border-gray-200 pb-4",
+            footer: "border-t border-gray-200 pt-4"
+          }}
+        >
           <ModalContent>
             {(onClose) => (
               <>

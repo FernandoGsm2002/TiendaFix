@@ -999,7 +999,20 @@ export default function DesbloqueoPage() {
         )}
 
         {/* Modal para crear nuevo desbloqueo */}
-        <Modal isOpen={isCreateOpen} onOpenChange={onCreateOpenChange} size="3xl">
+        <Modal 
+          isOpen={isCreateOpen} 
+          onOpenChange={onCreateOpenChange} 
+          size="3xl"
+          scrollBehavior="inside"
+          classNames={{
+            wrapper: "z-[1000]",
+            backdrop: "z-[999]",
+            base: "max-h-[95vh] my-2 mx-2 sm:mx-6",
+            body: "max-h-[75vh] overflow-y-auto py-4",
+            header: "border-b border-gray-200 pb-4",
+            footer: "border-t border-gray-200 pt-4"
+          }}
+        >
           <ModalContent>
             <ModalHeader>
               <h2 className={`text-xl font-bold ${textColors.primary}`}>Nuevo Servicio de Desbloqueo</h2>
@@ -1110,7 +1123,20 @@ export default function DesbloqueoPage() {
         </Modal>
 
         {/* Modal para cambiar estado */}
-        <Modal isOpen={isStatusOpen} onOpenChange={onStatusOpenChange} size="lg">
+        <Modal 
+          isOpen={isStatusOpen} 
+          onOpenChange={onStatusOpenChange} 
+          size="lg"
+          scrollBehavior="inside"
+          classNames={{
+            wrapper: "z-[1000]",
+            backdrop: "z-[999]",
+            base: "max-h-[95vh] my-2 mx-2 sm:mx-6",
+            body: "max-h-[70vh] overflow-y-auto py-4",
+            header: "border-b border-gray-200 pb-4",
+            footer: "border-t border-gray-200 pt-4"
+          }}
+        >
           <ModalContent>
             {(onClose) => (
               <>
@@ -1162,7 +1188,20 @@ export default function DesbloqueoPage() {
         </Modal>
 
         {/* Modal para editar desbloqueo */}
-        <Modal isOpen={isEditOpen} onClose={onEditClose} size="3xl">
+        <Modal 
+          isOpen={isEditOpen} 
+          onClose={onEditClose} 
+          size="3xl"
+          scrollBehavior="inside"
+          classNames={{
+            wrapper: "z-[1000]",
+            backdrop: "z-[999]",
+            base: "max-h-[95vh] my-2 mx-2 sm:mx-6",
+            body: "max-h-[75vh] overflow-y-auto py-4",
+            header: "border-b border-gray-200 pb-4",
+            footer: "border-t border-gray-200 pt-4"
+          }}
+        >
           <ModalContent>
             {(onClose) => (
               <>
@@ -1275,7 +1314,20 @@ export default function DesbloqueoPage() {
         </Modal>
 
         {/* Modal para ver detalles */}
-        <Modal isOpen={isDetailOpen} onClose={onDetailClose} size="2xl">
+        <Modal 
+          isOpen={isDetailOpen} 
+          onClose={onDetailClose} 
+          size="2xl"
+          scrollBehavior="inside"
+          classNames={{
+            wrapper: "z-[1000]",
+            backdrop: "z-[999]",
+            base: "max-h-[95vh] my-2 mx-2 sm:mx-6",
+            body: "max-h-[75vh] overflow-y-auto py-4",
+            header: "border-b border-gray-200 pb-4",
+            footer: "border-t border-gray-200 pt-4"
+          }}
+        >
           <ModalContent>
             <ModalHeader>
               <h2 className={`text-xl font-bold ${textColors.primary}`}>Detalles del Desbloqueo</h2>
@@ -1388,7 +1440,20 @@ export default function DesbloqueoPage() {
         </Modal>
 
         {/* Modal de eliminación */}
-        <Modal isOpen={isDeleteOpen} onClose={onDeleteClose}>
+        <Modal 
+          isOpen={isDeleteOpen} 
+          onClose={onDeleteClose}
+          size="md"
+          scrollBehavior="inside"
+          classNames={{
+            wrapper: "z-[1000]",
+            backdrop: "z-[999]",
+            base: "max-h-[95vh] my-2 mx-2 sm:mx-6",
+            body: "max-h-[60vh] overflow-y-auto py-4",
+            header: "border-b border-gray-200 pb-4",
+            footer: "border-t border-gray-200 pt-4"
+          }}
+        >
           <ModalContent>
             <ModalHeader>
               <h3 className={`text-xl font-bold ${textColors.primary}`}>Confirmar Eliminación</h3>

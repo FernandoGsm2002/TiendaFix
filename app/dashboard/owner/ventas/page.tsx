@@ -1374,7 +1374,20 @@ export default function VentasPage() {
       )}
 
       {/* Modal de advertencia inicial */}
-      <Modal isOpen={isWarningOpen} onClose={onWarningClose} size="md">
+      <Modal 
+        isOpen={isWarningOpen} 
+        onClose={onWarningClose} 
+        size="md"
+        scrollBehavior="inside"
+        classNames={{
+          wrapper: "z-[1000]",
+          backdrop: "z-[999]",
+          base: "max-h-[95vh] my-2 mx-2 sm:mx-6",
+          body: "max-h-[60vh] overflow-y-auto py-4",
+          header: "border-b border-gray-200 pb-4",
+          footer: "border-t border-gray-200 pt-4"
+        }}
+      >
         <ModalContent>
           <ModalHeader>
             <h2 className={`text-xl font-bold ${textColors.primary} flex items-center gap-2`}>
@@ -1438,7 +1451,20 @@ export default function VentasPage() {
       </Modal>
 
       {/* Modal de confirmación para comprobante */}
-      <Modal isOpen={isConfirmOpen} onClose={onConfirmClose} size="md">
+      <Modal 
+        isOpen={isConfirmOpen} 
+        onClose={onConfirmClose} 
+        size="md"
+        scrollBehavior="inside"
+        classNames={{
+          wrapper: "z-[1000]",
+          backdrop: "z-[999]",
+          base: "max-h-[95vh] my-2 mx-2 sm:mx-6",
+          body: "max-h-[60vh] overflow-y-auto py-4",
+          header: "border-b border-gray-200 pb-4",
+          footer: "border-t border-gray-200 pt-4"
+        }}
+      >
         <ModalContent>
           <ModalHeader>
             <h2 className={`text-xl font-bold ${textColors.primary} flex items-center gap-2`}>

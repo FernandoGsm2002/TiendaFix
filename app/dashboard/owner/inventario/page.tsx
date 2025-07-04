@@ -1047,7 +1047,20 @@ export default function InventarioPage() {
         </Modal>
 
         {/* Modal de detalles del producto */}
-        <Modal isOpen={isDetailOpen} onClose={onDetailClose} size="2xl">
+        <Modal 
+          isOpen={isDetailOpen} 
+          onClose={onDetailClose} 
+          size="2xl"
+          scrollBehavior="inside"
+          classNames={{
+            wrapper: "z-[1000]",
+            backdrop: "z-[999]",
+            base: "max-h-[95vh] my-2 mx-2 sm:mx-6",
+            body: "max-h-[75vh] overflow-y-auto py-4",
+            header: "border-b border-gray-200 pb-4",
+            footer: "border-t border-gray-200 pt-4"
+          }}
+        >
           <ModalContent>
             {selectedItem && (
               <>
@@ -1184,7 +1197,20 @@ export default function InventarioPage() {
         </Modal>
 
         {/* Modal de confirmación de eliminación del producto */}
-        <Modal isOpen={isDeleteOpen} onClose={onDeleteClose} size="lg">
+        <Modal 
+          isOpen={isDeleteOpen} 
+          onClose={onDeleteClose} 
+          size="md"
+          scrollBehavior="inside"
+          classNames={{
+            wrapper: "z-[1000]",
+            backdrop: "z-[999]",
+            base: "max-h-[95vh] my-2 mx-2 sm:mx-6",
+            body: "max-h-[60vh] overflow-y-auto py-4",
+            header: "border-b border-gray-200 pb-4",
+            footer: "border-t border-gray-200 pt-4"
+          }}
+        >
           <ModalContent>
             <ModalHeader>
               <h2 className={`text-xl font-bold ${textColors.primary}`}>{t('inventory.deleteTitle')}</h2>

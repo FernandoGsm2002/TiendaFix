@@ -720,7 +720,20 @@ export default function DispositivosPage() {
         )}
 
         {/* Modal de registro */}
-        <Modal isOpen={isCreateOpen} onClose={onCreateClose} size="2xl">
+        <Modal 
+          isOpen={isCreateOpen} 
+          onClose={onCreateClose} 
+          size="2xl"
+          scrollBehavior="inside"
+          classNames={{
+            wrapper: "z-[1000]",
+            backdrop: "z-[999]",
+            base: "max-h-[95vh] my-2 mx-2 sm:mx-6",
+            body: "max-h-[70vh] overflow-y-auto py-4",
+            header: "border-b border-gray-200 pb-4",
+            footer: "border-t border-gray-200 pt-4"
+          }}
+        >
           <ModalContent>
             <form onSubmit={handleSubmit}>
               <ModalHeader>
@@ -818,7 +831,20 @@ export default function DispositivosPage() {
         </Modal>
 
         {/* Modal de detalles */}
-        <Modal isOpen={isDetailOpen} onClose={onDetailClose} size="2xl">
+        <Modal 
+          isOpen={isDetailOpen} 
+          onClose={onDetailClose} 
+          size="2xl"
+          scrollBehavior="inside"
+          classNames={{
+            wrapper: "z-[1000]",
+            backdrop: "z-[999]",
+            base: "max-h-[95vh] my-2 mx-2 sm:mx-6",
+            body: "max-h-[75vh] overflow-y-auto py-4",
+            header: "border-b border-gray-200 pb-4",
+            footer: "border-t border-gray-200 pt-4"
+          }}
+        >
           <ModalContent>
             {selectedDevice && (
                              <React.Fragment>
@@ -886,7 +912,20 @@ export default function DispositivosPage() {
         </Modal>
 
         {/* Modal de edición */}
-        <Modal isOpen={isEditOpen} onClose={onEditClose} size="2xl">
+        <Modal 
+          isOpen={isEditOpen} 
+          onClose={onEditClose} 
+          size="2xl"
+          scrollBehavior="inside"
+          classNames={{
+            wrapper: "z-[1000]",
+            backdrop: "z-[999]",
+            base: "max-h-[95vh] my-2 mx-2 sm:mx-6",
+            body: "max-h-[70vh] overflow-y-auto py-4",
+            header: "border-b border-gray-200 pb-4",
+            footer: "border-t border-gray-200 pt-4"
+          }}
+        >
           <ModalContent>
             {(onClose) => (
               <form id="edit-device-form" onSubmit={handleUpdateDevice}>
@@ -989,7 +1028,20 @@ export default function DispositivosPage() {
         </Modal>
 
         {/* Modal de eliminación */}
-        <Modal isOpen={isDeleteOpen} onClose={onDeleteClose} size="2xl">
+        <Modal 
+          isOpen={isDeleteOpen} 
+          onClose={onDeleteClose} 
+          size="md"
+          scrollBehavior="inside"
+          classNames={{
+            wrapper: "z-[1000]",
+            backdrop: "z-[999]",
+            base: "max-h-[95vh] my-2 mx-2 sm:mx-6",
+            body: "max-h-[60vh] overflow-y-auto py-4",
+            header: "border-b border-gray-200 pb-4",
+            footer: "border-t border-gray-200 pt-4"
+          }}
+        >
           <ModalContent>
             <ModalHeader>
               <h2 className="text-xl font-bold">Eliminar Dispositivo</h2>
@@ -1013,7 +1065,20 @@ export default function DispositivosPage() {
         </Modal>
 
         {/* Modal de cambio de estado */}
-        <Modal isOpen={isStatusOpen} onClose={onStatusClose} size="2xl">
+        <Modal 
+          isOpen={isStatusOpen} 
+          onClose={onStatusClose} 
+          size="2xl"
+          scrollBehavior="inside"
+          classNames={{
+            wrapper: "z-[1000]",
+            backdrop: "z-[999]",
+            base: "max-h-[95vh] my-2 mx-2 sm:mx-6",
+            body: "max-h-[70vh] overflow-y-auto py-4",
+            header: "border-b border-gray-200 pb-4",
+            footer: "border-t border-gray-200 pt-4"
+          }}
+        >
           <ModalContent>
             <ModalHeader>
               <h2 className="text-xl font-bold">Cambiar Estado del Dispositivo</h2>
