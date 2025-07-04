@@ -1,13 +1,14 @@
 import React from 'react'
+import DemoLayout from './components/DemoLayout'
 
-export default function DemoLayout({ 
+export default function DemoLayoutWrapper({ 
   children 
 }: { 
   children: React.ReactNode 
 }) {
   return (
-    <div className="pt-16"> {/* Padding para el header fijo */}
+    <DemoLayout>
       {children}
-    </div>
+    </DemoLayout>
   )
 } 
