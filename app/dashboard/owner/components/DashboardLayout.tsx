@@ -65,17 +65,6 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-100 via-blue-50 to-indigo-100">
-      {/* Botón de menú móvil */}
-      <Button
-        isIconOnly
-        variant="solid"
-        color="primary"
-        className={`fixed top-4 left-4 transition-all duration-300 lg:hidden shadow-lg z-50`}
-        onPress={handleMobileMenuToggle}
-        aria-label={mobileMenuOpen ? "Cerrar menú" : "Abrir menú"}
-      >
-        {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-      </Button>
 
       {/* Sidebar Móvil (Drawer) - Sin overlay problemático */}
       {mobileMenuOpen && (
@@ -116,8 +105,11 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           </div>
           
           {/* Contenido principal */}
-          <div className="flex-1 flex flex-col gap-2 md:gap-4 pt-16 lg:pt-0">
-            <Header />
+          <div className="flex-1 flex flex-col gap-2 md:gap-4">
+            <Header 
+              onMobileMenuToggle={handleMobileMenuToggle}
+              mobileMenuOpen={mobileMenuOpen}
+            />
             
             <Card className="flex-1 shadow-xl border-0 bg-white/80 backdrop-blur-sm">
               <CardBody className="p-3 md:p-6 h-full overflow-y-auto">

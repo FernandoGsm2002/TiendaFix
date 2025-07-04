@@ -360,5 +360,13 @@
     "BRL": "Brazilian Real",
     "MXN": "Mexican Peso",
     "USD": "US Dollar"
+  },
+  "filters": {
+    "all": "All",
+    "allStates": "All states",
+    "allTypes": "All types",
+    "allCategories": "All categories",
+    "allBrands": "All brands",
+    "allRoles": "All roles"
   }
 } 

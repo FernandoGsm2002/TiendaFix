@@ -382,15 +382,7 @@ export default function ReparacionesPage() {
   }
 
   const getStatusLabel = (status: string) => {
-    switch (status) {
-      case 'pending': return 'Pendiente'
-      case 'diagnosed': return 'Diagnosticado'
-      case 'in_progress': return 'En Proceso'
-      case 'completed': return 'Completado'
-      case 'delivered': return 'Entregado'
-      case 'cancelled': return 'Cancelado'
-      default: return status
-    }
+    return t(`repairs.status.${status}`) || status
   }
 
   const getPriorityColor = (priority: string) => {
@@ -404,13 +396,7 @@ export default function ReparacionesPage() {
   }
 
   const getPriorityLabel = (priority: string) => {
-    switch (priority) {
-      case 'low': return 'Baja'
-      case 'medium': return 'Media'
-      case 'high': return 'Alta'
-      case 'urgent': return 'Urgente'
-      default: return priority
-    }
+    return t(`repairs.priority.${priority}`) || priority
   }
 
 
@@ -1001,14 +987,14 @@ export default function ReparacionesPage() {
                     value: "text-gray-900"
                   }}
                 >
-                  <SelectItem key="todos" className="text-gray-900">Todos</SelectItem>
-                  <SelectItem key="received" className="text-gray-900">Recibido</SelectItem>
-                  <SelectItem key="diagnosed" className="text-gray-900">Diagnosticado</SelectItem>
-                  <SelectItem key="in_progress" className="text-gray-900">En Proceso</SelectItem>
-                  <SelectItem key="waiting_parts" className="text-gray-900">Esperando Repuestos</SelectItem>
-                  <SelectItem key="completed" className="text-gray-900">Completado</SelectItem>
-                  <SelectItem key="delivered" className="text-gray-900">Entregado</SelectItem>
-                  <SelectItem key="cancelled" className="text-gray-900">Cancelado</SelectItem>
+                  <SelectItem key="todos" className="text-gray-900">{t('filters.all')}</SelectItem>
+                  <SelectItem key="received" className="text-gray-900">{t('repairs.status.received')}</SelectItem>
+                  <SelectItem key="diagnosed" className="text-gray-900">{t('repairs.status.diagnosed')}</SelectItem>
+                  <SelectItem key="in_progress" className="text-gray-900">{t('repairs.status.in_progress')}</SelectItem>
+                  <SelectItem key="waiting_parts" className="text-gray-900">{t('repairs.status.waiting_parts')}</SelectItem>
+                  <SelectItem key="completed" className="text-gray-900">{t('repairs.status.completed')}</SelectItem>
+                  <SelectItem key="delivered" className="text-gray-900">{t('repairs.status.delivered')}</SelectItem>
+                  <SelectItem key="cancelled" className="text-gray-900">{t('repairs.status.cancelled')}</SelectItem>
                 </Select>
               </div>
             </div>

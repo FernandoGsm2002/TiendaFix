@@ -57,7 +57,8 @@
     "next": "Siguiente",
     "previous": "Anterior",
     "finish": "Finalizar",
-    "continue": "Continuar"
+    "continue": "Continuar",
+    "all": "Todos"
   },
   "navigation": {
     "dashboard": "Panel",
@@ -592,5 +593,13 @@
     "BRL": "Real Brasileño",
     "MXN": "Peso Mexicano",
     "USD": "Dólar Americano"
+  },
+  "filters": {
+    "all": "Todos",
+    "allStates": "Todos los estados",
+    "allTypes": "Todos los tipos",
+    "allCategories": "Todas las categorías",
+    "allBrands": "Todas las marcas",
+    "allRoles": "Todos los roles"
   }
 } 

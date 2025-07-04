@@ -122,17 +122,7 @@ export default function TechnicianDashboardLayout({ children }: TechnicianDashbo
         <div className="absolute top-40 left-40 w-80 h-80 bg-indigo-200 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-4000"></div>
       </div>
 
-      {/* Botón de menú móvil */}
-      <Button
-        isIconOnly
-        variant="solid"
-        color="primary"
-        className={`fixed top-4 left-4 transition-all duration-300 lg:hidden shadow-lg z-50`}
-        onPress={handleMobileMenuToggle}
-        aria-label={mobileMenuOpen ? "Cerrar menú" : "Abrir menú"}
-      >
-        {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-      </Button>
+
 
       {/* Sidebar Móvil (Drawer) - Sin overlay problemático */}
       {mobileMenuOpen && (
@@ -173,10 +163,13 @@ export default function TechnicianDashboardLayout({ children }: TechnicianDashbo
           </div>
           
           {/* Main Content */}
-          <div className="flex-1 flex flex-col gap-4 md:gap-6 pt-16 lg:pt-0">
+          <div className="flex-1 flex flex-col gap-4 md:gap-6">
             {/* Header */}
             <div className="flex-shrink-0">
-              <TechnicianHeader />
+              <TechnicianHeader 
+                onMobileMenuToggle={handleMobileMenuToggle}
+                mobileMenuOpen={mobileMenuOpen}
+              />
             </div>
             
             {/* Content Area */}

@@ -29,7 +29,7 @@ import {
   Switch
 } from '@heroui/react'
 import { textColors } from '@/lib/utils/colors'
-import { useCurrency } from '@/lib/contexts/TranslationContext'
+import { useCurrency, useTranslations } from '@/lib/contexts/TranslationContext'
 import { 
   Search, 
   Plus, 
@@ -121,6 +121,7 @@ interface NewRepairForm {
 
 export default function TechnicianRepairsPage() {
   const { formatCurrency } = useCurrency()
+  const { t } = useTranslations()
   const [repairs, setRepairs] = useState<Repair[]>([])
   const [customers, setCustomers] = useState<Customer[]>([])
   // Eliminado: Ya no necesitamos gestionar dispositivos por separado
@@ -315,16 +316,7 @@ export default function TechnicianRepairsPage() {
   }
 
   const getStatusLabel = (status: string) => {
-    const labels: Record<string, string> = {
-      'received': 'Recibido',
-      'diagnosed': 'Diagnosticado',
-      'in_progress': 'En Proceso',
-      'waiting_parts': 'Esperando Repuestos',
-      'completed': 'Completado',
-      'delivered': 'Entregado',
-      'cancelled': 'Cancelado'
-    }
-    return labels[status] || status
+    return t(`repairs.status.${status}`) || status
   }
 
   const getPriorityColor = (priority: string) => {
@@ -338,13 +330,7 @@ export default function TechnicianRepairsPage() {
   }
 
   const getPriorityLabel = (priority: string) => {
-    const labels: Record<string, string> = {
-      'low': 'Baja',
-      'medium': 'Media',
-      'high': 'Alta',
-      'urgent': 'Urgente'
-    }
-    return labels[priority] || priority
+    return t(`repairs.priority.${priority}`) || priority
   }
 
   const formatDate = (dateString: string) => {
@@ -915,14 +901,14 @@ export default function TechnicianRepairsPage() {
                   trigger: "border-gray-200 hover:border-gray-300"
                 }}
               >
-                <SelectItem key="todos">Todos los estados</SelectItem>
-                <SelectItem key="received">Recibido</SelectItem>
-                <SelectItem key="diagnosed">Diagnosticado</SelectItem>
-                <SelectItem key="in_progress">En Proceso</SelectItem>
-                <SelectItem key="waiting_parts">Esperando Repuestos</SelectItem>
-                <SelectItem key="completed">Completado</SelectItem>
-                <SelectItem key="delivered">Entregado</SelectItem>
-                <SelectItem key="cancelled">Cancelado</SelectItem>
+                <SelectItem key="todos">{t('filters.allStates')}</SelectItem>
+                <SelectItem key="received">{t('repairs.status.received')}</SelectItem>
+                <SelectItem key="diagnosed">{t('repairs.status.diagnosed')}</SelectItem>
+                <SelectItem key="in_progress">{t('repairs.status.in_progress')}</SelectItem>
+                <SelectItem key="waiting_parts">{t('repairs.status.waiting_parts')}</SelectItem>
+                <SelectItem key="completed">{t('repairs.status.completed')}</SelectItem>
+                <SelectItem key="delivered">{t('repairs.status.delivered')}</SelectItem>
+                <SelectItem key="cancelled">{t('repairs.status.cancelled')}</SelectItem>
               </Select>
             </div>
           </CardBody>

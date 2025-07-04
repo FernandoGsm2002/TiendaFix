@@ -29,7 +29,7 @@ import {
 } from '@heroui/react'
 import FormField from '@/app/components/ui/FormField'
 import { textColors } from '@/lib/utils/colors'
-import { useCurrency } from '@/lib/contexts/TranslationContext'
+import { useCurrency, useTranslations } from '@/lib/contexts/TranslationContext'
 import { 
   Search, 
   Eye, 
@@ -80,6 +80,7 @@ interface UnlockService {
 
 export default function TechnicianUnlocksPage() {
   const { formatCurrency } = useCurrency()
+  const { t } = useTranslations()
   const [unlocks, setUnlocks] = useState<UnlockService[]>([])
   const [customers, setCustomers] = useState<Customer[]>([])
   const [loading, setLoading] = useState(true)
@@ -252,15 +253,8 @@ export default function TechnicianUnlocksPage() {
   }
 
   const getStatusLabel = (status: string) => {
-    const labels: Record<string, string> = {
-      'pending': 'Pendiente',
-      'in_progress': 'En Proceso',
-      'waiting_confirmation': 'Esperando Confirmación',
-      'completed': 'Completado',
-      'failed': 'Fallido',
-      'cancelled': 'Cancelado'
-    }
-    return labels[status] || status
+    // Usamos las traducciones de reparaciones ya que son los mismos estados
+    return t(`repairs.status.${status}`) || status
   }
 
   const getStatusColor = (status: string) => {
@@ -544,10 +538,10 @@ export default function TechnicianUnlocksPage() {
                     popoverContent: "bg-white shadow-2xl border border-gray-200",
                   }}
               >
-                  <SelectItem key="todos" className="text-gray-900">Todos los estados</SelectItem>
-                                  <SelectItem key="pending" className="text-gray-900">Pendiente</SelectItem>
-                <SelectItem key="in_progress" className="text-gray-900">En Proceso</SelectItem>
-                <SelectItem key="completed" className="text-gray-900">Completado</SelectItem>
+                                  <SelectItem key="todos" className="text-gray-900">{t('filters.allStates')}</SelectItem>
+                <SelectItem key="pending" className="text-gray-900">{t('repairs.status.pending')}</SelectItem>
+                <SelectItem key="in_progress" className="text-gray-900">{t('repairs.status.in_progress')}</SelectItem>
+                <SelectItem key="completed" className="text-gray-900">{t('repairs.status.completed')}</SelectItem>
                   <SelectItem key="failed" className="text-gray-900">Fallido</SelectItem>
               </Select>
               </div>

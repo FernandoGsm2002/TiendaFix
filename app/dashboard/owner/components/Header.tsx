@@ -1,11 +1,12 @@
 ﻿'use client'
 
 import { useAuth } from '@/lib/auth/auth-context'
-import { Bell, Search, User, LogOut, Settings, Package, Wrench, Unlock } from 'lucide-react'
+import { Bell, Search, User, LogOut, Settings, Package, Wrench, Unlock, Menu, X } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { textColors } from '@/lib/utils/colors'
 import { useTranslations } from '@/lib/contexts/TranslationContext'
+import { Button } from '@heroui/react'
 
 interface NotificationData {
   totalNotifications: number;
@@ -16,7 +17,12 @@ interface NotificationData {
   };
 }
 
-export default function Header() {
+interface HeaderProps {
+  onMobileMenuToggle?: () => void;
+  mobileMenuOpen?: boolean;
+}
+
+export default function Header({ onMobileMenuToggle, mobileMenuOpen }: HeaderProps = {}) {
   const { user, userProfile, signOut } = useAuth()
   const { t } = useTranslations()
   const [isProfileOpen, setIsProfileOpen] = useState(false)
@@ -50,11 +56,26 @@ export default function Header() {
   return (
     <header className="bg-white border-b border-gray-200 px-3 md:px-6 py-3 md:py-4 rounded-lg shadow-sm">
       <div className="flex items-center justify-between space-x-2 md:space-x-4">
-        <div className="flex-1 min-w-0">
-          <h1 className="text-lg md:text-2xl font-bold text-gray-900 truncate">
-            {userProfile?.organization_name || t('navigation.myStore')}
-          </h1>
-          <p className={`text-xs md:text-sm ${textColors.secondary} hidden sm:block`}>{t('navigation.adminPanel')}</p>
+        <div className="flex items-center space-x-3 flex-1 min-w-0">
+          {/* Botón de menú móvil integrado */}
+          {onMobileMenuToggle && (
+            <Button
+              isIconOnly
+              variant="light"
+              className="lg:hidden p-2"
+              onPress={onMobileMenuToggle}
+              aria-label={mobileMenuOpen ? "Cerrar menú" : "Abrir menú"}
+            >
+              {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </Button>
+          )}
+          
+          <div className="flex-1 min-w-0">
+            <h1 className="text-lg md:text-2xl font-bold text-gray-900 truncate">
+              {userProfile?.organization_name || t('navigation.myStore')}
+            </h1>
+            <p className={`text-xs md:text-sm ${textColors.secondary} hidden sm:block`}>{t('navigation.adminPanel')}</p>
+          </div>
         </div>
 
         <div className="flex items-center space-x-2 md:space-x-4">

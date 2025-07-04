@@ -1,7 +1,7 @@
 'use client'
 
 import { useAuth } from '@/lib/auth/auth-context'
-import { Bell, Search, User, LogOut, Settings, Package, Wrench, Unlock, Activity } from 'lucide-react'
+import { Bell, Search, User, LogOut, Settings, Package, Wrench, Unlock, Activity, Menu, X } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { 
@@ -26,7 +26,12 @@ interface NotificationData {
   };
 }
 
-export default function TechnicianHeader() {
+interface TechnicianHeaderProps {
+  onMobileMenuToggle?: () => void;
+  mobileMenuOpen?: boolean;
+}
+
+export default function TechnicianHeader({ onMobileMenuToggle, mobileMenuOpen }: TechnicianHeaderProps = {}) {
   const { user, userProfile, signOut } = useAuth()
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false)
   const [notifications, setNotifications] = useState<NotificationData | null>(null)
@@ -94,6 +99,19 @@ export default function TechnicianHeader() {
         <div className="flex items-center justify-between space-x-3 md:space-x-6">
           {/* Logo y título con gradiente */}
           <div className="flex items-center space-x-2 md:space-x-4 flex-1 min-w-0">
+            {/* Botón de menú móvil integrado */}
+            {onMobileMenuToggle && (
+              <Button
+                isIconOnly
+                variant="light"
+                className="lg:hidden p-2"
+                onPress={onMobileMenuToggle}
+                aria-label={mobileMenuOpen ? "Cerrar menú" : "Abrir menú"}
+              >
+                {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+              </Button>
+            )}
+            
             <div className="p-2 md:p-3 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 shadow-lg flex-shrink-0">
               <Activity className="w-5 md:w-6 h-5 md:h-6 text-white" />
             </div>

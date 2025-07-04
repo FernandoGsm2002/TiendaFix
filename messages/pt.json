@@ -57,7 +57,8 @@
     "next": "Próximo",
     "previous": "Anterior",
     "finish": "Finalizar",
-    "continue": "Continuar"
+    "continue": "Continuar",
+    "all": "Todos"
   },
   "navigation": {
     "dashboard": "Painel",
@@ -65,14 +66,14 @@
     "devices": "Dispositivos",
     "repairs": "Reparos",
     "sales": "Vendas",
-    "inventory": "Estoque",
+    "inventory": "Inventário",
     "unlocks": "Desbloqueios",
-    "technicians": "Equipe",
+    "technicians": "Pessoal",
     "reports": "Relatórios",
     "settings": "Configurações",
     "pos": "Vendas/PDV",
-    "staff": "Equipe",
-    "adminPanel": "Painel Administrativo",
+    "staff": "Pessoal",
+    "adminPanel": "Painel administrativo",
     "myStore": "Minha Loja"
   },
   "customers": {
@@ -115,7 +116,8 @@
       "waiting_parts": "Aguardando Peças",
       "completed": "Concluído",
       "delivered": "Entregue",
-      "cancelled": "Cancelado"
+      "cancelled": "Cancelado",
+      "pending": "Pendente"
     },
     "priority": {
       "low": "Baixa",
@@ -169,7 +171,7 @@
   "notifications": {
     "title": "Notificações",
     "loading": "Carregando...",
-    "noNotifications": "Você não tem notificações novas.",
+    "noNotifications": "Você não tem novas notificações.",
     "refresh": "Atualizar",
     "lowStock": "Estoque Baixo",
     "pendingRepairs": "Reparos Pendentes",
@@ -177,7 +179,7 @@
     "stock": "Estoque",
     "repair": "Reparo",
     "unlock": "Desbloqueio",
-    "serialNumber": "N/S"
+    "serialNumber": "S/N"
   },
   "header": {
     "search": "Buscar...",
@@ -196,12 +198,12 @@
     }
   },
   "inventory": {
-    "title": "Gestão de Estoque",
+    "title": "Gestão de Inventário",
     "description": "Controle estoque e produtos",
     "newProduct": "Novo Produto",
     "lowStock": "Estoque Baixo",
     "searchPlaceholder": "Buscar produtos...",
-    "noProducts": "Nenhum produto no estoque",
+    "noProducts": "Nenhum produto no inventário",
     "fields": {
       "name": "Produto",
       "category": "Categoria",
@@ -360,5 +362,13 @@
     "BRL": "Real Brasileiro",
     "MXN": "Peso Mexicano",
     "USD": "Dólar Americano"
+  },
+  "filters": {
+    "all": "Todos",
+    "allStates": "Todos os estados",
+    "allTypes": "Todos os tipos",
+    "allCategories": "Todas as categorias",
+    "allBrands": "Todas as marcas",
+    "allRoles": "Todos os papéis"
   }
 } 
