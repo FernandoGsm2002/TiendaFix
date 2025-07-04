@@ -37,6 +37,15 @@ export default function LoginPage() {
       return
     }
 
+    // Interceptar login demo
+    if (email === 'demo' && password === 'demo') {
+      console.log('✅ Demo login detected, redirecting to demo dashboard...')
+      setTimeout(() => {
+        router.push('/dashboard/demo')
+      }, 100)
+      return
+    }
+
     try {
       const { error } = await signIn(email, password)
       
@@ -59,8 +68,8 @@ export default function LoginPage() {
   }
 
   const fillDemoCredentials = () => {
-    setEmail('admin@demo.com')
-    setPassword('demo123')
+    setEmail('demo')
+    setPassword('demo')
   }
 
   return (
@@ -99,9 +108,9 @@ export default function LoginPage() {
               )}
 
               <Input
-                type="email"
-                label="Correo electrónico"
-                placeholder="Ingresa tu email"
+                type="text"
+                label="Usuario o email"
+                placeholder="Ingresa tu usuario o email"
                 value={email}
                 onValueChange={setEmail}
                 startContent={<Mail className="w-4 h-4 text-gray-400" />}
@@ -181,7 +190,7 @@ export default function LoginPage() {
                 onClick={fillDemoCredentials}
                 className="text-gray-500 hover:text-gray-700 text-xs"
               >
-                Modo Demo
+                Probar Demo (demo/demo)
               </Button>
             </div>
           </CardBody>

@@ -26,7 +26,8 @@ export async function middleware(req: NextRequest) {
     }
 
     // Si no hay sesión y la ruta requiere autenticación
-    if (!session && req.nextUrl.pathname.startsWith('/dashboard')) {
+    // Excluir el dashboard demo que no requiere autenticación
+    if (!session && req.nextUrl.pathname.startsWith('/dashboard') && !req.nextUrl.pathname.startsWith('/dashboard/demo')) {
       return NextResponse.redirect(new URL('/auth/login', req.url))
     }
 
