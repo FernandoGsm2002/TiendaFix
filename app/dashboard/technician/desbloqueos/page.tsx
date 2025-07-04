@@ -542,7 +542,7 @@ export default function TechnicianUnlocksPage() {
                 <SelectItem key="pending" className="text-gray-900">{t('repairs.status.pending')}</SelectItem>
                 <SelectItem key="in_progress" className="text-gray-900">{t('repairs.status.in_progress')}</SelectItem>
                 <SelectItem key="completed" className="text-gray-900">{t('repairs.status.completed')}</SelectItem>
-                  <SelectItem key="failed" className="text-gray-900">Fallido</SelectItem>
+                  <SelectItem key="failed" className="text-gray-900">{t('common.failed')}</SelectItem>
               </Select>
               </div>
               <div className="w-full md:w-60">
@@ -1055,7 +1055,7 @@ export default function TechnicianUnlocksPage() {
                     {selectedUnlock && selectedUnlock.status === 'pending' && (
                       <div className="bg-blue-50 p-3 rounded-lg">
                         <p className="text-sm text-blue-800">
-                          💡 Al guardar, este desbloqueo será marcado como "En Proceso"
+                          💡 {t('unlocks.saveProgressNote')}
                         </p>
                       </div>
                     )}

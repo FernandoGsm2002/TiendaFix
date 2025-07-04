@@ -489,7 +489,7 @@ export default function PersonalPage() {
                   popoverContent: "bg-white",
                 }}
               >
-                <SelectItem key="todos" className="text-gray-900">Todos los roles</SelectItem>
+                <SelectItem key="todos" className="text-gray-900">{t('filters.allRoles')}</SelectItem>
                 <SelectItem key="owner" className="text-gray-900">Propietario</SelectItem>
                 <SelectItem key="technician" className="text-gray-900">Técnico</SelectItem>
               </Select>
@@ -505,7 +505,7 @@ export default function PersonalPage() {
                   popoverContent: "bg-white",
                 }}
               >
-                <SelectItem key="todos" className="text-gray-900">Todos los estados</SelectItem>
+                <SelectItem key="todos" className="text-gray-900">{t('filters.allStates')}</SelectItem>
                                   <SelectItem key="active" className="text-gray-900">{t('common.active')}</SelectItem>
                                   <SelectItem key="inactive" className="text-gray-900">{t('common.inactive')}</SelectItem>
               </Select>

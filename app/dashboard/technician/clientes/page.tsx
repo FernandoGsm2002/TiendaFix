@@ -24,6 +24,7 @@ import {
   Progress
 } from '@heroui/react'
 import { textColors } from '@/lib/utils/colors'
+import { useTranslations } from '@/lib/contexts/TranslationContext'
 import { 
   Search, 
   Filter, 
@@ -104,6 +105,7 @@ interface PaginationInfo {
 }
 
 export default function ClientesPage() {
+  const { t } = useTranslations()
   const [customers, setCustomers] = useState<Customer[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -432,7 +434,7 @@ export default function ClientesPage() {
                     popoverContent: "bg-white",
                   }}
                 >
-                  <SelectItem key="todos" className="text-gray-900">Todos los tipos</SelectItem>
+                  <SelectItem key="todos" className="text-gray-900">{t('filters.allTypes')}</SelectItem>
                   <SelectItem key="identified" className="text-gray-900">Registrados</SelectItem>
                   <SelectItem key="anonymous" className="text-gray-900">Anónimos</SelectItem>
                 </Select>

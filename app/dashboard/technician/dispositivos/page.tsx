@@ -28,6 +28,7 @@ import {
   Button
 } from '@heroui/react'
 import { formatCurrency } from '@/lib/utils/currency'
+import { useTranslations } from '@/lib/contexts/TranslationContext'
 import { 
   Search, 
   Eye, 
@@ -81,6 +82,7 @@ interface Device {
 
 export default function TechnicianDevicesPage() {
   const router = useRouter()
+  const { t } = useTranslations()
 
   // REDIRECCIÓN AUTOMÁTICA - Apartado de dispositivos temporalmente deshabilitado
   useEffect(() => {
@@ -365,7 +367,7 @@ export default function TechnicianDevicesPage() {
                     popoverContent: "bg-white shadow-2xl border border-gray-200",
                   }}
                 >
-                  <SelectItem key="todos" className="text-gray-900">Todos los tipos</SelectItem>
+                  <SelectItem key="todos" className="text-gray-900">{t('filters.allTypes')}</SelectItem>
                   <SelectItem key="smartphone" className="text-gray-900">Smartphones</SelectItem>
                   <SelectItem key="laptop" className="text-gray-900">Laptops</SelectItem>
                   <SelectItem key="tablet" className="text-gray-900">Tablets</SelectItem>

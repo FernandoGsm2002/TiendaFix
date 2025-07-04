@@ -20,7 +20,7 @@ import {
   Alert,
   Button
 } from '@heroui/react'
-import { useCurrency } from '@/lib/contexts/TranslationContext'
+import { useCurrency, useTranslations } from '@/lib/contexts/TranslationContext'
 import { 
   Search, 
   Package, 
@@ -56,6 +56,7 @@ interface Product {
 
 export default function TechnicianInventoryPage() {
   const { formatCurrency } = useCurrency()
+  const { t } = useTranslations()
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
   const [busqueda, setBusqueda] = useState('')
@@ -305,7 +306,7 @@ export default function TechnicianInventoryPage() {
                     popoverContent: "bg-white shadow-2xl border border-gray-200",
                   }}
                 >
-                  <SelectItem key="todos" className="text-gray-900">Todas las categorías</SelectItem>
+                  <SelectItem key="todos" className="text-gray-900">{t('filters.allCategories')}</SelectItem>
                   <SelectItem key="pantallas" className="text-gray-900">Pantallas</SelectItem>
                   <SelectItem key="baterias" className="text-gray-900">Baterías</SelectItem>
                   <SelectItem key="accesorios" className="text-gray-900">Accesorios</SelectItem>

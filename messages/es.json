@@ -384,6 +384,7 @@
     "specialInstructions": "Instrucciones Especiales",
     "requestDate": "Fecha de Solicitud",
     "completionDate": "Fecha de Finalización",
+    "saveProgressNote": "Al guardar, este desbloqueo será marcado como \"En Proceso\"",
     "fields": {
       "imei": "IMEI",
       "brand": "Marca",
