@@ -79,7 +79,7 @@ export async function POST(request: NextRequest) {
     
     const { data: authUser, error: authError } = await supabase.auth.admin.createUser({
       email: orgRequest.owner_email,
-      password: 'TiendaFix2024!', // Contraseña temporal que el usuario debe cambiar
+      password: '12345678', // Contraseña temporal que el usuario debe cambiar
       email_confirm: true, // Confirmar email automáticamente
       user_metadata: {
         name: orgRequest.owner_name,
@@ -184,7 +184,7 @@ export async function POST(request: NextRequest) {
         authUser: {
           id: authUser.user.id,
           email: authUser.user.email,
-          temporaryPassword: 'TiendaFix2024!'
+          temporaryPassword: '12345678'
         },
         status: 'approved'
       }

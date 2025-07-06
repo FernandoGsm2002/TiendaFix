@@ -450,7 +450,7 @@ export default function DemoDesbloqueos() {
           {selectedUnlock && (
             <>
               <ModalHeader className="flex flex-col gap-1">
-                <h2 className="text-xl font-bold">Detalles del Desbloqueo</h2>
+                <h2 className="text-xl font-bold text-blue-600">Detalles del Desbloqueo</h2>
                 <p className="text-sm text-gray-500">ID: {selectedUnlock.id}</p>
               </ModalHeader>
               <ModalBody>

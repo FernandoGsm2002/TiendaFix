@@ -1,221 +1,211 @@
-import Link from 'next/link'
-import { ArrowRight, Smartphone, Wrench, BarChart3, Users, Shield, Clock } from 'lucide-react'
+import { LandingNavbar } from "./components/landing/Navbar";
+import { Hero } from "./components/landing/Hero";
+import { IndustriesSection } from "./components/landing/IndustriesSection";
+import { FeatureSection } from "./components/landing/FeatureSection";
+import { TestimonialsSection } from "./components/landing/TestimonialsSection";
+import { PricingSection } from "./components/landing/PricingSection";
+import { SecuritySection } from "./components/landing/SecuritySection";
+import { RolesSection } from "./components/landing/RolesSection";
+import { FaqSection } from "./components/landing/FaqSection";
+import { Footer } from "./components/landing/Footer";
+import { Button, Link } from "@heroui/react";
+import { 
+  Zap, 
+  Shield, 
+  Smartphone, 
+  BarChart3, 
+  Users, 
+  MessageCircle,
+  Clock,
+  CheckCircle,
+  TrendingUp,
+  Star,
+  Headphones,
+  Database,
+  Wrench,
+  Package,
+  Receipt,
+  Rocket,
+  Globe
+} from "lucide-react";
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-      {/* Navigation */}
-      <nav className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16 items-center">
-            <div className="flex items-center">
-              <Smartphone className="h-8 w-8 text-indigo-600" />
-              <span className="ml-2 text-xl font-bold text-gray-900">TiendaFix</span>
-            </div>
-            <div className="flex space-x-4">
-              <Link href="/auth/login" className="text-gray-600 hover:text-gray-900">
-                Iniciar Sesión
-              </Link>
-              <Link href="/auth/register" className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700">
-                Registrar Tienda
-              </Link>
-            </div>
-          </div>
-        </div>
-      </nav>
+    <div className="min-h-screen bg-white">
+      <LandingNavbar />
+      <main>
+        <Hero />
+        
+        <IndustriesSection />
+        
+        <FeatureSection
+          subtitle="Control Total de tu Taller"
+          title="Gestiona tu taller desde cualquier dispositivo"
+          description="TiendaFix ahora en la nube para darte la flexibilidad que necesitas. Ahora puedes controlar tu taller desde tu celular, tablet o computadora. Todo sincronizado en tiempo real."
+          imageUrl="/pngs/banner3.png"
+          imageAlt="Control de taller desde dispositivos móviles"
+          orientation="right"
+          backgroundColor="bg-white"
+          features={[
+            {
+              icon: <Wrench className="w-8 h-8 text-blue-600" />,
+              title: "Gestión completa de reparaciones",
+              description: "Registra, asigna y da seguimiento a todas las reparaciones de tu taller. Desde la recepción del equipo hasta la entrega al cliente, todo bajo control."
+            },
+            
+            {
+              icon: <Receipt className="w-8 h-8 text-purple-600" />,
+              title: "Impresion de tickets de reparcion y tickets de venta",
+              description: "Genera tickets y boletas, para que tus clientes puedan llevar su equipo."
+            },
+            {
+              icon: <Database className="w-8 h-8 text-blue-700" />,
+              title: "Historial completo de clientes",
+              description: "Mantén un registro detallado de todos los equipos y reparaciones de cada cliente. Ideal para garantías y reparaciones recurrentes."
+            }
+          ]}
+          ctaText="Registrate ahora"
+          ctaLink="/auth/register"
+        />
 
-      {/* Hero Section */}
-      <section className="relative overflow-hidden pt-20 pb-32">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
-              Gestiona tu tienda de
-              <span className="text-indigo-600"> reparaciones</span>
-            </h1>
-            <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
-              Sistema completo para administrar clientes, reparaciones, inventario, ventas y unlocks. 
-              Todo en una plataforma segura y fácil de usar.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link 
-                href="/auth/register" 
-                className="bg-indigo-600 text-white px-8 py-3 rounded-lg hover:bg-indigo-700 flex items-center justify-center"
-              >
-                Empezar Prueba Gratuita
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Link>
-              <Link 
-                href="/auth/login" 
-                className="bg-white text-indigo-600 px-8 py-3 rounded-lg border border-indigo-600 hover:bg-indigo-50"
-              >
-                Iniciar Sesión
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
+        <FeatureSection
+          subtitle="Inventario Inteligente"
+          title="Nunca te quedes sin repuestos importantes"
+          description="El sistema de inventario de TiendaFix te ayuda a mantener el stock perfecto. Alertas automáticas, control de proveedores y reportes de rotación para optimizar tu inversión."
+          imageUrl="/pngs/banner2.png"
+          imageAlt="Sistema de inventario inteligente"
+          orientation="left"
+          backgroundColor="bg-gray-50"
+          features={[
+            {
+              icon: <Package className="w-8 h-8 text-purple-600" />,
+              title: "Control de stock en tiempo real",
+              description: "Sabe exactamente qué tienes en stock, qué se está agotando y qué necesitas comprar. Todo actualizado automáticamente con cada venta o reparación."
+            },
+            {
+              icon: <TrendingUp className="w-8 h-8 text-blue-600" />,
+              title: "Alertas de stock mínimo",
+              description: "Recibe notificaciones cuando un producto esté llegando a su stock mínimo. Nunca más pierdas una venta por falta de repuestos."
+            },
+            {
+              icon: <BarChart3 className="w-8 h-8 text-purple-700" />,
+              title: "Reportes de rentabilidad",
+              description: "Conoce qué productos te dan más ganancia, cuáles rotan más rápido y optimiza tus compras basándote en datos reales."
+            }
+          ]}
+          ctaText="Ver Sistema de Inventario"
+          ctaLink="/dashboard/demo"
+        />
 
-      {/* Features Section */}
-      <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">
-              Todo lo que necesitas para tu negocio
-            </h2>
-            <p className="text-lg text-gray-600">
-              Funciones diseñadas específicamente para tiendas de reparación
-            </p>
-          </div>
+        <PricingSection />
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <div className="bg-gray-50 p-6 rounded-xl">
-              <Wrench className="h-12 w-12 text-indigo-600 mb-4" />
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">Gestión de Reparaciones</h3>
-              <p className="text-gray-600">
-                Controla el flujo completo de reparaciones desde la recepción hasta la entrega.
-              </p>
-            </div>
-
-            <div className="bg-gray-50 p-6 rounded-xl">
-              <Users className="h-12 w-12 text-indigo-600 mb-4" />
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">Clientes y Dispositivos</h3>
-              <p className="text-gray-600">
-                Base de datos completa de clientes y sus dispositivos con historial detallado.
-              </p>
-            </div>
-
-            <div className="bg-gray-50 p-6 rounded-xl">
-              <BarChart3 className="h-12 w-12 text-indigo-600 mb-4" />
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">Inventario y POS</h3>
-              <p className="text-gray-600">
-                Control de stock, ventas y repuestos con sistema de punto de venta integrado.
-              </p>
-            </div>
-
-            <div className="bg-gray-50 p-6 rounded-xl">
-              <Smartphone className="h-12 w-12 text-indigo-600 mb-4" />
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">Unlocks</h3>
-              <p className="text-gray-600">
-                Gestiona servicios de desbloqueo iCloud, FRP, red y bootloader.
-              </p>
-            </div>
-
-            <div className="bg-gray-50 p-6 rounded-xl">
-              <Shield className="h-12 w-12 text-indigo-600 mb-4" />
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">Multi-tenant Seguro</h3>
-              <p className="text-gray-600">
-                Cada tienda tiene sus datos completamente aislados y seguros.
-              </p>
-            </div>
-
-            <div className="bg-gray-50 p-6 rounded-xl">
-              <Clock className="h-12 w-12 text-indigo-600 mb-4" />
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">Técnicos y Horarios</h3>
-              <p className="text-gray-600">
-                Asigna reparaciones a técnicos y controla la productividad del equipo.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Pricing Section */}
-      <section className="py-20 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">
-              Planes de Suscripción
-            </h2>
-            <p className="text-lg text-gray-600">
-              Elige el plan que mejor se adapte a tu negocio
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="bg-white p-8 rounded-xl shadow-sm">
-              <h3 className="text-2xl font-bold text-gray-900 mb-2">3 Meses</h3>
-              <p className="text-4xl font-bold text-indigo-600 mb-6">$99</p>
-              <ul className="space-y-3 mb-8">
-                <li className="flex items-center">
-                  <span className="w-2 h-2 bg-indigo-600 rounded-full mr-3"></span>
-                  Hasta 5 usuarios
-                </li>
-                <li className="flex items-center">
-                  <span className="w-2 h-2 bg-indigo-600 rounded-full mr-3"></span>
-                  100 dispositivos
-                </li>
-                <li className="flex items-center">
-                  <span className="w-2 h-2 bg-indigo-600 rounded-full mr-3"></span>
-                  Todas las funciones
-                </li>
-              </ul>
-              <button className="w-full bg-indigo-600 text-white py-3 rounded-lg hover:bg-indigo-700">
-                Seleccionar
-              </button>
-            </div>
-
-            <div className="bg-white p-8 rounded-xl shadow-sm border-2 border-indigo-600 relative">
-              <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                <span className="bg-indigo-600 text-white px-4 py-1 rounded-full text-sm">Más Popular</span>
+        {/* Ultra Modern Final CTA Section */}
+        <section className="py-24 bg-gradient-to-br from-blue-800 via-purple-900 to-black text-white relative overflow-hidden">
+          {/* Background Effects */}
+          <div className="absolute inset-0 bg-[radial-gradient(circle_500px_at_50%_200px,rgba(255,255,255,0.1),transparent)]"></div>
+          <div className="absolute top-20 left-20 w-64 h-64 bg-white/10 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-20 right-20 w-96 h-96 bg-white/5 rounded-full blur-3xl animate-pulse delay-1000"></div>
+          
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+            <div className="max-w-4xl mx-auto">
+              {/* Enhanced Header */}
+              <div className="mb-8">
+                <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm text-white px-6 py-3 rounded-full text-sm font-semibold mb-6 shadow-lg">
+                  <TrendingUp className="w-4 h-4" />
+                  <span>Únete a la Revolución Digital</span>
+                  <Zap className="w-4 h-4 animate-pulse" />
+                </div>
+                
+                <h2 className="text-4xl md:text-6xl font-black mb-6 leading-tight">
+                  <span className="block">¿Listo para</span>
+                  <span className="bg-gradient-to-r from-white via-blue-100 to-purple-200 bg-clip-text text-transparent block">
+                    revolucionar tu taller?
+                  </span>
+                </h2>
+                
+                                 <p className="text-xl md:text-2xl mb-8 text-blue-100 leading-relaxed">
+                   Únete a los <span className="font-bold text-white">100+ talleres sudamericanos</span> que ya confían en TiendaFix para gestionar sus reparaciones de móviles y tablets.
+                 </p>
               </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-2">6 Meses</h3>
-              <p className="text-4xl font-bold text-indigo-600 mb-6">$179</p>
-              <ul className="space-y-3 mb-8">
-                <li className="flex items-center">
-                  <span className="w-2 h-2 bg-indigo-600 rounded-full mr-3"></span>
-                  Hasta 10 usuarios
-                </li>
-                <li className="flex items-center">
-                  <span className="w-2 h-2 bg-indigo-600 rounded-full mr-3"></span>
-                  200 dispositivos
-                </li>
-                <li className="flex items-center">
-                  <span className="w-2 h-2 bg-indigo-600 rounded-full mr-3"></span>
-                  Todas las funciones
-                </li>
-              </ul>
-              <button className="w-full bg-indigo-600 text-white py-3 rounded-lg hover:bg-indigo-700">
-                Seleccionar
-              </button>
-            </div>
 
-            <div className="bg-white p-8 rounded-xl shadow-sm">
-              <h3 className="text-2xl font-bold text-gray-900 mb-2">1 Año</h3>
-              <p className="text-4xl font-bold text-indigo-600 mb-6">$299</p>
-              <ul className="space-y-3 mb-8">
-                <li className="flex items-center">
-                  <span className="w-2 h-2 bg-indigo-600 rounded-full mr-3"></span>
-                  Usuarios ilimitados
-                </li>
-                <li className="flex items-center">
-                  <span className="w-2 h-2 bg-indigo-600 rounded-full mr-3"></span>
-                  Dispositivos ilimitados
-                </li>
-                <li className="flex items-center">
-                  <span className="w-2 h-2 bg-indigo-600 rounded-full mr-3"></span>
-                  Todas las funciones
-                </li>
-              </ul>
-              <button className="w-full bg-indigo-600 text-white py-3 rounded-lg hover:bg-indigo-700">
-                Seleccionar
-              </button>
+              {/* Enhanced CTA Buttons */}
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-6 mb-12">
+                <Button 
+                  as={Link}
+                  href="/auth/register"
+                  size="lg"
+                  className="bg-white text-blue-900 font-bold px-12 py-6 text-xl hover:bg-blue-50 transition-all duration-300 shadow-2xl hover:shadow-3xl hover:scale-105 relative overflow-hidden group border-0"
+                  endContent={<Rocket className="w-6 h-6 group-hover:translate-x-1 transition-transform duration-300" />}
+                >
+                  <div className="absolute inset-0 bg-gradient-to-r from-blue-50/20 to-purple-100/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  <span className="relative z-10">Registrate ahora</span>
+                </Button>
+                
+                <Button 
+                  as={Link}
+                  href="/dashboard/demo"
+                  size="lg"
+                  variant="bordered"
+                  className="border-2 border-white/50 text-white font-bold px-12 py-6 text-xl hover:bg-white/10 hover:border-white transition-all duration-300 backdrop-blur-sm group"
+                  startContent={<MessageCircle className="w-6 h-6 group-hover:scale-110 transition-transform duration-300" />}
+                >
+                  Ver Demo Web
+                </Button>
+              </div>
+
+              {/* Enhanced Trust Indicators */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+                <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 hover:bg-white/20 transition-all duration-300 group">
+                  <div className="flex items-center justify-center gap-3 mb-2">
+                    <Globe className="w-6 h-6 text-blue-300 group-hover:scale-110 transition-transform duration-300" />
+                    <span className="text-lg font-semibold">Sudamérica</span>
+                  </div>
+                  <p className="text-sm text-blue-200">Solución para tu taller</p>
+                </div>
+                
+                <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 hover:bg-white/20 transition-all duration-300 group">
+                  <div className="flex items-center justify-center gap-3 mb-2">
+                    <CheckCircle className="w-6 h-6 text-green-300 group-hover:scale-110 transition-transform duration-300" />
+                    <span className="text-lg font-semibold">Desde $9.99</span>
+                  </div>
+                  <p className="text-sm text-purple-200">USDT / S/. 37</p>
+                </div>
+                
+                <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 hover:bg-white/20 transition-all duration-300 group">
+                  <div className="flex items-center justify-center gap-3 mb-2">
+                    <Headphones className="w-6 h-6 text-purple-300 group-hover:scale-110 transition-transform duration-300" />
+                    <span className="text-lg font-semibold">Soporte 24/7</span>
+                  </div>
+                  <p className="text-sm text-blue-200">En español</p>
+                </div>
+              </div>
+
+              {/* Success Metrics */}
+              <div className="mt-12 pt-8 border-t border-white/20">
+                                 <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+                   <div className="text-center">
+                     <div className="text-3xl font-bold text-white mb-2">100+</div>
+                     <div className="text-sm text-blue-200">Talleres Activos</div>
+                   </div>
+                   <div className="text-center">
+                     <div className="text-3xl font-bold text-white mb-2">4.9★</div>
+                     <div className="text-sm text-purple-200">Calificación</div>
+                   </div>
+                   <div className="text-center">
+                     <div className="text-3xl font-bold text-white mb-2">99.9%</div>
+                     <div className="text-sm text-blue-200">Uptime</div>
+                   </div>
+                   <div className="text-center">
+                     <div className="text-3xl font-bold text-white mb-2">7 días</div>
+                     <div className="text-sm text-purple-200">Prueba Gratis</div>
+                   </div>
+                 </div>
+              </div>
             </div>
           </div>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="bg-gray-900 text-white py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-center">
-            <Smartphone className="h-8 w-8 text-indigo-400" />
-            <span className="ml-2 text-xl font-bold">TiendaFix</span>
-          </div>
-          <p className="text-center text-gray-400 mt-4">
-            © 2024 TiendaFix. Todos los derechos reservados.
-          </p>
-        </div>
-      </footer>
+        </section>
+      </main>
+      <Footer />
     </div>
   )
 } 

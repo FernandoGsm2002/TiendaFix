@@ -8,10 +8,13 @@ import {
   CardBody, 
   Button, 
   Input,
-  Link as HeroLink,
-  Divider
+  Divider,
+  Progress,
+  Image
 } from '@heroui/react'
-import { Eye, EyeOff, ArrowLeft, Lock, Mail, Settings } from 'lucide-react'
+import { 
+  Eye, EyeOff, ArrowLeft, Lock, Mail, CheckCircle
+} from 'lucide-react'
 import Link from 'next/link'
 
 export default function LoginPage() {
@@ -55,7 +58,6 @@ export default function LoginPage() {
         setLoading(false)
       } else {
         console.log('✅ Login successful, redirecting...')
-        // Pequeño delay para asegurar que la autenticación se procese
         setTimeout(() => {
           router.push('/dashboard')
         }, 100)
@@ -73,7 +75,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         {/* Botón de regreso */}
         <div className="mb-6">
@@ -88,28 +90,41 @@ export default function LoginPage() {
           </Link>
         </div>
 
-        <Card className="shadow-2xl border-0">
+        <Card className="shadow-xl border-0 bg-white">
           <CardBody className="p-8">
+            {/* Header simple y profesional */}
             <div className="text-center mb-8">
-              <div className="w-16 h-16 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-                <Lock className="w-8 h-8 text-white" />
+              {/* Logo centrado */}
+              <div className="flex justify-center mb-6">
+                <Image
+                  src="/pngs/tiendafixlogo.png"
+                  alt="TiendaFix Logo"
+                  width={120}
+                  height={120}
+                  className="rounded-2xl shadow-lg"
+                />
               </div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">Bienvenido</h1>
-              <p className="text-gray-600">Accede a tu cuenta de TiendaFix</p>
+              
+              <h1 className="text-2xl font-bold text-gray-900 mb-2">
+                Iniciar Sesión
+              </h1>
+              <p className="text-gray-600">
+                Accede a tu cuenta de TiendaFix
+              </p>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-6">
               {error && (
-                <Card className="bg-danger-50 border border-danger-200">
-                  <CardBody className="p-3">
-                    <p className="text-danger-600 text-sm">{error}</p>
+                <Card className="bg-red-50 border border-red-200">
+                  <CardBody className="p-4">
+                    <p className="text-red-600 text-sm">{error}</p>
                   </CardBody>
                 </Card>
               )}
 
               <Input
                 type="text"
-                label="Usuario o email"
+                label="Usuario o Email"
                 placeholder="Ingresa tu usuario o email"
                 value={email}
                 onValueChange={setEmail}
@@ -118,9 +133,8 @@ export default function LoginPage() {
                 size="lg"
                 isRequired
                 classNames={{
-                  label: "text-gray-700 font-medium",
                   input: "text-gray-900",
-                  inputWrapper: "border-gray-300 hover:border-blue-400 focus-within:border-blue-500"
+                  inputWrapper: "border-gray-300 focus-within:border-gray-600"
                 }}
               />
 
@@ -135,7 +149,7 @@ export default function LoginPage() {
                   <button 
                     type="button" 
                     onClick={() => setShowPassword(!showPassword)}
-                    className="text-gray-400 hover:text-gray-600 transition-colors"
+                    className="text-gray-400 hover:text-gray-600"
                   >
                     {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
@@ -144,19 +158,28 @@ export default function LoginPage() {
                 size="lg"
                 isRequired
                 classNames={{
-                  label: "text-gray-700 font-medium",
                   input: "text-gray-900",
-                  inputWrapper: "border-gray-300 hover:border-blue-400 focus-within:border-blue-500"
+                  inputWrapper: "border-gray-300 focus-within:border-gray-600"
                 }}
               />
 
+              {loading && (
+                <Progress 
+                  size="sm"
+                  isIndeterminate 
+                  color="default"
+                  className="max-w-md"
+                />
+              )}
+
               <Button
                 type="submit"
-                color="primary"
+                color="default"
                 size="lg"
-                className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-200"
+                className="w-full font-semibold bg-gray-900 text-white hover:bg-gray-800"
                 isLoading={loading}
                 isDisabled={!email || !password}
+                endContent={!loading && <CheckCircle className="w-4 h-4" />}
               >
                 {loading ? 'Iniciando sesión...' : 'Iniciar Sesión'}
               </Button>
@@ -164,6 +187,7 @@ export default function LoginPage() {
 
             <Divider className="my-6" />
 
+            {/* Sección de registro simple */}
             <div className="text-center">
               <p className="text-gray-600 mb-4">
                 ¿No tienes una cuenta?
@@ -171,30 +195,36 @@ export default function LoginPage() {
               <Link href="/auth/register">
                 <Button
                   variant="flat"
-                  color="primary"
-                  className="font-medium"
+                  color="default"
+                  className="font-medium bg-gray-100 text-gray-900 hover:bg-gray-200"
                 >
-                  Registra tu tienda
+                  Registrar Nueva Tienda
                 </Button>
               </Link>
             </div>
 
-            <Divider className="my-6" />
+            <Divider className="my-4" />
 
-            {/* Botón sutil para llenar credenciales de demo */}
+            {/* Demo simple */}
             <div className="text-center">
               <Button
                 variant="light"
                 size="sm"
-                startContent={<Settings className="w-4 h-4" />}
                 onClick={fillDemoCredentials}
-                className="text-gray-500 hover:text-gray-700 text-xs"
+                className="text-gray-500 hover:text-gray-700 text-sm"
               >
                 Probar Demo (demo/demo)
               </Button>
             </div>
           </CardBody>
         </Card>
+
+        {/* Footer simple */}
+        <div className="text-center mt-4">
+          <p className="text-xs text-gray-500">
+            © 2025 TiendaFix - Sistema de Gestión para Talleres
+          </p>
+        </div>
       </div>
     </div>
   )

@@ -5,7 +5,8 @@ import React from 'react'
 import { useTranslations } from '@/lib/contexts/TranslationContext'
 import DemoHeader from './DemoHeader'
 import DemoSidebar from './DemoSidebar'
-import { Card, CardBody } from '@heroui/react'
+import { Card, CardBody, Spinner } from '@heroui/react'
+import { Menu, X } from 'lucide-react'
 
 interface DemoLayoutProps {
   children: React.ReactNode
@@ -30,7 +31,7 @@ export default function DemoLayout({ children }: DemoLayoutProps) {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-100 via-blue-50 to-indigo-100">
-      {/* Sidebar Móvil (Drawer) */}
+      {/* Sidebar Móvil (Drawer) - Sin overlay problemático */}
       {mobileMenuOpen && (
         <div className="fixed inset-0 z-40 lg:hidden">
           {/* Área de fondo clickeable para cerrar */}
