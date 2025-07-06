@@ -15,22 +15,71 @@ const supabase = createClient(supabaseUrl, supabaseServiceKey, {
 export async function GET(request: NextRequest) {
   try {
     console.log('📋 API Admin - Getting organization requests...')
+    console.log('🔑 Using service key:', supabaseServiceKey ? 'Yes' : 'No')
+    console.log('🕐 Request timestamp:', new Date().toISOString())
+    
+    // Verificar configuración de Supabase
+    if (!supabaseUrl || !supabaseServiceKey) {
+      console.error('❌ Missing Supabase configuration')
+      return NextResponse.json(
+        { error: 'Configuración de Supabase faltante' },
+        { status: 500 }
+      )
+    }
 
-    // Obtener todas las solicitudes
-    const { data: requests, error: requestsError } = await supabase
+    // Log de configuración
+    console.log('🔗 Supabase URL:', supabaseUrl.substring(0, 30) + '...')
+    console.log('🔑 Service key length:', supabaseServiceKey.length)
+
+    // Obtener todas las solicitudes con logs detallados
+    console.log('🔍 Fetching organization requests...')
+    let { data: requests, error: requestsError } = await supabase
       .from('organization_requests')
       .select('*')
       .order('created_at', { ascending: false })
 
     if (requestsError) {
       console.error('❌ Error fetching requests:', requestsError)
-      return NextResponse.json(
-        { error: requestsError.message },
-        { status: 500 }
-      )
+      console.error('❌ RLS might be blocking access. Error details:', {
+        code: requestsError.code,
+        message: requestsError.message,
+        details: requestsError.details,
+        hint: requestsError.hint
+      })
+      
+      // Intentar con bypass RLS explícito
+      console.log('🔄 Trying with explicit RLS bypass...')
+      const { data: requestsRetry, error: retryError } = await supabase
+        .rpc('get_all_organization_requests_admin')
+        .then(
+          (result) => result,
+          async () => {
+            // Si no existe la función, usar query directo
+            console.log('🔄 Using direct query as fallback...')
+            return await supabase
+              .from('organization_requests')
+              .select('*')
+              .order('created_at', { ascending: false })
+          }
+        )
+      
+      if (retryError) {
+        console.error('❌ Retry also failed:', retryError)
+        return NextResponse.json(
+          { error: `Error RLS: ${requestsError.message}` },
+          { status: 500 }
+        )
+      }
+      
+      // Si el retry funcionó, usar esos datos
+      if (requestsRetry) {
+        console.log('✅ Retry successful, using retry data')
+        requests = requestsRetry
+      }
     }
 
     // Obtener organizaciones existentes
+    console.log('🔍 Fetching organizations...')
     const { data: organizations, error: orgsError } = await supabase
       .from('organizations')
       .select('*')
@@ -44,7 +93,17 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    console.log(`✅ Found ${requests.length} requests and ${organizations.length} organizations`)
+    console.log(`✅ Successfully fetched ${requests?.length || 0} requests and ${organizations?.length || 0} organizations`)
+    
+    // Log detallado de las solicitudes para debugging
+    if (requests && requests.length > 0) {
+      console.log('📊 Requests summary:')
+      requests.forEach((req, index) => {
+        console.log(`  ${index + 1}. ${req.name} (${req.owner_email}) - Status: ${req.status} - Created: ${req.created_at}`)
+      })
+    } else {
+      console.log('⚠️  No requests found - this might indicate RLS is still blocking')
+    }
 
     return NextResponse.json({
       success: true,

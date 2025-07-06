@@ -73,25 +73,46 @@ export default function SuperAdminDashboard() {
     setLoading(true)
     try {
       console.log('🔍 Loading admin data...')
+      console.log('👤 Current user:', user?.email)
+      console.log('🎭 Is super admin:', isSuperAdmin)
+      console.log('📋 User profile:', userProfile)
       
       // Usar API route para evitar problemas de RLS
-      const response = await fetch('/api/admin/requests')
+      const response = await fetch('/api/admin/requests', {
+        cache: 'no-store', // Forzar recarga sin caché
+        headers: {
+          'Cache-Control': 'no-cache',
+        }
+      })
       const result = await response.json()
 
       if (!response.ok) {
         console.error('❌ Error loading data:', result.error)
+        alert(`Error cargando datos: ${result.error}`)
         return
       }
 
-      console.log('✅ Data loaded:', {
+      console.log('✅ Data loaded successfully:', {
         requests: result.data.requests.length,
-        organizations: result.data.organizations.length
+        organizations: result.data.organizations.length,
+        timestamp: new Date().toLocaleString()
       })
+
+      // Log detallado de las solicitudes
+      if (result.data.requests?.length > 0) {
+        console.log('📊 Latest requests:')
+        result.data.requests.slice(0, 3).forEach((req: any, index: number) => {
+          console.log(`  ${index + 1}. ${req.name} (${req.owner_email}) - ${req.status} - ${new Date(req.created_at).toLocaleString()}`)
+        })
+      } else {
+        console.log('⚠️  No requests found - this may indicate an RLS or caching issue')
+      }
 
       setPendingRequests(result.data.requests || [])
       setOrganizations(result.data.organizations || [])
     } catch (error) {
       console.error('❌ Error loading data:', error)
+      alert(`Error de conexión: ${error}`)
     } finally {
       setLoading(false)
     }
@@ -231,6 +252,16 @@ export default function SuperAdminDashboard() {
                 <p className="text-sm font-medium text-gray-900">{userProfile?.name}</p>
                 <p className="text-xs text-gray-600">{user?.email}</p>
               </div>
+              <Button
+                variant="flat"
+                color="primary"
+                startContent={<Building className="w-4 h-4" />}
+                onClick={loadData}
+                isLoading={loading}
+                className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+              >
+                Refrescar
+              </Button>
               <Button
                 variant="flat"
                 color="danger"

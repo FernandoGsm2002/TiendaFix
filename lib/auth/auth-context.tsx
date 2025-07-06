@@ -46,7 +46,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // Verificar si es super admin
   const isSuperAdmin = userProfile?.role === 'super_admin' || 
-    user?.email === 'admin@demo.com'
+    user?.email === 'admin@demo.com' ||
+    user?.email === 'fernandoapple2002@gmail.com'
 
   const isOwner = userProfile?.role === 'owner'
   const isTechnician = userProfile?.role === 'technician'

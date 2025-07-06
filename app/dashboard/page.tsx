@@ -24,7 +24,7 @@ export default function DashboardPage() {
       }
 
       // Verificación específica para super admin
-      if (user.email === 'admin@demo.com') {
+      if (user.email === 'admin@demo.com' || user.email === 'fernandoapple2002@gmail.com') {
         console.log('✅ Super admin detected, redirecting to super-admin dashboard')
         router.push('/dashboard/super-admin')
         return
