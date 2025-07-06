@@ -1191,22 +1191,22 @@ export default function TechnicianRepairsPage() {
         <Modal 
           isOpen={isCreateOpen} 
           onClose={onCreateClose}
-          size="lg"
+          size="full"
           scrollBehavior="inside"
           classNames={{
             wrapper: "z-[1000]",
             backdrop: "z-[999]",
-            base: "max-h-[95vh] my-1 mx-1 sm:my-2 sm:mx-2 md:mx-6",
-            body: "max-h-[70vh] overflow-y-auto py-2 md:py-4",
-            header: "border-b border-gray-200 pb-2 md:pb-4",
-            footer: "border-t border-gray-200 pt-2 md:pt-4"
+            base: "max-h-[100vh] h-full sm:max-h-[95vh] sm:h-auto my-0 mx-0 sm:my-2 sm:mx-2 md:mx-6 sm:rounded-lg",
+            body: "max-h-[calc(100vh-180px)] sm:max-h-[70vh] overflow-y-auto py-3 px-3 sm:py-4 sm:px-6",
+            header: "border-b border-gray-200 pb-3 px-3 sm:pb-4 sm:px-6",
+            footer: "border-t border-gray-200 pt-3 px-3 sm:pt-4 sm:px-6"
           }}
         >
           <ModalContent>
             <form onSubmit={handleCreateRepair}>
               <ModalHeader className="flex flex-col gap-1">
-                <h2 className="text-lg md:text-2xl font-bold text-gray-900">Nueva Reparación</h2>
-                <p className="text-sm text-gray-600">Crea una nueva reparación para un cliente</p>
+                <h2 className="text-xl md:text-2xl font-bold text-gray-900">Nueva Reparación</h2>
+                <p className="text-sm md:text-base text-gray-600">Crea una nueva reparación para un cliente</p>
               </ModalHeader>
               <ModalBody className="gap-3 md:gap-4">
                 <div className="space-y-3 md:space-y-4">
@@ -1231,14 +1231,14 @@ export default function TechnicianRepairsPage() {
                   )}
 
                   {/* Switch para Cliente No Registrado */}
-                  <div className="flex items-center gap-4">
-                    <label className="text-sm md:text-base text-gray-700 font-medium">
+                  <div className="flex items-center gap-4 py-2">
+                    <label className="text-base font-medium text-gray-700">
                       Cliente no registrado
                     </label>
                     <Switch
                       isSelected={isUnregistered}
                       onChange={() => setIsUnregistered(!isUnregistered)}
-                      size="sm"
+                      size="md"
                     />
                   </div>
 
@@ -1253,11 +1253,11 @@ export default function TechnicianRepairsPage() {
                         onValueChange={(value) => setNewRepair(prev => ({ ...prev, unregistered_customer_name: value }))}
                         variant="bordered"
                         isRequired
-                        size="sm"
+                        size="md"
                         classNames={{
-                          label: "text-gray-700",
-                          input: "text-gray-900 placeholder:text-gray-500",
-                          inputWrapper: "border-gray-300",
+                          label: "text-gray-700 text-base",
+                          input: "text-gray-900 placeholder:text-gray-500 text-base",
+                          inputWrapper: "border-gray-300 min-h-12",
                         }}
                       />
                       
@@ -1267,11 +1267,11 @@ export default function TechnicianRepairsPage() {
                         value={newRepair.unregistered_customer_phone}
                         onValueChange={(value) => setNewRepair(prev => ({ ...prev, unregistered_customer_phone: value }))}
                         variant="bordered"
-                        size="sm"
+                        size="md"
                         classNames={{
-                          label: "text-gray-700",
-                          input: "text-gray-900 placeholder:text-gray-500",
-                          inputWrapper: "border-gray-300",
+                          label: "text-gray-700 text-base",
+                          input: "text-gray-900 placeholder:text-gray-500 text-base",
+                          inputWrapper: "border-gray-300 min-h-12",
                         }}
                       />
                       
@@ -1282,12 +1282,12 @@ export default function TechnicianRepairsPage() {
                         onValueChange={(value) => setNewRepair(prev => ({ ...prev, device_description: value }))}
                         variant="bordered"
                         isRequired
-                        size="sm"
-                        minRows={2}
-                        maxRows={4}
+                        size="md"
+                        minRows={3}
+                        maxRows={5}
                         classNames={{
-                          label: "text-gray-700",
-                          input: "text-gray-900 placeholder:text-gray-500",
+                          label: "text-gray-700 text-base",
+                          input: "text-gray-900 placeholder:text-gray-500 text-base",
                           inputWrapper: "border-gray-300",
                         }}
                       />
@@ -1302,16 +1302,16 @@ export default function TechnicianRepairsPage() {
                         onSelectionChange={(keys) => handleCustomerChange(Array.from(keys)[0] as string)}
                         variant="bordered"
                         isRequired
-                        size="sm"
+                        size="md"
                         classNames={{
-                          label: "text-gray-700",
-                          trigger: "text-gray-900",
-                          value: "text-gray-900",
+                          label: "text-gray-700 text-base",
+                          trigger: "text-gray-900 text-base min-h-12",
+                          value: "text-gray-900 text-base",
                           popoverContent: "bg-white",
                         }}
                       >
                         {customers.map((customer) => (
-                          <SelectItem key={customer.id} className="text-gray-900">
+                          <SelectItem key={customer.id} className="text-gray-900 text-base">
                             {getCustomerDisplay(customer)}
                           </SelectItem>
                         ))}
@@ -1324,11 +1324,11 @@ export default function TechnicianRepairsPage() {
                         onValueChange={(value) => setNewRepair(prev => ({ ...prev, device_description: value }))}
                         variant="bordered"
                         isRequired
-                        size="sm"
+                        size="md"
                         classNames={{
-                          label: "text-gray-700",
-                          input: "text-gray-900",
-                          inputWrapper: "text-gray-900",
+                          label: "text-gray-700 text-base",
+                          input: "text-gray-900 text-base",
+                          inputWrapper: "text-gray-900 min-h-12",
                         }}
                       />
                     </div>
@@ -1341,11 +1341,11 @@ export default function TechnicianRepairsPage() {
                     onValueChange={(value) => setNewRepair(prev => ({ ...prev, title: value }))}
                     variant="bordered"
                     isRequired
-                    size="sm"
+                    size="md"
                     classNames={{
-                      label: "text-gray-700",
-                      input: "text-gray-900 placeholder:text-gray-500",
-                      inputWrapper: "border-gray-300",
+                      label: "text-gray-700 text-base",
+                      input: "text-gray-900 placeholder:text-gray-500 text-base",
+                      inputWrapper: "border-gray-300 min-h-12",
                     }}
                   />
 
@@ -1356,12 +1356,12 @@ export default function TechnicianRepairsPage() {
                     onValueChange={(value) => setNewRepair(prev => ({ ...prev, problem_description: value }))}
                     variant="bordered"
                     isRequired
-                    size="sm"
-                    minRows={2}
-                    maxRows={4}
+                    size="md"
+                    minRows={3}
+                    maxRows={5}
                     classNames={{
-                      label: "text-gray-700",
-                      input: "text-gray-900 placeholder:text-gray-500",
+                      label: "text-gray-700 text-base",
+                      input: "text-gray-900 placeholder:text-gray-500 text-base",
                       inputWrapper: "border-gray-300",
                     }}
                   />
@@ -1372,12 +1372,12 @@ export default function TechnicianRepairsPage() {
                     value={newRepair.description}
                     onValueChange={(value) => setNewRepair(prev => ({ ...prev, description: value }))}
                     variant="bordered"
-                    size="sm"
-                    minRows={2}
-                    maxRows={3}
+                    size="md"
+                    minRows={3}
+                    maxRows={4}
                     classNames={{
-                      label: "text-gray-700",
-                      input: "text-gray-900 placeholder:text-gray-500",
+                      label: "text-gray-700 text-base",
+                      input: "text-gray-900 placeholder:text-gray-500 text-base",
                       inputWrapper: "border-gray-300",
                     }}
                   />
@@ -1388,18 +1388,18 @@ export default function TechnicianRepairsPage() {
                       selectedKeys={new Set([newRepair.priority])}
                       onSelectionChange={(keys) => setNewRepair(prev => ({ ...prev, priority: Array.from(keys)[0] as string }))}
                       variant="bordered"
-                      size="sm"
+                      size="md"
                       classNames={{
-                        label: "text-gray-700",
-                        trigger: "text-gray-900",
-                        value: "text-gray-900",
+                        label: "text-gray-700 text-base",
+                        trigger: "text-gray-900 text-base min-h-12",
+                        value: "text-gray-900 text-base",
                         popoverContent: "bg-white",
                       }}
                     >
-                      <SelectItem key="low" className="text-gray-900">Baja</SelectItem>
-                      <SelectItem key="medium" className="text-gray-900">Media</SelectItem>
-                      <SelectItem key="high" className="text-gray-900">Alta</SelectItem>
-                      <SelectItem key="urgent" className="text-gray-900">Urgente</SelectItem>
+                      <SelectItem key="low" className="text-gray-900 text-base">Baja</SelectItem>
+                      <SelectItem key="medium" className="text-gray-900 text-base">Media</SelectItem>
+                      <SelectItem key="high" className="text-gray-900 text-base">Alta</SelectItem>
+                      <SelectItem key="urgent" className="text-gray-900 text-base">Urgente</SelectItem>
                     </Select>
 
                     <Input
@@ -1410,11 +1410,11 @@ export default function TechnicianRepairsPage() {
                       value={newRepair.cost.toString()}
                       onValueChange={(value) => setNewRepair(prev => ({ ...prev, cost: parseFloat(value) || 0 }))}
                       variant="bordered"
-                      size="sm"
+                      size="md"
                       classNames={{
-                        label: "text-gray-700",
-                        input: "text-gray-900 placeholder:text-gray-500",
-                        inputWrapper: "border-gray-300",
+                        label: "text-gray-700 text-base",
+                        input: "text-gray-900 placeholder:text-gray-500 text-base",
+                        inputWrapper: "border-gray-300 min-h-12",
                       }}
                     />
                   </div>
@@ -1425,24 +1425,24 @@ export default function TechnicianRepairsPage() {
                     value={newRepair.internal_notes}
                     onValueChange={(value) => setNewRepair(prev => ({ ...prev, internal_notes: value }))}
                     variant="bordered"
-                    size="sm"
-                    minRows={2}
-                    maxRows={3}
+                    size="md"
+                    minRows={3}
+                    maxRows={4}
                     classNames={{
-                      label: "text-gray-700",
-                      input: "text-gray-900 placeholder:text-gray-500",
+                      label: "text-gray-700 text-base",
+                      input: "text-gray-900 placeholder:text-gray-500 text-base",
                       inputWrapper: "border-gray-300",
                     }}
                   />
                 </div>
               </ModalBody>
-              <ModalFooter className="gap-2">
+              <ModalFooter className="gap-3 py-4">
                 <Button 
                   color="danger" 
                   variant="flat" 
                   onPress={onCreateClose}
-                  className="text-gray-900"
-                  size="sm"
+                  className="text-gray-900 text-base font-medium"
+                  size="md"
                 >
                   Cancelar
                 </Button>
@@ -1450,7 +1450,8 @@ export default function TechnicianRepairsPage() {
                   color="primary" 
                   type="submit"
                   isLoading={createLoading}
-                  size="sm"
+                  size="md"
+                  className="font-medium text-base px-6"
                 >
                   {createLoading ? 'Creando...' : 'Crear Reparación'}
                 </Button>

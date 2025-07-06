@@ -1379,32 +1379,32 @@ export default function ReparacionesPage() {
         <Modal 
           isOpen={isCreateOpen} 
           onClose={onCreateClose}
-          size="lg"
+          size="full"
           scrollBehavior="inside"
           classNames={{
             wrapper: "z-[1000]",
             backdrop: "z-[999]",
-            base: "max-h-[95vh] my-1 mx-1 sm:my-2 sm:mx-2 md:mx-6",
-            body: "max-h-[70vh] overflow-y-auto py-2 md:py-4",
-            header: "border-b border-gray-200 pb-2 md:pb-4",
-            footer: "border-t border-gray-200 pt-2 md:pt-4"
+            base: "max-h-[100vh] h-full sm:max-h-[95vh] sm:h-auto my-0 mx-0 sm:my-2 sm:mx-2 md:mx-6 sm:rounded-lg",
+            body: "max-h-[calc(100vh-180px)] sm:max-h-[70vh] overflow-y-auto py-3 px-3 sm:py-4 sm:px-6",
+            header: "border-b border-gray-200 pb-3 px-3 sm:pb-4 sm:px-6",
+            footer: "border-t border-gray-200 pt-3 px-3 sm:pt-4 sm:px-6"
           }}
         >
           <ModalContent>
             <ModalHeader>
-              <h2 className={`text-lg md:text-xl font-bold ${textColors.primary}`}>{t('repairs.createTitle')}</h2>
+              <h2 className={`text-xl md:text-2xl font-bold ${textColors.primary}`}>{t('repairs.createTitle')}</h2>
             </ModalHeader>
             <ModalBody>
-              <form onSubmit={handleCreateRepair} className="space-y-3 md:space-y-4">
-                <div className="flex items-center gap-4">
-                  <label htmlFor="unregistered-switch" className="text-sm md:text-base text-gray-700 dark:text-gray-300">
+              <form onSubmit={handleCreateRepair} className="space-y-4 md:space-y-6">
+                <div className="flex items-center gap-4 py-2">
+                  <label htmlFor="unregistered-switch" className="text-base font-medium text-gray-700 dark:text-gray-300">
                     Cliente no registrado
                   </label>
                   <Switch
                     id="unregistered-switch"
                     isSelected={isUnregistered}
                     onChange={() => setIsUnregistered(!isUnregistered)}
-                    size="sm"
+                    size="md"
                   />
                 </div>
 
@@ -1416,11 +1416,12 @@ export default function ReparacionesPage() {
                       value={newRepair.unregistered_customer_name}
                       onChange={(e) => setNewRepair({ ...newRepair, unregistered_customer_name: e.target.value })}
                       isRequired
-                      size="sm"
+                      size="md"
                       variant="bordered"
                       classNames={{
-                        input: "text-gray-900 dark:text-gray-100",
-                        inputWrapper: "bg-white dark:bg-gray-800"
+                        label: "text-base",
+                        input: "text-gray-900 dark:text-gray-100 text-base",
+                        inputWrapper: "bg-white dark:bg-gray-800 min-h-12"
                       }}
                     />
                     <Input
@@ -1428,11 +1429,12 @@ export default function ReparacionesPage() {
                       placeholder="Ej: +123456789"
                       value={newRepair.unregistered_customer_phone}
                       onChange={(e) => setNewRepair({ ...newRepair, unregistered_customer_phone: e.target.value })}
-                      size="sm"
+                      size="md"
                       variant="bordered"
                       classNames={{
-                        input: "text-gray-900 dark:text-gray-100",
-                        inputWrapper: "bg-white dark:bg-gray-800"
+                        label: "text-base",
+                        input: "text-gray-900 dark:text-gray-100 text-base",
+                        inputWrapper: "bg-white dark:bg-gray-800 min-h-12"
                       }}
                     />
                     <Textarea
@@ -1441,12 +1443,13 @@ export default function ReparacionesPage() {
                       value={newRepair.unregistered_device_info}
                       onChange={(e) => setNewRepair({ ...newRepair, unregistered_device_info: e.target.value })}
                       isRequired
-                      size="sm"
+                      size="md"
                       variant="bordered"
-                      minRows={2}
-                      maxRows={4}
+                      minRows={3}
+                      maxRows={5}
                       classNames={{
-                        input: "text-gray-900 dark:text-gray-100",
+                        label: "text-base",
+                        input: "text-gray-900 dark:text-gray-100 text-base",
                         inputWrapper: "bg-white dark:bg-gray-800"
                       }}
                     />
@@ -1458,15 +1461,16 @@ export default function ReparacionesPage() {
                       placeholder="Seleccione un cliente"
                       onSelectionChange={(keys) => handleCustomerChange(Array.from(keys)[0] as string)}
                       isRequired
-                      size="sm"
+                      size="md"
                       variant="bordered"
                       classNames={{
-                        trigger: "bg-white dark:bg-gray-800",
-                        value: "text-gray-900 dark:text-gray-100"
+                        label: "text-base",
+                        trigger: "bg-white dark:bg-gray-800 min-h-12",
+                        value: "text-gray-900 dark:text-gray-100 text-base"
                       }}
                     >
                       {customers.map((customer) => (
-                        <SelectItem key={customer.id} textValue={`${customer.name} (${customer.email || customer.phone})`} className="text-gray-900 dark:text-gray-100">
+                        <SelectItem key={customer.id} textValue={`${customer.name} (${customer.email || customer.phone})`} className="text-gray-900 dark:text-gray-100 text-base">
                           {customer.name} ({customer.email || customer.phone})
                         </SelectItem>
                       ))}
@@ -1478,12 +1482,13 @@ export default function ReparacionesPage() {
                       onChange={(e) => setNewRepair({ ...newRepair, device_description: e.target.value })}
                       isDisabled={!newRepair.customer_id}
                       isRequired
-                      size="sm"
+                      size="md"
                       variant="bordered"
                       startContent={<Smartphone className="w-4 h-4 text-gray-400" />}
                       classNames={{
-                        input: "text-gray-900 dark:text-gray-100",
-                        inputWrapper: "bg-white dark:bg-gray-800"
+                        label: "text-base",
+                        input: "text-gray-900 dark:text-gray-100 text-base",
+                        inputWrapper: "bg-white dark:bg-gray-800 min-h-12"
                       }}
                     />
                   </>
@@ -1495,11 +1500,12 @@ export default function ReparacionesPage() {
                   value={newRepair.title}
                   onChange={(e) => setNewRepair({ ...newRepair, title: e.target.value })}
                   isRequired
-                  size="sm"
+                  size="md"
                   variant="bordered"
                   classNames={{
-                    input: "text-gray-900 dark:text-gray-100",
-                    inputWrapper: "bg-white dark:bg-gray-800"
+                    label: "text-base",
+                    input: "text-gray-900 dark:text-gray-100 text-base",
+                    inputWrapper: "bg-white dark:bg-gray-800 min-h-12"
                   }}
                 />
                 <Textarea
@@ -1508,12 +1514,13 @@ export default function ReparacionesPage() {
                   value={newRepair.problem_description}
                   onChange={(e) => setNewRepair({ ...newRepair, problem_description: e.target.value })}
                   isRequired
-                  size="sm"
+                  size="md"
                   variant="bordered"
-                  minRows={2}
-                  maxRows={4}
+                  minRows={3}
+                  maxRows={5}
                   classNames={{
-                    input: "text-gray-900 dark:text-gray-100",
+                    label: "text-base",
+                    input: "text-gray-900 dark:text-gray-100 text-base",
                     inputWrapper: "bg-white dark:bg-gray-800"
                   }}
                 />
@@ -1522,16 +1529,17 @@ export default function ReparacionesPage() {
                     label="Prioridad"
                     selectedKeys={[newRepair.priority]}
                     onSelectionChange={(keys) => setNewRepair({ ...newRepair, priority: Array.from(keys)[0] as string })}
-                    size="sm"
+                    size="md"
                     variant="bordered"
                     classNames={{
-                      trigger: "bg-white dark:bg-gray-800",
-                      value: "text-gray-900 dark:text-gray-100"
+                      label: "text-base",
+                      trigger: "bg-white dark:bg-gray-800 min-h-12",
+                      value: "text-gray-900 dark:text-gray-100 text-base"
                     }}
                   >
-                    <SelectItem key="low" className="text-gray-900 dark:text-gray-100">Baja</SelectItem>
-                    <SelectItem key="medium" className="text-gray-900 dark:text-gray-100">Media</SelectItem>
-                    <SelectItem key="high" className="text-gray-900 dark:text-gray-100">Alta</SelectItem>
+                    <SelectItem key="low" className="text-gray-900 dark:text-gray-100 text-base">Baja</SelectItem>
+                    <SelectItem key="medium" className="text-gray-900 dark:text-gray-100 text-base">Media</SelectItem>
+                    <SelectItem key="high" className="text-gray-900 dark:text-gray-100 text-base">Alta</SelectItem>
                   </Select>
                   <Input
                     type="number"
@@ -1539,12 +1547,13 @@ export default function ReparacionesPage() {
                     placeholder="0.00"
                     value={String(newRepair.cost)}
                     onChange={(e) => setNewRepair({ ...newRepair, cost: parseFloat(e.target.value) || 0 })}
-                    size="sm"
+                    size="md"
                     variant="bordered"
                     startContent={<DollarSign className="w-4 h-4 text-gray-400" />}
                     classNames={{
-                      input: "text-gray-900 dark:text-gray-100",
-                      inputWrapper: "bg-white dark:bg-gray-800"
+                      label: "text-base",
+                      input: "text-gray-900 dark:text-gray-100 text-base",
+                      inputWrapper: "bg-white dark:bg-gray-800 min-h-12"
                     }}
                   />
                 </div>
@@ -1553,20 +1562,21 @@ export default function ReparacionesPage() {
                   placeholder="Recordar pedir la pieza X..."
                   value={newRepair.internal_notes}
                   onChange={(e) => setNewRepair({ ...newRepair, internal_notes: e.target.value })}
-                  size="sm"
+                  size="md"
                   variant="bordered"
-                  minRows={2}
-                  maxRows={3}
+                  minRows={3}
+                  maxRows={4}
                   classNames={{
-                    input: "text-gray-900 dark:text-gray-100",
+                    label: "text-base",
+                    input: "text-gray-900 dark:text-gray-100 text-base",
                     inputWrapper: "bg-white dark:bg-gray-800"
                   }}
                 />
               </form>
             </ModalBody>
-            <ModalFooter className="gap-2">
-              <Button variant="flat" onClick={onCreateClose} size="sm">Cancelar</Button>
-              <Button color="primary" onClick={handleCreateRepair} isLoading={createLoading} size="sm">
+            <ModalFooter className="gap-3 py-4">
+              <Button variant="flat" onClick={onCreateClose} size="md" className="text-base font-medium">Cancelar</Button>
+              <Button color="primary" onClick={handleCreateRepair} isLoading={createLoading} size="md" className="text-base font-medium px-6">
                 Crear Reparación
               </Button>
             </ModalFooter>

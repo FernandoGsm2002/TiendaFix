@@ -60,11 +60,11 @@ export default function FormField({
           description={helpText}
           minRows={rows}
           variant="bordered"
-          size="sm"
+          size="md"
           classNames={{
-            input: "text-gray-900 dark:text-gray-100",
+            input: "text-gray-900 dark:text-gray-100 text-base",
             inputWrapper: "bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600",
-            label: "text-gray-800 dark:text-gray-200 font-medium text-sm md:text-base",
+            label: "text-gray-800 dark:text-gray-200 font-medium text-base",
             description: "text-gray-600 dark:text-gray-400",
             errorMessage: "text-red-700 dark:text-red-400 font-medium"
           }}
@@ -103,7 +103,7 @@ export default function FormField({
           errorMessage={error}
           description={helpText}
           variant="bordered"
-          size="sm"
+          size="md"
           color="primary"
           classNames={{
             trigger: [
@@ -113,14 +113,16 @@ export default function FormField({
               "data-[open=true]:border-primary-500",
               "data-[focus=true]:border-primary-500",
               "data-[hover=true]:border-primary-400",
-              "transition-colors"
+              "transition-colors",
+              "min-h-12"
             ].join(" "),
             value: [
               "text-gray-900 dark:text-gray-100",
               "font-medium",
+              "text-base",
               hasValue ? "text-primary-700 dark:text-primary-300" : "text-gray-500 dark:text-gray-400"
             ].join(" "),
-            label: "text-gray-800 dark:text-gray-200 font-medium text-sm md:text-base",
+            label: "text-gray-800 dark:text-gray-200 font-medium text-base",
             description: "text-gray-600 dark:text-gray-400",
             errorMessage: "text-red-700 dark:text-red-400 font-medium",
             popoverContent: [
@@ -159,12 +161,12 @@ export default function FormField({
       description: helpText,
       startContent,
       endContent,
-      size: "sm" as const,
+      size: "md" as const,
       variant: "bordered" as const,
       classNames: {
-        input: "text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500",
-        inputWrapper: "bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600",
-        label: "text-gray-800 dark:text-gray-200 font-medium text-sm md:text-base",
+        input: "text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 text-base",
+        inputWrapper: "bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 min-h-12",
+        label: "text-gray-800 dark:text-gray-200 font-medium text-base",
         description: "text-gray-600 dark:text-gray-400",
         errorMessage: "text-red-700 dark:text-red-400 font-medium"
       },
@@ -186,8 +188,8 @@ export default function FormField({
   }
 
   return (
-    <div className="space-y-1">
-      <label className={`block text-sm md:text-base font-medium text-gray-700 dark:text-gray-300 ${required ? 'after:content-["*"] after:ml-1 after:text-red-600' : ''}`}>
+    <div className="space-y-2">
+      <label className={`block text-base font-medium text-gray-700 dark:text-gray-300 ${required ? 'after:content-["*"] after:ml-1 after:text-red-600' : ''}`}>
         {label}
       </label>
       {renderInput()}
