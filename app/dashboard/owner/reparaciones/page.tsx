@@ -1418,6 +1418,10 @@ export default function ReparacionesPage() {
                       isRequired
                       size="sm"
                       variant="bordered"
+                      classNames={{
+                        input: "text-gray-900 dark:text-gray-100",
+                        inputWrapper: "bg-white dark:bg-gray-800"
+                      }}
                     />
                     <Input
                       label="Teléfono del Cliente (Opcional)"
@@ -1426,6 +1430,10 @@ export default function ReparacionesPage() {
                       onChange={(e) => setNewRepair({ ...newRepair, unregistered_customer_phone: e.target.value })}
                       size="sm"
                       variant="bordered"
+                      classNames={{
+                        input: "text-gray-900 dark:text-gray-100",
+                        inputWrapper: "bg-white dark:bg-gray-800"
+                      }}
                     />
                     <Textarea
                       label="Información del Dispositivo"
@@ -1437,6 +1445,10 @@ export default function ReparacionesPage() {
                       variant="bordered"
                       minRows={2}
                       maxRows={4}
+                      classNames={{
+                        input: "text-gray-900 dark:text-gray-100",
+                        inputWrapper: "bg-white dark:bg-gray-800"
+                      }}
                     />
                   </>
                 ) : (
@@ -1448,7 +1460,10 @@ export default function ReparacionesPage() {
                       isRequired
                       size="sm"
                       variant="bordered"
-                      className="text-gray-900 dark:text-gray-100"
+                      classNames={{
+                        trigger: "bg-white dark:bg-gray-800",
+                        value: "text-gray-900 dark:text-gray-100"
+                      }}
                     >
                       {customers.map((customer) => (
                         <SelectItem key={customer.id} textValue={`${customer.name} (${customer.email || customer.phone})`} className="text-gray-900 dark:text-gray-100">
@@ -1466,6 +1481,10 @@ export default function ReparacionesPage() {
                       size="sm"
                       variant="bordered"
                       startContent={<Smartphone className="w-4 h-4 text-gray-400" />}
+                      classNames={{
+                        input: "text-gray-900 dark:text-gray-100",
+                        inputWrapper: "bg-white dark:bg-gray-800"
+                      }}
                     />
                   </>
                 )}
@@ -1478,6 +1497,10 @@ export default function ReparacionesPage() {
                   isRequired
                   size="sm"
                   variant="bordered"
+                  classNames={{
+                    input: "text-gray-900 dark:text-gray-100",
+                    inputWrapper: "bg-white dark:bg-gray-800"
+                  }}
                 />
                 <Textarea
                   label="Descripción del Problema"
@@ -1489,6 +1512,10 @@ export default function ReparacionesPage() {
                   variant="bordered"
                   minRows={2}
                   maxRows={4}
+                  classNames={{
+                    input: "text-gray-900 dark:text-gray-100",
+                    inputWrapper: "bg-white dark:bg-gray-800"
+                  }}
                 />
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
                   <Select
@@ -1497,7 +1524,10 @@ export default function ReparacionesPage() {
                     onSelectionChange={(keys) => setNewRepair({ ...newRepair, priority: Array.from(keys)[0] as string })}
                     size="sm"
                     variant="bordered"
-                    className="text-gray-900 dark:text-gray-100"
+                    classNames={{
+                      trigger: "bg-white dark:bg-gray-800",
+                      value: "text-gray-900 dark:text-gray-100"
+                    }}
                   >
                     <SelectItem key="low" className="text-gray-900 dark:text-gray-100">Baja</SelectItem>
                     <SelectItem key="medium" className="text-gray-900 dark:text-gray-100">Media</SelectItem>
@@ -1512,6 +1542,10 @@ export default function ReparacionesPage() {
                     size="sm"
                     variant="bordered"
                     startContent={<DollarSign className="w-4 h-4 text-gray-400" />}
+                    classNames={{
+                      input: "text-gray-900 dark:text-gray-100",
+                      inputWrapper: "bg-white dark:bg-gray-800"
+                    }}
                   />
                 </div>
                 <Textarea
@@ -1523,6 +1557,10 @@ export default function ReparacionesPage() {
                   variant="bordered"
                   minRows={2}
                   maxRows={3}
+                  classNames={{
+                    input: "text-gray-900 dark:text-gray-100",
+                    inputWrapper: "bg-white dark:bg-gray-800"
+                  }}
                 />
               </form>
             </ModalBody>

@@ -60,11 +60,13 @@ export default function FormField({
           description={helpText}
           minRows={rows}
           variant="bordered"
+          size="sm"
           classNames={{
-            input: "text-gray-900",
-            label: "text-gray-800 font-medium",
-            description: "text-gray-600",
-            errorMessage: "text-red-700 font-medium"
+            input: "text-gray-900 dark:text-gray-100",
+            inputWrapper: "bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600",
+            label: "text-gray-800 dark:text-gray-200 font-medium text-sm md:text-base",
+            description: "text-gray-600 dark:text-gray-400",
+            errorMessage: "text-red-700 dark:text-red-400 font-medium"
           }}
           className={className}
         />
@@ -101,30 +103,32 @@ export default function FormField({
           errorMessage={error}
           description={helpText}
           variant="bordered"
+          size="sm"
           color="primary"
           classNames={{
             trigger: [
-              "border-gray-300",
-              "text-gray-900",
+              "bg-white dark:bg-gray-800",
+              "border-gray-300 dark:border-gray-600",
+              "text-gray-900 dark:text-gray-100",
               "data-[open=true]:border-primary-500",
               "data-[focus=true]:border-primary-500",
               "data-[hover=true]:border-primary-400",
               "transition-colors"
             ].join(" "),
             value: [
-              "text-gray-900",
+              "text-gray-900 dark:text-gray-100",
               "font-medium",
-              hasValue ? "text-primary-700" : "text-gray-500"
+              hasValue ? "text-primary-700 dark:text-primary-300" : "text-gray-500 dark:text-gray-400"
             ].join(" "),
-            label: "text-gray-800 font-medium",
-            description: "text-gray-600",
-            errorMessage: "text-red-700 font-medium",
+            label: "text-gray-800 dark:text-gray-200 font-medium text-sm md:text-base",
+            description: "text-gray-600 dark:text-gray-400",
+            errorMessage: "text-red-700 dark:text-red-400 font-medium",
             popoverContent: [
-              "bg-white",
-              "border-gray-200",
+              "bg-white dark:bg-gray-800",
+              "border-gray-200 dark:border-gray-600",
               "shadow-lg"
             ].join(" "),
-            listbox: "bg-white",
+            listbox: "bg-white dark:bg-gray-800",
             selectorIcon: "text-primary-500"
           }}
           className={className}
@@ -132,7 +136,7 @@ export default function FormField({
           {options.map((option) => (
             <SelectItem 
               key={option.value} 
-              className="text-gray-900 data-[selected=true]:bg-primary-50 data-[selected=true]:text-primary-700 data-[hover=true]:bg-primary-100 data-[focus=true]:bg-primary-100"
+              className="text-gray-900 dark:text-gray-100 data-[selected=true]:bg-primary-50 dark:data-[selected=true]:bg-primary-900 data-[selected=true]:text-primary-700 dark:data-[selected=true]:text-primary-300 data-[hover=true]:bg-primary-100 dark:data-[hover=true]:bg-primary-800 data-[focus=true]:bg-primary-100 dark:data-[focus=true]:bg-primary-800"
               textValue={option.label}
             >
               <span className="font-medium">{option.label}</span>
@@ -155,12 +159,14 @@ export default function FormField({
       description: helpText,
       startContent,
       endContent,
+      size: "sm" as const,
       variant: "bordered" as const,
       classNames: {
-        input: "text-gray-900 placeholder:text-gray-400",
-        label: "text-gray-800 font-medium",
-        description: "text-gray-600",
-        errorMessage: "text-red-700 font-medium"
+        input: "text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500",
+        inputWrapper: "bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600",
+        label: "text-gray-800 dark:text-gray-200 font-medium text-sm md:text-base",
+        description: "text-gray-600 dark:text-gray-400",
+        errorMessage: "text-red-700 dark:text-red-400 font-medium"
       },
       className
     }
@@ -181,9 +187,8 @@ export default function FormField({
 
   return (
     <div className="space-y-1">
-      <label className={`block text-sm ${formColors.label} ${required ? formColors.labelRequired : ''}`}>
+      <label className={`block text-sm md:text-base font-medium text-gray-700 dark:text-gray-300 ${required ? 'after:content-["*"] after:ml-1 after:text-red-600' : ''}`}>
         {label}
-        {required && <span className="text-red-600 ml-1">*</span>}
       </label>
       {renderInput()}
     </div>

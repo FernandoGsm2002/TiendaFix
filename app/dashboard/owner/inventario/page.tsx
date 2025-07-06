@@ -927,21 +927,21 @@ export default function InventarioPage() {
         <Modal 
           isOpen={isCreateOpen} 
           onClose={onCreateClose} 
-          size="3xl"
+          size="2xl"
           scrollBehavior="inside"
           classNames={{
             wrapper: "z-[1000]",
             backdrop: "z-[999]",
-            base: "max-h-[95vh] my-2 mx-2 sm:mx-6",
-            body: "max-h-[75vh] overflow-y-auto py-4",
-            header: "border-b border-gray-200 pb-4",
-            footer: "border-t border-gray-200 pt-4"
+            base: "max-h-[95vh] my-1 mx-1 sm:my-2 sm:mx-2 md:mx-6",
+            body: "max-h-[75vh] overflow-y-auto py-2 md:py-4",
+            header: "border-b border-gray-200 pb-2 md:pb-4",
+            footer: "border-t border-gray-200 pt-2 md:pt-4"
           }}
         >
           <ModalContent>
             <form onSubmit={handleCreateProduct}>
               <ModalHeader>
-                <h2 className={`text-xl font-bold ${textColors.primary}`}>{t('inventory.createTitle')}</h2>
+                <h2 className={`text-lg md:text-xl font-bold ${textColors.primary}`}>{t('inventory.createTitle')}</h2>
               </ModalHeader>
               <ModalBody className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1075,13 +1075,14 @@ export default function InventarioPage() {
                   />
                 </div>
               </ModalBody>
-              <ModalFooter>
-                <Button variant="flat" onPress={onCreateClose}>{t('common.cancel')}</Button>
+              <ModalFooter className="gap-2">
+                <Button variant="flat" onPress={onCreateClose} size="sm">{t('common.cancel')}</Button>
                 <Button 
                   type="submit" 
                   color="primary" 
                   isLoading={createLoading}
                   startContent={!createLoading ? <Plus className="w-4 h-4" /> : null}
+                  size="sm"
                 >
                   {t('inventory.newProduct')}
                 </Button>
@@ -1094,50 +1095,50 @@ export default function InventarioPage() {
         <Modal 
           isOpen={isDetailOpen} 
           onClose={onDetailClose} 
-          size="2xl"
+          size="xl"
           scrollBehavior="inside"
           classNames={{
             wrapper: "z-[1000]",
             backdrop: "z-[999]",
-            base: "max-h-[95vh] my-2 mx-2 sm:mx-6",
-            body: "max-h-[75vh] overflow-y-auto py-4",
-            header: "border-b border-gray-200 pb-4",
-            footer: "border-t border-gray-200 pt-4"
+            base: "max-h-[95vh] my-1 mx-1 sm:my-2 sm:mx-2 md:mx-6",
+            body: "max-h-[75vh] overflow-y-auto py-2 md:py-4",
+            header: "border-b border-gray-200 pb-2 md:pb-4",
+            footer: "border-t border-gray-200 pt-2 md:pt-4"
           }}
         >
           <ModalContent>
             {selectedItem && (
               <>
                 <ModalHeader>
-                  <h2 className={`text-xl font-bold ${textColors.primary}`}>{selectedItem.name}</h2>
+                  <h2 className={`text-lg md:text-xl font-bold ${textColors.primary}`}>{selectedItem.name}</h2>
                 </ModalHeader>
-                <ModalBody className="space-y-4">
-                  <div className="flex justify-between items-center">
-                    <Chip color={getCategoryColor(selectedItem.category)} variant="flat">{selectedItem.category}</Chip>
-                    <Chip color={getStatusColor(selectedItem)} variant="flat">{getStatusLabel(selectedItem)}</Chip>
+                <ModalBody className="space-y-3 md:space-y-4">
+                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+                    <Chip color={getCategoryColor(selectedItem.category)} variant="flat" size="sm">{selectedItem.category}</Chip>
+                    <Chip color={getStatusColor(selectedItem)} variant="flat" size="sm">{getStatusLabel(selectedItem)}</Chip>
                   </div>
-                  {selectedItem.description && <p>{selectedItem.description}</p>}
-                  <div className="grid grid-cols-2 gap-4">
+                  {selectedItem.description && <p className="text-sm md:text-base">{selectedItem.description}</p>}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
                     <div>
-                      <p className={`text-sm ${textColors.tertiary}`}>Precio de Costo</p>
-                      <p className={`font-bold ${textColors.primary}`}>{formatCurrency(selectedItem.unit_cost)}</p>
+                      <p className={`text-xs md:text-sm ${textColors.tertiary}`}>Precio de Costo</p>
+                      <p className={`text-sm md:text-base font-bold ${textColors.primary}`}>{formatCurrency(selectedItem.unit_cost)}</p>
                     </div>
                     <div>
-                      <p className={`text-sm ${textColors.tertiary}`}>Precio de Venta</p>
-                      <p className={`font-bold ${textColors.primary}`}>{formatCurrency(selectedItem.enduser_price)}</p>
+                      <p className={`text-xs md:text-sm ${textColors.tertiary}`}>Precio de Venta</p>
+                      <p className={`text-sm md:text-base font-bold ${textColors.primary}`}>{formatCurrency(selectedItem.enduser_price)}</p>
                     </div>
                     <div>
-                      <p className={`text-sm ${textColors.tertiary}`}>Cantidad en Stock</p>
-                      <p className={`font-bold ${textColors.primary}`}>{selectedItem.stock_quantity}</p>
+                      <p className={`text-xs md:text-sm ${textColors.tertiary}`}>Cantidad en Stock</p>
+                      <p className={`text-sm md:text-base font-bold ${textColors.primary}`}>{selectedItem.stock_quantity}</p>
                     </div>
                     <div>
-                      <p className={`text-sm ${textColors.tertiary}`}>Stock Mínimo</p>
-                      <p className={`font-bold ${textColors.primary}`}>{selectedItem.min_stock}</p>
+                      <p className={`text-xs md:text-sm ${textColors.tertiary}`}>Stock Mínimo</p>
+                      <p className={`text-sm md:text-base font-bold ${textColors.primary}`}>{selectedItem.min_stock}</p>
                     </div>
                   </div>
                 </ModalBody>
-                <ModalFooter>
-                  <Button variant="flat" onPress={onDetailClose}>{t('common.close')}</Button>
+                <ModalFooter className="gap-2">
+                  <Button variant="flat" onPress={onDetailClose} size="sm">{t('common.close')}</Button>
                 </ModalFooter>
               </>
             )}
@@ -1148,25 +1149,25 @@ export default function InventarioPage() {
         <Modal 
           isOpen={isEditOpen} 
           onClose={onEditClose} 
-          size="3xl"
+          size="2xl"
           scrollBehavior="inside"
           classNames={{
             wrapper: "z-[1000]",
             backdrop: "z-[999]",
-            base: "max-h-[95vh] my-2 mx-2 sm:mx-6",
-            body: "max-h-[75vh] overflow-y-auto py-4",
-            header: "border-b border-gray-200 pb-4",
-            footer: "border-t border-gray-200 pt-4"
+            base: "max-h-[95vh] my-1 mx-1 sm:my-2 sm:mx-2 md:mx-6",
+            body: "max-h-[75vh] overflow-y-auto py-2 md:py-4",
+            header: "border-b border-gray-200 pb-2 md:pb-4",
+            footer: "border-t border-gray-200 pt-2 md:pt-4"
           }}
         >
           <ModalContent>
             <form id="edit-item-form" onSubmit={handleUpdateItem}>
               <ModalHeader>
-                <h2 className={`text-xl font-bold ${textColors.primary}`}>{t('inventory.editTitle')}</h2>
+                <h2 className={`text-lg md:text-xl font-bold ${textColors.primary}`}>{t('inventory.editTitle')}</h2>
               </ModalHeader>
               {editingItem && (
-                <ModalBody className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <ModalBody className="space-y-3 md:space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-6">
                     <FormField
                       label="Nombre del Producto"
                       name="name"
@@ -1192,7 +1193,7 @@ export default function InventarioPage() {
                     onChange={(value) => setEditingItem(prev => prev ? { ...prev, description: value } : null)}
                     rows={3}
                   />
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
                     <FormField
                       label="Stock"
                       name="stock_quantity"
@@ -1224,14 +1225,15 @@ export default function InventarioPage() {
                   </div>
                 </ModalBody>
               )}
-              <ModalFooter>
-                <Button variant="flat" onPress={onEditClose}>{t('common.cancel')}</Button>
+              <ModalFooter className="gap-2">
+                <Button variant="flat" onPress={onEditClose} size="sm">{t('common.cancel')}</Button>
                 <Button 
                   type="submit" 
                   form="edit-item-form"
                   color="primary" 
                   isLoading={updateLoading}
                   startContent={!updateLoading ? <Plus className="w-4 h-4" /> : null}
+                  size="sm"
                 >
                   {t('common.update')} {t('common.name').toLowerCase()}
                 </Button>
