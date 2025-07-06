@@ -72,9 +72,8 @@ export default function Header({ onMobileMenuToggle, mobileMenuOpen }: HeaderPro
           
           <div className="flex-1 min-w-0">
             <h1 className="text-lg md:text-2xl font-bold text-gray-900 truncate">
-              {userProfile?.organization_name || t('navigation.myStore')}
+              {userProfile?.organization_name ? `${userProfile.organization_name} - ${t('navigation.adminPanel')}` : t('navigation.adminPanel')}
             </h1>
-            <p className={`text-xs md:text-sm ${textColors.secondary} hidden sm:block`}>{t('navigation.adminPanel')}</p>
           </div>
         </div>
 

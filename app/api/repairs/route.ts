@@ -34,9 +34,9 @@ export async function GET(request: NextRequest) {
 
     console.log('📅 Date filters received:', { startDate, endDate })
 
-    // 3. Construir query base optimizada
+    // 3. Construir query base optimizada usando la vista
     let query = supabase
-      .from('repairs')
+      .from('repairs_view')
       .select(`
         id,
         title,
@@ -58,28 +58,19 @@ export async function GET(request: NextRequest) {
         unregistered_customer_name,
         unregistered_customer_phone,
         unregistered_device_info,
-        customers!left (
-          id,
-          name,
-          phone,
-          email,
-          anonymous_identifier,
-          customer_type
-        ),
-        devices!left (
-          id,
-          brand,
-          model,
-          device_type,
-          color,
-          serial_number,
-          imei
-        ),
-        users!repairs_created_by_fkey (
-          id,
-          name,
-          email
-        )
+        customer_name,
+        customer_email,
+        customer_phone,
+        customer_anonymous_identifier,
+        customer_type,
+        device_brand,
+        device_model,
+        device_type,
+        device_color,
+        device_imei,
+        device_serial_number,
+        created_by_name,
+        created_by_email
       `, { count: 'exact' })
 
     // 4. Aplicar filtros de organización y rol
@@ -125,7 +116,7 @@ export async function GET(request: NextRequest) {
 
     // 7. Calcular estadísticas de forma paralela
     let statsQuery = supabase
-      .from('repairs')
+      .from('repairs_view')
       .select('status')
       .eq('organization_id', organizationId)
 
@@ -176,7 +167,7 @@ export async function GET(request: NextRequest) {
 
     console.log('📊 Stats calculated:', stats)
 
-    // 9. Serializar datos de forma segura
+    // 9. Serializar datos de forma segura usando la vista
     const serializedRepairs = repairs?.map((repair: any) => ({
       id: repair.id,
       title: repair.title,
@@ -198,27 +189,27 @@ export async function GET(request: NextRequest) {
       unregistered_customer_name: repair.unregistered_customer_name,
       unregistered_customer_phone: repair.unregistered_customer_phone,
       unregistered_device_info: repair.unregistered_device_info,
-      customer: repair.customers ? {
-        id: repair.customers.id,
-        name: repair.customers.name,
-        phone: repair.customers.phone,
-        email: repair.customers.email,
-        anonymous_identifier: repair.customers.anonymous_identifier,
-        customer_type: repair.customers.customer_type
+      customers: repair.customer_name ? {
+        id: repair.customer_id,
+        name: repair.customer_name,
+        phone: repair.customer_phone,
+        email: repair.customer_email,
+        anonymous_identifier: repair.customer_anonymous_identifier,
+        customer_type: repair.customer_type
       } : null,
-      device: repair.devices ? {
-        id: repair.devices.id,
-        brand: repair.devices.brand,
-        model: repair.devices.model,
-        device_type: repair.devices.device_type,
-        color: repair.devices.color,
-        serial_number: repair.devices.serial_number,
-        imei: repair.devices.imei
+      devices: repair.device_brand ? {
+        id: repair.device_id,
+        brand: repair.device_brand,
+        model: repair.device_model,
+        device_type: repair.device_type,
+        color: repair.device_color,
+        serial_number: repair.device_serial_number,
+        imei: repair.device_imei
       } : null,
-      technician: repair.users ? {
-        id: repair.users.id,
-        name: repair.users.name,
-        email: repair.users.email
+      technician: repair.created_by_name ? {
+        id: repair.created_by,
+        name: repair.created_by_name,
+        email: repair.created_by_email
       } : null
     })) || []
 

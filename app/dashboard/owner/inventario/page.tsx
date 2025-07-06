@@ -27,7 +27,7 @@ import {
   TableColumn,
   TableBody,
   TableRow,
-  TableCell
+      TableCell
 } from '@heroui/react'
 import FormField from '@/app/components/ui/FormField'
 import { textColors } from '@/lib/utils/colors'
@@ -46,7 +46,10 @@ import {
   DollarSign,
   Archive,
   ShoppingCart,
-  Zap
+  Zap,
+  ArrowUpRight,
+  ArrowDownRight,
+  Minus
 } from 'lucide-react'
 
 interface InventoryItem {
@@ -406,82 +409,123 @@ export default function InventarioPage() {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-6">
-          <Card className="hover:scale-105 transition-transform border-0 shadow-lg">
+          <Card className="hover:scale-105 transition-all duration-300 border-0 shadow-lg bg-gradient-to-br from-blue-50/60 to-blue-100/40 backdrop-blur-sm">
             <CardBody className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <div className="p-3 rounded-xl bg-gradient-to-br from-blue-400 to-blue-600 shadow-lg">
+                <div className="p-3 rounded-xl bg-gradient-to-br from-blue-400/80 to-blue-600/80 shadow-lg">
                   <Package className="w-6 h-6 text-white" />
                 </div>
-                <Chip color="primary" variant="flat">Total</Chip>
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1">
+                    <ArrowUpRight className="w-3 h-3 text-green-500" />
+                    <span className="text-xs text-green-600 font-medium">+8%</span>
+                  </div>
+                  <Chip color="primary" variant="flat" size="sm" className="font-medium">
+                    Total
+                  </Chip>
+                </div>
               </div>
               <div className="space-y-2">
-                <p className={`text-sm font-medium ${textColors.tertiary}`}>{t('inventory.totalProducts')}</p>
-                <p className={`text-3xl font-bold ${textColors.primary}`}>{stats.totalItems}</p>
+                <p className="text-sm font-medium text-gray-700">{t('inventory.totalProducts')}</p>
+                <p className="text-3xl font-bold text-blue-700">{stats.totalItems}</p>
                 <Progress value={100} color="primary" size="sm" />
               </div>
             </CardBody>
           </Card>
 
-          <Card className="hover:scale-105 transition-transform border-0 shadow-lg">
+          <Card className="hover:scale-105 transition-all duration-300 border-0 shadow-lg bg-gradient-to-br from-green-50/60 to-emerald-100/40 backdrop-blur-sm">
             <CardBody className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <div className="p-3 rounded-xl bg-gradient-to-br from-green-400 to-green-600 shadow-lg">
+                <div className="p-3 rounded-xl bg-gradient-to-br from-green-400/80 to-green-600/80 shadow-lg">
                   <TrendingUp className="w-6 h-6 text-white" />
                 </div>
-                <Chip color="success" variant="flat">Disponibles</Chip>
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1">
+                    <ArrowUpRight className="w-3 h-3 text-green-500" />
+                    <span className="text-xs text-green-600 font-medium">+15%</span>
+                  </div>
+                  <Chip color="success" variant="flat" size="sm" className="font-medium">
+                    Disponibles
+                  </Chip>
+                </div>
               </div>
               <div className="space-y-2">
-                <p className={`text-sm font-medium ${textColors.tertiary}`}>{t('inventory.availableProducts')}</p>
-                <p className={`text-3xl font-bold text-green-600`}>{stats.totalItems - stats.stockBajo - stats.agotados}</p>
+                <p className="text-sm font-medium text-gray-700">{t('inventory.availableProducts')}</p>
+                <p className="text-3xl font-bold text-green-700">{stats.totalItems - stats.stockBajo - stats.agotados}</p>
                 <Progress value={((stats.totalItems - stats.stockBajo - stats.agotados) / Math.max(stats.totalItems, 1)) * 100} color="success" size="sm" />
               </div>
             </CardBody>
           </Card>
 
-          <Card className="hover:scale-105 transition-transform border-0 shadow-lg">
+          <Card className="hover:scale-105 transition-all duration-300 border-0 shadow-lg bg-gradient-to-br from-yellow-50/60 to-amber-100/40 backdrop-blur-sm">
             <CardBody className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <div className="p-3 rounded-xl bg-gradient-to-br from-yellow-400 to-yellow-600 shadow-lg">
+                <div className="p-3 rounded-xl bg-gradient-to-br from-yellow-400/80 to-yellow-600/80 shadow-lg">
                   <AlertTriangle className="w-6 h-6 text-white" />
                 </div>
-                <Chip color="warning" variant="flat">Bajo</Chip>
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1">
+                    <ArrowDownRight className="w-3 h-3 text-red-500" />
+                    <span className="text-xs text-red-600 font-medium">-3%</span>
+                  </div>
+                  <Chip color="warning" variant="flat" size="sm" className="font-medium">
+                    Bajo
+                  </Chip>
+                </div>
               </div>
               <div className="space-y-2">
-                <p className={`text-sm font-medium ${textColors.tertiary}`}>{t('inventory.lowStock')}</p>
-                <p className={`text-3xl font-bold text-yellow-600`}>{stats.stockBajo}</p>
+                <p className="text-sm font-medium text-gray-700">{t('inventory.lowStock')}</p>
+                <p className="text-3xl font-bold text-yellow-700">{stats.stockBajo}</p>
                 <Progress value={(stats.stockBajo / Math.max(stats.totalItems, 1)) * 100} color="warning" size="sm" />
               </div>
             </CardBody>
           </Card>
 
-          <Card className="hover:scale-105 transition-transform border-0 shadow-lg">
+          <Card className="hover:scale-105 transition-all duration-300 border-0 shadow-lg bg-gradient-to-br from-red-50/60 to-pink-100/40 backdrop-blur-sm">
             <CardBody className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <div className="p-3 rounded-xl bg-gradient-to-br from-red-400 to-red-600 shadow-lg">
+                <div className="p-3 rounded-xl bg-gradient-to-br from-red-400/80 to-red-600/80 shadow-lg">
                   <TrendingDown className="w-6 h-6 text-white" />
                 </div>
-                <Chip color="danger" variant="flat">Agotados</Chip>
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1">
+                    <Minus className="w-3 h-3 text-gray-500" />
+                    <span className="text-xs text-gray-600 font-medium">0%</span>
+                  </div>
+                  <Chip color="danger" variant="flat" size="sm" className="font-medium">
+                    Agotados
+                  </Chip>
+                </div>
               </div>
               <div className="space-y-2">
-                <p className={`text-sm font-medium ${textColors.tertiary}`}>{t('inventory.outOfStock')}</p>
-                <p className={`text-3xl font-bold text-red-600`}>{stats.agotados}</p>
+                <p className="text-sm font-medium text-gray-700">{t('inventory.outOfStock')}</p>
+                <p className="text-3xl font-bold text-red-700">{stats.agotados}</p>
                 <Progress value={(stats.agotados / Math.max(stats.totalItems, 1)) * 100} color="danger" size="sm" />
               </div>
             </CardBody>
           </Card>
 
-          <Card className="hover:scale-105 transition-transform border-0 shadow-lg">
+          <Card className="hover:scale-105 transition-all duration-300 border-0 shadow-lg bg-gradient-to-br from-purple-50/60 to-violet-100/40 backdrop-blur-sm">
             <CardBody className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <div className="p-3 rounded-xl bg-gradient-to-br from-purple-400 to-purple-600 shadow-lg">
+                <div className="p-3 rounded-xl bg-gradient-to-br from-purple-400/80 to-purple-600/80 shadow-lg">
                   <DollarSign className="w-6 h-6 text-white" />
                 </div>
-                <Chip color="secondary" variant="flat">Valor</Chip>
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1">
+                    <ArrowUpRight className="w-3 h-3 text-green-500" />
+                    <span className="text-xs text-green-600 font-medium">+12%</span>
+                  </div>
+                  <Chip color="secondary" variant="flat" size="sm" className="font-medium">
+                    Valor
+                  </Chip>
+                </div>
               </div>
               <div className="space-y-2">
-                <p className={`text-sm font-medium ${textColors.tertiary}`}>{t('inventory.totalValue')}</p>
-                <p className={`text-lg font-bold text-purple-600`}>{formatCurrency(stats.valorTotal)}</p>
-                <p className={`text-xs ${textColors.muted}`}>Venta: {formatCurrency(stats.valorVenta)}</p>
+                <p className="text-sm font-medium text-gray-700">{t('inventory.totalValue')}</p>
+                <p className="text-lg font-bold text-purple-700">{formatCurrency(stats.valorTotal)}</p>
+                <Progress value={75} color="secondary" size="sm" />
+                <p className="text-xs text-gray-500">Venta: {formatCurrency(stats.valorVenta)}</p>
               </div>
             </CardBody>
           </Card>

@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import dynamic from 'next/dynamic'
 import TechnicianDashboardLayout from '../components/TechnicianDashboardLayout'
 import { useCurrency } from '@/lib/contexts/TranslationContext'
+import WelcomeHeader from '@/app/components/ui/WelcomeHeader'
 import { Card, CardBody, CardHeader, Skeleton, Chip, Avatar, Progress } from '@heroui/react'
 import { textColors } from '@/lib/utils/colors'
 import { 
@@ -369,16 +370,7 @@ export default function TechnicianDashboardPage() {
     <TechnicianDashboardLayout>
       <div className="space-y-4 md:space-y-6">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          <div>
-            <h1 className="text-xl md:text-2xl lg:text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              Mi Panel de Trabajo
-            </h1>
-            <p className={`text-sm md:text-base ${textColors.secondary} mt-1`}>
-              Gestiona tus reparaciones y seguimiento de tareas
-            </p>
-          </div>
-        </div>
+        <WelcomeHeader />
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">

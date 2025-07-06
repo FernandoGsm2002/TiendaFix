@@ -855,26 +855,26 @@ export default function PersonalPage() {
         <Modal 
           isOpen={isCreateOpen} 
           onOpenChange={onCreateOpenChange} 
-          size="2xl"
+          size="lg"
           scrollBehavior="inside"
           classNames={{
             wrapper: "z-[1000]",
             backdrop: "z-[999]",
-            base: "max-h-[95vh] my-2 mx-2 sm:mx-6",
-            body: "max-h-[70vh] overflow-y-auto py-4",
-            header: "border-b border-gray-200 pb-4",
-            footer: "border-t border-gray-200 pt-4"
+            base: "max-h-[95vh] my-1 mx-1 sm:my-2 sm:mx-2 md:mx-6",
+            body: "max-h-[70vh] overflow-y-auto py-2 md:py-4",
+            header: "border-b border-gray-200 pb-2 md:pb-4",
+            footer: "border-t border-gray-200 pt-2 md:pt-4"
           }}
         >
           <ModalContent>
             {(onClose) => (
               <>
                 <ModalHeader className="flex flex-col gap-1">
-                  <h2 className={`text-xl font-bold ${textColors.primary}`}>Agregar Nuevo Personal</h2>
-                  <p className={textColors.secondary}>Complete la información del nuevo empleado</p>
+                  <h2 className={`text-lg md:text-xl font-bold ${textColors.primary}`}>Agregar Nuevo Personal</h2>
+                  <p className={`text-sm md:text-base ${textColors.secondary}`}>Complete la información del nuevo empleado</p>
                 </ModalHeader>
                 <ModalBody>
-                  <form onSubmit={handleCreateTechnician} className="space-y-4">
+                  <form onSubmit={handleCreateTechnician} className="space-y-3 md:space-y-4">
                     <FormField
                       label="Nombre Completo"
                       name="name"
@@ -918,17 +918,18 @@ export default function PersonalPage() {
                     />
                   </form>
                 </ModalBody>
-                <ModalFooter>
-                  <Button color="danger" variant="flat" onPress={onClose}>
+                <ModalFooter className="gap-2">
+                  <Button color="danger" variant="flat" onPress={onClose} size="sm">
                     Cancelar
                   </Button>
-                                     <Button 
-                     color="primary" 
-                     onPress={() => handleCreateTechnician({ preventDefault: () => {} } as any)}
-                     isLoading={createLoading}
-                   >
-                     Crear Personal
-                   </Button>
+                  <Button 
+                    color="primary" 
+                    onPress={() => handleCreateTechnician({ preventDefault: () => {} } as any)}
+                    isLoading={createLoading}
+                    size="sm"
+                  >
+                    Crear Personal
+                  </Button>
                 </ModalFooter>
               </>
             )}
@@ -939,70 +940,73 @@ export default function PersonalPage() {
         <Modal 
           isOpen={isDetailOpen} 
           onOpenChange={onDetailClose} 
-          size="2xl"
+          size="lg"
           scrollBehavior="inside"
           classNames={{
             wrapper: "z-[1000]",
             backdrop: "z-[999]",
-            base: "max-h-[95vh] my-2 mx-2 sm:mx-6",
-            body: "max-h-[75vh] overflow-y-auto py-4",
-            header: "border-b border-gray-200 pb-4",
-            footer: "border-t border-gray-200 pt-4"
+            base: "max-h-[95vh] my-1 mx-1 sm:my-2 sm:mx-2 md:mx-6",
+            body: "max-h-[75vh] overflow-y-auto py-2 md:py-4",
+            header: "border-b border-gray-200 pb-2 md:pb-4",
+            footer: "border-t border-gray-200 pt-2 md:pt-4"
           }}
         >
           <ModalContent>
             {(onClose) => (
               <>
                 <ModalHeader className="flex flex-col gap-1">
-                  <h2 className={`text-xl font-bold ${textColors.primary}`}>Detalles del Técnico</h2>
+                  <h2 className={`text-lg md:text-xl font-bold ${textColors.primary}`}>Detalles del Técnico</h2>
                 </ModalHeader>
                 <ModalBody>
                   {selectedTechnician && (
-                    <div className="space-y-4">
+                    <div className="space-y-3 md:space-y-4">
                       <div className="flex items-center gap-3">
                         <Avatar
                           src={selectedTechnician.avatar_url || undefined}
                           name={selectedTechnician.name}
+                          size="sm"
                           classNames={{
                             base: "bg-gradient-to-br from-blue-400 to-purple-600",
                             icon: "text-white"
                           }}
                         />
                         <div>
-                          <p className={`font-semibold ${textColors.primary}`}>{selectedTechnician.name}</p>
-                          <p className={`text-sm ${textColors.muted}`}>
+                          <p className={`text-sm md:text-base font-semibold ${textColors.primary}`}>{selectedTechnician.name}</p>
+                          <p className={`text-xs md:text-sm ${textColors.muted}`}>
                             Registrado: {formatDate(selectedTechnician.created_at)}
                           </p>
                         </div>
                       </div>
                       <div className="space-y-2">
-                        <p className={`text-sm font-medium ${textColors.secondary}`}>Correo Electrónico: {selectedTechnician.email}</p>
+                        <p className={`text-xs md:text-sm font-medium ${textColors.secondary}`}>Correo Electrónico: {selectedTechnician.email}</p>
                         {selectedTechnician.phone && (
-                          <p className={`text-sm font-medium ${textColors.secondary}`}>Teléfono: {selectedTechnician.phone}</p>
+                          <p className={`text-xs md:text-sm font-medium ${textColors.secondary}`}>Teléfono: {selectedTechnician.phone}</p>
                         )}
                       </div>
                       <div className="space-y-2">
-                        <p className={`text-sm font-medium ${textColors.secondary}`}>Rol: {getRoleLabel(selectedTechnician.role)}</p>
+                        <p className={`text-xs md:text-sm font-medium ${textColors.secondary}`}>Rol: {getRoleLabel(selectedTechnician.role)}</p>
                         <Chip
                           color={getRoleColor(selectedTechnician.role) as any}
                           variant="flat"
+                          size="sm"
                           startContent={<Shield className="w-3 h-3" />}
                         >
                           {getRoleLabel(selectedTechnician.role)}
                         </Chip>
                       </div>
                       <div className="space-y-2">
-                        <p className={`text-sm font-medium ${textColors.secondary}`}>Estado: {selectedTechnician.is_active ? 'Activo' : 'Inactivo'}</p>
+                        <p className={`text-xs md:text-sm font-medium ${textColors.secondary}`}>Estado: {selectedTechnician.is_active ? 'Activo' : 'Inactivo'}</p>
                         <Chip
                           color={selectedTechnician.is_active ? 'success' : 'danger'}
                           variant="flat"
+                          size="sm"
                           startContent={selectedTechnician.is_active ? <CheckCircle className="w-3 h-3" /> : <X className="w-3 h-3" />}
                         >
                           {selectedTechnician.is_active ? 'Activo' : 'Inactivo'}
                         </Chip>
                       </div>
                       <div className="space-y-2">
-                        <p className={`text-sm font-medium ${textColors.secondary}`}>Último acceso: {formatDate(selectedTechnician.last_login)}</p>
+                        <p className={`text-xs md:text-sm font-medium ${textColors.secondary}`}>Último acceso: {formatDate(selectedTechnician.last_login)}</p>
                         <Chip
                           color={getActivityStatus(selectedTechnician.last_login).color as any}
                           variant="flat"
@@ -1014,7 +1018,7 @@ export default function PersonalPage() {
                       </div>
                       {selectedTechnician.stats && (
                         <div className="space-y-2">
-                          <p className={`text-sm font-medium ${textColors.secondary}`}>Estadísticas</p>
+                          <p className={`text-xs md:text-sm font-medium ${textColors.secondary}`}>Estadísticas</p>
                           <div className="grid grid-cols-2 gap-2 text-xs">
                             <div className="text-center p-2 bg-blue-50 rounded">
                               <p className="font-bold text-blue-600">{selectedTechnician.stats.totalReparaciones}</p>
@@ -1038,8 +1042,8 @@ export default function PersonalPage() {
                     </div>
                   )}
                 </ModalBody>
-                <ModalFooter>
-                  <Button color="danger" variant="flat" onPress={onClose}>
+                <ModalFooter className="gap-2">
+                  <Button color="danger" variant="flat" onPress={onClose} size="sm">
                     Cerrar
                   </Button>
                 </ModalFooter>

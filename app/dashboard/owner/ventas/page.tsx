@@ -1377,64 +1377,65 @@ export default function VentasPage() {
       <Modal 
         isOpen={isWarningOpen} 
         onClose={onWarningClose} 
-        size="md"
+        size="sm"
         scrollBehavior="inside"
         classNames={{
           wrapper: "z-[1000]",
           backdrop: "z-[999]",
-          base: "max-h-[95vh] my-2 mx-2 sm:mx-6",
-          body: "max-h-[60vh] overflow-y-auto py-4",
-          header: "border-b border-gray-200 pb-4",
-          footer: "border-t border-gray-200 pt-4"
+          base: "max-h-[95vh] my-1 mx-1 sm:my-2 sm:mx-2 md:mx-6",
+          body: "max-h-[60vh] overflow-y-auto py-2 md:py-4",
+          header: "border-b border-gray-200 pb-2 md:pb-4",
+          footer: "border-t border-gray-200 pt-2 md:pt-4"
         }}
       >
         <ModalContent>
           <ModalHeader>
-            <h2 className={`text-xl font-bold ${textColors.primary} flex items-center gap-2`}>
-              <AlertTriangle className="w-6 h-6 text-orange-500" />
+            <h2 className={`text-lg md:text-xl font-bold ${textColors.primary} flex items-center gap-2`}>
+              <AlertTriangle className="w-4 h-4 md:w-6 md:h-6 text-orange-500" />
               Confirmar Venta
             </h2>
           </ModalHeader>
           <ModalBody>
-            <div className="space-y-4">
-              <p className={`text-lg ${textColors.primary}`}>
+            <div className="space-y-3 md:space-y-4">
+              <p className={`text-sm md:text-lg ${textColors.primary}`}>
                 ¿Estás seguro de que deseas procesar esta venta?
               </p>
               
-              <div className="bg-orange-50 rounded-lg p-4 border border-orange-200">
+              <div className="bg-orange-50 rounded-lg p-3 md:p-4 border border-orange-200">
                 <div className="flex justify-between items-center mb-2">
-                  <span className={`font-medium ${textColors.secondary}`}>Total a cobrar:</span>
-                  <span className="text-2xl font-bold text-orange-600">
+                  <span className={`text-sm md:text-base font-medium ${textColors.secondary}`}>Total a cobrar:</span>
+                  <span className="text-lg md:text-2xl font-bold text-orange-600">
                     {formatCurrency(getTotal())}
                   </span>
                 </div>
                 <div className="flex justify-between items-center mb-2">
-                  <span className={`${textColors.secondary}`}>Productos:</span>
-                  <span className={`font-medium ${textColors.primary}`}>
+                  <span className={`text-sm md:text-base ${textColors.secondary}`}>Productos:</span>
+                  <span className={`text-sm md:text-base font-medium ${textColors.primary}`}>
                     {cart.length} item{cart.length !== 1 ? 's' : ''}
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className={`${textColors.secondary}`}>Método de pago:</span>
-                  <span className={`font-medium ${textColors.primary}`}>
+                  <span className={`text-sm md:text-base ${textColors.secondary}`}>Método de pago:</span>
+                  <span className={`text-sm md:text-base font-medium ${textColors.primary}`}>
                     {paymentMethod.charAt(0).toUpperCase() + paymentMethod.slice(1)}
                   </span>
                 </div>
               </div>
 
               <div className="flex items-center gap-2 p-3 bg-orange-50 rounded-lg border border-orange-200">
-                <AlertTriangle className="w-5 h-5 text-orange-600" />
-                <p className={`text-sm ${textColors.secondary}`}>
+                <AlertTriangle className="w-4 h-4 md:w-5 md:h-5 text-orange-600" />
+                <p className={`text-xs md:text-sm ${textColors.secondary}`}>
                   Una vez procesada, esta venta no se puede deshacer. Verifica que todos los datos sean correctos.
                 </p>
               </div>
             </div>
           </ModalBody>
-          <ModalFooter>
+          <ModalFooter className="gap-2">
             <Button
               variant="light"
               onPress={onWarningClose}
               className="font-medium"
+              size="sm"
             >
               No, cancelar
             </Button>
@@ -1442,7 +1443,8 @@ export default function VentasPage() {
               color="warning"
               onPress={proceedToTicketConfirmation}
               className="font-medium"
-              startContent={<Receipt className="w-4 h-4" />}
+              startContent={<Receipt className="w-3 h-3 md:w-4 md:h-4" />}
+              size="sm"
             >
               Sí, continuar
             </Button>
@@ -1454,69 +1456,73 @@ export default function VentasPage() {
       <Modal 
         isOpen={isConfirmOpen} 
         onClose={onConfirmClose} 
-        size="md"
+        size="sm"
         scrollBehavior="inside"
         classNames={{
           wrapper: "z-[1000]",
           backdrop: "z-[999]",
-          base: "max-h-[95vh] my-2 mx-2 sm:mx-6",
-          body: "max-h-[60vh] overflow-y-auto py-4",
-          header: "border-b border-gray-200 pb-4",
-          footer: "border-t border-gray-200 pt-4"
+          base: "max-h-[95vh] my-1 mx-1 sm:my-2 sm:mx-2 md:mx-6",
+          body: "max-h-[60vh] overflow-y-auto py-2 md:py-4",
+          header: "border-b border-gray-200 pb-2 md:pb-4",
+          footer: "border-t border-gray-200 pt-2 md:pt-4"
         }}
       >
         <ModalContent>
           <ModalHeader>
-            <h2 className={`text-xl font-bold ${textColors.primary} flex items-center gap-2`}>
-              <Receipt className="w-6 h-6" />
+            <h2 className={`text-lg md:text-xl font-bold ${textColors.primary} flex items-center gap-2`}>
+              <Receipt className="w-4 h-4 md:w-6 md:h-6" />
               Confirmar Venta
             </h2>
           </ModalHeader>
           <ModalBody>
-            <div className="space-y-4">
-              <p className={`text-lg ${textColors.primary}`}>
+            <div className="space-y-3 md:space-y-4">
+              <p className={`text-sm md:text-lg ${textColors.primary}`}>
                 ¿Desea imprimir un comprobante de esta venta?
               </p>
               
-              <div className="bg-gray-50 rounded-lg p-4">
+              <div className="bg-gray-50 rounded-lg p-3 md:p-4">
                 <div className="flex justify-between items-center mb-2">
-                  <span className={`font-medium ${textColors.secondary}`}>Total de la venta:</span>
-                  <span className="text-xl font-bold text-green-600">
+                  <span className={`text-sm md:text-base font-medium ${textColors.secondary}`}>Total de la venta:</span>
+                  <span className="text-lg md:text-xl font-bold text-green-600">
                     {formatCurrency(getTotal())}
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className={`${textColors.secondary}`}>Método de pago:</span>
-                  <span className={`font-medium ${textColors.primary}`}>
+                  <span className={`text-sm md:text-base ${textColors.secondary}`}>Método de pago:</span>
+                  <span className={`text-sm md:text-base font-medium ${textColors.primary}`}>
                     {paymentMethod.charAt(0).toUpperCase() + paymentMethod.slice(1)}
                   </span>
                 </div>
               </div>
 
               <div className="flex items-center gap-2 p-3 bg-blue-50 rounded-lg">
-                <Printer className="w-5 h-5 text-blue-600" />
-                <p className={`text-sm ${textColors.secondary}`}>
+                <Printer className="w-4 h-4 md:w-5 md:h-5 text-blue-600" />
+                <p className={`text-xs md:text-sm ${textColors.secondary}`}>
                   El comprobante será enviado a la impresora predeterminada en formato de ticket térmico (80mm).
                 </p>
               </div>
             </div>
           </ModalBody>
-          <ModalFooter>
+          <ModalFooter className="gap-2">
             <Button
               variant="light"
               onPress={processSaleWithoutTicket}
               isLoading={loading}
               disabled={printLoading}
+              size="sm"
             >
-              No, solo procesar venta
+              <span className="hidden md:inline">No, solo procesar venta</span>
+              <span className="md:hidden">Solo procesar</span>
             </Button>
             <Button
               color="primary"
               onPress={processSaleWithTicket}
               isLoading={loading || printLoading}
-              startContent={<Printer className="w-4 h-4" />}
+              startContent={<Printer className="w-3 h-3 md:w-4 md:h-4" />}
+              size="sm"
             >
-              Sí, imprimir comprobante
+              <span className="hidden md:inline">Sí, imprimir comprobante</span>
+              <span className="md:hidden">Imprimir</span>
             </Button>
           </ModalFooter>
         </ModalContent>

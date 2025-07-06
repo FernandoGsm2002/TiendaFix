@@ -223,13 +223,15 @@ export default function TechnicianRepairsPage() {
         }
       : {
           customer_id: newRepair.customer_id,
-          unregistered_device_info: newRepair.device_description, // Para clientes registrados también usamos descripción libre
           title: newRepair.title,
           description: newRepair.description,
           problem_description: newRepair.problem_description,
           priority: newRepair.priority,
           cost: newRepair.cost,
           internal_notes: newRepair.internal_notes,
+          // Para clientes registrados, guardamos la info del dispositivo en unregistered_device_info
+          // pero mantenemos customer_id para que se identifique como registrado
+          unregistered_device_info: newRepair.device_description,
         }
     
     // Validaciones específicas
@@ -342,9 +344,9 @@ export default function TechnicianRepairsPage() {
   }
 
   const getCustomerName = (customer: Repair['customers'], unregisteredName?: string | null) => {
-    if (unregisteredName) return unregisteredName
-    if (!customer) return 'Cliente desconocido'
-    return customer.name || customer.anonymous_identifier || 'Cliente anónimo'
+    if (!customer && unregisteredName) return unregisteredName
+    if (!customer) return 'Cliente no registrado'
+    return customer.name || customer.anonymous_identifier || 'Cliente Anónimo'
   }
 
   const getDeviceName = (device: Repair['devices'], unregisteredInfo?: string | null) => {
@@ -1189,29 +1191,29 @@ export default function TechnicianRepairsPage() {
         <Modal 
           isOpen={isCreateOpen} 
           onClose={onCreateClose}
-          size="2xl"
+          size="lg"
           scrollBehavior="inside"
           classNames={{
             wrapper: "z-[1000]",
             backdrop: "z-[999]",
-            base: "max-h-[95vh] my-2 mx-2 sm:mx-6",
-            body: "max-h-[70vh] overflow-y-auto py-4",
-            header: "border-b border-gray-200 pb-4",
-            footer: "border-t border-gray-200 pt-4"
+            base: "max-h-[95vh] my-1 mx-1 sm:my-2 sm:mx-2 md:mx-6",
+            body: "max-h-[70vh] overflow-y-auto py-2 md:py-4",
+            header: "border-b border-gray-200 pb-2 md:pb-4",
+            footer: "border-t border-gray-200 pt-2 md:pt-4"
           }}
         >
           <ModalContent>
             <form onSubmit={handleCreateRepair}>
               <ModalHeader className="flex flex-col gap-1">
-                <h2 className="text-2xl font-bold text-gray-900">Nueva Reparación</h2>
+                <h2 className="text-lg md:text-2xl font-bold text-gray-900">Nueva Reparación</h2>
                 <p className="text-sm text-gray-600">Crea una nueva reparación para un cliente</p>
               </ModalHeader>
-              <ModalBody className="gap-4">
-                <div className="space-y-4">
+              <ModalBody className="gap-3 md:gap-4">
+                <div className="space-y-3 md:space-y-4">
                   {error && (
-                    <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                    <div className="bg-red-50 border border-red-200 rounded-lg p-3 md:p-4">
                       <div className="flex">
-                        <AlertTriangle className="w-5 h-5 text-red-400" />
+                        <AlertTriangle className="w-4 h-4 md:w-5 md:h-5 text-red-400" />
                         <div className="ml-3">
                           <h3 className="text-sm font-medium text-red-800">Error</h3>
                           <p className="text-sm text-red-700 mt-1">{error}</p>
@@ -1230,12 +1232,13 @@ export default function TechnicianRepairsPage() {
 
                   {/* Switch para Cliente No Registrado */}
                   <div className="flex items-center gap-4">
-                    <label className="text-gray-700 font-medium">
+                    <label className="text-sm md:text-base text-gray-700 font-medium">
                       Cliente no registrado
                     </label>
                     <Switch
                       isSelected={isUnregistered}
                       onChange={() => setIsUnregistered(!isUnregistered)}
+                      size="sm"
                     />
                   </div>
 
@@ -1250,6 +1253,7 @@ export default function TechnicianRepairsPage() {
                         onValueChange={(value) => setNewRepair(prev => ({ ...prev, unregistered_customer_name: value }))}
                         variant="bordered"
                         isRequired
+                        size="sm"
                         classNames={{
                           label: "text-gray-700",
                           input: "text-gray-900 placeholder:text-gray-500",
@@ -1263,6 +1267,7 @@ export default function TechnicianRepairsPage() {
                         value={newRepair.unregistered_customer_phone}
                         onValueChange={(value) => setNewRepair(prev => ({ ...prev, unregistered_customer_phone: value }))}
                         variant="bordered"
+                        size="sm"
                         classNames={{
                           label: "text-gray-700",
                           input: "text-gray-900 placeholder:text-gray-500",
@@ -1277,7 +1282,9 @@ export default function TechnicianRepairsPage() {
                         onValueChange={(value) => setNewRepair(prev => ({ ...prev, device_description: value }))}
                         variant="bordered"
                         isRequired
-                        rows={3}
+                        size="sm"
+                        minRows={2}
+                        maxRows={4}
                         classNames={{
                           label: "text-gray-700",
                           input: "text-gray-900 placeholder:text-gray-500",
@@ -1287,7 +1294,7 @@ export default function TechnicianRepairsPage() {
                     </>
                   ) : (
                     // Campos para clientes registrados
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
                       <Select
                         label="Cliente"
                         placeholder="Selecciona un cliente"
@@ -1295,6 +1302,7 @@ export default function TechnicianRepairsPage() {
                         onSelectionChange={(keys) => handleCustomerChange(Array.from(keys)[0] as string)}
                         variant="bordered"
                         isRequired
+                        size="sm"
                         classNames={{
                           label: "text-gray-700",
                           trigger: "text-gray-900",
@@ -1316,6 +1324,7 @@ export default function TechnicianRepairsPage() {
                         onValueChange={(value) => setNewRepair(prev => ({ ...prev, device_description: value }))}
                         variant="bordered"
                         isRequired
+                        size="sm"
                         classNames={{
                           label: "text-gray-700",
                           input: "text-gray-900",
@@ -1332,6 +1341,7 @@ export default function TechnicianRepairsPage() {
                     onValueChange={(value) => setNewRepair(prev => ({ ...prev, title: value }))}
                     variant="bordered"
                     isRequired
+                    size="sm"
                     classNames={{
                       label: "text-gray-700",
                       input: "text-gray-900 placeholder:text-gray-500",
@@ -1346,7 +1356,9 @@ export default function TechnicianRepairsPage() {
                     onValueChange={(value) => setNewRepair(prev => ({ ...prev, problem_description: value }))}
                     variant="bordered"
                     isRequired
-                    rows={3}
+                    size="sm"
+                    minRows={2}
+                    maxRows={4}
                     classNames={{
                       label: "text-gray-700",
                       input: "text-gray-900 placeholder:text-gray-500",
@@ -1360,7 +1372,9 @@ export default function TechnicianRepairsPage() {
                     value={newRepair.description}
                     onValueChange={(value) => setNewRepair(prev => ({ ...prev, description: value }))}
                     variant="bordered"
-                    rows={2}
+                    size="sm"
+                    minRows={2}
+                    maxRows={3}
                     classNames={{
                       label: "text-gray-700",
                       input: "text-gray-900 placeholder:text-gray-500",
@@ -1368,12 +1382,13 @@ export default function TechnicianRepairsPage() {
                     }}
                   />
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
                     <Select
                       label="Prioridad"
                       selectedKeys={new Set([newRepair.priority])}
                       onSelectionChange={(keys) => setNewRepair(prev => ({ ...prev, priority: Array.from(keys)[0] as string }))}
                       variant="bordered"
+                      size="sm"
                       classNames={{
                         label: "text-gray-700",
                         trigger: "text-gray-900",
@@ -1395,6 +1410,7 @@ export default function TechnicianRepairsPage() {
                       value={newRepair.cost.toString()}
                       onValueChange={(value) => setNewRepair(prev => ({ ...prev, cost: parseFloat(value) || 0 }))}
                       variant="bordered"
+                      size="sm"
                       classNames={{
                         label: "text-gray-700",
                         input: "text-gray-900 placeholder:text-gray-500",
@@ -1409,7 +1425,9 @@ export default function TechnicianRepairsPage() {
                     value={newRepair.internal_notes}
                     onValueChange={(value) => setNewRepair(prev => ({ ...prev, internal_notes: value }))}
                     variant="bordered"
-                    rows={2}
+                    size="sm"
+                    minRows={2}
+                    maxRows={3}
                     classNames={{
                       label: "text-gray-700",
                       input: "text-gray-900 placeholder:text-gray-500",
@@ -1418,12 +1436,13 @@ export default function TechnicianRepairsPage() {
                   />
                 </div>
               </ModalBody>
-              <ModalFooter>
+              <ModalFooter className="gap-2">
                 <Button 
                   color="danger" 
                   variant="flat" 
                   onPress={onCreateClose}
                   className="text-gray-900"
+                  size="sm"
                 >
                   Cancelar
                 </Button>
@@ -1431,6 +1450,7 @@ export default function TechnicianRepairsPage() {
                   color="primary" 
                   type="submit"
                   isLoading={createLoading}
+                  size="sm"
                 >
                   {createLoading ? 'Creando...' : 'Crear Reparación'}
                 </Button>
@@ -1443,32 +1463,32 @@ export default function TechnicianRepairsPage() {
         <Modal 
           isOpen={isDetailOpen} 
           onClose={onDetailClose} 
-          size="3xl"
+          size="xl"
           scrollBehavior="inside"
           classNames={{
             wrapper: "z-[1000]",
             backdrop: "z-[999]",
-            base: "max-h-[95vh] my-2 mx-2 sm:mx-6",
-            body: "max-h-[75vh] overflow-y-auto py-4",
-            header: "border-b border-gray-200 pb-4",
-            footer: "border-t border-gray-200 pt-4"
+            base: "max-h-[95vh] my-1 mx-1 sm:my-2 sm:mx-2 md:mx-6",
+            body: "max-h-[75vh] overflow-y-auto py-2 md:py-4",
+            header: "border-b border-gray-200 pb-2 md:pb-4",
+            footer: "border-t border-gray-200 pt-2 md:pt-4"
           }}
         >
           <ModalContent>
             <ModalHeader className={`flex flex-col gap-1 ${textColors.primary}`}>
-              Detalles de la Reparación: {selectedRepair?.title}
+              <h2 className="text-lg md:text-xl font-bold">Detalles de la Reparación: {selectedRepair?.title}</h2>
             </ModalHeader>
             <ModalBody>
               {selectedRepair && (
-               <div className="space-y-6">
-                 <div className="grid grid-cols-2 gap-4">
+               <div className="space-y-3 md:space-y-6">
+                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
                    <div>
-                     <p className="text-sm font-medium text-gray-500">Título</p>
-                     <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">{selectedRepair.title}</p>
+                     <p className="text-xs md:text-sm font-medium text-gray-500">Título</p>
+                     <p className="text-sm md:text-lg font-semibold text-gray-900 dark:text-gray-100">{selectedRepair.title}</p>
                    </div>
                    <div>
-                     <p className="text-sm font-medium text-gray-500">Estado</p>
-                     <Chip color={getStatusColor(selectedRepair.status)} variant="flat">
+                     <p className="text-xs md:text-sm font-medium text-gray-500">Estado</p>
+                     <Chip color={getStatusColor(selectedRepair.status)} variant="flat" size="sm">
                        {getStatusLabel(selectedRepair.status)}
                      </Chip>
                    </div>
@@ -1476,14 +1496,14 @@ export default function TechnicianRepairsPage() {
 
                  {/* Información del creador */}
                  {selectedRepair.technician && (
-                   <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                   <div className="bg-blue-50 p-3 md:p-4 rounded-lg border border-blue-200">
                      <div className="flex items-center gap-3">
                        <div className="p-2 bg-blue-100 rounded-full">
-                         <User className="w-4 h-4 text-blue-600" />
+                         <User className="w-3 h-3 md:w-4 md:h-4 text-blue-600" />
                        </div>
                        <div className="flex-1">
-                         <p className="text-sm font-medium text-blue-800">Creado por</p>
-                         <p className="text-base font-semibold text-blue-900">
+                         <p className="text-xs md:text-sm font-medium text-blue-800">Creado por</p>
+                         <p className="text-sm md:text-base font-semibold text-blue-900">
                            {selectedRepair.technician.name}
                          </p>
                          <p className="text-xs text-blue-600">
@@ -1504,48 +1524,48 @@ export default function TechnicianRepairsPage() {
                  )}
                  
                  <div>
-                   <p className="text-sm font-medium text-gray-500 mb-2">Cliente</p>
-                   <p className="text-base text-gray-900 dark:text-gray-100">{getCustomerName(selectedRepair.customers, selectedRepair.unregistered_customer_name)}</p>
+                   <p className="text-xs md:text-sm font-medium text-gray-500 mb-2">Cliente</p>
+                   <p className="text-sm md:text-base text-gray-900 dark:text-gray-100">{getCustomerName(selectedRepair.customers, selectedRepair.unregistered_customer_name)}</p>
                    {(selectedRepair.customers?.phone || selectedRepair.unregistered_customer_phone) && (
-                     <p className="text-sm text-gray-600">{selectedRepair.customers?.phone || selectedRepair.unregistered_customer_phone}</p>
+                     <p className="text-xs md:text-sm text-gray-600">{selectedRepair.customers?.phone || selectedRepair.unregistered_customer_phone}</p>
                    )}
                  </div>
 
                  <div>
-                   <p className="text-sm font-medium text-gray-500 mb-2">Dispositivo</p>
-                   <p className="text-base text-gray-900 dark:text-gray-100">{getDeviceName(selectedRepair.devices, selectedRepair.unregistered_device_info)}</p>
+                   <p className="text-xs md:text-sm font-medium text-gray-500 mb-2">Dispositivo</p>
+                   <p className="text-sm md:text-base text-gray-900 dark:text-gray-100">{getDeviceName(selectedRepair.devices, selectedRepair.unregistered_device_info)}</p>
                    {selectedRepair.devices && (
-                     <p className="text-sm text-gray-600">{selectedRepair.devices.device_type}</p>
+                     <p className="text-xs md:text-sm text-gray-600">{selectedRepair.devices.device_type}</p>
                    )}
                  </div>
 
                  <div>
-                   <p className="text-sm font-medium text-gray-500 mb-2">Problema Reportado</p>
-                   <p className="text-base text-gray-900 dark:text-gray-100">{selectedRepair.problem_description}</p>
+                   <p className="text-xs md:text-sm font-medium text-gray-500 mb-2">Problema Reportado</p>
+                   <p className="text-sm md:text-base text-gray-900 dark:text-gray-100">{selectedRepair.problem_description}</p>
                  </div>
 
                  {selectedRepair.description && (
                    <div>
-                     <p className="text-sm font-medium text-gray-500 mb-2">Descripción General</p>
-                     <p className="text-base text-gray-900 dark:text-gray-100">{selectedRepair.description}</p>
+                     <p className="text-xs md:text-sm font-medium text-gray-500 mb-2">Descripción General</p>
+                     <p className="text-sm md:text-base text-gray-900 dark:text-gray-100">{selectedRepair.description}</p>
                    </div>
                  )}
 
                  {selectedRepair.solution_description && (
                    <div>
-                     <p className="text-sm font-medium text-gray-500 mb-2">Solución</p>
-                     <p className="text-base text-gray-900 dark:text-gray-100">{selectedRepair.solution_description}</p>
+                     <p className="text-xs md:text-sm font-medium text-gray-500 mb-2">Solución</p>
+                     <p className="text-sm md:text-base text-gray-900 dark:text-gray-100">{selectedRepair.solution_description}</p>
                    </div>
                  )}
 
-                 <div className="grid grid-cols-2 gap-4">
+                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
                    <div>
-                     <p className="text-sm font-medium text-gray-500">Costo</p>
-                     <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">{formatCurrency(selectedRepair.cost)}</p>
+                     <p className="text-xs md:text-sm font-medium text-gray-500">Costo</p>
+                     <p className="text-sm md:text-lg font-semibold text-gray-900 dark:text-gray-100">{formatCurrency(selectedRepair.cost)}</p>
                    </div>
                    <div>
-                     <p className="text-sm font-medium text-gray-500">Prioridad</p>
-                     <Chip color={getPriorityColor(selectedRepair.priority)} variant="flat">
+                     <p className="text-xs md:text-sm font-medium text-gray-500">Prioridad</p>
+                     <Chip color={getPriorityColor(selectedRepair.priority)} variant="flat" size="sm">
                        {getPriorityLabel(selectedRepair.priority)}
                      </Chip>
                    </div>
@@ -1553,17 +1573,18 @@ export default function TechnicianRepairsPage() {
                </div>
               )}
             </ModalBody>
-            <ModalFooter>
-              <Button color="default" variant="light" onPress={onDetailClose}>
+            <ModalFooter className="gap-2">
+              <Button color="default" variant="light" onPress={onDetailClose} size="sm">
                 Cerrar
               </Button>
               {selectedRepair && (
                 <Button 
                   color="secondary" 
                   variant="flat"
-                  startContent={<Printer className="w-4 h-4" />}
+                  startContent={<Printer className="w-3 h-3 md:w-4 md:h-4" />}
                   onPress={() => handlePrintTicket(selectedRepair)}
                   isLoading={printLoading}
+                  size="sm"
                 >
                   Imprimir Ticket
                 </Button>

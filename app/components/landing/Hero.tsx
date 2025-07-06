@@ -87,21 +87,21 @@ export function Hero() {
         <div className="absolute bottom-1/3 right-1/4 w-2 h-2 bg-gray-800 rounded-full animate-bounce delay-1500"></div>
       </div>
       
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 md:px-8 py-12 md:py-20">
         <div className="text-center">
           {/* Ultra Modern Badge */}
           <Badge
             content="NEW"
             color="danger"
             placement="top-right"
-            className="mb-6 md:mb-8"
+            className="mb-4 md:mb-8"
           >
             <Chip
-              startContent={<Crown className="w-4 h-4 md:w-5 md:h-5 animate-pulse" />}
-              endContent={<Sparkles className="w-4 h-4 md:w-5 md:h-5" />}
+              startContent={<Crown className="w-3 h-3 md:w-5 md:h-5 animate-pulse" />}
+              endContent={<Sparkles className="w-3 h-3 md:w-5 md:h-5" />}
               variant="flat"
               color="default"
-              className="bg-gradient-to-r from-gray-100 via-gray-200 to-gray-300 text-gray-800 px-4 md:px-8 py-2 md:py-4 text-sm md:text-lg font-bold shadow-2xl border border-gray-300/50 hover:scale-105 transition-transform duration-300"
+              className="bg-gradient-to-r from-gray-100 via-gray-200 to-gray-300 text-gray-800 px-3 md:px-8 py-1 md:py-4 text-xs md:text-lg font-bold shadow-2xl border border-gray-300/50 hover:scale-105 transition-transform duration-300"
             >
               <span className="hidden sm:inline">Líder en Software para Talleres V2</span>
               <span className="sm:hidden">Software para Talleres V2</span>
@@ -109,8 +109,8 @@ export function Hero() {
           </Badge>
           
           {/* Enhanced Main Title with Animation */}
-          <div className="mb-6 md:mb-8">
-            <h1 className="text-3xl sm:text-4xl md:text-6xl lg:text-8xl font-black tracking-tight mb-4 relative">
+          <div className="mb-4 md:mb-8">
+            <h1 className="text-3xl sm:text-4xl md:text-6xl lg:text-8xl font-black tracking-tight mb-2 md:mb-4 relative">
               <span className="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-700 bg-clip-text text-transparent block">
                 <span className="hidden sm:inline">Software para Taller</span>
                 <span className="sm:hidden">Software Taller</span>
@@ -120,29 +120,32 @@ export function Hero() {
                 <div className="absolute -inset-1 bg-gradient-to-r from-gray-600/20 to-gray-800/20 blur-lg rounded-lg"></div>
               </span>
             </h1>
-            <div className="flex justify-center mt-4">
-              <div className="flex items-center gap-2 bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 px-3 md:px-4 py-2 rounded-full text-xs md:text-sm font-medium shadow-lg">
+            <div className="flex justify-center mt-2 md:mt-4">
+              <div className="flex items-center gap-2 bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 px-2 md:px-4 py-1 md:py-2 rounded-full text-xs md:text-sm font-medium shadow-lg">
                 <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                <span>100% en la Nube</span>
+                <span className="hidden sm:inline">100% en la Nube</span>
+                <span className="sm:hidden">Cloud</span>
                 <Rocket className="w-3 h-3 md:w-4 md:h-4 animate-bounce" />
               </div>
             </div>
           </div>
           
           {/* Enhanced Subtitle */}
-          <Card className="max-w-5xl mx-auto mb-8 md:mb-12 bg-white/80 backdrop-blur-xl shadow-2xl border-0">
-            <CardBody className="p-4 md:p-8">
-              <p className="text-base md:text-xl lg:text-2xl text-gray-700 leading-relaxed">
-                La solución completa para talleres de reparación de móviles y tablets. 
+          <Card className="max-w-5xl mx-auto mb-6 md:mb-12 bg-white/80 backdrop-blur-xl shadow-2xl border-0">
+            <CardBody className="p-3 md:p-8">
+              <p className="text-sm md:text-xl lg:text-2xl text-gray-700 leading-relaxed">
+                <span className="hidden sm:inline">La solución completa para talleres de reparación de móviles y tablets.</span>
+                <span className="sm:hidden">Solución completa para talleres móviles.</span>
                 <span className="bg-gradient-to-r from-gray-700 to-gray-900 bg-clip-text text-transparent font-semibold">
                   {" "}Gestiona inventario, técnicos, reparaciones y ventas desde la nube.
                 </span>
               </p>
-              <Spacer y={4} />
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-6 text-xs md:text-sm text-gray-600">
+              <Spacer y={2} className="md:hidden" />
+              <Spacer y={4} className="hidden md:block" />
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-6 text-xs md:text-sm text-gray-600">
                 <div className="flex items-center gap-2">
                   <Timer className="w-4 h-4 text-gray-600" />
-                  <span>Setup en 5 minutos</span>
+                  <span>Setup en 5 min</span>
                 </div>
                 <Divider orientation="vertical" className="h-4 hidden sm:block" />
                 <div className="flex items-center gap-2">
@@ -159,18 +162,21 @@ export function Hero() {
           </Card>
           
           {/* Enhanced Social Proof */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6 mb-8 md:mb-12 max-w-4xl mx-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-6 mb-6 md:mb-12 max-w-4xl mx-auto">
             <Card className="bg-white/90 backdrop-blur-xl shadow-xl border-0 hover:shadow-2xl hover:scale-105 transition-all duration-300 group">
-              <CardBody className="p-4 md:p-6 text-center">
-                <div className="flex justify-center mb-3">
+              <CardBody className="p-3 md:p-6 text-center">
+                <div className="flex justify-center mb-2 md:mb-3">
                   <div className="flex items-center gap-1">
                     {[...Array(5)].map((_, i) => (
-                      <Star key={i} className="w-4 h-4 md:w-6 md:h-6 text-yellow-400 fill-current group-hover:scale-110 transition-transform duration-300" style={{animationDelay: `${i * 100}ms`}} />
+                      <Star key={i} className="w-3 h-3 md:w-6 md:h-6 text-yellow-400 fill-current group-hover:scale-110 transition-transform duration-300" style={{animationDelay: `${i * 100}ms`}} />
                     ))}
                   </div>
                 </div>
-                <div className="text-xl md:text-2xl font-black bg-gradient-to-r from-yellow-500 to-orange-500 bg-clip-text text-transparent">4.9/5</div>
-                <div className="text-xs md:text-sm text-gray-600 font-medium">Calificación Promedio</div>
+                <div className="text-lg md:text-2xl font-black bg-gradient-to-r from-yellow-500 to-orange-500 bg-clip-text text-transparent">4.9/5</div>
+                <div className="text-xs md:text-sm text-gray-600 font-medium">
+                  <span className="hidden sm:inline">Calificación Promedio</span>
+                  <span className="sm:hidden">Calificación</span>
+                </div>
                 <Progress 
                   value={98} 
                   color="warning" 
@@ -183,16 +189,19 @@ export function Hero() {
             </Card>
             
             <Card className="bg-white/90 backdrop-blur-xl shadow-xl border-0 hover:shadow-2xl hover:scale-105 transition-all duration-300 group">
-              <CardBody className="p-4 md:p-6 text-center">
-                <div className="flex justify-center mb-3">
+              <CardBody className="p-3 md:p-6 text-center">
+                <div className="flex justify-center mb-2 md:mb-3">
                   <Avatar
-                    icon={<Users className="w-5 h-5 md:w-6 md:h-6" />}
+                    icon={<Users className="w-4 h-4 md:w-6 md:h-6" />}
                     className="bg-gradient-to-r from-gray-600 to-gray-700 text-white group-hover:scale-110 transition-transform duration-300"
-                    size="lg"
+                    size="md"
                   />
                 </div>
-                <div className="text-xl md:text-2xl font-black bg-gradient-to-r from-gray-600 to-gray-800 bg-clip-text text-transparent">100+</div>
-                <div className="text-xs md:text-sm text-gray-600 font-medium">Talleres Activos</div>
+                <div className="text-lg md:text-2xl font-black bg-gradient-to-r from-gray-600 to-gray-800 bg-clip-text text-transparent">100+</div>
+                <div className="text-xs md:text-sm text-gray-600 font-medium">
+                  <span className="hidden sm:inline">Talleres Activos</span>
+                  <span className="sm:hidden">Talleres</span>
+                </div>
                 <div className="flex items-center justify-center gap-1 mt-2 text-xs text-green-600">
                   <TrendingUp className="w-3 h-3" />
                   <span>+25% este mes</span>
@@ -201,15 +210,15 @@ export function Hero() {
             </Card>
             
             <Card className="bg-white/90 backdrop-blur-xl shadow-xl border-0 hover:shadow-2xl hover:scale-105 transition-all duration-300 group">
-              <CardBody className="p-4 md:p-6 text-center">
-                <div className="flex justify-center mb-3">
+              <CardBody className="p-3 md:p-6 text-center">
+                <div className="flex justify-center mb-2 md:mb-3">
                   <Avatar
-                    icon={<Target className="w-5 h-5 md:w-6 md:h-6" />}
+                    icon={<Target className="w-4 h-4 md:w-6 md:h-6" />}
                     className="bg-gradient-to-r from-green-500 to-emerald-600 text-white group-hover:scale-110 transition-transform duration-300"
-                    size="lg"
+                    size="md"
                   />
                 </div>
-                <div className="text-xl md:text-2xl font-black bg-gradient-to-r from-green-500 to-emerald-500 bg-clip-text text-transparent">3 meses</div>
+                <div className="text-lg md:text-2xl font-black bg-gradient-to-r from-green-500 to-emerald-500 bg-clip-text text-transparent">3 meses</div>
                 <div className="text-xs md:text-sm text-gray-600 font-medium">En el mercado</div>
                 <Chip size="sm" color="success" variant="flat" className="mt-2">
                   Crecimiento Rápido

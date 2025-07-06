@@ -652,15 +652,15 @@ export default function TechnicianSalesPage() {
         <Modal 
           isOpen={isCustomerModalOpen} 
           onOpenChange={onCustomerModalClose} 
-          size="md"
+          size="sm"
           scrollBehavior="inside"
           classNames={{
             wrapper: "z-[1000]",
             backdrop: "z-[999]",
-            base: "max-h-[95vh] my-2 mx-2 sm:mx-6",
-            body: "max-h-[70vh] overflow-y-auto py-4",
-            header: "border-b border-gray-200 pb-4",
-            footer: "border-t border-gray-200 pt-4"
+            base: "max-h-[95vh] my-1 mx-1 sm:my-2 sm:mx-2 md:mx-6",
+            body: "max-h-[70vh] overflow-y-auto py-2 md:py-4",
+            header: "border-b border-gray-200 pb-2 md:pb-4",
+            footer: "border-t border-gray-200 pt-2 md:pt-4"
           }}
         >
           <ModalContent>
@@ -669,11 +669,11 @@ export default function TechnicianSalesPage() {
                 <ModalHeader className="flex flex-col gap-1">
                   <div className="flex items-center gap-3">
                     <div className="p-2 bg-primary-100 rounded-xl">
-                      <User className="w-6 h-6 text-primary-600" />
+                      <User className="w-4 h-4 md:w-6 md:h-6 text-primary-600" />
                     </div>
                     <div>
-                      <h3 className="text-xl font-bold text-primary-700">Seleccionar Cliente</h3>
-                      <p className="text-sm text-gray-600">Busca y selecciona un cliente</p>
+                      <h3 className="text-lg md:text-xl font-bold text-primary-700">Seleccionar Cliente</h3>
+                      <p className="text-xs md:text-sm text-gray-600">Busca y selecciona un cliente</p>
                     </div>
                   </div>
                 </ModalHeader>
@@ -683,17 +683,18 @@ export default function TechnicianSalesPage() {
                     value={busquedaCliente}
                     onValueChange={setBusquedaCliente}
                     startContent={<Search className="w-4 h-4 text-primary-400" />}
-                    className="mb-4"
+                    className="mb-3 md:mb-4"
                     color="primary"
                     variant="bordered"
+                    size="sm"
                     classNames={{
                       input: "text-gray-800",
                       inputWrapper: "border-primary-200 hover:border-primary-300 focus-within:border-primary-500"
                     }}
                   />
-                  <div className="space-y-3 max-h-60 overflow-y-auto">
+                  <div className="space-y-2 md:space-y-3 max-h-40 md:max-h-60 overflow-y-auto">
                     <div 
-                      className="p-4 border border-primary-200 rounded-xl cursor-pointer hover:bg-primary-50 hover:border-primary-300 transition-all duration-200"
+                      className="p-3 md:p-4 border border-primary-200 rounded-xl cursor-pointer hover:bg-primary-50 hover:border-primary-300 transition-all duration-200"
                       onClick={() => {
                         setSelectedCustomer(null)
                         onClose()
@@ -703,18 +704,18 @@ export default function TechnicianSalesPage() {
                         <Avatar 
                           name="?" 
                           className="bg-gray-400 text-white"
-                          size="md"
+                          size="sm"
                         />
                         <div>
-                          <p className="font-semibold text-gray-800">Cliente de mostrador</p>
-                          <p className="text-sm text-gray-500">Sin datos de cliente</p>
+                          <p className="text-sm md:text-base font-semibold text-gray-800">Cliente de mostrador</p>
+                          <p className="text-xs md:text-sm text-gray-500">Sin datos de cliente</p>
                         </div>
                       </div>
                     </div>
                     {filteredCustomers.map((customer) => (
                       <div
                         key={customer.id}
-                        className="p-4 border border-primary-200 rounded-xl cursor-pointer hover:bg-primary-50 hover:border-primary-300 transition-all duration-200"
+                        className="p-3 md:p-4 border border-primary-200 rounded-xl cursor-pointer hover:bg-primary-50 hover:border-primary-300 transition-all duration-200"
                         onClick={() => {
                           setSelectedCustomer(customer)
                           onClose()
@@ -724,11 +725,11 @@ export default function TechnicianSalesPage() {
                           <Avatar 
                             name={customer.name.charAt(0)} 
                             className="bg-primary-500 text-white"
-                            size="md"
+                            size="sm"
                           />
                           <div>
-                            <p className="font-semibold text-gray-800">{customer.name}</p>
-                            <p className="text-sm text-gray-500">
+                            <p className="text-sm md:text-base font-semibold text-gray-800">{customer.name}</p>
+                            <p className="text-xs md:text-sm text-gray-500">
                               {customer.phone} • {customer.email}
                             </p>
                           </div>
@@ -737,11 +738,11 @@ export default function TechnicianSalesPage() {
                     ))}
                   </div>
                 </ModalBody>
-                <ModalFooter className="gap-3">
+                <ModalFooter className="gap-2">
                   <Button 
                     variant="flat" 
                     onPress={onClose}
-                    size="lg"
+                    size="sm"
                     className="font-medium"
                   >
                     Cancelar
@@ -756,15 +757,15 @@ export default function TechnicianSalesPage() {
         <Modal 
           isOpen={isCheckoutModalOpen} 
           onOpenChange={onCheckoutModalClose} 
-          size="lg"
+          size="md"
           scrollBehavior="inside"
           classNames={{
             wrapper: "z-[1000]",
             backdrop: "z-[999]",
-            base: "max-h-[95vh] my-2 mx-2 sm:mx-6",
-            body: "max-h-[75vh] overflow-y-auto py-4",
-            header: "border-b border-gray-200 pb-4",
-            footer: "border-t border-gray-200 pt-4"
+            base: "max-h-[95vh] my-1 mx-1 sm:my-2 sm:mx-2 md:mx-6",
+            body: "max-h-[75vh] overflow-y-auto py-2 md:py-4",
+            header: "border-b border-gray-200 pb-2 md:pb-4",
+            footer: "border-t border-gray-200 pt-2 md:pt-4"
           }}
         >
           <ModalContent>
@@ -773,63 +774,63 @@ export default function TechnicianSalesPage() {
                 <ModalHeader className="flex flex-col gap-1">
                   <div className="flex items-center gap-3">
                     <div className="p-2 bg-primary-100 rounded-xl">
-                      <Receipt className="w-6 h-6 text-primary-600" />
+                      <Receipt className="w-4 h-4 md:w-6 md:h-6 text-primary-600" />
                     </div>
                     <div>
-                      <h3 className="text-xl font-bold text-primary-700">Procesar Venta</h3>
-                      <p className="text-sm text-gray-600">Confirma los detalles de la venta</p>
+                      <h3 className="text-lg md:text-xl font-bold text-primary-700">Procesar Venta</h3>
+                      <p className="text-xs md:text-sm text-gray-600">Confirma los detalles de la venta</p>
                     </div>
                   </div>
                 </ModalHeader>
                 <ModalBody>
-                  <div className="space-y-6">
+                  <div className="space-y-3 md:space-y-6">
                     <div>
-                      <h4 className="font-semibold mb-3 text-gray-800 flex items-center gap-2">
-                        <Calculator className="w-4 h-4 text-primary-600" />
+                      <h4 className="text-sm md:text-base font-semibold mb-3 text-gray-800 flex items-center gap-2">
+                        <Calculator className="w-3 h-3 md:w-4 md:h-4 text-primary-600" />
                         Resumen de la venta
                       </h4>
-                      <div className="bg-gradient-to-br from-primary-50 to-blue-50 p-4 rounded-xl border border-primary-100 space-y-3">
+                      <div className="bg-gradient-to-br from-primary-50 to-blue-50 p-3 md:p-4 rounded-xl border border-primary-100 space-y-2 md:space-y-3">
                         {cart.map((item) => (
                           <div key={item.product.id} className="flex justify-between items-center">
                             <div className="flex-1">
-                              <span className="font-medium text-gray-800">{item.product.name}</span>
-                              <span className="text-primary-600 ml-2">x{item.quantity}</span>
+                              <span className="text-sm md:text-base font-medium text-gray-800">{item.product.name}</span>
+                              <span className="text-primary-600 ml-2 text-sm">x{item.quantity}</span>
                             </div>
-                            <span className="font-semibold text-gray-800">{formatCurrency(item.subtotal)}</span>
+                            <span className="text-sm md:text-base font-semibold text-gray-800">{formatCurrency(item.subtotal)}</span>
                           </div>
                         ))}
                         <Divider className="bg-primary-200" />
-                        <div className="flex justify-between text-sm text-gray-700">
+                        <div className="flex justify-between text-xs md:text-sm text-gray-700">
                           <span>Subtotal:</span>
                           <span className="font-medium">{formatCurrency(subtotalSinIGV)}</span>
                         </div>
-                        <div className="flex justify-between text-sm text-gray-700">
+                        <div className="flex justify-between text-xs md:text-sm text-gray-700">
                           <span>IGV (18%):</span>
                           <span className="font-medium">{formatCurrency(igv)}</span>
                         </div>
-                        <div className="flex justify-between text-lg font-bold">
+                        <div className="flex justify-between text-sm md:text-lg font-bold">
                           <span className="text-gray-800">Total:</span>
-                          <span className="text-primary-600 text-xl">{formatCurrency(total)}</span>
+                          <span className="text-primary-600 text-lg md:text-xl">{formatCurrency(total)}</span>
                         </div>
                       </div>
                     </div>
 
                     <div>
-                      <h4 className="font-semibold mb-3 text-gray-800 flex items-center gap-2">
-                        <User className="w-4 h-4 text-primary-600" />
+                      <h4 className="text-sm md:text-base font-semibold mb-3 text-gray-800 flex items-center gap-2">
+                        <User className="w-3 h-3 md:w-4 md:h-4 text-primary-600" />
                         Cliente
                       </h4>
                       {selectedCustomer ? (
-                        <div className="bg-gradient-to-br from-primary-50 to-blue-50 p-4 rounded-xl border border-primary-100 flex justify-between items-center">
+                        <div className="bg-gradient-to-br from-primary-50 to-blue-50 p-3 md:p-4 rounded-xl border border-primary-100 flex justify-between items-center">
                           <div className="flex items-center gap-3">
                             <Avatar 
                               name={selectedCustomer.name.charAt(0)} 
                               className="bg-primary-500 text-white"
-                              size="md"
+                              size="sm"
                             />
                             <div>
-                              <p className="font-semibold text-gray-800">{selectedCustomer.name}</p>
-                              <p className="text-sm text-gray-600">{selectedCustomer.phone}</p>
+                              <p className="text-sm md:text-base font-semibold text-gray-800">{selectedCustomer.name}</p>
+                              <p className="text-xs md:text-sm text-gray-600">{selectedCustomer.phone}</p>
                             </div>
                           </div>
                           <Button
@@ -845,7 +846,8 @@ export default function TechnicianSalesPage() {
                         <Button
                           color="primary"
                           variant="flat"
-                          className="w-full h-12"
+                          className="w-full h-10 md:h-12"
+                          size="sm"
                           startContent={<User className="w-4 h-4" />}
                           onPress={onCustomerModalOpen}
                         >

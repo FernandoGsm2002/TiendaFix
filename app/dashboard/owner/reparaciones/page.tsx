@@ -30,7 +30,7 @@ import {
   TableBody,
   TableRow,
   TableCell,
-  Switch
+      Switch
 } from '@heroui/react'
 import FormField from '@/app/components/ui/FormField'
 import { textColors } from '@/lib/utils/colors'
@@ -53,7 +53,9 @@ import {
   ClipboardList,
   Shield,
   Settings,
-  Printer
+  Printer,
+  ArrowUpRight,
+  ArrowDownRight
 } from 'lucide-react'
 
 interface Repair {
@@ -304,7 +306,6 @@ export default function ReparacionesPage() {
         }
       : {
           customer_id: newRepair.customer_id,
-          unregistered_device_info: newRepair.device_description,
           device_id: null,
           title: newRepair.title,
           description: newRepair.description,
@@ -312,6 +313,9 @@ export default function ReparacionesPage() {
           priority: newRepair.priority,
           cost: newRepair.cost,
           internal_notes: newRepair.internal_notes,
+          // Para clientes registrados, guardamos la info del dispositivo en unregistered_device_info
+          // pero mantenemos customer_id para que se identifique como registrado
+          unregistered_device_info: newRepair.device_description,
         };
     
     if (isUnregistered) {
@@ -753,7 +757,7 @@ export default function ReparacionesPage() {
           </div>
         )
       case 'cliente':
-        const isUnregistered = !repair.customers && repair.unregistered_customer_name
+        const isUnregistered = !repair.customers
         const customerType = isUnregistered ? 'No registrado' : 
                            repair.customers?.customer_type === 'anonymous' ? 'Anónimo' : 'Registrado'
         const contactInfo = isUnregistered ? 
@@ -910,8 +914,8 @@ export default function ReparacionesPage() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-                      <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-gray-900">{t('repairs.title')}</h1>
-          <p className={`text-sm md:text-base ${textColors.secondary} mt-1`}>{t('repairs.description')}</p>
+            <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-gray-900">{t('repairs.title')}</h1>
+            <p className={`text-sm md:text-base ${textColors.secondary} mt-1`}>{t('repairs.description')}</p>
           </div>
           <Button 
             color="primary" 
@@ -922,6 +926,120 @@ export default function ReparacionesPage() {
           >
             Nueva Reparación
           </Button>
+        </div>
+
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <Card className="hover:scale-105 transition-all duration-300 border-0 shadow-lg bg-gradient-to-br from-blue-50/60 to-blue-100/40 backdrop-blur-sm">
+            <CardBody className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <div className="p-3 rounded-xl bg-gradient-to-br from-blue-500/80 to-blue-600/80 shadow-lg">
+                  <Wrench className="w-5 h-5 text-white" />
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1">
+                    <ArrowUpRight className="w-3 h-3 text-green-500" />
+                    <span className="text-xs text-green-600 font-medium">+12%</span>
+                  </div>
+                  <Chip color="primary" variant="flat" size="sm" className="font-medium">
+                    Total
+                  </Chip>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <p className="text-sm font-medium text-gray-700">{t('repairs.total')}</p>
+                <p className="text-3xl font-bold text-blue-700">{stats.total}</p>
+                <p className="text-xs text-gray-500">Reparaciones registradas</p>
+              </div>
+            </CardBody>
+          </Card>
+
+          <Card className="hover:scale-105 transition-all duration-300 border-0 shadow-lg bg-gradient-to-br from-orange-50/60 to-amber-100/40 backdrop-blur-sm">
+            <CardBody className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <div className="p-3 rounded-xl bg-gradient-to-br from-orange-500/80 to-orange-600/80 shadow-lg">
+                  <Clock className="w-5 h-5 text-white" />
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1">
+                    <ArrowDownRight className="w-3 h-3 text-red-500" />
+                    <span className="text-xs text-red-600 font-medium">-8%</span>
+                  </div>
+                  <Chip color="warning" variant="flat" size="sm" className="font-medium">
+                    Pendientes
+                  </Chip>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <p className="text-sm font-medium text-gray-700">Pendientes</p>
+                <p className="text-3xl font-bold text-orange-700">{stats.received + stats.diagnosed}</p>
+                <Progress 
+                  value={((stats.received + stats.diagnosed) / Math.max(stats.total, 1)) * 100} 
+                  color="warning" 
+                  size="sm" 
+                  className="max-w-md"
+                />
+              </div>
+            </CardBody>
+          </Card>
+
+          <Card className="hover:scale-105 transition-all duration-300 border-0 shadow-lg bg-gradient-to-br from-indigo-50/60 to-purple-100/40 backdrop-blur-sm">
+            <CardBody className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <div className="p-3 rounded-xl bg-gradient-to-br from-indigo-500/80 to-purple-600/80 shadow-lg">
+                  <Settings className="w-5 h-5 text-white" />
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1">
+                    <ArrowUpRight className="w-3 h-3 text-green-500" />
+                    <span className="text-xs text-green-600 font-medium">+15%</span>
+                  </div>
+                  <Chip color="primary" variant="flat" size="sm" className="font-medium">
+                    Proceso
+                  </Chip>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <p className="text-sm font-medium text-gray-700">En Proceso</p>
+                <p className="text-3xl font-bold text-indigo-700">{stats.inProgress}</p>
+                <Progress 
+                  value={(stats.inProgress / Math.max(stats.total, 1)) * 100} 
+                  color="primary" 
+                  size="sm" 
+                  className="max-w-md"
+                />
+              </div>
+            </CardBody>
+          </Card>
+
+          <Card className="hover:scale-105 transition-all duration-300 border-0 shadow-lg bg-gradient-to-br from-green-50/60 to-emerald-100/40 backdrop-blur-sm">
+            <CardBody className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <div className="p-3 rounded-xl bg-gradient-to-br from-green-500/80 to-emerald-600/80 shadow-lg">
+                  <CheckCircle className="w-5 h-5 text-white" />
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1">
+                    <ArrowUpRight className="w-3 h-3 text-green-500" />
+                    <span className="text-xs text-green-600 font-medium">+22%</span>
+                  </div>
+                  <Chip color="success" variant="flat" size="sm" className="font-medium">
+                    Completadas
+                  </Chip>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <p className="text-sm font-medium text-gray-700">Completadas</p>
+                <p className="text-3xl font-bold text-green-700">{stats.completed + stats.delivered}</p>
+                <Progress 
+                  value={((stats.completed + stats.delivered) / Math.max(stats.total, 1)) * 100} 
+                  color="success" 
+                  size="sm" 
+                  className="max-w-md"
+                />
+              </div>
+            </CardBody>
+          </Card>
         </div>
 
         {/* Filtros */}
@@ -1000,69 +1118,6 @@ export default function ReparacionesPage() {
             </div>
           </CardBody>
         </Card>
-
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <Card className="hover:scale-105 transition-all duration-300 border-0 shadow-xl bg-gradient-to-br from-blue-50 to-blue-100">
-            <CardBody className="p-4">
-              <div className="flex items-center justify-between mb-3">
-                <div className="p-2 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 shadow-lg">
-                  <Wrench className="w-5 h-5 text-white" />
-                </div>
-                <Chip color="primary" variant="flat" className="font-semibold">Total</Chip>
-              </div>
-              <div className="space-y-2">
-                <p className="text-sm font-medium text-blue-700">{t('repairs.total')}</p>
-                <p className="text-2xl font-bold text-blue-800">{stats.total}</p>
-              </div>
-            </CardBody>
-          </Card>
-
-          <Card className="hover:scale-105 transition-all duration-300 border-0 shadow-xl bg-gradient-to-br from-orange-50 to-orange-100">
-            <CardBody className="p-4">
-              <div className="flex items-center justify-between mb-3">
-                <div className="p-2 rounded-xl bg-gradient-to-br from-orange-500 to-orange-600 shadow-lg">
-                  <Clock className="w-5 h-5 text-white" />
-                </div>
-                <Chip color="warning" variant="flat" className="font-semibold">Pendientes</Chip>
-              </div>
-              <div className="space-y-2">
-                <p className="text-sm font-medium text-orange-700">Pendientes</p>
-                <p className="text-2xl font-bold text-orange-800">{stats.received + stats.diagnosed}</p>
-              </div>
-            </CardBody>
-          </Card>
-
-          <Card className="hover:scale-105 transition-all duration-300 border-0 shadow-xl bg-gradient-to-br from-blue-50 to-indigo-100">
-            <CardBody className="p-4">
-              <div className="flex items-center justify-between mb-3">
-                <div className="p-2 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 shadow-lg">
-                  <Settings className="w-5 h-5 text-white" />
-                </div>
-                <Chip color="primary" variant="flat" className="font-semibold">Proceso</Chip>
-              </div>
-              <div className="space-y-2">
-                <p className="text-sm font-medium text-blue-700">En Proceso</p>
-                <p className="text-2xl font-bold text-blue-800">{stats.inProgress}</p>
-              </div>
-            </CardBody>
-          </Card>
-
-          <Card className="hover:scale-105 transition-all duration-300 border-0 shadow-xl bg-gradient-to-br from-green-50 to-emerald-100">
-            <CardBody className="p-4">
-              <div className="flex items-center justify-between mb-3">
-                <div className="p-2 rounded-xl bg-gradient-to-br from-green-500 to-emerald-600 shadow-lg">
-                  <CheckCircle className="w-5 h-5 text-white" />
-                </div>
-                <Chip color="success" variant="flat" className="font-semibold">Completadas</Chip>
-              </div>
-              <div className="space-y-2">
-                <p className="text-sm font-medium text-green-700">Completadas</p>
-                <p className="text-2xl font-bold text-green-800">{stats.completed + stats.delivered}</p>
-              </div>
-            </CardBody>
-          </Card>
-        </div>
 
         {/* Lista de Reparaciones */}
         <Card className="shadow-lg border-0 bg-white/80 backdrop-blur-sm">
@@ -1324,31 +1379,32 @@ export default function ReparacionesPage() {
         <Modal 
           isOpen={isCreateOpen} 
           onClose={onCreateClose}
-          size="2xl"
+          size="lg"
           scrollBehavior="inside"
           classNames={{
             wrapper: "z-[1000]",
             backdrop: "z-[999]",
-            base: "max-h-[95vh] my-2 mx-2 sm:mx-6",
-            body: "max-h-[70vh] overflow-y-auto py-4",
-            header: "border-b border-gray-200 pb-4",
-            footer: "border-t border-gray-200 pt-4"
+            base: "max-h-[95vh] my-1 mx-1 sm:my-2 sm:mx-2 md:mx-6",
+            body: "max-h-[70vh] overflow-y-auto py-2 md:py-4",
+            header: "border-b border-gray-200 pb-2 md:pb-4",
+            footer: "border-t border-gray-200 pt-2 md:pt-4"
           }}
         >
           <ModalContent>
             <ModalHeader>
-                              <h2 className={`text-xl font-bold ${textColors.primary}`}>{t('repairs.createTitle')}</h2>
+              <h2 className={`text-lg md:text-xl font-bold ${textColors.primary}`}>{t('repairs.createTitle')}</h2>
             </ModalHeader>
             <ModalBody>
-              <form onSubmit={handleCreateRepair} className="space-y-4">
+              <form onSubmit={handleCreateRepair} className="space-y-3 md:space-y-4">
                 <div className="flex items-center gap-4">
-                  <label htmlFor="unregistered-switch" className="text-gray-700 dark:text-gray-300">
+                  <label htmlFor="unregistered-switch" className="text-sm md:text-base text-gray-700 dark:text-gray-300">
                     Cliente no registrado
                   </label>
                   <Switch
                     id="unregistered-switch"
                     isSelected={isUnregistered}
                     onChange={() => setIsUnregistered(!isUnregistered)}
+                    size="sm"
                   />
                 </div>
 
@@ -1360,12 +1416,16 @@ export default function ReparacionesPage() {
                       value={newRepair.unregistered_customer_name}
                       onChange={(e) => setNewRepair({ ...newRepair, unregistered_customer_name: e.target.value })}
                       isRequired
+                      size="sm"
+                      variant="bordered"
                     />
                     <Input
                       label="Teléfono del Cliente (Opcional)"
                       placeholder="Ej: +123456789"
                       value={newRepair.unregistered_customer_phone}
                       onChange={(e) => setNewRepair({ ...newRepair, unregistered_customer_phone: e.target.value })}
+                      size="sm"
+                      variant="bordered"
                     />
                     <Textarea
                       label="Información del Dispositivo"
@@ -1373,6 +1433,10 @@ export default function ReparacionesPage() {
                       value={newRepair.unregistered_device_info}
                       onChange={(e) => setNewRepair({ ...newRepair, unregistered_device_info: e.target.value })}
                       isRequired
+                      size="sm"
+                      variant="bordered"
+                      minRows={2}
+                      maxRows={4}
                     />
                   </>
                 ) : (
@@ -1382,6 +1446,8 @@ export default function ReparacionesPage() {
                       placeholder="Seleccione un cliente"
                       onSelectionChange={(keys) => handleCustomerChange(Array.from(keys)[0] as string)}
                       isRequired
+                      size="sm"
+                      variant="bordered"
                       className="text-gray-900 dark:text-gray-100"
                     >
                       {customers.map((customer) => (
@@ -1397,6 +1463,8 @@ export default function ReparacionesPage() {
                       onChange={(e) => setNewRepair({ ...newRepair, device_description: e.target.value })}
                       isDisabled={!newRepair.customer_id}
                       isRequired
+                      size="sm"
+                      variant="bordered"
                       startContent={<Smartphone className="w-4 h-4 text-gray-400" />}
                     />
                   </>
@@ -1408,6 +1476,8 @@ export default function ReparacionesPage() {
                   value={newRepair.title}
                   onChange={(e) => setNewRepair({ ...newRepair, title: e.target.value })}
                   isRequired
+                  size="sm"
+                  variant="bordered"
                 />
                 <Textarea
                   label="Descripción del Problema"
@@ -1415,36 +1485,50 @@ export default function ReparacionesPage() {
                   value={newRepair.problem_description}
                   onChange={(e) => setNewRepair({ ...newRepair, problem_description: e.target.value })}
                   isRequired
+                  size="sm"
+                  variant="bordered"
+                  minRows={2}
+                  maxRows={4}
                 />
-                <Select
-                  label="Prioridad"
-                  selectedKeys={[newRepair.priority]}
-                  onSelectionChange={(keys) => setNewRepair({ ...newRepair, priority: Array.from(keys)[0] as string })}
-                  className="text-gray-900 dark:text-gray-100"
-                >
-                  <SelectItem key="low" className="text-gray-900 dark:text-gray-100">Baja</SelectItem>
-                  <SelectItem key="medium" className="text-gray-900 dark:text-gray-100">Media</SelectItem>
-                  <SelectItem key="high" className="text-gray-900 dark:text-gray-100">Alta</SelectItem>
-                </Select>
-                <Input
-                  type="number"
-                  label="Costo"
-                  placeholder="0.00"
-                  value={String(newRepair.cost)}
-                  onChange={(e) => setNewRepair({ ...newRepair, cost: parseFloat(e.target.value) || 0 })}
-                  startContent={<DollarSign className="w-4 h-4 text-gray-400" />}
-                />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
+                  <Select
+                    label="Prioridad"
+                    selectedKeys={[newRepair.priority]}
+                    onSelectionChange={(keys) => setNewRepair({ ...newRepair, priority: Array.from(keys)[0] as string })}
+                    size="sm"
+                    variant="bordered"
+                    className="text-gray-900 dark:text-gray-100"
+                  >
+                    <SelectItem key="low" className="text-gray-900 dark:text-gray-100">Baja</SelectItem>
+                    <SelectItem key="medium" className="text-gray-900 dark:text-gray-100">Media</SelectItem>
+                    <SelectItem key="high" className="text-gray-900 dark:text-gray-100">Alta</SelectItem>
+                  </Select>
+                  <Input
+                    type="number"
+                    label="Costo"
+                    placeholder="0.00"
+                    value={String(newRepair.cost)}
+                    onChange={(e) => setNewRepair({ ...newRepair, cost: parseFloat(e.target.value) || 0 })}
+                    size="sm"
+                    variant="bordered"
+                    startContent={<DollarSign className="w-4 h-4 text-gray-400" />}
+                  />
+                </div>
                 <Textarea
                   label="Notas Internas (Opcional)"
                   placeholder="Recordar pedir la pieza X..."
                   value={newRepair.internal_notes}
                   onChange={(e) => setNewRepair({ ...newRepair, internal_notes: e.target.value })}
+                  size="sm"
+                  variant="bordered"
+                  minRows={2}
+                  maxRows={3}
                 />
               </form>
             </ModalBody>
-            <ModalFooter>
-              <Button variant="flat" onClick={onCreateClose}>Cancelar</Button>
-              <Button color="primary" onClick={handleCreateRepair} isLoading={createLoading}>
+            <ModalFooter className="gap-2">
+              <Button variant="flat" onClick={onCreateClose} size="sm">Cancelar</Button>
+              <Button color="primary" onClick={handleCreateRepair} isLoading={createLoading} size="sm">
                 Crear Reparación
               </Button>
             </ModalFooter>
@@ -1455,54 +1539,54 @@ export default function ReparacionesPage() {
         <Modal 
           isOpen={isDetailOpen} 
           onClose={onDetailClose} 
-          size="3xl"
+          size="xl"
           scrollBehavior="inside"
           classNames={{
             wrapper: "z-[1000]",
             backdrop: "z-[999]",
-            base: "max-h-[95vh] my-2 mx-2 sm:mx-6",
-            body: "max-h-[75vh] overflow-y-auto py-4",
-            header: "border-b border-gray-200 pb-4",
-            footer: "border-t border-gray-200 pt-4"
+            base: "max-h-[95vh] my-1 mx-1 sm:my-2 sm:mx-2 md:mx-6",
+            body: "max-h-[75vh] overflow-y-auto py-2 md:py-4",
+            header: "border-b border-gray-200 pb-2 md:pb-4",
+            footer: "border-t border-gray-200 pt-2 md:pt-4"
           }}
         >
           <ModalContent>
             {(onDetailClose) => (
               <>
                 <ModalHeader className="flex flex-col gap-1">
-                  <h2 className={`text-xl font-bold ${textColors.primary}`}>
+                  <h2 className={`text-lg md:text-xl font-bold ${textColors.primary}`}>
                     Detalles de la Reparación: {selectedRepair?.title}
                   </h2>
                 </ModalHeader>
                 <ModalBody>
                   {selectedRepair && (
-                   <div className="space-y-6">
-                     <div className="grid grid-cols-2 gap-4">
+                   <div className="space-y-3 md:space-y-6">
+                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
                        <div>
-                         <p className={`text-sm font-medium ${textColors.tertiary}`}>Título</p>
-                         <p className={`text-lg font-semibold ${textColors.primary}`}>{selectedRepair.title}</p>
+                         <p className={`text-xs md:text-sm font-medium ${textColors.tertiary}`}>Título</p>
+                         <p className={`text-sm md:text-lg font-semibold ${textColors.primary}`}>{selectedRepair.title}</p>
                        </div>
                        <div>
-                         <p className={`text-sm font-medium ${textColors.tertiary}`}>Estado</p>
-                         <Chip color={getStatusColor(selectedRepair.status)} variant="flat">
+                         <p className={`text-xs md:text-sm font-medium ${textColors.tertiary}`}>Estado</p>
+                         <Chip color={getStatusColor(selectedRepair.status)} variant="flat" size="sm">
                            {getStatusLabel(selectedRepair.status)}
                          </Chip>
                        </div>
                      </div>
 
                      {/* Información del creador */}
-                     <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                     <div className="bg-blue-50 p-3 md:p-4 rounded-lg border border-blue-200">
                        <div className="flex items-center gap-3">
                          <div className="p-2 bg-blue-100 rounded-full">
                            {selectedRepair.technician?.email.includes('admin') || selectedRepair.technician?.name?.toLowerCase().includes('admin') ? (
-                             <Shield className="w-4 h-4 text-blue-600" />
+                             <Shield className="w-3 h-3 md:w-4 md:h-4 text-blue-600" />
                            ) : (
-                             <User className="w-4 h-4 text-blue-600" />
+                             <User className="w-3 h-3 md:w-4 md:h-4 text-blue-600" />
                            )}
                          </div>
                          <div className="flex-1">
-                           <p className="text-sm font-medium text-blue-800">Creado por</p>
-                           <p className="text-base font-semibold text-blue-900">
+                           <p className="text-xs md:text-sm font-medium text-blue-800">Creado por</p>
+                           <p className="text-sm md:text-base font-semibold text-blue-900">
                              {selectedRepair.technician ? selectedRepair.technician.name : 'Usuario desconocido'}
                            </p>
                            <p className="text-xs text-blue-600">
@@ -1538,51 +1622,53 @@ export default function ReparacionesPage() {
                      </div>
                      
                      <div>
-                       <p className={`text-sm font-medium ${textColors.tertiary} mb-2`}>Cliente</p>
-                       <p className={`text-base ${textColors.primary}`}>{getCustomerName(selectedRepair.customers, selectedRepair.unregistered_customer_name)}</p>
+                       <p className={`text-xs md:text-sm font-medium ${textColors.tertiary} mb-2`}>Cliente</p>
+                       <p className={`text-sm md:text-base ${textColors.primary}`}>{getCustomerName(selectedRepair.customers, selectedRepair.unregistered_customer_name)}</p>
                      </div>
 
                      <div>
-                       <p className={`text-sm font-medium ${textColors.tertiary} mb-2`}>Dispositivo</p>
-                       <p className={`text-base ${textColors.primary}`}>{getDeviceName(selectedRepair.devices, selectedRepair.unregistered_device_info)}</p>
+                       <p className={`text-xs md:text-sm font-medium ${textColors.tertiary} mb-2`}>Dispositivo</p>
+                       <p className={`text-sm md:text-base ${textColors.primary}`}>{getDeviceName(selectedRepair.devices, selectedRepair.unregistered_device_info)}</p>
                      </div>
 
                      <div>
-                       <p className={`text-sm font-medium ${textColors.tertiary} mb-2`}>Problema Reportado</p>
-                       <p className={`text-base ${textColors.primary}`}>{selectedRepair.problem_description}</p>
+                       <p className={`text-xs md:text-sm font-medium ${textColors.tertiary} mb-2`}>Problema Reportado</p>
+                       <p className={`text-sm md:text-base ${textColors.primary}`}>{selectedRepair.problem_description}</p>
                      </div>
 
                      {selectedRepair.solution_description && (
                        <div>
-                         <p className={`text-sm font-medium ${textColors.tertiary} mb-2`}>Solución</p>
-                         <p className={`text-base ${textColors.primary}`}>{selectedRepair.solution_description}</p>
+                         <p className={`text-xs md:text-sm font-medium ${textColors.tertiary} mb-2`}>Solución</p>
+                         <p className={`text-sm md:text-base ${textColors.primary}`}>{selectedRepair.solution_description}</p>
                        </div>
                      )}
 
-                     <div className="grid grid-cols-2 gap-4">
+                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
                        <div>
-                         <p className={`text-sm font-medium ${textColors.tertiary}`}>Costo</p>
-                         <p className={`text-lg font-semibold ${textColors.primary}`}>{formatCurrency(selectedRepair.cost)}</p>
+                         <p className={`text-xs md:text-sm font-medium ${textColors.tertiary}`}>Costo</p>
+                         <p className={`text-sm md:text-lg font-semibold ${textColors.primary}`}>{formatCurrency(selectedRepair.cost)}</p>
                        </div>
                        <div>
-                         <p className={`text-sm font-medium ${textColors.tertiary}`}>Estado</p>
-                         <p className={`text-lg font-semibold ${textColors.primary}`}>{selectedRepair.status}</p>
+                         <p className={`text-xs md:text-sm font-medium ${textColors.tertiary}`}>Estado</p>
+                         <p className={`text-sm md:text-lg font-semibold ${textColors.primary}`}>{selectedRepair.status}</p>
                        </div>
                      </div>
                    </div>
                   )}
                 </ModalBody>
-                <ModalFooter>
-                  <Button color="default" variant="light" onPress={onDetailClose}>
+                <ModalFooter className="gap-2">
+                  <Button color="default" variant="light" onPress={onDetailClose} size="sm">
                     Cerrar
                   </Button>
                   <Button 
                     color="secondary" 
-                    startContent={<Printer className="h-4 w-4" />}
+                    startContent={<Printer className="h-3 w-3 md:h-4 md:w-4" />}
                     onPress={() => selectedRepair && handlePrintTicket(selectedRepair)}
                     isLoading={printLoading}
+                    size="sm"
                   >
-                    Imprimir Ticket
+                    <span className="hidden md:inline">Imprimir Ticket</span>
+                    <span className="md:hidden">Imprimir</span>
                   </Button>
                 </ModalFooter>
               </>
@@ -1594,44 +1680,45 @@ export default function ReparacionesPage() {
         <Modal 
           isOpen={isDeleteOpen} 
           onClose={onDeleteClose}
-          size="md"
+          size="sm"
           scrollBehavior="inside"
           classNames={{
             wrapper: "z-[1000]",
             backdrop: "z-[999]",
-            base: "max-h-[95vh] my-2 mx-2 sm:mx-6",
-            body: "max-h-[60vh] overflow-y-auto py-4",
-            header: "border-b border-gray-200 pb-4",
-            footer: "border-t border-gray-200 pt-4"
+            base: "max-h-[95vh] my-1 mx-1 sm:my-2 sm:mx-2 md:mx-6",
+            body: "max-h-[60vh] overflow-y-auto py-2 md:py-4",
+            header: "border-b border-gray-200 pb-2 md:pb-4",
+            footer: "border-t border-gray-200 pt-2 md:pt-4"
           }}
         >
           <ModalContent>
             <ModalHeader>
-              <h3 className={`text-xl font-bold ${textColors.primary}`}>Confirmar Eliminación</h3>
+              <h3 className={`text-lg md:text-xl font-bold ${textColors.primary}`}>Confirmar Eliminación</h3>
             </ModalHeader>
             <ModalBody>
               {selectedRepair && (
-                <div className="space-y-4">
-                  <p className={textColors.secondary}>{t('repairs.deleteMessage')}</p>
-                  <div className="bg-red-50 p-4 rounded-lg">
-                    <p className={`font-medium ${textColors.primary}`}>{selectedRepair.title}</p>
-                    <p className={`text-sm ${textColors.secondary}`}>Cliente: {getCustomerName(selectedRepair.customers, selectedRepair.unregistered_customer_name)}</p>
-                    <p className={`text-sm ${textColors.secondary}`}>Dispositivo: {getDeviceName(selectedRepair.devices, selectedRepair.unregistered_device_info)}</p>
+                <div className="space-y-3 md:space-y-4">
+                  <p className={`text-sm md:text-base ${textColors.secondary}`}>{t('repairs.deleteMessage')}</p>
+                  <div className="bg-red-50 p-3 md:p-4 rounded-lg">
+                    <p className={`text-sm md:text-base font-medium ${textColors.primary}`}>{selectedRepair.title}</p>
+                    <p className={`text-xs md:text-sm ${textColors.secondary}`}>Cliente: {getCustomerName(selectedRepair.customers, selectedRepair.unregistered_customer_name)}</p>
+                    <p className={`text-xs md:text-sm ${textColors.secondary}`}>Dispositivo: {getDeviceName(selectedRepair.devices, selectedRepair.unregistered_device_info)}</p>
                   </div>
-                  <p className="text-sm text-red-600">Esta acción no se puede deshacer.</p>
+                  <p className="text-xs md:text-sm text-red-600">Esta acción no se puede deshacer.</p>
                 </div>
               )}
             </ModalBody>
-            <ModalFooter>
-              <Button color="default" variant="light" onPress={onDeleteClose}>
+            <ModalFooter className="gap-2">
+              <Button color="default" variant="light" onPress={onDeleteClose} size="sm">
                 Cancelar
               </Button>
               <Button 
                 color="danger" 
                 onPress={confirmDeleteRepair}
                 isLoading={deleteLoading}
+                size="sm"
               >
-                                  {t('common.delete')}
+                {t('common.delete')}
               </Button>
             </ModalFooter>
           </ModalContent>
@@ -1641,33 +1728,33 @@ export default function ReparacionesPage() {
         <Modal 
           isOpen={isStatusOpen} 
           onClose={onStatusClose}
-          size="lg"
+          size="md"
           scrollBehavior="inside"
           classNames={{
             wrapper: "z-[1000]",
             backdrop: "z-[999]",
-            base: "max-h-[95vh] my-2 mx-2 sm:mx-6",
-            body: "max-h-[70vh] overflow-y-auto py-4",
-            header: "border-b border-gray-200 pb-4",
-            footer: "border-t border-gray-200 pt-4"
+            base: "max-h-[95vh] my-1 mx-1 sm:my-2 sm:mx-2 md:mx-6",
+            body: "max-h-[70vh] overflow-y-auto py-2 md:py-4",
+            header: "border-b border-gray-200 pb-2 md:pb-4",
+            footer: "border-t border-gray-200 pt-2 md:pt-4"
           }}
         >
           <ModalContent>
             <ModalHeader>
-              <h2 className={`text-xl font-bold ${textColors.primary}`}>Actualizar Estado de la Reparación</h2>
+              <h2 className={`text-lg md:text-xl font-bold ${textColors.primary}`}>Actualizar Estado de la Reparación</h2>
             </ModalHeader>
             <ModalBody>
               {selectedRepair && (
-                <div className="space-y-4">
+                <div className="space-y-3 md:space-y-4">
                   <div className="flex items-center gap-2">
-                    <p className={`text-sm ${textColors.secondary}`}>Estado actual:</p>
+                    <p className={`text-xs md:text-sm ${textColors.secondary}`}>Estado actual:</p>
                     <Chip color={getStatusColor(selectedRepair.status) as any} size="sm">
                       {getStatusLabel(selectedRepair.status)}
                     </Chip>
                   </div>
                   <div className="flex flex-col gap-2 pt-2">
-                    <p className={`text-sm font-medium ${textColors.primary}`}>Seleccionar nuevo estado:</p>
-                    <div className="grid grid-cols-2 gap-2">
+                    <p className={`text-xs md:text-sm font-medium ${textColors.primary}`}>Seleccionar nuevo estado:</p>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                       {['received', 'diagnosed', 'in_progress', 'completed', 'delivered', 'cancelled'].map(status => (
                         <Button
                           key={status}
@@ -1685,8 +1772,8 @@ export default function ReparacionesPage() {
                 </div>
               )}
             </ModalBody>
-            <ModalFooter>
-              <Button variant="light" onClick={onStatusClose}>
+            <ModalFooter className="gap-2">
+              <Button variant="light" onClick={onStatusClose} size="sm">
                 Cancelar
               </Button>
             </ModalFooter>

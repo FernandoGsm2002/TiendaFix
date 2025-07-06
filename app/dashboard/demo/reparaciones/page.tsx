@@ -296,8 +296,8 @@ export default function DemoReparacionesPage() {
         </CardBody>
       </Card>
 
-      {/* Tabla de reparaciones */}
-      <Card className="shadow-lg">
+      {/* Tabla de reparaciones - Vista Desktop */}
+      <Card className="shadow-lg hidden md:block">
         <CardHeader className="pb-0">
           <div className="flex items-center justify-between w-full">
             <h2 className="text-lg font-semibold text-gray-900">
@@ -417,6 +417,112 @@ export default function DemoReparacionesPage() {
           </Table>
         </CardBody>
       </Card>
+
+      {/* Vista de Cards para Móvil */}
+      <div className="md:hidden">
+        <div className="mb-4">
+          <h2 className="text-lg font-semibold text-gray-900 mb-2">
+            Lista de Reparaciones ({filteredRepairs.length})
+          </h2>
+          <Chip color="primary" variant="flat" size="sm">
+            Solo visualización
+          </Chip>
+        </div>
+        
+        <div className="space-y-4">
+          {filteredRepairs.map((repair) => (
+            <Card key={repair.id} className="shadow-lg hover:shadow-xl transition-shadow">
+              <CardBody className="p-4">
+                {/* Header del card */}
+                <div className="flex items-start justify-between mb-3">
+                  <div className="flex items-center gap-3 flex-1">
+                    <div className="bg-blue-100 p-2 rounded-xl">
+                      <User className="h-5 w-5 text-blue-600" />
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="font-medium text-gray-900 text-sm">{repair.customer_name}</h3>
+                      <p className="text-xs text-gray-500">{formatDate(repair.received_date)}</p>
+                    </div>
+                  </div>
+                  <div className="flex flex-col items-end gap-1">
+                    <Chip 
+                      color={getStatusColor(repair.status)}
+                      variant="flat"
+                      size="sm"
+                    >
+                      {getStatusLabel(repair.status)}
+                    </Chip>
+                    <span className={`text-xs font-medium ${getPriorityColor(repair.priority)}`}>
+                      {getPriorityLabel(repair.priority)}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Información del dispositivo */}
+                <div className="mb-3">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Smartphone className="h-4 w-4 text-gray-400" />
+                    <span className="text-sm font-medium text-gray-900">{repair.device_info}</span>
+                  </div>
+                  <div className="bg-gray-50 p-2 rounded-lg">
+                    <p className="text-xs font-medium text-gray-700 mb-1">{repair.title}</p>
+                    <p className="text-xs text-gray-600">{repair.description}</p>
+                  </div>
+                </div>
+
+                {/* Técnico y costo */}
+                <div className="grid grid-cols-2 gap-4 mb-3">
+                  <div>
+                    <p className="text-xs text-gray-500 mb-1">Técnico</p>
+                    <div className="flex items-center gap-2">
+                      {repair.technician ? (
+                        <>
+                          <div className="w-5 h-5 bg-green-100 rounded-full flex items-center justify-center">
+                            <User className="h-3 w-3 text-green-600" />
+                          </div>
+                          <span className="text-xs text-gray-900 font-medium">{repair.technician}</span>
+                        </>
+                      ) : (
+                        <span className="text-xs text-gray-500">Sin asignar</span>
+                      )}
+                    </div>
+                  </div>
+                  <div>
+                    <p className="text-xs text-gray-500 mb-1">Costo</p>
+                    <div className="flex items-center gap-1">
+                      <DollarSign className="h-3 w-3 text-green-600" />
+                      <span className="text-sm font-medium text-gray-900">S/ {repair.cost}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Acciones */}
+                <div className="flex gap-2 justify-center">
+                  <Button
+                    variant="ghost"
+                    color="primary"
+                    size="sm"
+                    startContent={<Eye className="h-4 w-4" />}
+                    onPress={() => viewRepairDetails(repair)}
+                  >
+                    Ver Detalles
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    color="warning"
+                    size="sm"
+                    startContent={<Edit3 className="h-4 w-4" />}
+                    className="cursor-not-allowed opacity-50"
+                    disabled
+                  >
+                    Editar
+                  </Button>
+                </div>
+              </CardBody>
+            </Card>
+          ))}
+        </div>
+      </div>
 
       {/* Modal de detalles */}
       <Modal isOpen={isOpen} onClose={onClose} size="2xl">

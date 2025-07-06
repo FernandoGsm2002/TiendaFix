@@ -117,9 +117,8 @@ export default function TechnicianHeader({ onMobileMenuToggle, mobileMenuOpen }:
             </div>
             <div className="flex-1 min-w-0">
               <h1 className="text-xl md:text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent truncate">
-                {userProfile?.organization_name || 'Mi Taller'}
+                {userProfile?.organization_name ? `${userProfile.organization_name} - Panel de Técnico` : 'Panel de Técnico'}
               </h1>
-              <p className="text-gray-600 font-medium text-xs md:text-base hidden sm:block">Panel de Técnico • Área de trabajo personal</p>
             </div>
           </div>
 

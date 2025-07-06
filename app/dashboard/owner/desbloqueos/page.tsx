@@ -29,8 +29,8 @@ import {
   TableBody,
   TableRow,
   TableCell,
-  Textarea
-} from '@heroui/react'
+      Textarea
+  } from '@heroui/react'
 import FormField from '@/app/components/ui/FormField'
 import { textColors } from '@/lib/utils/colors'
 import { useCurrency } from '@/lib/contexts/TranslationContext'
@@ -57,7 +57,9 @@ import {
   Calendar,
   Phone,
   Settings,
-  Trash2
+  Trash2,
+  ArrowUpRight,
+  ArrowDownRight
 } from 'lucide-react'
 
 interface Customer {
@@ -457,77 +459,143 @@ export default function DesbloqueoPage() {
 
         {/* Estadísticas */}
         <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
-          <Card className="hover:scale-105 transition-transform border-0 shadow-lg">
+          <Card className="hover:scale-105 transition-all duration-300 border-0 shadow-lg bg-gradient-to-br from-blue-50/60 to-blue-100/40 backdrop-blur-sm">
             <CardBody className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <div className="p-3 rounded-xl bg-gradient-to-br from-blue-400 to-blue-600 shadow-lg">
+                <div className="p-3 rounded-xl bg-gradient-to-br from-blue-400/80 to-blue-600/80 shadow-lg">
                   <Unlock className="w-6 h-6 text-white" />
                 </div>
-                <Chip color="primary" variant="flat">Total</Chip>
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1">
+                    <ArrowUpRight className="w-3 h-3 text-green-500" />
+                    <span className="text-xs text-green-600 font-medium">+18%</span>
+                  </div>
+                  <Chip color="primary" variant="flat" size="sm" className="font-medium">
+                    Total
+                  </Chip>
+                </div>
               </div>
               <div className="space-y-2">
-                <p className={`text-sm font-medium ${textColors.tertiary}`}>Total</p>
-                <p className={`text-3xl font-bold ${textColors.primary}`}>{stats.total}</p>
+                <p className="text-sm font-medium text-gray-700">Total</p>
+                <p className="text-3xl font-bold text-blue-700">{stats.total}</p>
+                <p className="text-xs text-gray-500">Desbloqueos procesados</p>
               </div>
             </CardBody>
           </Card>
 
-          <Card className="hover:scale-105 transition-transform border-0 shadow-lg">
+          <Card className="hover:scale-105 transition-all duration-300 border-0 shadow-lg bg-gradient-to-br from-yellow-50/60 to-orange-100/40 backdrop-blur-sm">
             <CardBody className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <div className="p-3 rounded-xl bg-gradient-to-br from-yellow-400 to-orange-500 shadow-lg">
+                <div className="p-3 rounded-xl bg-gradient-to-br from-yellow-400/80 to-orange-500/80 shadow-lg">
                   <Clock className="w-6 h-6 text-white" />
                 </div>
-                <Chip color="warning" variant="flat">Pendientes</Chip>
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1">
+                    <ArrowDownRight className="w-3 h-3 text-red-500" />
+                    <span className="text-xs text-red-600 font-medium">-5%</span>
+                  </div>
+                  <Chip color="warning" variant="flat" size="sm" className="font-medium">
+                    Pendientes
+                  </Chip>
+                </div>
               </div>
               <div className="space-y-2">
-                <p className={`text-sm font-medium ${textColors.tertiary}`}>Pendientes</p>
-                <p className={`text-3xl font-bold text-yellow-600`}>{stats.pendientes}</p>
+                <p className="text-sm font-medium text-gray-700">Pendientes</p>
+                <p className="text-3xl font-bold text-yellow-700">{stats.pendientes}</p>
+                <Progress 
+                  value={(stats.pendientes / Math.max(stats.total, 1)) * 100} 
+                  color="warning" 
+                  size="sm" 
+                  className="max-w-md"
+                />
               </div>
             </CardBody>
           </Card>
 
-          <Card className="hover:scale-105 transition-transform border-0 shadow-lg">
+          <Card className="hover:scale-105 transition-all duration-300 border-0 shadow-lg bg-gradient-to-br from-indigo-50/60 to-blue-100/40 backdrop-blur-sm">
             <CardBody className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <div className="p-3 rounded-xl bg-gradient-to-br from-blue-400 to-blue-600 shadow-lg">
+                <div className="p-3 rounded-xl bg-gradient-to-br from-indigo-400/80 to-blue-600/80 shadow-lg">
                   <Play className="w-6 h-6 text-white" />
                 </div>
-                <Chip color="primary" variant="flat">Proceso</Chip>
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1">
+                    <ArrowUpRight className="w-3 h-3 text-green-500" />
+                    <span className="text-xs text-green-600 font-medium">+25%</span>
+                  </div>
+                  <Chip color="primary" variant="flat" size="sm" className="font-medium">
+                    Proceso
+                  </Chip>
+                </div>
               </div>
               <div className="space-y-2">
-                <p className={`text-sm font-medium ${textColors.tertiary}`}>En Proceso</p>
-                <p className={`text-3xl font-bold text-blue-600`}>{stats.enProceso}</p>
+                <p className="text-sm font-medium text-gray-700">En Proceso</p>
+                <p className="text-3xl font-bold text-indigo-700">{stats.enProceso}</p>
+                <Progress 
+                  value={(stats.enProceso / Math.max(stats.total, 1)) * 100} 
+                  color="primary" 
+                  size="sm" 
+                  className="max-w-md"
+                />
               </div>
             </CardBody>
           </Card>
 
-          <Card className="hover:scale-105 transition-transform border-0 shadow-lg">
+          <Card className="hover:scale-105 transition-all duration-300 border-0 shadow-lg bg-gradient-to-br from-green-50/60 to-emerald-100/40 backdrop-blur-sm">
             <CardBody className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <div className="p-3 rounded-xl bg-gradient-to-br from-green-400 to-green-600 shadow-lg">
+                <div className="p-3 rounded-xl bg-gradient-to-br from-green-400/80 to-green-600/80 shadow-lg">
                   <CheckCircle2 className="w-6 h-6 text-white" />
                 </div>
-                <Chip color="success" variant="flat">Completados</Chip>
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1">
+                    <ArrowUpRight className="w-3 h-3 text-green-500" />
+                    <span className="text-xs text-green-600 font-medium">+30%</span>
+                  </div>
+                  <Chip color="success" variant="flat" size="sm" className="font-medium">
+                    Completados
+                  </Chip>
+                </div>
               </div>
               <div className="space-y-2">
-                <p className={`text-sm font-medium ${textColors.tertiary}`}>Completados</p>
-                <p className={`text-3xl font-bold text-green-600`}>{stats.completados}</p>
+                <p className="text-sm font-medium text-gray-700">Completados</p>
+                <p className="text-3xl font-bold text-green-700">{stats.completados}</p>
+                <Progress 
+                  value={(stats.completados / Math.max(stats.total, 1)) * 100} 
+                  color="success" 
+                  size="sm" 
+                  className="max-w-md"
+                />
               </div>
             </CardBody>
           </Card>
 
-          <Card className="hover:scale-105 transition-transform border-0 shadow-lg">
+          <Card className="hover:scale-105 transition-all duration-300 border-0 shadow-lg bg-gradient-to-br from-emerald-50/60 to-green-100/40 backdrop-blur-sm">
             <CardBody className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <div className="p-3 rounded-xl bg-gradient-to-br from-emerald-400 to-emerald-600 shadow-lg">
+                <div className="p-3 rounded-xl bg-gradient-to-br from-emerald-400/80 to-emerald-600/80 shadow-lg">
                   <DollarSign className="w-6 h-6 text-white" />
                 </div>
-                <Chip color="success" variant="flat">Ingresos</Chip>
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1">
+                    <ArrowUpRight className="w-3 h-3 text-green-500" />
+                    <span className="text-xs text-green-600 font-medium">+42%</span>
+                  </div>
+                  <Chip color="success" variant="flat" size="sm" className="font-medium">
+                    Ingresos
+                  </Chip>
+                </div>
               </div>
               <div className="space-y-2">
-                <p className={`text-sm font-medium ${textColors.tertiary}`}>Ingresos</p>
-                <p className={`text-lg font-bold text-emerald-600`}>{formatCurrency(stats.totalIngresos)}</p>
+                <p className="text-sm font-medium text-gray-700">Ingresos</p>
+                <p className="text-lg font-bold text-emerald-700">{formatCurrency(stats.totalIngresos)}</p>
+                <Progress 
+                  value={85} 
+                  color="success" 
+                  size="sm" 
+                  className="max-w-md"
+                />
+                <p className="text-xs text-gray-500">Meta: {formatCurrency(stats.totalIngresos * 1.2)}</p>
               </div>
             </CardBody>
           </Card>

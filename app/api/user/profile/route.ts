@@ -28,13 +28,30 @@ async function getUserProfile(supabase: any) {
 
   console.log('✅ User found in database:', { id: user.id, email: user.email, role: user.role })
 
+  // Obtener el nombre real de la organización si existe
+  let organization_name = null
+  if (user.organization_id) {
+    const { data: organization, error: orgError } = await supabase
+      .from('organizations')
+      .select('name')
+      .eq('id', user.organization_id)
+      .single()
+    
+    if (!orgError && organization) {
+      organization_name = organization.name
+      console.log('✅ Organization name found:', organization_name)
+    } else {
+      console.warn('⚠️ Could not fetch organization name:', orgError)
+    }
+  }
+
   return {
     id: user.id, // ID real de la base de datos
     email: user.email,
     name: user.name,
     role: user.role,
     organization_id: user.organization_id,
-    organization_name: 'TiendaFix Central',
+    organization_name: organization_name,
     is_active: true,
     status: 'approved'
   }

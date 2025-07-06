@@ -287,8 +287,8 @@ export default function DemoInventarioPage() {
         </CardBody>
       </Card>
 
-      {/* Tabla de productos */}
-      <Card className="shadow-lg">
+      {/* Tabla de productos - Vista Desktop */}
+      <Card className="shadow-lg hidden md:block">
         <CardHeader className="pb-0">
           <div className="flex items-center justify-between w-full">
             <h2 className="text-lg font-semibold text-gray-900">
@@ -421,6 +421,124 @@ export default function DemoInventarioPage() {
           </Table>
         </CardBody>
       </Card>
+
+      {/* Vista de Cards para Móvil */}
+      <div className="md:hidden">
+        <div className="mb-4">
+          <h2 className="text-lg font-semibold text-gray-900 mb-2">
+            Catálogo de Productos ({filteredProducts.length})
+          </h2>
+          <Chip color="primary" variant="flat" size="sm">
+            Solo visualización
+          </Chip>
+        </div>
+        
+        <div className="space-y-4">
+          {filteredProducts.map((product) => {
+            const IconComponent = getCategoryIcon(product.category)
+            const margin = ((product.sale_price - product.unit_cost) / product.unit_cost * 100)
+            const stockStatus = getStockStatus(product.stock_quantity, product.min_stock)
+            const stockProgress = (product.stock_quantity / (product.min_stock * 3)) * 100
+
+            return (
+              <Card key={product.id} className="shadow-lg hover:shadow-xl transition-shadow">
+                <CardBody className="p-4">
+                  {/* Header del producto */}
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="flex items-center gap-3 flex-1">
+                      <div className="bg-blue-100 p-2 rounded-xl">
+                        <IconComponent className="h-5 w-5 text-blue-600" />
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="font-medium text-gray-900 text-sm">{product.name}</h3>
+                        <p className="text-xs text-gray-500">{product.brand} - {product.model}</p>
+                        <div className="flex items-center gap-2 mt-1">
+                          <Tag className="h-3 w-3 text-blue-600" />
+                          <span className="text-xs text-gray-600 font-mono">{product.sku}</span>
+                        </div>
+                      </div>
+                    </div>
+                    <Chip variant="flat" size="sm" color="primary">
+                      {product.category}
+                    </Chip>
+                  </div>
+
+                  {/* Estado del Stock */}
+                  <div className="mb-3">
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-sm font-medium text-gray-600">Stock</span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-lg font-bold text-gray-900">{product.stock_quantity}</span>
+                        <Chip 
+                          color={getStatusColor(stockStatus)}
+                          variant="flat"
+                          size="sm"
+                        >
+                          {getStatusLabel(stockStatus)}
+                        </Chip>
+                      </div>
+                    </div>
+                    <Progress 
+                      value={Math.min(stockProgress, 100)} 
+                      color={stockStatus === 'active' ? 'success' : stockStatus === 'low_stock' ? 'warning' : 'danger'}
+                      size="sm"
+                      className="mb-1"
+                    />
+                    <p className="text-xs text-gray-500">Mínimo: {product.min_stock}</p>
+                  </div>
+
+                  {/* Información de Precios */}
+                  <div className="grid grid-cols-2 gap-4 mb-3">
+                    <div className="text-center">
+                      <p className="text-xs text-gray-500">Costo</p>
+                      <p className="text-sm font-medium text-gray-900">{formatCurrency(product.unit_cost)}</p>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-xs text-gray-500">Precio Venta</p>
+                      <p className="text-sm font-medium text-gray-900">{formatCurrency(product.sale_price)}</p>
+                    </div>
+                  </div>
+
+                  {/* Margen */}
+                  <div className="flex items-center justify-center gap-2 mb-3 p-2 bg-gray-50 rounded-lg">
+                    {margin > 0 ? (
+                      <TrendingUp className="h-4 w-4 text-green-600" />
+                    ) : (
+                      <TrendingDown className="h-4 w-4 text-red-600" />
+                    )}
+                    <span className={`font-medium ${margin > 0 ? 'text-green-600' : 'text-red-600'}`}>
+                      Margen: {margin.toFixed(1)}%
+                    </span>
+                  </div>
+
+                  {/* Acciones */}
+                  <div className="flex gap-2 justify-center">
+                    <Button
+                      variant="ghost"
+                      color="primary"
+                      size="sm"
+                      startContent={<Eye className="h-4 w-4" />}
+                      onPress={() => viewProductDetails(product)}
+                    >
+                      Ver Detalles
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      color="warning"
+                      size="sm"
+                      startContent={<Edit3 className="h-4 w-4" />}
+                      className="cursor-not-allowed opacity-50"
+                      disabled
+                    >
+                      Editar
+                    </Button>
+                  </div>
+                </CardBody>
+              </Card>
+            )
+          })}
+        </div>
+      </div>
 
       {/* Modal de detalles */}
       <Modal isOpen={isOpen} onClose={onClose} size="2xl">

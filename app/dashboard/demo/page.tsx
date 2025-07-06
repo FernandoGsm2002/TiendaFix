@@ -171,13 +171,13 @@ export default function DemoDashboard() {
   return (
     <div className="p-3 md:p-6 space-y-4 md:space-y-6">
       {/* Header con indicador demo ultra premium */}
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-3 md:gap-4">
         <div>
-          <h1 className="text-xl md:text-2xl lg:text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+          <h1 className="text-lg md:text-2xl lg:text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
             Dashboard Principal
           </h1>
-          <p className="text-gray-600 mt-1 flex items-center gap-2 text-sm md:text-base">
-            <Sparkles className="h-4 w-4 text-blue-500" />
+          <p className="text-gray-600 mt-1 flex items-center gap-2 text-xs md:text-base">
+            <Sparkles className="h-3 w-3 md:h-4 md:w-4 text-blue-500" />
             Bienvenido al sistema de gestión TiendaFix
           </p>
         </div>
@@ -185,9 +185,9 @@ export default function DemoDashboard() {
           <Chip 
             color="warning" 
             variant="shadow" 
-            size="md"
+            size="sm"
             className="font-bold animate-pulse"
-            startContent={<Eye className="h-4 w-4" />}
+            startContent={<Eye className="h-3 w-3 md:h-4 md:w-4" />}
           >
             🎭 MODO DEMO
           </Chip>
@@ -197,43 +197,49 @@ export default function DemoDashboard() {
             size="sm"
             startContent={<Activity className="h-3 w-3" />}
           >
-            Activo desde 10:30 AM
+            <span className="hidden sm:inline">Activo desde 10:30 AM</span>
+            <span className="sm:hidden">Activo</span>
+          </Chip>
+          <Chip 
+            color="primary" 
+            variant="flat" 
+            size="sm"
+            startContent={<Zap className="h-3 w-3" />}
+          >
+            <span className="hidden sm:inline">Datos en tiempo real</span>
+            <span className="sm:hidden">Live</span>
           </Chip>
         </div>
       </div>
 
-      {/* Tarjetas de estadísticas principales con efectos premium */}
+      {/* Estadísticas principales con efectos premium */}
       <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3 md:gap-4">
         {statsCards.map((stat, index) => {
           const Icon = stat.icon
           return (
-            <Card key={index} className="shadow-xl hover:shadow-2xl transition-all duration-300 border-0 bg-white/80 backdrop-blur-sm hover:scale-105">
+            <Card key={index} className="group hover:scale-105 transition-transform duration-300 shadow-lg hover:shadow-xl border-0 bg-gradient-to-br from-white via-gray-50/50 to-white backdrop-blur-sm">
               <CardBody className="p-3 md:p-4">
-                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 md:gap-0">
-                  <div className="flex-1 order-2 md:order-1">
-                    <p className="text-xs md:text-sm font-medium text-gray-600 mb-1 line-clamp-1">
+                <div className="flex flex-col items-center text-center gap-2">
+                  <div className={`p-2 md:p-3 rounded-xl bg-gradient-to-r ${stat.gradient} group-hover:scale-110 transition-transform duration-300`}>
+                    <Icon className="h-4 w-4 md:h-5 md:w-5 text-white" />
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-xs md:text-sm font-medium text-gray-600 line-clamp-2">
                       {stat.title}
                     </p>
-                    <p className="text-lg md:text-2xl font-bold text-gray-900 mb-2">
+                    <p className="text-lg md:text-2xl font-bold text-gray-900">
                       {stat.value}
                     </p>
-                    <div className="flex items-center">
-                      <Chip
-                        size="sm"
-                        color={stat.changeType === 'increase' ? 'success' : 'danger'}
-                        variant="flat"
-                        startContent={stat.changeType === 'increase' ? 
-                          <ArrowUp className="h-3 w-3" /> : 
-                          <ArrowDown className="h-3 w-3" />
-                        }
-                        className="text-xs font-medium"
-                      >
+                    <div className="flex items-center justify-center gap-1">
+                      {stat.changeType === 'increase' ? (
+                        <ArrowUp className="h-3 w-3 text-green-600" />
+                      ) : (
+                        <ArrowDown className="h-3 w-3 text-red-600" />
+                      )}
+                      <span className={`text-xs font-medium ${stat.changeType === 'increase' ? 'text-green-600' : 'text-red-600'}`}>
                         {stat.change}
-                      </Chip>
+                      </span>
                     </div>
-                  </div>
-                  <div className={`bg-gradient-to-br ${stat.gradient} p-2 md:p-3 rounded-xl shadow-lg flex-shrink-0 order-1 md:order-2 self-center`}>
-                    <Icon className="h-5 w-5 md:h-6 md:w-6 text-white" />
                   </div>
                 </div>
               </CardBody>
@@ -242,53 +248,41 @@ export default function DemoDashboard() {
         })}
       </div>
 
-      {/* Estadísticas resumidas y progreso con componentes avanzados */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+      {/* Estadísticas rápidas con progress bars */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4">
         {quickStats.map((stat, index) => {
           const Icon = stat.icon
           return (
-            <Card key={index} className="shadow-xl border-0 bg-gradient-to-br from-white via-gray-50/30 to-white backdrop-blur-sm">
-              <CardBody className="p-4 md:p-6">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0 mb-4">
-                  <div className="flex items-center gap-3">
-                    <Avatar
-                      icon={<Icon className="h-5 w-5" />}
-                      size="md"
-                      color={stat.color as 'success' | 'primary' | 'warning' | 'secondary' | 'default' | 'danger'}
-                      classNames={{ 
-                        base: "shadow-lg",
-                        icon: "text-white"
-                      }}
-                    />
-                    <h3 className="text-base md:text-lg font-semibold text-gray-900 line-clamp-1">
-                      {stat.title}
-                    </h3>
+            <Card key={index} className="shadow-lg border-0 bg-gradient-to-br from-white via-gray-50/30 to-white backdrop-blur-sm">
+              <CardBody className="p-3 md:p-4">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className={`p-2 rounded-lg bg-gradient-to-r ${
+                    stat.color === 'success' ? 'from-green-400 to-emerald-600' :
+                    stat.color === 'primary' ? 'from-blue-400 to-blue-600' :
+                    'from-orange-400 to-orange-600'
+                  }`}>
+                    <Icon className="h-4 w-4 md:h-5 md:w-5 text-white" />
                   </div>
-                  <Badge 
-                    color={stat.color as 'success' | 'primary' | 'warning' | 'secondary' | 'default' | 'danger'} 
-                    variant="flat" 
-                    size="md"
-                  >
-                    {Math.round(stat.progress)}%
-                  </Badge>
+                  <div className="flex-1">
+                    <p className="text-sm md:text-base font-semibold text-gray-900">
+                      {stat.title}
+                    </p>
+                    <p className="text-xs md:text-sm text-gray-600">
+                      {stat.subtitle}
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-lg md:text-xl font-bold text-gray-900">
+                      {stat.value}
+                    </p>
+                  </div>
                 </div>
-                <p className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent mb-2">
-                  {stat.value}
-                </p>
-                <p className="text-sm text-gray-500 mb-4 line-clamp-2">
-                  {stat.subtitle}
-                </p>
                 <Progress 
-                  value={Math.min(stat.progress, 100)} 
+                  value={stat.progress} 
                   color={stat.color as 'success' | 'primary' | 'warning' | 'secondary' | 'default' | 'danger'}
-                  size="md"
-                  className="mb-2"
-                  showValueLabel={false}
+                  size="sm"
+                  className="max-w-full"
                 />
-                <div className="flex items-center gap-2 text-xs text-gray-500">
-                  <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full animate-pulse"></div>
-                  <span>Actualizado hace 5 min</span>
-                </div>
               </CardBody>
             </Card>
           )
@@ -296,27 +290,28 @@ export default function DemoDashboard() {
       </div>
 
       {/* Actividad reciente y estadísticas adicionales */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 md:gap-6">
         {/* Actividad reciente con efectos premium */}
         <Card className="shadow-xl border-0 bg-gradient-to-br from-white via-blue-50/30 to-white backdrop-blur-sm">
           <CardHeader className="pb-3">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0 w-full">
               <div className="flex items-center gap-3">
                 <Avatar
-                  icon={<Activity className="h-5 w-5" />}
-                  size="md"
+                  icon={<Activity className="h-4 w-4 md:h-5 md:w-5" />}
+                  size="sm"
                   color="primary"
                   classNames={{ 
                     base: "shadow-lg",
                     icon: "text-white"
                   }}
                 />
-                <h3 className="text-base md:text-lg font-semibold text-gray-900">
+                <h3 className="text-sm md:text-lg font-semibold text-gray-900">
                   Actividad Reciente
                 </h3>
               </div>
               <Badge color="primary" variant="flat" size="sm">
-                En vivo
+                <span className="hidden sm:inline">En vivo</span>
+                <span className="sm:hidden">Live</span>
               </Badge>
             </div>
           </CardHeader>
@@ -325,25 +320,25 @@ export default function DemoDashboard() {
               {recentActivity.map((activity, index) => {
                 const Icon = activity.icon
                 return (
-                  <div key={activity.id} className="flex items-start gap-3 p-3 rounded-xl hover:bg-gradient-to-r hover:from-gray-50 hover:to-blue-50 transition-all duration-300 group">
-                                         <Avatar
-                       icon={<Icon className="h-4 w-4" />}
-                       size="sm"
-                       color={activity.color as 'success' | 'primary' | 'warning' | 'secondary' | 'default' | 'danger'}
-                       classNames={{ 
-                         base: "shadow-md group-hover:shadow-lg transition-all flex-shrink-0",
-                         icon: "text-white"
-                       }}
-                     />
+                  <div key={activity.id} className="flex items-start gap-3 p-2 md:p-3 rounded-xl hover:bg-gradient-to-r hover:from-gray-50 hover:to-blue-50 transition-all duration-300 group">
+                    <Avatar
+                      icon={<Icon className="h-3 w-3 md:h-4 md:w-4" />}
+                      size="sm"
+                      color={activity.color as 'success' | 'primary' | 'warning' | 'secondary' | 'default' | 'danger'}
+                      classNames={{ 
+                        base: "shadow-md group-hover:shadow-lg transition-all flex-shrink-0",
+                        icon: "text-white"
+                      }}
+                    />
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold text-gray-900 line-clamp-1">
+                      <p className="text-xs md:text-sm font-semibold text-gray-900 line-clamp-1">
                         {activity.title}
                       </p>
-                      <p className="text-sm text-gray-600 line-clamp-2">
+                      <p className="text-xs md:text-sm text-gray-600 line-clamp-2">
                         {activity.description}
                       </p>
-                      <div className="flex flex-wrap items-center gap-2 mt-1">
-                        <Chip size="sm" color="default" variant="flat" className="max-w-32 truncate">
+                      <div className="flex flex-wrap items-center gap-1 md:gap-2 mt-1">
+                        <Chip size="sm" color="default" variant="flat" className="max-w-24 md:max-w-32 truncate text-xs">
                           {activity.customer}
                         </Chip>
                         <span className="text-xs text-gray-500">
@@ -364,68 +359,69 @@ export default function DemoDashboard() {
             <div className="flex items-center justify-between w-full">
               <div className="flex items-center gap-3">
                 <Avatar
-                  icon={<BarChart3 className="h-5 w-5" />}
-                  size="md"
+                  icon={<BarChart3 className="h-4 w-4 md:h-5 md:w-5" />}
+                  size="sm"
                   color="secondary"
                   classNames={{ 
                     base: "shadow-lg",
                     icon: "text-white"
                   }}
                 />
-                <h3 className="text-lg font-semibold text-gray-900">
+                <h3 className="text-sm md:text-lg font-semibold text-gray-900">
                   Estado General
                 </h3>
               </div>
               <Tooltip content="Actualizado automáticamente" color="primary">
                 <Badge color="success" variant="flat" size="sm">
                   <Sparkles className="h-3 w-3 mr-1" />
-                  Live
+                  <span className="hidden sm:inline">Live</span>
+                  <span className="sm:hidden">•</span>
                 </Badge>
               </Tooltip>
             </div>
           </CardHeader>
           <CardBody className="pt-0">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-2 md:gap-4">
               <Card className="bg-gradient-to-br from-green-50 to-emerald-50 border border-green-200 shadow-lg">
-                <CardBody className="text-center p-4">
-                  <CheckCircle className="h-8 w-8 text-green-600 mx-auto mb-2" />
-                  <p className="text-2xl font-bold text-green-900">
+                <CardBody className="text-center p-2 md:p-4">
+                  <CheckCircle className="h-6 w-6 md:h-8 md:w-8 text-green-600 mx-auto mb-2" />
+                  <p className="text-lg md:text-2xl font-bold text-green-900">
                     {DEMO_STATS.completedRepairs}
                   </p>
-                  <p className="text-sm text-green-700 font-medium">
+                  <p className="text-xs md:text-sm text-green-700 font-medium">
                     Completadas
                   </p>
                 </CardBody>
               </Card>
               <Card className="bg-gradient-to-br from-blue-50 to-blue-50 border border-blue-200 shadow-lg">
-                <CardBody className="text-center p-4">
-                  <Clock className="h-8 w-8 text-blue-600 mx-auto mb-2" />
-                  <p className="text-2xl font-bold text-blue-900">
+                <CardBody className="text-center p-2 md:p-4">
+                  <Clock className="h-6 w-6 md:h-8 md:w-8 text-blue-600 mx-auto mb-2" />
+                  <p className="text-lg md:text-2xl font-bold text-blue-900">
                     {DEMO_STATS.inProgressRepairs}
                   </p>
-                  <p className="text-sm text-blue-700 font-medium">
+                  <p className="text-xs md:text-sm text-blue-700 font-medium">
                     En Progreso
                   </p>
                 </CardBody>
               </Card>
               <Card className="bg-gradient-to-br from-orange-50 to-orange-50 border border-orange-200 shadow-lg">
-                <CardBody className="text-center p-4">
-                  <AlertCircle className="h-8 w-8 text-orange-600 mx-auto mb-2" />
-                  <p className="text-2xl font-bold text-orange-900">
+                <CardBody className="text-center p-2 md:p-4">
+                  <AlertCircle className="h-6 w-6 md:h-8 md:w-8 text-orange-600 mx-auto mb-2" />
+                  <p className="text-lg md:text-2xl font-bold text-orange-900">
                     {DEMO_STATS.pendingRepairs}
                   </p>
-                  <p className="text-sm text-orange-700 font-medium">
+                  <p className="text-xs md:text-sm text-orange-700 font-medium">
                     Pendientes
                   </p>
                 </CardBody>
               </Card>
               <Card className="bg-gradient-to-br from-purple-50 to-purple-50 border border-purple-200 shadow-lg">
-                <CardBody className="text-center p-4">
-                  <Unlock className="h-8 w-8 text-purple-600 mx-auto mb-2" />
-                  <p className="text-2xl font-bold text-purple-900">
+                <CardBody className="text-center p-2 md:p-4">
+                  <Unlock className="h-6 w-6 md:h-8 md:w-8 text-purple-600 mx-auto mb-2" />
+                  <p className="text-lg md:text-2xl font-bold text-purple-900">
                     {DEMO_STATS.totalUnlocks}
                   </p>
-                  <p className="text-sm text-purple-700 font-medium">
+                  <p className="text-xs md:text-sm text-purple-700 font-medium">
                     Desbloqueos
                   </p>
                 </CardBody>
@@ -437,53 +433,54 @@ export default function DemoDashboard() {
 
       {/* Información del demo ultra premium */}
       <Card className="shadow-2xl border-0 bg-gradient-to-br from-blue-50 via-purple-50 to-blue-50 backdrop-blur-xl">
-        <CardBody className="p-6">
-          <div className="flex items-start gap-4">
+        <CardBody className="p-4 md:p-6">
+          <div className="flex flex-col sm:flex-row items-start gap-4">
             <Avatar
-              icon={<Crown className="h-7 w-7" />}
+              icon={<Crown className="h-5 w-5 md:h-7 md:w-7" />}
               size="lg"
               color="warning"
               classNames={{ 
-                base: "shadow-xl bg-gradient-to-br from-amber-500 to-orange-600",
+                base: "shadow-xl bg-gradient-to-br from-amber-500 to-orange-600 flex-shrink-0",
                 icon: "text-white"
               }}
             />
             <div className="flex-1">
-              <h3 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
+              <h3 className="text-lg md:text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
                 ¡Bienvenido al Modo Demo de TiendaFix! 🎉
               </h3>
-              <p className="text-gray-700 mb-4">
+              <p className="text-sm md:text-base text-gray-700 mb-4">
                 Estás explorando una versión completa del sistema con datos de ejemplo realistas. 
-                Todas las secciones están disponibles para navegar y explorar la funcionalidad.
+                <span className="hidden sm:inline"> Todas las secciones están disponibles para navegar y explorar la funcionalidad.</span>
               </p>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                                 <div className="flex items-center gap-2 p-3 bg-white/60 rounded-lg backdrop-blur-sm">
-                   <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                   <span className="text-sm font-medium text-gray-700">
-                     {DEMO_STATS.totalCustomers} clientes registrados
-                   </span>
-                 </div>
-                 <div className="flex items-center gap-2 p-3 bg-white/60 rounded-lg backdrop-blur-sm">
-                   <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                   <span className="text-sm font-medium text-gray-700">
-                     {DEMO_STATS.totalRepairs} reparaciones en historial
-                   </span>
-                 </div>
-                 <div className="flex items-center gap-2 p-3 bg-white/60 rounded-lg backdrop-blur-sm">
-                   <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
-                   <span className="text-sm font-medium text-gray-700">
-                     {DEMO_STATS.totalProducts} productos en inventario
-                   </span>
-                 </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-2 md:gap-4 mb-4">
+                <div className="flex items-center gap-2 p-2 md:p-3 bg-white/60 rounded-lg backdrop-blur-sm">
+                  <div className="w-2 h-2 bg-green-500 rounded-full flex-shrink-0"></div>
+                  <span className="text-xs md:text-sm font-medium text-gray-700">
+                    {DEMO_STATS.totalCustomers} clientes
+                  </span>
+                </div>
+                <div className="flex items-center gap-2 p-2 md:p-3 bg-white/60 rounded-lg backdrop-blur-sm">
+                  <div className="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0"></div>
+                  <span className="text-xs md:text-sm font-medium text-gray-700">
+                    {DEMO_STATS.totalRepairs} reparaciones
+                  </span>
+                </div>
+                <div className="flex items-center gap-2 p-2 md:p-3 bg-white/60 rounded-lg backdrop-blur-sm">
+                  <div className="w-2 h-2 bg-purple-500 rounded-full flex-shrink-0"></div>
+                  <span className="text-xs md:text-sm font-medium text-gray-700">
+                    {DEMO_STATS.totalProducts} productos
+                  </span>
+                </div>
               </div>
               <Button 
                 color="primary" 
                 variant="shadow" 
-                size="lg"
+                size="md"
                 startContent={<Sparkles className="h-4 w-4" />}
-                className="font-bold"
+                className="font-bold w-full sm:w-auto"
               >
-                Explorar Funcionalidades
+                <span className="hidden sm:inline">Explorar Funcionalidades</span>
+                <span className="sm:hidden">Explorar</span>
               </Button>
             </div>
           </div>

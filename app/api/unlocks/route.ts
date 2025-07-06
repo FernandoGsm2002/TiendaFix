@@ -32,9 +32,9 @@ export async function GET(request: NextRequest) {
     const unlockType = searchParams.get('unlock_type')
     const offset = (page - 1) * limit
 
-    // 3. Construir query optimizada
+    // 3. Construir query optimizada usando la vista
     let query = supabase
-      .from('unlocks')
+      .from('unlocks_view')
       .select(`
         id,
         unlock_type,
@@ -50,19 +50,13 @@ export async function GET(request: NextRequest) {
         notes,
         created_at,
         updated_at,
-        customers!left (
-          id,
-          name,
-          phone,
-          email,
-          anonymous_identifier,
-          customer_type
-        ),
-        users!unlocks_created_by_fkey (
-          id,
-          name,
-          email
-        )
+        customer_name,
+        customer_email,
+        customer_phone,
+        customer_anonymous_identifier,
+        customer_type,
+        created_by_name,
+        created_by_email
       `, { count: 'exact' })
       .eq('organization_id', organizationId)
 
@@ -98,7 +92,7 @@ export async function GET(request: NextRequest) {
 
     // 7. Calcular estadísticas
     const { data: statsData } = await supabase
-      .from('unlocks')
+      .from('unlocks_view')
       .select('status, cost')
       .eq('organization_id', organizationId)
 
@@ -110,7 +104,7 @@ export async function GET(request: NextRequest) {
       totalRevenue: statsData?.filter((u: any) => u.status === 'completed').reduce((sum: number, u: any) => sum + (u.cost || 0), 0) || 0
     }
 
-    // 8. Serializar datos de forma segura
+    // 8. Serializar datos de forma segura usando la vista
     const serializedUnlocks = unlocks?.map((unlock: any) => ({
       id: unlock.id,
       unlock_type: unlock.unlock_type,
@@ -126,18 +120,18 @@ export async function GET(request: NextRequest) {
       notes: unlock.notes,
       created_at: unlock.created_at,
       updated_at: unlock.updated_at,
-      customer: unlock.customers ? {
-        id: unlock.customers.id,
-        name: unlock.customers.name,
-        phone: unlock.customers.phone,
-        email: unlock.customers.email,
-        anonymous_identifier: unlock.customers.anonymous_identifier,
-        customer_type: unlock.customers.customer_type
+      customers: unlock.customer_name ? {
+        id: unlock.customer_id,
+        name: unlock.customer_name,
+        phone: unlock.customer_phone,
+        email: unlock.customer_email,
+        anonymous_identifier: unlock.customer_anonymous_identifier,
+        customer_type: unlock.customer_type
       } : null,
-      technician: unlock.users ? {
-        id: unlock.users.id,
-        name: unlock.users.name,
-        email: unlock.users.email
+      technician: unlock.created_by_name ? {
+        id: unlock.created_by,
+        name: unlock.created_by_name,
+        email: unlock.created_by_email
       } : null
     })) || []
 

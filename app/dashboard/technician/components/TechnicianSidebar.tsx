@@ -20,6 +20,7 @@ import {
 } from 'lucide-react'
 import { useAuth } from '@/lib/auth/auth-context'
 import { useRouter } from 'next/navigation'
+import Image from 'next/image'
 
 interface TechnicianSidebarProps {
   isCollapsed: boolean
@@ -90,7 +91,7 @@ const menuItems = [
 
 export default function TechnicianSidebar({ isCollapsed, onToggleCollapse, onMobileMenuClose }: TechnicianSidebarProps) {
   const pathname = usePathname()
-  const { signOut } = useAuth()
+  const { signOut, userProfile } = useAuth()
   const router = useRouter()
 
   const handleSignOut = async () => {
@@ -185,40 +186,36 @@ export default function TechnicianSidebar({ isCollapsed, onToggleCollapse, onMob
     `}>
       {/* Header del Sidebar con gradiente */}
       <div className={`
-        flex shrink-0 items-center justify-between p-4 border-b border-gray-200/50
-        ${isCollapsed ? 'h-20' : 'h-24'}
+        relative flex shrink-0 items-center justify-center p-4 border-b border-gray-200/50
+        ${isCollapsed ? 'h-20' : 'h-28'}
       `}>
         {!isCollapsed && (
-          <Link href="/dashboard/technician/dashboard" className="flex items-center gap-3 group">
-            <div className="relative">
-              <Avatar
-                icon={<Zap className="h-6 w-6" />}
-                size="lg"
-                classNames={{ 
-                  base: "bg-gradient-to-br from-blue-500 to-purple-600 shadow-lg group-hover:shadow-xl transition-all",
-                  icon: "text-white"
-                }}
+          <Link href="/dashboard/technician/dashboard" className="flex items-center justify-center w-full group">
+            <div className="flex flex-col items-center gap-2">
+              <Image
+                src="/pngs/tiendafixlogo.png"
+                alt="Logo"
+                width={140}
+                height={70}
+                className="object-contain group-hover:scale-105 transition-transform duration-300"
+                priority
               />
-              <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white shadow-sm animate-pulse"></div>
-            </div>
-            <div className="flex items-center">
-              <span className="font-bold text-xl bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                Panel Técnico
-              </span>
             </div>
           </Link>
         )}
+        
+        {/* Botón de toggle posicionado en la esquina */}
         <Button
           isIconOnly
           variant="light"
           onPress={onToggleCollapse}
           className={`
-            h-10 w-10 text-gray-600 hover:text-gray-800 hover:bg-gradient-to-br hover:from-blue-50 hover:to-purple-50 transition-all duration-300 rounded-xl shadow-sm hover:shadow-md
-            ${isCollapsed ? 'mx-auto' : ''}
+            absolute top-4 right-4 h-8 w-8 text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-all duration-300 rounded-lg z-10
+            ${isCollapsed ? 'mx-auto relative top-0 right-0' : ''}
           `}
           aria-label={isCollapsed ? "Expandir sidebar" : "Contraer sidebar"}
         >
-          {isCollapsed ? <ChevronRight className="h-5 w-5" /> : <ChevronLeft className="h-5 w-5" />}
+          {isCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
         </Button>
       </div>
 

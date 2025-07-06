@@ -316,8 +316,8 @@ export default function DemoDesbloqueos() {
         </CardBody>
       </Card>
 
-      {/* Tabla de desbloqueos */}
-      <Card className="shadow-lg">
+      {/* Tabla de desbloqueos - Vista Desktop */}
+      <Card className="shadow-lg hidden md:block">
         <CardHeader className="pb-0">
           <div className="flex items-center justify-between w-full">
             <h2 className="text-lg font-semibold text-gray-900">
@@ -443,6 +443,124 @@ export default function DemoDesbloqueos() {
           </Table>
         </CardBody>
       </Card>
+
+      {/* Vista de Cards para Móvil */}
+      <div className="md:hidden">
+        <div className="mb-4">
+          <h2 className="text-lg font-semibold text-gray-900 mb-2">
+            Lista de Desbloqueos ({filteredUnlocks.length})
+          </h2>
+          <Chip color="primary" variant="flat" size="sm">
+            Solo visualización
+          </Chip>
+        </div>
+        
+        <div className="space-y-4">
+          {filteredUnlocks.map((unlock) => {
+            const UnlockIcon = getUnlockTypeIcon(unlock.unlock_type)
+            const BrandIcon = getBrandIcon(unlock.brand)
+            
+            return (
+              <Card key={unlock.id} className="shadow-lg hover:shadow-xl transition-shadow">
+                <CardBody className="p-4">
+                  {/* Header del card */}
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="flex items-center gap-3 flex-1">
+                      <div className="bg-blue-100 p-2 rounded-xl">
+                        <User className="h-5 w-5 text-blue-600" />
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="font-medium text-gray-900 text-sm">{unlock.customer_name}</h3>
+                        <p className="text-xs text-gray-500">{formatDate(unlock.created_at)}</p>
+                      </div>
+                    </div>
+                    <Chip 
+                      color={getStatusColor(unlock.status)}
+                      variant="flat"
+                      size="sm"
+                    >
+                      {getStatusLabel(unlock.status)}
+                    </Chip>
+                  </div>
+
+                  {/* Información del dispositivo */}
+                  <div className="mb-3">
+                    <div className="flex items-center gap-2 mb-2">
+                      <BrandIcon className="h-4 w-4 text-gray-400" />
+                      <span className="text-sm font-medium text-gray-900">{unlock.brand} {unlock.model}</span>
+                    </div>
+                    <div className="bg-gray-50 p-2 rounded-lg">
+                      <div className="flex items-center gap-2">
+                        <Hash className="h-3 w-3 text-gray-400" />
+                        <span className="text-xs text-gray-600 font-mono">{unlock.imei}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Tipo de desbloqueo */}
+                  <div className="mb-3">
+                    <div className="flex items-center gap-2 justify-center p-2 bg-purple-50 rounded-lg">
+                      <UnlockIcon className="h-4 w-4 text-purple-600" />
+                      <Chip 
+                        color={getUnlockTypeColor(unlock.unlock_type)}
+                        variant="flat"
+                        size="sm"
+                      >
+                        {unlock.unlock_type}
+                      </Chip>
+                    </div>
+                  </div>
+
+                  {/* Información del servicio */}
+                  <div className="grid grid-cols-2 gap-4 mb-3">
+                    <div>
+                      <p className="text-xs text-gray-500 mb-1">Proveedor</p>
+                      <p className="text-sm font-medium text-gray-900">{unlock.provider}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-500 mb-1">Costo</p>
+                      <p className="text-sm font-medium text-gray-900">{formatCurrency(unlock.cost)}</p>
+                    </div>
+                  </div>
+
+                  {/* Tiempo transcurrido */}
+                  <div className="mb-3 p-2 bg-gray-50 rounded-lg text-center">
+                    <p className="text-sm font-medium text-gray-900">
+                      {getTimeElapsed(unlock.created_at, unlock.completion_date)}
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      {unlock.status === 'completed' ? 'completado' : 'transcurrido'}
+                    </p>
+                  </div>
+
+                  {/* Acciones */}
+                  <div className="flex gap-2 justify-center">
+                    <Button
+                      variant="ghost"
+                      color="primary"
+                      size="sm"
+                      startContent={<Eye className="h-4 w-4" />}
+                      onPress={() => viewUnlockDetails(unlock)}
+                    >
+                      Ver Detalles
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      color="warning"
+                      size="sm"
+                      startContent={<Edit3 className="h-4 w-4" />}
+                      className="cursor-not-allowed opacity-50"
+                      disabled
+                    >
+                      Editar
+                    </Button>
+                  </div>
+                </CardBody>
+              </Card>
+            )
+          })}
+        </div>
+      </div>
 
       {/* Modal de detalles */}
       <Modal isOpen={isOpen} onClose={onClose} size="2xl">
