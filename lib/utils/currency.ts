@@ -143,8 +143,11 @@ export function getCurrencyName(currencyCode?: string, locale: string = 'es'): s
   return translations[locale]?.[finalCurrencyCode] || currency.name
 }
 
-// Hook para usar en componentes React
+// DEPRECATED: Use useCurrency from TranslationContext instead
+// This hook is kept for backward compatibility but should not be used in new code
+// The TranslationContext provides reactive currency updates
 export function useCurrency() {
+  console.warn('⚠️ DEPRECATED: useCurrency from currency.ts is deprecated. Use useCurrency from TranslationContext instead for reactive updates.')
   const currentCurrency = getUserCurrency()
   
   return {
@@ -155,6 +158,7 @@ export function useCurrency() {
     symbol: getCurrencySymbol(),
     name: getCurrencyName(),
     changeCurrency: (newCurrency: string) => {
+      console.warn('⚠️ Currency change through currency.ts will not update components reactively. Use TranslationContext instead.')
       if (typeof window !== 'undefined') {
         localStorage.setItem('currency', newCurrency)
       }

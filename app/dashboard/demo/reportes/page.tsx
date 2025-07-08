@@ -33,13 +33,9 @@ import {
 } from 'lucide-react'
 
 export default function DemoReportesPage() {
-  const { t } = useTranslations()
+  const { t, formatCurrency } = useTranslations()
   const [dateRange, setDateRange] = useState('thisMonth')
   const [reportType, setReportType] = useState('general')
-
-  const formatCurrency = (amount: number) => {
-    return `S/ ${amount.toLocaleString()}`
-  }
 
   const formatPercentage = (value: number) => {
     return `${value.toFixed(1)}%`

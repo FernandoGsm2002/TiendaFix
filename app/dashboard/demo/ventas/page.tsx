@@ -41,7 +41,7 @@ import {
 } from 'lucide-react'
 
 export default function DemoVentasPage() {
-  const { t } = useTranslations()
+  const { t, formatCurrency } = useTranslations()
   const [searchTerm, setSearchTerm] = useState('')
   const [paymentMethodFilter, setPaymentMethodFilter] = useState('all')
   const [saleTypeFilter, setSaleTypeFilter] = useState('all')
@@ -114,10 +114,6 @@ export default function DemoVentasPage() {
       hour: '2-digit',
       minute: '2-digit'
     })
-  }
-
-  const formatCurrency = (amount: number) => {
-    return `S/ ${amount.toLocaleString()}`
   }
 
   const viewSaleDetails = (sale: any) => {

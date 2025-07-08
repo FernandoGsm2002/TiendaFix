@@ -1148,7 +1148,7 @@ export default function TechnicianUnlocksPage() {
         <Modal 
           isOpen={isNewUnlockOpen} 
           onClose={onNewUnlockClose} 
-          size="3xl"
+          size="xl"
           scrollBehavior="inside"
           classNames={{
             wrapper: "z-[1000]",

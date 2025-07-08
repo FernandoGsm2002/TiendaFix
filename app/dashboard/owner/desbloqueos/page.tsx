@@ -1070,7 +1070,7 @@ export default function DesbloqueoPage() {
         <Modal 
           isOpen={isCreateOpen} 
           onOpenChange={onCreateOpenChange} 
-          size="full"
+          size="xl"
           scrollBehavior="inside"
           classNames={{
             wrapper: "z-[1000]",
@@ -1259,7 +1259,7 @@ export default function DesbloqueoPage() {
         <Modal 
           isOpen={isEditOpen} 
           onClose={onEditClose} 
-          size="3xl"
+          size="xl"
           scrollBehavior="inside"
           classNames={{
             wrapper: "z-[1000]",

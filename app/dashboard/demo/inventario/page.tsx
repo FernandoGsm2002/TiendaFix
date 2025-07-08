@@ -51,7 +51,7 @@ import {
 } from 'lucide-react'
 
 export default function DemoInventarioPage() {
-  const { t } = useTranslations()
+  const { t, formatCurrency } = useTranslations()
   const [searchTerm, setSearchTerm] = useState('')
   const [categoryFilter, setCategoryFilter] = useState('all')
   const [statusFilter, setStatusFilter] = useState('all')
@@ -105,9 +105,7 @@ export default function DemoInventarioPage() {
     return 'active'
   }
 
-  const formatCurrency = (amount: number) => {
-    return `S/ ${amount.toLocaleString()}`
-  }
+
 
   const viewProductDetails = (product: any) => {
     setSelectedProduct(product)

@@ -924,10 +924,10 @@ export default function InventarioPage() {
         )}
 
         {/* Modal de nuevo producto */}
-        <Modal 
+                <Modal 
           isOpen={isCreateOpen} 
-          onClose={onCreateClose} 
-          size="full"
+          onClose={onCreateClose}
+          size="xl"
           scrollBehavior="inside"
           classNames={{
             wrapper: "z-[1000]",

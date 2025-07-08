@@ -1191,15 +1191,15 @@ export default function TechnicianRepairsPage() {
         <Modal 
           isOpen={isCreateOpen} 
           onClose={onCreateClose}
-          size="full"
+          size="2xl"
           scrollBehavior="inside"
           classNames={{
             wrapper: "z-[1000]",
             backdrop: "z-[999]",
-            base: "max-h-[100vh] h-full sm:max-h-[95vh] sm:h-auto my-0 mx-0 sm:my-2 sm:mx-2 md:mx-6 sm:rounded-lg",
-            body: "max-h-[calc(100vh-180px)] sm:max-h-[70vh] overflow-y-auto py-3 px-3 sm:py-4 sm:px-6",
-            header: "border-b border-gray-200 pb-3 px-3 sm:pb-4 sm:px-6",
-            footer: "border-t border-gray-200 pt-3 px-3 sm:pt-4 sm:px-6"
+            base: "max-h-[95vh] my-2 mx-2 sm:mx-6 w-full max-w-4xl",
+            body: "max-h-[75vh] overflow-y-auto py-4 px-6",
+            header: "border-b border-gray-200 pb-4 px-6",
+            footer: "border-t border-gray-200 pt-4 px-6"
           }}
         >
           <ModalContent>
