@@ -62,11 +62,11 @@ export default function FormField({
           variant="bordered"
           size="md"
           classNames={{
-            input: "text-gray-900 dark:text-gray-100 text-base",
-            inputWrapper: "bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600",
-            label: "text-gray-800 dark:text-gray-200 font-medium text-base",
-            description: "text-gray-600 dark:text-gray-400",
-            errorMessage: "text-red-700 dark:text-red-400 font-medium"
+            input: "text-[#013237] placeholder:text-[#4ca771] text-base",
+            inputWrapper: "bg-[#f0fdf9] border-[#c0e6ba] hover:border-[#4ca771] focus-within:border-[#4ca771]",
+            label: "text-[#013237] font-medium text-base",
+            description: "text-[#4ca771]",
+            errorMessage: "text-red-700 font-medium"
           }}
           className={className}
         />
@@ -104,41 +104,40 @@ export default function FormField({
           description={helpText}
           variant="bordered"
           size="md"
-          color="primary"
           classNames={{
             trigger: [
-              "bg-white dark:bg-gray-800",
-              "border-gray-300 dark:border-gray-600",
-              "text-gray-900 dark:text-gray-100",
-              "data-[open=true]:border-primary-500",
-              "data-[focus=true]:border-primary-500",
-              "data-[hover=true]:border-primary-400",
+              "bg-[#f0fdf9]",
+              "border-[#c0e6ba]",
+              "text-[#013237]",
+              "data-[open=true]:border-[#4ca771]",
+              "data-[focus=true]:border-[#4ca771]",
+              "data-[hover=true]:border-[#4ca771]",
               "transition-colors",
               "min-h-12"
             ].join(" "),
             value: [
-              "text-gray-900 dark:text-gray-100",
+              "text-[#013237]",
               "font-medium",
               "text-base",
-              hasValue ? "text-primary-700 dark:text-primary-300" : "text-gray-500 dark:text-gray-400"
+              hasValue ? "text-[#013237]" : "text-[#4ca771]"
             ].join(" "),
-            label: "text-gray-800 dark:text-gray-200 font-medium text-base",
-            description: "text-gray-600 dark:text-gray-400",
-            errorMessage: "text-red-700 dark:text-red-400 font-medium",
+            label: "text-[#013237] font-medium text-base",
+            description: "text-[#4ca771]",
+            errorMessage: "text-red-700 font-medium",
             popoverContent: [
-              "bg-white dark:bg-gray-800",
-              "border-gray-200 dark:border-gray-600",
+              "bg-[#f0fdf9]",
+              "border-[#c0e6ba]",
               "shadow-lg"
             ].join(" "),
-            listbox: "bg-white dark:bg-gray-800",
-            selectorIcon: "text-primary-500"
+            listbox: "bg-[#f0fdf9]",
+            selectorIcon: "text-[#4ca771]"
           }}
           className={className}
         >
           {options.map((option) => (
             <SelectItem 
               key={option.value} 
-              className="text-gray-900 dark:text-gray-100 data-[selected=true]:bg-primary-50 dark:data-[selected=true]:bg-primary-900 data-[selected=true]:text-primary-700 dark:data-[selected=true]:text-primary-300 data-[hover=true]:bg-primary-100 dark:data-[hover=true]:bg-primary-800 data-[focus=true]:bg-primary-100 dark:data-[focus=true]:bg-primary-800"
+              className="text-[#013237] data-[selected=true]:bg-[#eafae7] data-[selected=true]:text-[#013237] data-[hover=true]:bg-[#eafae7] data-[focus=true]:bg-[#eafae7]"
               textValue={option.label}
             >
               <span className="font-medium">{option.label}</span>
@@ -164,11 +163,11 @@ export default function FormField({
       size: "md" as const,
       variant: "bordered" as const,
       classNames: {
-        input: "text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 text-base",
-        inputWrapper: "bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 min-h-12",
-        label: "text-gray-800 dark:text-gray-200 font-medium text-base",
-        description: "text-gray-600 dark:text-gray-400",
-        errorMessage: "text-red-700 dark:text-red-400 font-medium"
+        input: "text-[#013237] placeholder:text-[#4ca771] text-base",
+        inputWrapper: "bg-[#f0fdf9] border-[#c0e6ba] hover:border-[#4ca771] focus-within:border-[#4ca771] min-h-12",
+        label: "text-[#013237] font-medium text-base",
+        description: "text-[#4ca771]",
+        errorMessage: "text-red-700 font-medium"
       },
       className
     }
@@ -189,7 +188,7 @@ export default function FormField({
 
   return (
     <div className="space-y-2">
-      <label className={`block text-base font-medium text-gray-700 dark:text-gray-300 ${required ? 'after:content-["*"] after:ml-1 after:text-red-600' : ''}`}>
+      <label className={`block text-base font-medium text-[#013237] ${required ? 'after:content-["*"] after:ml-1 after:text-red-600' : ''}`}>
         {label}
       </label>
       {renderInput()}

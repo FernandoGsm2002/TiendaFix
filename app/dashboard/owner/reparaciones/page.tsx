@@ -812,6 +812,7 @@ export default function ReparacionesPage() {
                 variant="light"
                 size="sm"
                 onPress={() => handleViewDetails(repair)}
+                className="text-gray-600 hover:text-[#4ca771] hover:bg-gray-100"
               >
                 <Eye className="h-4 w-4" />
               </Button>
@@ -821,8 +822,8 @@ export default function ReparacionesPage() {
                 isIconOnly
                 variant="light"
                 size="sm"
-                color="warning"
                 onPress={() => handleStatusChange(repair)}
+                className="text-orange-600 hover:text-orange-700 hover:bg-orange-100"
               >
                 <ClipboardList className="h-4 w-4" />
               </Button>
@@ -832,9 +833,9 @@ export default function ReparacionesPage() {
                 isIconOnly
                 variant="light"
                 size="sm"
-                color="secondary"
                 onPress={() => handlePrintTicket(repair)}
                 isLoading={printLoading}
+                className="text-purple-600 hover:text-purple-700 hover:bg-purple-100"
               >
                 <Printer className="h-4 w-4" />
               </Button>
@@ -844,8 +845,8 @@ export default function ReparacionesPage() {
                 isIconOnly
                 variant="light"
                 size="sm"
-                color="danger"
                 onPress={() => handleDeleteRepair(repair)}
+                className="text-red-600 hover:text-red-700 hover:bg-red-100"
               >
                 <Trash2 className="h-4 w-4" />
               </Button>
@@ -914,14 +915,13 @@ export default function ReparacionesPage() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-gray-900">{t('repairs.title')}</h1>
-            <p className={`text-sm md:text-base ${textColors.secondary} mt-1`}>{t('repairs.description')}</p>
+            <h1 className="text-xl md:text-2xl lg:text-3xl font-bold bg-gradient-to-r from-[#4ca771] to-[#013237] bg-clip-text text-transparent">{t('repairs.title')}</h1>
+            <p className="text-sm md:text-base text-[#4ca771] mt-1">{t('repairs.description')}</p>
           </div>
           <Button 
-            color="primary" 
             startContent={<Plus className="h-4 w-4" />}
             onPress={onCreateOpen}
-            className="w-full sm:w-auto font-semibold"
+            className="w-full sm:w-auto font-semibold bg-gradient-to-r from-[#4ca771] to-[#013237] text-white hover:from-[#013237] hover:to-[#4ca771] transition-all"
             size="lg"
           >
             Nueva Reparación
@@ -930,10 +930,10 @@ export default function ReparacionesPage() {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <Card className="hover:scale-105 transition-all duration-300 border-0 shadow-lg bg-gradient-to-br from-blue-50/60 to-blue-100/40 backdrop-blur-sm">
+          <Card className="hover:scale-105 transition-all duration-300 border border-gray-200 shadow-lg bg-gradient-to-br from-blue-100 to-blue-200">
             <CardBody className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <div className="p-3 rounded-xl bg-gradient-to-br from-blue-500/80 to-blue-600/80 shadow-lg">
+                <div className="p-3 rounded-xl bg-blue-500 shadow-lg">
                   <Wrench className="w-5 h-5 text-white" />
                 </div>
                 <div className="flex items-center gap-2">
@@ -941,23 +941,23 @@ export default function ReparacionesPage() {
                     <ArrowUpRight className="w-3 h-3 text-green-500" />
                     <span className="text-xs text-green-600 font-medium">+12%</span>
                   </div>
-                  <Chip color="primary" variant="flat" size="sm" className="font-medium">
+                  <Chip variant="flat" size="sm" className="font-semibold bg-white/60 text-blue-800 border border-white/30">
                     Total
                   </Chip>
                 </div>
               </div>
               <div className="space-y-2">
-                <p className="text-sm font-medium text-gray-700">{t('repairs.total')}</p>
-                <p className="text-3xl font-bold text-blue-700">{stats.total}</p>
-                <p className="text-xs text-gray-500">Reparaciones registradas</p>
+                <p className="text-base font-bold text-blue-800 opacity-90 uppercase tracking-wider">{t('repairs.total')}</p>
+                <p className="text-4xl font-extrabold text-blue-800 mb-2 tracking-tight">{stats.total}</p>
+                <p className="text-sm font-medium text-blue-800 opacity-70">Reparaciones registradas</p>
               </div>
             </CardBody>
           </Card>
 
-          <Card className="hover:scale-105 transition-all duration-300 border-0 shadow-lg bg-gradient-to-br from-orange-50/60 to-amber-100/40 backdrop-blur-sm">
+          <Card className="hover:scale-105 transition-all duration-300 border border-gray-200 shadow-lg bg-gradient-to-br from-orange-100 to-orange-200">
             <CardBody className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <div className="p-3 rounded-xl bg-gradient-to-br from-orange-500/80 to-orange-600/80 shadow-lg">
+                <div className="p-3 rounded-xl bg-orange-500 shadow-lg">
                   <Clock className="w-5 h-5 text-white" />
                 </div>
                 <div className="flex items-center gap-2">
@@ -965,17 +965,19 @@ export default function ReparacionesPage() {
                     <ArrowDownRight className="w-3 h-3 text-red-500" />
                     <span className="text-xs text-red-600 font-medium">-8%</span>
                   </div>
-                  <Chip color="warning" variant="flat" size="sm" className="font-medium">
+                  <Chip variant="flat" size="sm" className="font-semibold bg-white/60 text-orange-800 border border-white/30">
                     Pendientes
                   </Chip>
                 </div>
               </div>
               <div className="space-y-2">
-                <p className="text-sm font-medium text-gray-700">Pendientes</p>
-                <p className="text-3xl font-bold text-orange-700">{stats.received + stats.diagnosed}</p>
+                <p className="text-base font-bold text-orange-800 opacity-90 uppercase tracking-wider">Pendientes</p>
+                <p className="text-4xl font-extrabold text-orange-800 mb-2 tracking-tight">{stats.received + stats.diagnosed}</p>
                 <Progress 
                   value={((stats.received + stats.diagnosed) / Math.max(stats.total, 1)) * 100} 
-                  color="warning" 
+                  classNames={{
+                    indicator: "bg-orange-500",
+                  }}
                   size="sm" 
                   className="max-w-md"
                 />
@@ -983,10 +985,10 @@ export default function ReparacionesPage() {
             </CardBody>
           </Card>
 
-          <Card className="hover:scale-105 transition-all duration-300 border-0 shadow-lg bg-gradient-to-br from-indigo-50/60 to-purple-100/40 backdrop-blur-sm">
+          <Card className="hover:scale-105 transition-all duration-300 border border-gray-200 shadow-lg bg-gradient-to-br from-purple-100 to-purple-200">
             <CardBody className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <div className="p-3 rounded-xl bg-gradient-to-br from-indigo-500/80 to-purple-600/80 shadow-lg">
+                <div className="p-3 rounded-xl bg-purple-500 shadow-lg">
                   <Settings className="w-5 h-5 text-white" />
                 </div>
                 <div className="flex items-center gap-2">
@@ -994,17 +996,19 @@ export default function ReparacionesPage() {
                     <ArrowUpRight className="w-3 h-3 text-green-500" />
                     <span className="text-xs text-green-600 font-medium">+15%</span>
                   </div>
-                  <Chip color="primary" variant="flat" size="sm" className="font-medium">
+                  <Chip variant="flat" size="sm" className="font-semibold bg-white/60 text-purple-800 border border-white/30">
                     Proceso
                   </Chip>
                 </div>
               </div>
               <div className="space-y-2">
-                <p className="text-sm font-medium text-gray-700">En Proceso</p>
-                <p className="text-3xl font-bold text-indigo-700">{stats.inProgress}</p>
+                <p className="text-base font-bold text-purple-800 opacity-90 uppercase tracking-wider">En Proceso</p>
+                <p className="text-4xl font-extrabold text-purple-800 mb-2 tracking-tight">{stats.inProgress}</p>
                 <Progress 
                   value={(stats.inProgress / Math.max(stats.total, 1)) * 100} 
-                  color="primary" 
+                  classNames={{
+                    indicator: "bg-purple-500",
+                  }}
                   size="sm" 
                   className="max-w-md"
                 />
@@ -1012,10 +1016,10 @@ export default function ReparacionesPage() {
             </CardBody>
           </Card>
 
-          <Card className="hover:scale-105 transition-all duration-300 border-0 shadow-lg bg-gradient-to-br from-green-50/60 to-emerald-100/40 backdrop-blur-sm">
+          <Card className="hover:scale-105 transition-all duration-300 border border-gray-200 shadow-lg bg-gradient-to-br from-emerald-100 to-emerald-200">
             <CardBody className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <div className="p-3 rounded-xl bg-gradient-to-br from-green-500/80 to-emerald-600/80 shadow-lg">
+                <div className="p-3 rounded-xl bg-emerald-500 shadow-lg">
                   <CheckCircle className="w-5 h-5 text-white" />
                 </div>
                 <div className="flex items-center gap-2">
@@ -1023,17 +1027,19 @@ export default function ReparacionesPage() {
                     <ArrowUpRight className="w-3 h-3 text-green-500" />
                     <span className="text-xs text-green-600 font-medium">+22%</span>
                   </div>
-                  <Chip color="success" variant="flat" size="sm" className="font-medium">
+                  <Chip variant="flat" size="sm" className="font-semibold bg-white/60 text-emerald-800 border border-white/30">
                     Completadas
                   </Chip>
                 </div>
               </div>
               <div className="space-y-2">
-                <p className="text-sm font-medium text-gray-700">Completadas</p>
-                <p className="text-3xl font-bold text-green-700">{stats.completed + stats.delivered}</p>
+                <p className="text-base font-bold text-emerald-800 opacity-90 uppercase tracking-wider">Completadas</p>
+                <p className="text-4xl font-extrabold text-emerald-800 mb-2 tracking-tight">{stats.completed + stats.delivered}</p>
                 <Progress 
                   value={((stats.completed + stats.delivered) / Math.max(stats.total, 1)) * 100} 
-                  color="success" 
+                  classNames={{
+                    indicator: "bg-emerald-500",
+                  }}
                   size="sm" 
                   className="max-w-md"
                 />
@@ -1043,7 +1049,7 @@ export default function ReparacionesPage() {
         </div>
 
         {/* Filtros */}
-        <Card className="shadow-lg border-0 bg-white/80 backdrop-blur-sm">
+        <Card className="shadow-lg border border-gray-200 bg-white/90">
           <CardBody className="p-4 md:p-6">
             <div className="flex flex-col lg:flex-row gap-4">
               <div className="flex-1 lg:flex-none lg:w-96">
@@ -1051,13 +1057,13 @@ export default function ReparacionesPage() {
                   placeholder="Buscar por cliente, dispositivo..."
                   value={busqueda}
                   onChange={(e) => handleBusquedaChange(e.target.value)}
-                  startContent={<Search className="h-4 w-4 text-gray-400" />}
+                  startContent={<Search className="h-4 w-4 text-[#4ca771]" />}
                   variant="bordered"
                   size="lg"
                   className="w-full"
                   classNames={{
-                    input: "text-sm",
-                    inputWrapper: "border-gray-200 hover:border-gray-300"
+                    input: "text-sm text-gray-800 placeholder:text-gray-400",
+                    inputWrapper: "border-gray-300 hover:border-[#4ca771] focus-within:border-[#4ca771]"
                   }}
                 />
               </div>
@@ -1072,8 +1078,8 @@ export default function ReparacionesPage() {
                     size="lg"
                     className="w-40"
                     classNames={{
-                      input: "text-sm text-gray-900",
-                      inputWrapper: "border-gray-200 hover:border-gray-300",
+                      input: "text-sm text-gray-800",
+                      inputWrapper: "border-gray-300 hover:border-[#4ca771] focus-within:border-[#4ca771]",
                       label: "text-gray-700 font-medium"
                     }}
                   />
@@ -1086,8 +1092,8 @@ export default function ReparacionesPage() {
                     size="lg"
                     className="w-40"
                     classNames={{
-                      input: "text-sm text-gray-900",
-                      inputWrapper: "border-gray-200 hover:border-gray-300",
+                      input: "text-sm text-gray-800",
+                      inputWrapper: "border-gray-300 hover:border-[#4ca771] focus-within:border-[#4ca771]",
                       label: "text-gray-700 font-medium"
                     }}
                   />
@@ -1096,23 +1102,24 @@ export default function ReparacionesPage() {
                   placeholder="Estado"
                   selectedKeys={[filtroEstado]}
                   onSelectionChange={handleFiltroChange}
-                  startContent={<Filter className="h-4 w-4 text-gray-400" />}
+                  startContent={<Filter className="h-4 w-4 text-[#4ca771]" />}
                   variant="bordered"
                   size="lg"
                   className="w-full sm:w-48"
                   classNames={{
-                    trigger: "border-gray-200 hover:border-gray-300",
-                    value: "text-gray-900"
+                    trigger: "border-gray-300 hover:border-[#4ca771] focus:border-[#4ca771]",
+                    value: "text-gray-800",
+                    popoverContent: "bg-white border border-gray-200"
                   }}
                 >
-                  <SelectItem key="todos" className="text-gray-900">{t('filters.all')}</SelectItem>
-                  <SelectItem key="received" className="text-gray-900">{t('repairs.status.received')}</SelectItem>
-                  <SelectItem key="diagnosed" className="text-gray-900">{t('repairs.status.diagnosed')}</SelectItem>
-                  <SelectItem key="in_progress" className="text-gray-900">{t('repairs.status.in_progress')}</SelectItem>
-                  <SelectItem key="waiting_parts" className="text-gray-900">{t('repairs.status.waiting_parts')}</SelectItem>
-                  <SelectItem key="completed" className="text-gray-900">{t('repairs.status.completed')}</SelectItem>
-                  <SelectItem key="delivered" className="text-gray-900">{t('repairs.status.delivered')}</SelectItem>
-                  <SelectItem key="cancelled" className="text-gray-900">{t('repairs.status.cancelled')}</SelectItem>
+                  <SelectItem key="todos" className="text-gray-800 hover:bg-gray-50">{t('filters.all')}</SelectItem>
+                  <SelectItem key="received" className="text-gray-800 hover:bg-gray-50">{t('repairs.status.received')}</SelectItem>
+                  <SelectItem key="diagnosed" className="text-gray-800 hover:bg-gray-50">{t('repairs.status.diagnosed')}</SelectItem>
+                  <SelectItem key="in_progress" className="text-gray-800 hover:bg-gray-50">{t('repairs.status.in_progress')}</SelectItem>
+                  <SelectItem key="waiting_parts" className="text-gray-800 hover:bg-gray-50">{t('repairs.status.waiting_parts')}</SelectItem>
+                  <SelectItem key="completed" className="text-gray-800 hover:bg-gray-50">{t('repairs.status.completed')}</SelectItem>
+                  <SelectItem key="delivered" className="text-gray-800 hover:bg-gray-50">{t('repairs.status.delivered')}</SelectItem>
+                  <SelectItem key="cancelled" className="text-gray-800 hover:bg-gray-50">{t('repairs.status.cancelled')}</SelectItem>
                 </Select>
               </div>
             </div>
@@ -1120,7 +1127,7 @@ export default function ReparacionesPage() {
         </Card>
 
         {/* Lista de Reparaciones */}
-        <Card className="shadow-lg border-0 bg-white/80 backdrop-blur-sm">
+        <Card className="shadow-lg border border-gray-200 bg-white/90">
           <CardBody className="p-0">
             {/* Desktop Table */}
             <div className="hidden lg:block overflow-x-auto">

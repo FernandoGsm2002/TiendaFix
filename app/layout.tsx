@@ -1,11 +1,15 @@
 import type { Metadata } from 'next'
-import { Manrope } from 'next/font/google'
+import { Poppins } from 'next/font/google'
 import './globals.css'
 import { AuthProvider } from '@/lib/auth/auth-context'
 import { HeroUIProvider } from '@/lib/providers/heroui-provider'
 import { TranslationProvider } from '@/lib/contexts/TranslationContext'
 
-const manrope = Manrope({ subsets: ['latin'] })
+const poppins = Poppins({ 
+  subsets: ['latin'],
+  weight: ['300', '400', '500', '600', '700', '800'],
+  variable: '--font-poppins'
+})
 
 export const metadata: Metadata = {
   title: 'TiendaFix',
@@ -30,7 +34,7 @@ export default function RootLayout({
         <meta name="format-detection" content="telephone=no" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
       </head>
-      <body className={manrope.className}>
+      <body className={poppins.className}>
         <HeroUIProvider>
           <TranslationProvider>
             <AuthProvider>

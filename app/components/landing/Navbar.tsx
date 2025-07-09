@@ -45,14 +45,14 @@ const menuItems = [
 const resourcesDropdown = [
   {
     key: "docs",
-    icon: <BookOpen className="w-5 h-5 text-gray-600" />,
+    icon: <BookOpen className="w-5 h-5 text-[#013237]" />,
     title: "Documentación",
     description: "Guías y tutoriales completos",
     href: "/docs"
   },
   {
     key: "help",
-    icon: <HelpCircle className="w-5 h-5 text-gray-600" />,
+    icon: <HelpCircle className="w-5 h-5 text-[#013237]" />,
     title: "Centro de Ayuda",
     description: "Preguntas frecuentes y soporte",
     href: "/help"
@@ -63,14 +63,14 @@ const resourcesDropdown = [
 const companyDropdown = [
   {
     key: "about",
-    icon: <Award className="w-5 h-5 text-gray-600" />,
+    icon: <Award className="w-5 h-5 text-[#013237]" />,
     title: "Sobre Nosotros",
     description: "Nuestra historia",
     href: "/about"
   },
   {
     key: "contact",
-    icon: <Phone className="w-5 h-5 text-gray-600" />,
+    icon: <Phone className="w-5 h-5 text-[#013237]" />,
     title: "Contacto",
     description: "Habla con nuestro equipo",
     href: "/contact"
@@ -83,17 +83,17 @@ export function LandingNavbar() {
   return (
     <Navbar 
       onMenuOpenChange={setIsMenuOpen}
-      className="bg-white/98 backdrop-blur-xl border-b border-gray-200/50 shadow-lg sticky top-0 left-0 right-0 z-50"
+      className="bg-[#f0fdf9]/98 backdrop-blur-xl border-b border-[#c0e6ba]/50 shadow-lg sticky top-0 left-0 right-0 z-50"
       maxWidth="full"
       height="5rem"
     >
       {/* Animated background gradient */}
-      <div className="absolute inset-0 bg-gradient-to-r from-gray-50/30 via-transparent to-gray-100/30 opacity-50"></div>
+      <div className="absolute inset-0 bg-gradient-to-r from-[#eafae7]/30 via-transparent to-[#c0e6ba]/30 opacity-50"></div>
       
       <NavbarContent className="relative z-10">
         <NavbarMenuToggle
           aria-label={isMenuOpen ? "Close menu" : "Open menu"}
-          className="sm:hidden text-gray-700 hover:text-gray-900 transition-colors"
+          className="sm:hidden text-[#4ca771] hover:text-[#013237] transition-colors"
         />
         <NavbarBrand>
           <div className="flex items-center group cursor-pointer">
@@ -112,10 +112,10 @@ export function LandingNavbar() {
         <NavbarItem>
           <Link 
             href="#inicio" 
-            className="text-gray-700 hover:text-gray-900 font-medium transition-all duration-300 relative group px-3 py-2 rounded-lg hover:bg-gray-100"
+            className="text-[#4ca771] hover:text-[#013237] font-medium transition-all duration-300 relative group px-3 py-2 rounded-lg hover:bg-[#eafae7]"
           >
             <span className="relative z-10">Inicio</span>
-            <div className="absolute inset-0 bg-gradient-to-r from-gray-100 to-gray-200 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <div className="absolute inset-0 bg-gradient-to-r from-[#eafae7] to-[#c0e6ba] rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
           </Link>
         </NavbarItem>
         
@@ -127,7 +127,7 @@ export function LandingNavbar() {
             rel="noopener noreferrer"
             variant="flat"
             color="default"
-            className="font-medium shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105 bg-gradient-to-r from-gray-600 to-gray-700 text-white border-0"
+            className="font-medium shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105 bg-gradient-to-r from-[#4ca771] to-[#013237] text-white border-0"
             endContent={<ExternalLink className="w-4 h-4" />}
           >
             TiendaFix Para Escritorio
@@ -137,17 +137,17 @@ export function LandingNavbar() {
         <NavbarItem>
           <Link 
             href="#precios" 
-            className="text-gray-700 hover:text-gray-900 font-medium transition-all duration-300 relative group px-3 py-2 rounded-lg hover:bg-gray-100"
+            className="text-[#4ca771] hover:text-[#013237] font-medium transition-all duration-300 relative group px-3 py-2 rounded-lg hover:bg-[#eafae7]"
           >
             <span className="relative z-10">Precios</span>
-            <div className="absolute inset-0 bg-gradient-to-r from-gray-100 to-gray-200 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <div className="absolute inset-0 bg-gradient-to-r from-[#eafae7] to-[#c0e6ba] rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
           </Link>
         </NavbarItem>
 
         <Dropdown 
           backdrop="blur"
           classNames={{
-            base: "p-0 bg-white/95 backdrop-blur-xl",
+            base: "p-0 bg-[#f0fdf9]/95 backdrop-blur-xl",
             content: "p-0 border-0 shadow-2xl",
           }}
         >
@@ -155,13 +155,13 @@ export function LandingNavbar() {
             <DropdownTrigger>
               <Button
                 disableRipple
-                className="p-0 bg-transparent data-[hover=true]:bg-transparent text-gray-700 hover:text-gray-900 font-medium transition-all duration-300 relative group px-3 py-2 rounded-lg hover:bg-gray-100"
+                className="p-0 bg-transparent data-[hover=true]:bg-transparent text-[#4ca771] hover:text-[#013237] font-medium transition-all duration-300 relative group px-3 py-2 rounded-lg hover:bg-[#eafae7]"
                 endContent={<ChevronDown className="w-4 h-4 group-hover:rotate-180 transition-transform duration-300" />}
                 radius="sm"
                 variant="light"
               >
                 <span className="relative z-10">Tutoriales</span>
-                <div className="absolute inset-0 bg-gradient-to-r from-gray-100 to-gray-200 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-[#eafae7] to-[#c0e6ba] rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               </Button>
             </DropdownTrigger>
           </NavbarItem>
@@ -169,9 +169,9 @@ export function LandingNavbar() {
             aria-label="Recursos"
             className="w-80 p-2"
             itemClasses={{
-              base: "gap-4 p-4 data-[hover=true]:bg-gradient-to-r data-[hover=true]:from-gray-50 data-[hover=true]:to-gray-100 rounded-lg margin-2 transition-all duration-300 hover:scale-[1.02] hover:shadow-md",
-              title: "text-gray-900 font-semibold",
-              description: "text-gray-600 text-sm"
+              base: "gap-4 p-4 data-[hover=true]:bg-gradient-to-r data-[hover=true]:from-[#eafae7] data-[hover=true]:to-[#c0e6ba] rounded-lg margin-2 transition-all duration-300 hover:scale-[1.02] hover:shadow-md",
+              title: "text-[#013237] font-semibold",
+              description: "text-[#4ca771] text-sm"
             }}
           >
             {resourcesDropdown.map((item) => (
@@ -179,12 +179,12 @@ export function LandingNavbar() {
                 key={item.key}
                 description={item.description}
                 startContent={
-                  <div className="w-10 h-10 bg-gradient-to-r from-gray-500 to-gray-700 rounded-lg flex items-center justify-center shadow-md">
+                  <div className="w-10 h-10 bg-gradient-to-r from-[#4ca771] to-[#013237] rounded-lg flex items-center justify-center shadow-md">
                     {item.icon}
                   </div>
                 }
                 href={item.href}
-                className="text-gray-900"
+                className="text-[#013237]"
               >
                 {item.title}
               </DropdownItem>
@@ -195,7 +195,7 @@ export function LandingNavbar() {
         <Dropdown 
           backdrop="blur"
           classNames={{
-            base: "p-0 bg-white/95 backdrop-blur-xl",
+            base: "p-0 bg-[#f0fdf9]/95 backdrop-blur-xl",
             content: "p-0 border-0 shadow-2xl",
           }}
         >
@@ -203,13 +203,13 @@ export function LandingNavbar() {
             <DropdownTrigger>
               <Button
                 disableRipple
-                className="p-0 bg-transparent data-[hover=true]:bg-transparent text-gray-700 hover:text-gray-900 font-medium transition-all duration-300 relative group px-3 py-2 rounded-lg hover:bg-gray-100"
+                className="p-0 bg-transparent data-[hover=true]:bg-transparent text-[#4ca771] hover:text-[#013237] font-medium transition-all duration-300 relative group px-3 py-2 rounded-lg hover:bg-[#eafae7]"
                 endContent={<ChevronDown className="w-4 h-4 group-hover:rotate-180 transition-transform duration-300" />}
                 radius="sm"
                 variant="light"
               >
                 <span className="relative z-10">Empresa</span>
-                <div className="absolute inset-0 bg-gradient-to-r from-gray-100 to-gray-200 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-[#eafae7] to-[#c0e6ba] rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               </Button>
             </DropdownTrigger>
           </NavbarItem>
@@ -217,9 +217,9 @@ export function LandingNavbar() {
             aria-label="Empresa"
             className="w-80 p-2"
             itemClasses={{
-              base: "gap-4 p-4 data-[hover=true]:bg-gradient-to-r data-[hover=true]:from-gray-50 data-[hover=true]:to-gray-100 rounded-lg margin-2 transition-all duration-300 hover:scale-[1.02] hover:shadow-md",
-              title: "text-gray-900 font-semibold",
-              description: "text-gray-600 text-sm"
+              base: "gap-4 p-4 data-[hover=true]:bg-gradient-to-r data-[hover=true]:from-[#eafae7] data-[hover=true]:to-[#c0e6ba] rounded-lg margin-2 transition-all duration-300 hover:scale-[1.02] hover:shadow-md",
+              title: "text-[#013237] font-semibold",
+              description: "text-[#4ca771] text-sm"
             }}
           >
             {companyDropdown.map((item) => (
@@ -227,12 +227,12 @@ export function LandingNavbar() {
                 key={item.key}
                 description={item.description}
                 startContent={
-                  <div className="w-10 h-10 bg-gradient-to-r from-gray-500 to-gray-700 rounded-lg flex items-center justify-center shadow-md">
+                  <div className="w-10 h-10 bg-gradient-to-r from-[#4ca771] to-[#013237] rounded-lg flex items-center justify-center shadow-md">
                     {item.icon}
                   </div>
                 }
                 href={item.href}
-                className="text-gray-900"
+                className="text-[#013237]"
               >
                 {item.title}
               </DropdownItem>
@@ -247,10 +247,10 @@ export function LandingNavbar() {
             as={Link}
             href="/auth/login"
             variant="light"
-            className="text-gray-700 hover:text-gray-900 font-medium transition-all duration-300 relative group px-4 py-2 rounded-lg hover:bg-gray-100"
+            className="text-[#4ca771] hover:text-[#013237] font-medium transition-all duration-300 relative group px-4 py-2 rounded-lg hover:bg-[#eafae7]"
           >
             <span className="relative z-10">Iniciar Sesión</span>
-            <div className="absolute inset-0 bg-gradient-to-r from-gray-100 to-gray-200 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <div className="absolute inset-0 bg-gradient-to-r from-[#eafae7] to-[#c0e6ba] rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
           </Button>
         </NavbarItem>
         <NavbarItem className="hidden md:flex">
@@ -258,7 +258,7 @@ export function LandingNavbar() {
             as={Link}
             href="/dashboard/demo"
             variant="flat"
-            className="text-gray-700 hover:text-gray-900 font-medium transition-all duration-300 relative group px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200"
+            className="text-[#013237] hover:text-[#4ca771] font-medium transition-all duration-300 relative group px-4 py-2 rounded-lg bg-[#eafae7] hover:bg-[#c0e6ba]"
             startContent={<Play className="w-4 h-4 group-hover:scale-110 transition-transform duration-300" />}
           >
             <span className="relative z-10">Ver Demo</span>
@@ -268,7 +268,7 @@ export function LandingNavbar() {
           <Button 
             as={Link} 
             href="/auth/register" 
-            className="bg-gradient-to-r from-gray-800 to-gray-900 text-white font-semibold px-8 py-3 shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300 relative overflow-hidden group border-0"
+            className="bg-gradient-to-r from-[#4ca771] to-[#013237] text-white font-semibold px-8 py-3 shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300 relative overflow-hidden group border-0"
             endContent={<Zap className="w-4 h-4 group-hover:rotate-12 transition-transform duration-300" />}
           >
             <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -277,22 +277,22 @@ export function LandingNavbar() {
         </NavbarItem>
       </NavbarContent>
 
-      <NavbarMenu className="bg-white/98 backdrop-blur-xl border-r border-gray-200/50 shadow-2xl">
+      <NavbarMenu className="bg-[#f0fdf9]/98 backdrop-blur-xl border-r border-[#c0e6ba]/50 shadow-2xl">
         {/* Mobile Menu Background */}
-        <div className="absolute inset-0 bg-gradient-to-b from-gray-50/30 via-transparent to-gray-100/30 opacity-50"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-[#eafae7]/30 via-transparent to-[#c0e6ba]/30 opacity-50"></div>
         
         <div className="flex flex-col gap-3 pt-8 px-2 relative z-10">
           {menuItems.map((item, index) => (
             <NavbarMenuItem key={`${item.name}-${index}`}>
                           <Link
-              className="w-full text-gray-700 hover:text-gray-900 font-medium py-4 px-4 rounded-lg transition-all duration-300 hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100 hover:shadow-md group"
+              className="w-full text-[#4ca771] hover:text-[#013237] font-medium py-4 px-4 rounded-lg transition-all duration-300 hover:bg-gradient-to-r hover:from-[#eafae7] hover:to-[#c0e6ba] hover:shadow-md group"
               href={item.href}
               size="lg"
               target={item.external ? "_blank" : undefined}
               rel={item.external ? "noopener noreferrer" : undefined}
             >
               <div className="flex items-center gap-3">
-                <div className="w-2 h-2 bg-gray-500 rounded-full group-hover:bg-gray-700 group-hover:scale-150 transition-all duration-300"></div>
+                <div className="w-2 h-2 bg-[#4ca771] rounded-full group-hover:bg-[#013237] group-hover:scale-150 transition-all duration-300"></div>
                 <span className="flex-1">{item.name}</span>
                 {item.external && <ExternalLink className="w-4 h-4 group-hover:rotate-12 transition-transform duration-300" />}
               </div>
@@ -300,17 +300,17 @@ export function LandingNavbar() {
             </NavbarMenuItem>
           ))}
           
-          <Divider className="my-6 bg-gradient-to-r from-transparent via-gray-300 to-transparent" />
+          <Divider className="my-6 bg-gradient-to-r from-transparent via-[#c0e6ba] to-transparent" />
           
           <NavbarMenuItem>
             <Button
               as={Link}
               href="/auth/login"
               variant="light"
-              className="w-full justify-start text-gray-700 hover:text-gray-900 font-medium py-4 px-4 rounded-lg transition-all duration-300 hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100 hover:shadow-md group"
+              className="w-full justify-start text-[#4ca771] hover:text-[#013237] font-medium py-4 px-4 rounded-lg transition-all duration-300 hover:bg-gradient-to-r hover:from-[#eafae7] hover:to-[#c0e6ba] hover:shadow-md group"
             >
               <div className="flex items-center gap-3">
-                <div className="w-2 h-2 bg-gray-500 rounded-full group-hover:bg-gray-700 group-hover:scale-150 transition-all duration-300"></div>
+                <div className="w-2 h-2 bg-[#4ca771] rounded-full group-hover:bg-[#013237] group-hover:scale-150 transition-all duration-300"></div>
                 <span>Iniciar Sesión</span>
               </div>
             </Button>
@@ -321,11 +321,11 @@ export function LandingNavbar() {
               as={Link}
               href="/dashboard/demo"
               variant="flat"
-              className="w-full justify-start text-gray-700 hover:text-gray-900 font-medium py-4 px-4 rounded-lg transition-all duration-300 hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100 hover:shadow-md group bg-gray-100"
+              className="w-full justify-start text-[#013237] hover:text-[#4ca771] font-medium py-4 px-4 rounded-lg transition-all duration-300 hover:bg-gradient-to-r hover:from-[#eafae7] hover:to-[#c0e6ba] hover:shadow-md group bg-[#eafae7]"
               startContent={<Play className="w-4 h-4 group-hover:scale-110 transition-transform duration-300" />}
             >
               <div className="flex items-center gap-3">
-                <div className="w-2 h-2 bg-gray-500 rounded-full group-hover:bg-gray-700 group-hover:scale-150 transition-all duration-300"></div>
+                <div className="w-2 h-2 bg-[#4ca771] rounded-full group-hover:bg-[#013237] group-hover:scale-150 transition-all duration-300"></div>
                 <span>Ver Demo</span>
               </div>
             </Button>
@@ -335,7 +335,7 @@ export function LandingNavbar() {
             <Button 
               as={Link} 
               href="/auth/register" 
-              className="w-full bg-gradient-to-r from-gray-800 to-gray-900 text-white font-semibold shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300 py-4 px-6 relative overflow-hidden group border-0"
+              className="w-full bg-gradient-to-r from-[#4ca771] to-[#013237] text-white font-semibold shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300 py-4 px-6 relative overflow-hidden group border-0"
               endContent={<Zap className="w-5 h-5 group-hover:rotate-12 transition-transform duration-300" />}
             >
               <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>

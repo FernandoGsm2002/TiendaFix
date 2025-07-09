@@ -157,6 +157,15 @@ export default function ClientesPage() {
   const { isOpen: isEditOpen, onOpen: onEditOpen, onClose: onEditClose } = useDisclosure()
   const { isOpen: isDeleteOpen, onOpen: onDeleteOpen, onClose: onDeleteClose } = useDisclosure()
 
+  // Estados para filtros de historial en el modal de detalles
+  const [dateFilter, setDateFilter] = useState('all') // 7d, 30d, 3m, 6m, year, all, custom
+  const [customDateRange, setCustomDateRange] = useState({
+    start: '',
+    end: ''
+  })
+  const [serviceTypeFilter, setServiceTypeFilter] = useState('all') // all, repair, unlock, sale
+  const [serviceStatusFilter, setServiceStatusFilter] = useState('all') // all, pending, completed
+
   const fetchCustomers = async (page = 1, tipo = filtroTipo, search = busqueda) => {
     try {
       setLoading(true)
@@ -265,6 +274,11 @@ export default function ClientesPage() {
   const handleViewDetails = (customer: Customer) => {
     setSelectedCustomer(customer)
     setCustomerDetail(null)
+    // Resetear filtros al abrir modal
+    setDateFilter('all')
+    setCustomDateRange({ start: '', end: '' })
+    setServiceTypeFilter('all')
+    setServiceStatusFilter('all')
     onDetailOpen()
     fetchCustomerDetail(customer.id)
   }
@@ -405,6 +419,104 @@ export default function ClientesPage() {
     }
   }
 
+  // Funciones para filtrado de historial
+  const getDateRangeFromFilter = (filter: string) => {
+    const now = new Date()
+    const ranges = {
+      '7d': new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000),
+      '30d': new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000),
+      '3m': new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000),
+      '6m': new Date(now.getTime() - 180 * 24 * 60 * 60 * 1000),
+      'year': new Date(now.getFullYear(), 0, 1),
+      'all': null
+    }
+    
+    return ranges[filter as keyof typeof ranges] || null
+  }
+
+  const isServiceInDateRange = (service: CustomerService) => {
+    if (dateFilter === 'all') return true
+    
+    if (dateFilter === 'custom') {
+      if (!customDateRange.start && !customDateRange.end) return true
+      
+      const serviceDate = new Date(service.created_at)
+      const start = customDateRange.start ? new Date(customDateRange.start) : null
+      const end = customDateRange.end ? new Date(customDateRange.end + 'T23:59:59') : null
+      
+      if (start && serviceDate < start) return false
+      if (end && serviceDate > end) return false
+      return true
+    }
+    
+    const startDate = getDateRangeFromFilter(dateFilter)
+    if (!startDate) return true
+    
+    return new Date(service.created_at) >= startDate
+  }
+
+  const isServiceTypeMatch = (service: CustomerService) => {
+    if (serviceTypeFilter === 'all') return true
+    return service.type === serviceTypeFilter
+  }
+
+  const isServiceStatusMatch = (service: CustomerService) => {
+    if (serviceStatusFilter === 'all') return true
+    
+    const pendingStatuses = ['pending', 'received', 'diagnosed', 'in_progress']
+    const completedStatuses = ['completed', 'delivered']
+    
+    if (serviceStatusFilter === 'pending') {
+      return pendingStatuses.includes(service.status)
+    }
+    if (serviceStatusFilter === 'completed') {
+      return completedStatuses.includes(service.status)
+    }
+    
+    return true
+  }
+
+  // Función principal de filtrado
+  const getFilteredServices = () => {
+    if (!customerDetail?.services) return []
+    
+    return customerDetail.services.filter(service => 
+      isServiceInDateRange(service) && 
+      isServiceTypeMatch(service) && 
+      isServiceStatusMatch(service)
+    ).sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+  }
+
+  // Función para calcular estadísticas filtradas
+  const getFilteredStats = () => {
+    const filteredServices = getFilteredServices()
+    
+    const totalServices = filteredServices.length
+    const totalSpent = filteredServices.reduce((sum, service) => sum + service.cost, 0)
+    const pendingServices = filteredServices.filter(s => 
+      ['pending', 'received', 'diagnosed', 'in_progress'].includes(s.status)
+    ).length
+    const completedServices = filteredServices.filter(s => 
+      ['completed', 'delivered'].includes(s.status)
+    ).length
+    
+    return {
+      totalServices,
+      totalSpent,
+      pendingServices,
+      completedServices
+    }
+  }
+
+  // Resetear filtros cuando se cierra el modal
+  const handleDetailClose = () => {
+    setDateFilter('all')
+    setCustomDateRange({ start: '', end: '' })
+    setServiceTypeFilter('all')
+    setServiceStatusFilter('all')
+    onDetailClose()
+  }
+
   // Estadísticas
   const stats = {
     total: pagination.total,
@@ -459,20 +571,19 @@ export default function ClientesPage() {
         {/* Header mejorado */}
         <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
           <div className="space-y-2">
-            <h1 className={`text-4xl font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent`}>
+            <h1 className={`text-4xl font-bold bg-gradient-to-r from-[#4ca771] to-[#013237] bg-clip-text text-transparent`}>
               {t('customers.title')}
             </h1>
-            <p className={`${textColors.secondary} text-lg`}>
+            <p className={`text-[#4ca771] text-lg`}>
               {t('customers.description')}
             </p>
           </div>
           
           <Button
-            color="primary"
             size="lg"
             startContent={<Plus className="w-5 h-5" />}
             onPress={onCreateOpen}
-            className="shadow-lg"
+            className="bg-gradient-to-r from-[#4ca771] to-[#013237] text-white shadow-lg hover:from-[#013237] hover:to-[#4ca771] transition-all"
           >
             {t('customers.new')}
           </Button>
@@ -480,73 +591,69 @@ export default function ClientesPage() {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
-          <Card className="hover:scale-105 transition-transform border-0 shadow-lg">
+          <Card className="hover:scale-105 transition-all duration-300 border border-gray-200 shadow-lg bg-gradient-to-br from-blue-100 to-blue-200">
             <CardBody className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <div className="p-3 rounded-xl bg-gradient-to-br from-blue-400 to-blue-600 shadow-lg">
+                <div className="p-3 rounded-xl bg-blue-500 shadow-lg">
                   <Users className="w-6 h-6 text-white" />
                 </div>
-                <Chip color="primary" variant="flat">Total</Chip>
+                <Chip variant="flat" size="sm" className="font-semibold bg-white/60 text-blue-800 border border-white/30">Total</Chip>
               </div>
               <div className="space-y-2">
-                <p className={`text-sm font-medium ${textColors.tertiary}`}>{t('customers.totalClients')}</p>
-                <p className={`text-3xl font-bold ${textColors.primary}`}>{stats.total}</p>
-                <Progress value={100} color="primary" size="sm" />
+                <p className="text-base font-bold text-blue-800 opacity-90 uppercase tracking-wider">{t('customers.totalClients')}</p>
+                <p className="text-4xl font-extrabold text-blue-800 mb-2 tracking-tight">{stats.total}</p>
               </div>
             </CardBody>
           </Card>
 
-          <Card className="hover:scale-105 transition-transform border-0 shadow-lg">
+          <Card className="hover:scale-105 transition-all duration-300 border border-gray-200 shadow-lg bg-gradient-to-br from-emerald-100 to-emerald-200">
             <CardBody className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <div className="p-3 rounded-xl bg-gradient-to-br from-green-400 to-green-600 shadow-lg">
+                <div className="p-3 rounded-xl bg-emerald-500 shadow-lg">
                   <UserCheck className="w-6 h-6 text-white" />
                 </div>
-                <Chip color="success" variant="flat">Registrados</Chip>
+                <Chip variant="flat" size="sm" className="font-semibold bg-white/60 text-emerald-800 border border-white/30">Registrados</Chip>
               </div>
               <div className="space-y-2">
-                <p className={`text-sm font-medium ${textColors.tertiary}`}>{t('customers.registeredClients')}</p>
-                <p className={`text-3xl font-bold text-green-600`}>{stats.identificados}</p>
-                <Progress value={(stats.identificados / Math.max(stats.total, 1)) * 100} color="success" size="sm" />
+                <p className="text-base font-bold text-emerald-800 opacity-90 uppercase tracking-wider">{t('customers.registeredClients')}</p>
+                <p className="text-4xl font-extrabold text-emerald-800 mb-2 tracking-tight">{stats.identificados}</p>
               </div>
             </CardBody>
           </Card>
 
-          <Card className="hover:scale-105 transition-transform border-0 shadow-lg">
+          <Card className="hover:scale-105 transition-all duration-300 border border-gray-200 shadow-lg bg-gradient-to-br from-purple-100 to-purple-200">
             <CardBody className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <div className="p-3 rounded-xl bg-gradient-to-br from-purple-400 to-purple-600 shadow-lg">
+                <div className="p-3 rounded-xl bg-purple-500 shadow-lg">
                   <Star className="w-6 h-6 text-white" />
                 </div>
-                <Chip color="secondary" variant="flat">VIP</Chip>
+                <Chip variant="flat" size="sm" className="font-semibold bg-white/60 text-purple-800 border border-white/30">VIP</Chip>
               </div>
               <div className="space-y-2">
-                <p className={`text-sm font-medium ${textColors.tertiary}`}>{t('customers.vipClients')}</p>
-                <p className={`text-3xl font-bold text-purple-600`}>{stats.vip}</p>
-                <Progress value={(stats.vip / Math.max(stats.total, 1)) * 100} color="secondary" size="sm" />
+                <p className="text-base font-bold text-purple-800 opacity-90 uppercase tracking-wider">{t('customers.vipClients')}</p>
+                <p className="text-4xl font-extrabold text-purple-800 mb-2 tracking-tight">{stats.vip}</p>
               </div>
             </CardBody>
           </Card>
 
-          <Card className="hover:scale-105 transition-transform border-0 shadow-lg">
+          <Card className="hover:scale-105 transition-all duration-300 border border-gray-200 shadow-lg bg-gradient-to-br from-orange-100 to-orange-200">
             <CardBody className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <div className="p-3 rounded-xl bg-gradient-to-br from-orange-400 to-orange-600 shadow-lg">
+                <div className="p-3 rounded-xl bg-orange-500 shadow-lg">
                   <User className="w-6 h-6 text-white" />
                 </div>
-                <Chip color="warning" variant="flat">Anónimos</Chip>
+                <Chip variant="flat" size="sm" className="font-semibold bg-white/60 text-orange-800 border border-white/30">Anónimos</Chip>
               </div>
               <div className="space-y-2">
-                <p className={`text-sm font-medium ${textColors.tertiary}`}>{t('customers.anonymousClients')}</p>
-                <p className={`text-3xl font-bold text-orange-600`}>{stats.anonimos}</p>
-                <Progress value={(stats.anonimos / Math.max(stats.total, 1)) * 100} color="warning" size="sm" />
+                <p className="text-base font-bold text-orange-800 opacity-90 uppercase tracking-wider">{t('customers.anonymousClients')}</p>
+                <p className="text-4xl font-extrabold text-orange-800 mb-2 tracking-tight">{stats.anonimos}</p>
               </div>
             </CardBody>
           </Card>
         </div>
 
         {/* Filtros y búsqueda */}
-        <Card>
+        <Card className="border border-gray-200 bg-white/90 shadow-sm">
           <CardBody>
             <div className="flex flex-col md:flex-row gap-4 items-center">
               <div className="flex-1 w-full">
@@ -554,11 +661,11 @@ export default function ClientesPage() {
                   placeholder={t('customers.searchPlaceholder')}
                   value={busqueda}
                   onValueChange={handleBusquedaChange}
-                  startContent={<Search className="w-4 h-4 text-gray-400" />}
+                  startContent={<Search className="w-4 h-4 text-[#4ca771]" />}
                   variant="bordered"
                   classNames={{
-                    input: "text-gray-900 placeholder:text-gray-500",
-                    inputWrapper: "border-gray-300",
+                    input: "text-gray-800 placeholder:text-gray-400",
+                    inputWrapper: "border-gray-300 hover:border-[#4ca771] focus-within:border-[#4ca771]",
                   }}
                 />
               </div>
@@ -569,15 +676,15 @@ export default function ClientesPage() {
                   onSelectionChange={handleTipoChange}
                   variant="bordered"
                   classNames={{
-                    trigger: "text-gray-900",
-                    value: "text-gray-900",
-                    popoverContent: "bg-white",
+                    trigger: "text-gray-800 border-gray-300 hover:border-[#4ca771] focus:border-[#4ca771]",
+                    value: "text-gray-800",
+                    popoverContent: "bg-white border border-gray-200",
                   }}
                 >
-                  <SelectItem key="todos" className="text-gray-900">{t('customers.allTypes')}</SelectItem>
-                                      <SelectItem key="identified" className="text-gray-900">{t('customers.identified')}</SelectItem>
-                                      <SelectItem key="anonymous" className="text-gray-900">{t('customers.anonymous')}</SelectItem>
-                                      <SelectItem key="recurrent" className="text-gray-900">{t('customers.recurrent')}</SelectItem>
+                  <SelectItem key="todos" className="text-gray-800 hover:bg-gray-50">{t('customers.allTypes')}</SelectItem>
+                  <SelectItem key="identified" className="text-gray-800 hover:bg-gray-50">{t('customers.identified')}</SelectItem>
+                  <SelectItem key="anonymous" className="text-gray-800 hover:bg-gray-50">{t('customers.anonymous')}</SelectItem>
+                  <SelectItem key="recurrent" className="text-gray-800 hover:bg-gray-50">{t('customers.recurrent')}</SelectItem>
                 </Select>
               </div>
             </div>
@@ -587,7 +694,7 @@ export default function ClientesPage() {
         {/* Lista de clientes */}
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
           {customers.map((customer) => (
-            <Card key={customer.id} className="hover:shadow-xl transition-shadow border-0">
+            <Card key={customer.id} className="hover:shadow-lg transition-all duration-300 border border-gray-200 bg-white/95 shadow-sm">
               <CardBody className="p-6">
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex items-center gap-3">
@@ -595,20 +702,21 @@ export default function ClientesPage() {
                       name={getCustomerDisplayName(customer).charAt(0)}
                       classNames={{
                         base: customer.is_recurrent 
-                          ? "bg-gradient-to-br from-purple-400 to-pink-400" 
-                          : "bg-gradient-to-br from-blue-400 to-cyan-400",
+                          ? "bg-gradient-to-br from-purple-400 to-purple-500" 
+                          : "bg-gradient-to-br from-blue-400 to-blue-500",
                         name: "text-white font-bold"
                       }}
                       size="lg"
                     />
                     <div>
-                      <h3 className={`text-lg font-semibold ${textColors.primary}`}>
+                      <h3 className={`text-lg font-semibold text-gray-800`}>
                         {getCustomerDisplayName(customer)}
                       </h3>
                       <Chip
                         color={getBadgeColor(customer.customer_type, customer.is_recurrent)}
                         size="sm"
                         variant="flat"
+                        className="bg-gray-100 text-gray-700 border border-gray-200"
                       >
                         {getBadgeLabel(customer.customer_type, customer.is_recurrent)}
                       </Chip>
@@ -620,45 +728,45 @@ export default function ClientesPage() {
                   {customer.email && (
                     <div className="flex items-center gap-2">
                       <Mail className="w-4 h-4 text-gray-500" />
-                      <span className={`text-sm ${textColors.secondary}`}>{customer.email}</span>
+                      <span className={`text-sm text-gray-600`}>{customer.email}</span>
                     </div>
                   )}
                   {customer.phone && (
                     <div className="flex items-center gap-2">
                       <Phone className="w-4 h-4 text-gray-500" />
-                      <span className={`text-sm ${textColors.secondary}`}>{customer.phone}</span>
+                      <span className={`text-sm text-gray-600`}>{customer.phone}</span>
                     </div>
                   )}
                 </div>
 
                 <div className="space-y-3 mb-4">
                   <div className="flex justify-between">
-                    <span className={`text-sm ${textColors.muted}`}>Total gastado:</span>
+                    <span className={`text-sm text-gray-500`}>Total gastado:</span>
                     <span className="text-sm font-semibold text-green-600">
                       {formatCurrency(customer.stats?.totalGastado || 0)}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className={`text-sm ${textColors.muted}`}>Servicios:</span>
-                    <span className={`text-sm font-semibold ${textColors.primary}`}>
+                    <span className={`text-sm text-gray-500`}>Servicios:</span>
+                    <span className={`text-sm font-semibold text-gray-800`}>
                       {customer.stats?.totalReparaciones || 0}
                     </span>
                   </div>
                 </div>
 
                 <div className="flex justify-end gap-2 mt-4">
-                  <Tooltip content={t('common.view') + " " + t('common.details')} classNames={{ content: "bg-gray-900 text-white" }}>
-                    <Button isIconOnly variant="flat" size="sm" onPress={() => handleViewDetails(customer)}>
+                  <Tooltip content={t('common.view') + " " + t('common.details')} classNames={{ content: "bg-gray-800 text-white" }}>
+                    <Button isIconOnly variant="flat" size="sm" onPress={() => handleViewDetails(customer)} className="hover:bg-gray-100 text-gray-600">
                       <Eye className="w-5 h-5" />
                     </Button>
                   </Tooltip>
-                  <Tooltip content={t('common.edit') + " " + t('common.customer')} classNames={{ content: "bg-gray-900 text-white" }}>
-                    <Button isIconOnly variant="flat" size="sm" onPress={() => handleEditCustomer(customer)}>
+                  <Tooltip content={t('common.edit') + " " + t('common.customer')} classNames={{ content: "bg-gray-800 text-white" }}>
+                    <Button isIconOnly variant="flat" size="sm" onPress={() => handleEditCustomer(customer)} className="hover:bg-gray-100 text-gray-600">
                       <Edit className="w-5 h-5" />
                     </Button>
                   </Tooltip>
-                                      <Tooltip content={t('common.delete') + " " + t('common.customer')} classNames={{ content: "bg-gray-900 text-white" }}>
-                    <Button isIconOnly variant="flat" size="sm" color="danger" onPress={() => handleDeleteCustomer(customer)}>
+                  <Tooltip content={t('common.delete') + " " + t('common.customer')} classNames={{ content: "bg-gray-800 text-white" }}>
+                    <Button isIconOnly variant="flat" size="sm" color="danger" onPress={() => handleDeleteCustomer(customer)} className="hover:bg-red-50 text-red-600">
                       <Trash2 className="w-5 h-5" />
                     </Button>
                   </Tooltip>
@@ -676,8 +784,14 @@ export default function ClientesPage() {
               page={pagination.page}
               onChange={handlePageChange}
               showControls
-              color="primary"
               size="lg"
+              classNames={{
+                wrapper: "gap-0 overflow-visible h-fit rounded-lg border border-gray-300",
+                item: "w-10 h-10 text-small rounded-none bg-transparent text-gray-700 hover:bg-gray-100",
+                cursor: "bg-gradient-to-r from-[#4ca771] to-[#013237] shadow-lg font-bold text-white",
+                prev: "bg-transparent hover:bg-gray-100 text-gray-700",
+                next: "bg-transparent hover:bg-gray-100 text-gray-700",
+              }}
             />
           </div>
         )}
@@ -691,7 +805,7 @@ export default function ClientesPage() {
           classNames={{
             wrapper: "z-[1000]",
             backdrop: "z-[999]",
-            base: "max-h-[95vh] my-2 mx-2 sm:mx-6",
+            base: "max-h-[95vh] my-2 mx-2 sm:mx-6 bg-white border border-gray-200",
             body: "max-h-[70vh] overflow-y-auto py-4",
             header: "border-b border-gray-200 pb-4",
             footer: "border-t border-gray-200 pt-4"
@@ -700,7 +814,7 @@ export default function ClientesPage() {
           <ModalContent>
             <form onSubmit={handleCreateCustomer}>
               <ModalHeader>
-                <h2 className={`text-xl font-bold ${textColors.primary}`}>{t('customers.createTitle')}</h2>
+                <h2 className={`text-xl font-bold text-gray-800`}>{t('customers.createTitle')}</h2>
               </ModalHeader>
               <ModalBody className="space-y-4">
                 <FormField
@@ -747,12 +861,12 @@ export default function ClientesPage() {
                 />
               </ModalBody>
               <ModalFooter>
-                <Button variant="flat" onPress={onCreateClose}>Cancelar</Button>
+                <Button variant="flat" onPress={onCreateClose} className="hover:bg-gray-100 text-gray-600">Cancelar</Button>
                 <Button 
                   type="submit" 
-                  color="primary" 
                   isLoading={createLoading}
                   startContent={!createLoading ? <Plus className="w-4 h-4" /> : null}
+                  className="bg-gradient-to-r from-[#4ca771] to-[#013237] text-white hover:from-[#013237] hover:to-[#4ca771]"
                 >
                   {t('customers.new')}
                 </Button>
@@ -764,7 +878,7 @@ export default function ClientesPage() {
         {/* Modal de ver detalles mejorado */}
         <Modal 
           isOpen={isDetailOpen} 
-          onClose={onDetailClose} 
+          onClose={handleDetailClose} 
           size="2xl" 
           scrollBehavior="inside"
           classNames={{
@@ -858,25 +972,25 @@ export default function ClientesPage() {
                         <div className="grid grid-cols-2 gap-3">
                           <div className="text-center p-3 bg-blue-50 rounded-lg">
                             <p className="text-xl font-bold text-blue-600">
-                              {customerDetail?.services?.length || 0}
+                              {getFilteredStats().totalServices}
                             </p>
                             <p className="text-xs text-gray-600">Total Servicios</p>
                           </div>
                           <div className="text-center p-3 bg-green-50 rounded-lg">
                             <p className="text-xl font-bold text-green-600">
-                              {formatCurrency(customerDetail?.financialSummary?.totalSpent || 0)}
+                              {formatCurrency(getFilteredStats().totalSpent)}
                             </p>
                             <p className="text-xs text-gray-600">Total Gastado</p>
                           </div>
                           <div className="text-center p-3 bg-orange-50 rounded-lg">
                             <p className="text-xl font-bold text-orange-600">
-                              {customerDetail?.services?.filter(s => ['pending', 'received', 'diagnosed', 'in_progress'].includes(s.status)).length || 0}
+                              {getFilteredStats().pendingServices}
                             </p>
                             <p className="text-xs text-gray-600">Pendientes</p>
                           </div>
                           <div className="text-center p-3 bg-purple-50 rounded-lg">
                             <p className="text-xl font-bold text-purple-600">
-                              {customerDetail?.services?.filter(s => ['completed', 'delivered'].includes(s.status)).length || 0}
+                              {getFilteredStats().completedServices}
                             </p>
                             <p className="text-xs text-gray-600">Completadas</p>
                           </div>
@@ -935,10 +1049,112 @@ export default function ClientesPage() {
                   {/* Historial de servicios */}
                   <Card>
                     <CardHeader>
-                      <h3 className={`text-xl font-semibold flex items-center gap-2 ${textColors.primary}`}>
-                        <History className="w-6 h-6 text-purple-500" />
-                        Historial de Servicios
-                      </h3>
+                      <div className="flex flex-col gap-4">
+                        <h3 className={`text-xl font-semibold flex items-center gap-2 ${textColors.primary}`}>
+                          <History className="w-6 h-6 text-purple-500" />
+                          Historial de Servicios
+                        </h3>
+                        
+                        {/* Filtros de fecha */}
+                        <div className="flex flex-wrap gap-2">
+                          <div className="flex flex-wrap gap-2">
+                            {[
+                              { key: 'all', label: 'Todo' },
+                              { key: '7d', label: '7 días' },
+                              { key: '30d', label: '30 días' },
+                              { key: '3m', label: '3 meses' },
+                              { key: '6m', label: '6 meses' },
+                              { key: 'year', label: 'Este año' },
+                              { key: 'custom', label: 'Personalizado' }
+                            ].map(filter => (
+                              <Button
+                                key={filter.key}
+                                size="sm"
+                                variant={dateFilter === filter.key ? "solid" : "bordered"}
+                                color={dateFilter === filter.key ? "primary" : "default"}
+                                onPress={() => setDateFilter(filter.key)}
+                                className={dateFilter === filter.key ? 
+                                  "bg-gray-900 text-white border-gray-900" : 
+                                  "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"}
+                              >
+                                {filter.label}
+                              </Button>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Filtro de rango personalizado */}
+                        {dateFilter === 'custom' && (
+                          <div className="flex gap-2 flex-wrap">
+                            <Input
+                              type="date"
+                              label="Desde"
+                              value={customDateRange.start}
+                              onChange={(e) => setCustomDateRange(prev => ({ ...prev, start: e.target.value }))}
+                              size="sm"
+                              className="max-w-36"
+                              classNames={{
+                                input: "text-gray-700",
+                                inputWrapper: "bg-white border-gray-300 hover:bg-gray-50",
+                                label: "text-gray-600",
+                              }}
+                            />
+                            <Input
+                              type="date"
+                              label="Hasta"
+                              value={customDateRange.end}
+                              onChange={(e) => setCustomDateRange(prev => ({ ...prev, end: e.target.value }))}
+                              size="sm"
+                              className="max-w-36"
+                              classNames={{
+                                input: "text-gray-700",
+                                inputWrapper: "bg-white border-gray-300 hover:bg-gray-50",
+                                label: "text-gray-600",
+                              }}
+                            />
+                          </div>
+                        )}
+
+                        {/* Filtros adicionales */}
+                        <div className="flex flex-wrap gap-2">
+                          <Select
+                            size="sm"
+                            label="Tipo de servicio"
+                            selectedKeys={[serviceTypeFilter]}
+                            onSelectionChange={(keys) => setServiceTypeFilter(Array.from(keys)[0] as string)}
+                            className="max-w-48"
+                            classNames={{
+                              trigger: "bg-white border-gray-300 text-gray-700 hover:bg-gray-50",
+                              value: "text-gray-700",
+                              label: "text-gray-600",
+                              popoverContent: "bg-white border-gray-300",
+                            }}
+                          >
+                            <SelectItem key="all" className="text-gray-700">Todos los tipos</SelectItem>
+                            <SelectItem key="repair" className="text-gray-700">Reparaciones</SelectItem>
+                            <SelectItem key="unlock" className="text-gray-700">Desbloqueos</SelectItem>
+                            <SelectItem key="sale" className="text-gray-700">Ventas</SelectItem>
+                          </Select>
+                          
+                          <Select
+                            size="sm"
+                            label="Estado"
+                            selectedKeys={[serviceStatusFilter]}
+                            onSelectionChange={(keys) => setServiceStatusFilter(Array.from(keys)[0] as string)}
+                            className="max-w-48"
+                            classNames={{
+                              trigger: "bg-white border-gray-300 text-gray-700 hover:bg-gray-50",
+                              value: "text-gray-700",
+                              label: "text-gray-600",
+                              popoverContent: "bg-white border-gray-300",
+                            }}
+                          >
+                            <SelectItem key="all" className="text-gray-700">Todos los estados</SelectItem>
+                            <SelectItem key="pending" className="text-gray-700">Pendientes</SelectItem>
+                            <SelectItem key="completed" className="text-gray-700">Completados</SelectItem>
+                          </Select>
+                        </div>
+                      </div>
                     </CardHeader>
                     <CardBody>
                       {loadingDetail ? (
@@ -951,11 +1167,9 @@ export default function ClientesPage() {
                             </div>
                           ))}
                         </div>
-                      ) : customerDetail && customerDetail.services.length > 0 ? (
+                      ) : customerDetail && getFilteredServices().length > 0 ? (
                         <div className="space-y-3 max-h-96 overflow-y-auto">
-                          {customerDetail.services
-                            .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
-                            .map((service) => (
+                          {getFilteredServices().map((service) => (
                             <div key={service.id} className="p-4 border rounded-lg hover:bg-gray-50 transition-colors">
                               <div className="flex justify-between items-start mb-2">
                                 <div className="flex items-center gap-2">
@@ -1009,7 +1223,26 @@ export default function ClientesPage() {
                       ) : (
                         <div className="text-center py-8">
                           <FileText className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                          <p className={textColors.muted}>No hay servicios registrados para este cliente</p>
+                          <p className={textColors.muted}>
+                            {customerDetail && customerDetail.services.length > 0 
+                              ? "No hay servicios que coincidan con los filtros seleccionados" 
+                              : "No hay servicios registrados para este cliente"}
+                          </p>
+                          {customerDetail && customerDetail.services.length > 0 && (
+                            <Button 
+                              size="sm" 
+                              variant="light" 
+                              onPress={() => {
+                                setDateFilter('all')
+                                setServiceTypeFilter('all')
+                                setServiceStatusFilter('all')
+                                setCustomDateRange({ start: '', end: '' })
+                              }}
+                              className="mt-2 text-gray-700 hover:bg-gray-100"
+                            >
+                              Limpiar filtros
+                            </Button>
+                          )}
                         </div>
                       )}
                     </CardBody>
@@ -1018,7 +1251,7 @@ export default function ClientesPage() {
               )}
             </ModalBody>
             <ModalFooter className="border-t">
-              <Button variant="flat" onPress={onDetailClose}>
+              <Button variant="flat" onPress={handleDetailClose}>
                 Cerrar
               </Button>
               {selectedCustomer && (
@@ -1027,7 +1260,7 @@ export default function ClientesPage() {
                   startContent={<Edit className="w-4 h-4" />}
                   onPress={() => {
                     handleEditCustomer(selectedCustomer)
-                    onDetailClose()
+                    handleDetailClose()
                   }}
                 >
                   Editar Cliente

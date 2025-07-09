@@ -94,7 +94,7 @@ export default function TechnicianHeader({ onMobileMenuToggle, mobileMenuOpen }:
   }
 
   return (
-    <Card className="shadow-xl border-0 bg-gradient-to-r from-blue-50 via-white to-purple-50 backdrop-blur-sm">
+    <Card className="shadow-xl border-0 bg-gradient-to-r from-[#eafae7] via-[#f0fdf9] to-[#c0e6ba] backdrop-blur-sm">
       <CardBody className="px-4 md:px-8 py-4 md:py-6">
         <div className="flex items-center justify-between space-x-3 md:space-x-6">
           {/* Logo y título con gradiente */}
@@ -104,7 +104,7 @@ export default function TechnicianHeader({ onMobileMenuToggle, mobileMenuOpen }:
               <Button
                 isIconOnly
                 variant="light"
-                className="lg:hidden p-2"
+                className="lg:hidden p-2 text-[#4ca771] hover:text-[#013237] hover:bg-[#eafae7]"
                 onPress={onMobileMenuToggle}
                 aria-label={mobileMenuOpen ? "Cerrar menú" : "Abrir menú"}
               >
@@ -112,11 +112,11 @@ export default function TechnicianHeader({ onMobileMenuToggle, mobileMenuOpen }:
               </Button>
             )}
             
-            <div className="p-2 md:p-3 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 shadow-lg flex-shrink-0">
+            <div className="p-2 md:p-3 rounded-xl bg-gradient-to-br from-[#4ca771] to-[#013237] shadow-lg flex-shrink-0">
               <Activity className="w-5 md:w-6 h-5 md:h-6 text-white" />
             </div>
             <div className="flex-1 min-w-0">
-              <h1 className="text-xl md:text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent truncate">
+              <h1 className="text-xl md:text-3xl font-bold bg-gradient-to-r from-[#4ca771] to-[#013237] bg-clip-text text-transparent truncate">
                 {userProfile?.organization_name ? `${userProfile.organization_name} - Panel de Técnico` : 'Panel de Técnico'}
               </h1>
             </div>
@@ -131,16 +131,16 @@ export default function TechnicianHeader({ onMobileMenuToggle, mobileMenuOpen }:
                 value={searchValue}
                 onValueChange={setSearchValue}
                 startContent={
-                  <div className="p-1 rounded-md bg-gradient-to-br from-blue-100 to-purple-100">
-                    <Search className="w-4 h-4 text-blue-600" />
+                  <div className="p-1 rounded-md bg-gradient-to-br from-[#eafae7] to-[#c0e6ba]">
+                    <Search className="w-4 h-4 text-[#4ca771]" />
                   </div>
                 }
                 variant="bordered"
                 size="lg"
                 className="w-80"
                 classNames={{
-                  input: "text-gray-700 placeholder:text-gray-500",
-                  inputWrapper: "border-gray-200 hover:border-blue-300 focus-within:border-blue-500 bg-white/80 backdrop-blur-sm",
+                  input: "text-[#013237] placeholder:text-[#4ca771]",
+                  inputWrapper: "border-[#c0e6ba] hover:border-[#4ca771] focus-within:border-[#013237] bg-[#f0fdf9]/80 backdrop-blur-sm",
                 }}
                 aria-label="Buscar en el sistema"
               />
@@ -153,10 +153,10 @@ export default function TechnicianHeader({ onMobileMenuToggle, mobileMenuOpen }:
                   isIconOnly
                   variant="light"
                   size="lg"
-                  className="relative bg-white/80 backdrop-blur-sm border border-gray-200 hover:border-blue-300 shadow-lg hover:shadow-xl transition-all"
+                  className="relative bg-[#f0fdf9]/80 backdrop-blur-sm border border-[#c0e6ba] hover:border-[#4ca771] shadow-lg hover:shadow-xl transition-all"
                   aria-label="Ver notificaciones"
                 >
-                  <Bell className="w-5 h-5 text-gray-600" />
+                  <Bell className="w-5 h-5 text-[#4ca771]" />
                   {notifications && notifications.totalNotifications > 0 && (
                     <Badge
                       content={notifications.totalNotifications}
@@ -177,7 +177,7 @@ export default function TechnicianHeader({ onMobileMenuToggle, mobileMenuOpen }:
                 className="w-80 md:w-96 max-h-96 overflow-y-auto"
                 variant="flat"
                 classNames={{
-                  base: "bg-white/95 backdrop-blur-lg border border-gray-200 shadow-2xl"
+                  base: "bg-[#f0fdf9]/95 backdrop-blur-lg border border-[#c0e6ba] shadow-2xl"
                 }}
               >
                 <DropdownItem
@@ -185,12 +185,12 @@ export default function TechnicianHeader({ onMobileMenuToggle, mobileMenuOpen }:
                   className="h-auto"
                   isReadOnly
                 >
-                  <div className="px-2 py-3 border-b border-gray-100">
+                  <div className="px-2 py-3 border-b border-[#c0e6ba]">
                     <div className="flex items-center justify-between">
-                      <p className="text-base md:text-lg font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                      <p className="text-base md:text-lg font-bold bg-gradient-to-r from-[#4ca771] to-[#013237] bg-clip-text text-transparent">
                         Mis Notificaciones
                       </p>
-                      <Chip size="sm" color="primary" variant="flat">
+                      <Chip size="sm" color="primary" variant="flat" className="bg-[#eafae7] text-[#013237]">
                         {notifications?.totalNotifications || 0}
                       </Chip>
                     </div>
@@ -199,8 +199,8 @@ export default function TechnicianHeader({ onMobileMenuToggle, mobileMenuOpen }:
                 {loading ? (
                   <DropdownItem key="loading" isReadOnly>
                     <div className="flex items-center justify-center py-8">
-                      <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
-                      <p className="ml-3 text-sm text-gray-600">Cargando notificaciones...</p>
+                      <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-[#4ca771]"></div>
+                      <p className="ml-3 text-sm text-[#013237]">Cargando notificaciones...</p>
                     </div>
                   </DropdownItem>
                 ) : notifications && notifications.totalNotifications > 0 ? (
@@ -304,24 +304,24 @@ export default function TechnicianHeader({ onMobileMenuToggle, mobileMenuOpen }:
               <DropdownTrigger>
                 <Button
                   variant="light"
-                  className="flex items-center space-x-2 md:space-x-3 p-2 md:p-3 bg-white/80 backdrop-blur-sm border border-gray-200 hover:border-blue-300 shadow-lg hover:shadow-xl transition-all rounded-xl"
+                  className="flex items-center space-x-2 md:space-x-3 p-2 md:p-3 bg-[#f0fdf9]/80 backdrop-blur-sm border border-[#c0e6ba] hover:border-[#4ca771] shadow-lg hover:shadow-xl transition-all rounded-xl"
                   aria-label="Menu de usuario"
                 >
                   <Avatar
                     icon={<User className="w-4 md:w-5 h-4 md:h-5" />}
                     size="sm"
                     classNames={{
-                      base: "bg-gradient-to-br from-blue-500 to-purple-600",
+                      base: "bg-gradient-to-br from-[#4ca771] to-[#013237]",
                       icon: "text-white"
                     }}
                   />
                   <div className="hidden md:block text-left">
-                    <p className="text-sm font-bold text-gray-900 truncate">
+                    <p className="text-sm font-bold text-[#013237] truncate">
                       {userProfile?.name || 'Usuario'}
                     </p>
                     <div className="flex items-center gap-2">
-                      <p className="text-xs text-gray-600">Técnico</p>
-                      <Chip size="sm" color="success" variant="dot" className="text-black">
+                      <p className="text-xs text-[#4ca771]">Técnico</p>
+                      <Chip size="sm" color="success" variant="dot" className="text-[#013237] bg-[#eafae7]">
                         Activo
                       </Chip>
                     </div>
@@ -332,26 +332,26 @@ export default function TechnicianHeader({ onMobileMenuToggle, mobileMenuOpen }:
                 aria-label="Menu de perfil de usuario" 
                 variant="flat"
                 classNames={{
-                  base: "bg-white/95 backdrop-blur-lg border border-gray-200 shadow-2xl min-w-[250px]"
+                  base: "bg-[#f0fdf9]/95 backdrop-blur-lg border border-[#c0e6ba] shadow-2xl min-w-[250px]"
                 }}
               >
                 <DropdownItem key="profile-info" isReadOnly>
-                  <div className="py-3 border-b border-gray-100">
+                  <div className="py-3 border-b border-[#c0e6ba]">
                     <div className="flex items-center gap-3">
                       <Avatar
                         icon={<User className="w-5 h-5" />}
                         size="md"
                         classNames={{
-                          base: "bg-gradient-to-br from-blue-500 to-purple-600",
+                          base: "bg-gradient-to-br from-[#4ca771] to-[#013237]",
                           icon: "text-white"
                         }}
                       />
                       <div className="min-w-0 flex-1">
-                        <p className="text-sm font-bold text-gray-900 truncate">
+                        <p className="text-sm font-bold text-[#013237] truncate">
                           {userProfile?.name}
                         </p>
-                        <p className="text-xs text-gray-600 truncate">{user?.email}</p>
-                        <Chip size="sm" color="primary" variant="flat" className="mt-1">
+                        <p className="text-xs text-[#4ca771] truncate">{user?.email}</p>
+                        <Chip size="sm" color="primary" variant="flat" className="mt-1 bg-[#eafae7] text-[#013237]">
                           Técnico Autorizado
                         </Chip>
                       </div>
@@ -363,13 +363,13 @@ export default function TechnicianHeader({ onMobileMenuToggle, mobileMenuOpen }:
                   as={Link} 
                   href="/dashboard/technician/perfil"
                   startContent={
-                    <div className="p-1 rounded-md bg-blue-100">
-                      <Settings className="w-4 h-4 text-blue-600" />
+                    <div className="p-1 rounded-md bg-[#eafae7]">
+                      <Settings className="w-4 h-4 text-[#4ca771]" />
                     </div>
                   }
-                  className="hover:bg-blue-50"
+                  className="hover:bg-[#eafae7] text-[#013237]"
                 >
-                  <span className="text-gray-700 font-medium">Mi Perfil y Configuración</span>
+                  <span className="font-medium">Mi Perfil y Configuración</span>
                 </DropdownItem>
                 <DropdownItem 
                   key="logout" 

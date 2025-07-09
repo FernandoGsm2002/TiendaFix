@@ -439,30 +439,29 @@ export default function DesbloqueoPage() {
         {/* Header */}
         <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
           <div className="space-y-2">
-            <h1 className={`text-4xl font-bold bg-gradient-to-r from-cyan-600 to-blue-600 bg-clip-text text-transparent`}>
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-[#4ca771] to-[#013237] bg-clip-text text-transparent">
               Servicios de Desbloqueo
             </h1>
-            <p className={`${textColors.secondary} text-lg`}>
+            <p className="text-[#4ca771] text-lg">
               Gestión de servicios de unlock y liberación de dispositivos
             </p>
           </div>
           
           <Button
-            color="primary"
             onPress={onCreateOpen}
             startContent={<Plus className="w-4 h-4" />}
-            className="shadow-lg"
+            className="bg-gradient-to-r from-[#4ca771] to-[#013237] text-white hover:from-[#013237] hover:to-[#4ca771] transition-all shadow-lg"
           >
             Nuevo Desbloqueo
           </Button>
         </div>
 
         {/* Estadísticas */}
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
-          <Card className="hover:scale-105 transition-all duration-300 border-0 shadow-lg bg-gradient-to-br from-blue-50/60 to-blue-100/40 backdrop-blur-sm">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+          <Card className="hover:scale-105 transition-all duration-300 border border-gray-200 shadow-lg bg-gradient-to-br from-blue-100 to-blue-200">
             <CardBody className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <div className="p-3 rounded-xl bg-gradient-to-br from-blue-400/80 to-blue-600/80 shadow-lg">
+                <div className="p-3 rounded-xl bg-blue-500 shadow-lg">
                   <Unlock className="w-6 h-6 text-white" />
                 </div>
                 <div className="flex items-center gap-2">
@@ -470,52 +469,25 @@ export default function DesbloqueoPage() {
                     <ArrowUpRight className="w-3 h-3 text-green-500" />
                     <span className="text-xs text-green-600 font-medium">+18%</span>
                   </div>
-                  <Chip color="primary" variant="flat" size="sm" className="font-medium">
+                  <Chip variant="flat" size="sm" className="font-semibold bg-white/60 text-blue-800 border border-white/30">
                     Total
                   </Chip>
                 </div>
               </div>
               <div className="space-y-2">
-                <p className="text-sm font-medium text-gray-700">Total</p>
-                <p className="text-3xl font-bold text-blue-700">{stats.total}</p>
-                <p className="text-xs text-gray-500">Desbloqueos procesados</p>
+                <p className="text-base font-bold text-blue-800 opacity-90 uppercase tracking-wider">Total</p>
+                <p className="text-4xl font-extrabold text-blue-800 mb-2 tracking-tight">{stats.total}</p>
+                <p className="text-sm font-medium text-blue-800 opacity-70">Desbloqueos procesados</p>
               </div>
             </CardBody>
           </Card>
 
-          <Card className="hover:scale-105 transition-all duration-300 border-0 shadow-lg bg-gradient-to-br from-yellow-50/60 to-orange-100/40 backdrop-blur-sm">
-            <CardBody className="p-6">
-              <div className="flex items-center justify-between mb-4">
-                <div className="p-3 rounded-xl bg-gradient-to-br from-yellow-400/80 to-orange-500/80 shadow-lg">
-                  <Clock className="w-6 h-6 text-white" />
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="flex items-center gap-1">
-                    <ArrowDownRight className="w-3 h-3 text-red-500" />
-                    <span className="text-xs text-red-600 font-medium">-5%</span>
-                  </div>
-                  <Chip color="warning" variant="flat" size="sm" className="font-medium">
-                    Pendientes
-                  </Chip>
-                </div>
-              </div>
-              <div className="space-y-2">
-                <p className="text-sm font-medium text-gray-700">Pendientes</p>
-                <p className="text-3xl font-bold text-yellow-700">{stats.pendientes}</p>
-                <Progress 
-                  value={(stats.pendientes / Math.max(stats.total, 1)) * 100} 
-                  color="warning" 
-                  size="sm" 
-                  className="max-w-md"
-                />
-              </div>
-            </CardBody>
-          </Card>
 
-          <Card className="hover:scale-105 transition-all duration-300 border-0 shadow-lg bg-gradient-to-br from-indigo-50/60 to-blue-100/40 backdrop-blur-sm">
+
+          <Card className="hover:scale-105 transition-all duration-300 border border-gray-200 shadow-lg bg-gradient-to-br from-purple-100 to-purple-200">
             <CardBody className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <div className="p-3 rounded-xl bg-gradient-to-br from-indigo-400/80 to-blue-600/80 shadow-lg">
+                <div className="p-3 rounded-xl bg-purple-500 shadow-lg">
                   <Play className="w-6 h-6 text-white" />
                 </div>
                 <div className="flex items-center gap-2">
@@ -523,17 +495,19 @@ export default function DesbloqueoPage() {
                     <ArrowUpRight className="w-3 h-3 text-green-500" />
                     <span className="text-xs text-green-600 font-medium">+25%</span>
                   </div>
-                  <Chip color="primary" variant="flat" size="sm" className="font-medium">
+                  <Chip variant="flat" size="sm" className="font-semibold bg-white/60 text-purple-800 border border-white/30">
                     Proceso
                   </Chip>
                 </div>
               </div>
               <div className="space-y-2">
-                <p className="text-sm font-medium text-gray-700">En Proceso</p>
-                <p className="text-3xl font-bold text-indigo-700">{stats.enProceso}</p>
+                <p className="text-base font-bold text-purple-800 opacity-90 uppercase tracking-wider">En Proceso</p>
+                <p className="text-4xl font-extrabold text-purple-800 mb-2 tracking-tight">{stats.enProceso}</p>
                 <Progress 
                   value={(stats.enProceso / Math.max(stats.total, 1)) * 100} 
-                  color="primary" 
+                  classNames={{
+                    indicator: "bg-purple-500",
+                  }}
                   size="sm" 
                   className="max-w-md"
                 />
@@ -541,10 +515,10 @@ export default function DesbloqueoPage() {
             </CardBody>
           </Card>
 
-          <Card className="hover:scale-105 transition-all duration-300 border-0 shadow-lg bg-gradient-to-br from-green-50/60 to-emerald-100/40 backdrop-blur-sm">
+          <Card className="hover:scale-105 transition-all duration-300 border border-gray-200 shadow-lg bg-gradient-to-br from-emerald-100 to-emerald-200">
             <CardBody className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <div className="p-3 rounded-xl bg-gradient-to-br from-green-400/80 to-green-600/80 shadow-lg">
+                <div className="p-3 rounded-xl bg-emerald-500 shadow-lg">
                   <CheckCircle2 className="w-6 h-6 text-white" />
                 </div>
                 <div className="flex items-center gap-2">
@@ -552,17 +526,19 @@ export default function DesbloqueoPage() {
                     <ArrowUpRight className="w-3 h-3 text-green-500" />
                     <span className="text-xs text-green-600 font-medium">+30%</span>
                   </div>
-                  <Chip color="success" variant="flat" size="sm" className="font-medium">
+                  <Chip variant="flat" size="sm" className="font-semibold bg-white/60 text-emerald-800 border border-white/30">
                     Completados
                   </Chip>
                 </div>
               </div>
               <div className="space-y-2">
-                <p className="text-sm font-medium text-gray-700">Completados</p>
-                <p className="text-3xl font-bold text-green-700">{stats.completados}</p>
+                <p className="text-base font-bold text-emerald-800 opacity-90 uppercase tracking-wider">Completados</p>
+                <p className="text-4xl font-extrabold text-emerald-800 mb-2 tracking-tight">{stats.completados}</p>
                 <Progress 
                   value={(stats.completados / Math.max(stats.total, 1)) * 100} 
-                  color="success" 
+                  classNames={{
+                    indicator: "bg-emerald-500",
+                  }}
                   size="sm" 
                   className="max-w-md"
                 />
@@ -570,10 +546,10 @@ export default function DesbloqueoPage() {
             </CardBody>
           </Card>
 
-          <Card className="hover:scale-105 transition-all duration-300 border-0 shadow-lg bg-gradient-to-br from-emerald-50/60 to-green-100/40 backdrop-blur-sm">
+          <Card className="hover:scale-105 transition-all duration-300 border border-gray-200 shadow-lg bg-gradient-to-br from-teal-100 to-teal-200">
             <CardBody className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <div className="p-3 rounded-xl bg-gradient-to-br from-emerald-400/80 to-emerald-600/80 shadow-lg">
+                <div className="p-3 rounded-xl bg-teal-500 shadow-lg">
                   <DollarSign className="w-6 h-6 text-white" />
                 </div>
                 <div className="flex items-center gap-2">
@@ -581,21 +557,23 @@ export default function DesbloqueoPage() {
                     <ArrowUpRight className="w-3 h-3 text-green-500" />
                     <span className="text-xs text-green-600 font-medium">+42%</span>
                   </div>
-                  <Chip color="success" variant="flat" size="sm" className="font-medium">
+                  <Chip variant="flat" size="sm" className="font-semibold bg-white/60 text-teal-800 border border-white/30">
                     Ingresos
                   </Chip>
                 </div>
               </div>
               <div className="space-y-2">
-                <p className="text-sm font-medium text-gray-700">Ingresos</p>
-                <p className="text-lg font-bold text-emerald-700">{formatCurrency(stats.totalIngresos)}</p>
+                <p className="text-base font-bold text-teal-800 opacity-90 uppercase tracking-wider">Ingresos</p>
+                <p className="text-3xl font-extrabold text-teal-800 mb-2 tracking-tight">{formatCurrency(stats.totalIngresos)}</p>
                 <Progress 
                   value={85} 
-                  color="success" 
+                  classNames={{
+                    indicator: "bg-teal-500",
+                  }}
                   size="sm" 
                   className="max-w-md"
                 />
-                <p className="text-xs text-gray-500">Meta: {formatCurrency(stats.totalIngresos * 1.2)}</p>
+                <p className="text-sm font-medium text-teal-800 opacity-70">Meta: {formatCurrency(stats.totalIngresos * 1.2)}</p>
               </div>
             </CardBody>
           </Card>
@@ -1181,7 +1159,7 @@ export default function DesbloqueoPage() {
                   <Button color="danger" variant="light" onClick={() => onCreateOpenChange()} size="md" className="text-base font-medium">
                     Cancelar
                   </Button>
-                  <Button color="primary" type="submit" size="md" className="text-base font-medium px-6">
+                  <Button type="submit" size="md" className="bg-gradient-to-r from-[#4ca771] to-[#013237] text-white hover:from-[#013237] hover:to-[#4ca771] transition-all text-base font-medium px-6">
                     Registrar Desbloqueo
                   </Button>
                 </div>
@@ -1368,10 +1346,10 @@ export default function DesbloqueoPage() {
                     Cancelar
                   </Button>
                   <Button 
-                    color="primary" 
                     type="submit"
                     form="edit-unlock-form"
                     isLoading={updateLoading}
+                    className="bg-gradient-to-r from-[#4ca771] to-[#013237] text-white hover:from-[#013237] hover:to-[#4ca771] transition-all"
                   >
                     Actualizar Desbloqueo
                   </Button>

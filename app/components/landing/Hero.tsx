@@ -68,23 +68,23 @@ export function Hero() {
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Ultra Modern Animated Background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_800px_at_100%_200px,#f3f4f6,transparent)]"></div>
-        <div className="absolute inset-0 bg-[radial-gradient(circle_600px_at_0%_100%,#e5e7eb,transparent)]"></div>
+      <div className="absolute inset-0 bg-gradient-to-br from-[#f0fdf9] via-[#eafae7] to-[#c0e6ba]">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_800px_at_100%_200px,#eafae7,transparent)]"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(circle_600px_at_0%_100%,#c0e6ba,transparent)]"></div>
       </div>
       
       {/* Advanced Floating Elements */}
-      <div className="absolute top-20 left-10 w-32 h-32 bg-gradient-to-r from-gray-400/30 to-gray-500/30 rounded-full blur-2xl animate-pulse"></div>
-      <div className="absolute top-40 right-20 w-48 h-48 bg-gradient-to-r from-gray-500/30 to-gray-600/30 rounded-full blur-3xl animate-pulse delay-1000"></div>
-      <div className="absolute bottom-20 left-20 w-40 h-40 bg-gradient-to-r from-gray-600/30 to-gray-700/30 rounded-full blur-2xl animate-pulse delay-2000"></div>
-      <div className="absolute bottom-40 right-10 w-36 h-36 bg-gradient-to-r from-gray-700/30 to-gray-800/30 rounded-full blur-2xl animate-pulse delay-3000"></div>
+      <div className="absolute top-20 left-10 w-32 h-32 bg-gradient-to-r from-[#4ca771]/30 to-[#013237]/30 rounded-full blur-2xl animate-pulse"></div>
+      <div className="absolute top-40 right-20 w-48 h-48 bg-gradient-to-r from-[#013237]/30 to-[#4ca771]/30 rounded-full blur-3xl animate-pulse delay-1000"></div>
+      <div className="absolute bottom-20 left-20 w-40 h-40 bg-gradient-to-r from-[#4ca771]/30 to-[#013237]/30 rounded-full blur-2xl animate-pulse delay-2000"></div>
+      <div className="absolute bottom-40 right-10 w-36 h-36 bg-gradient-to-r from-[#013237]/30 to-[#4ca771]/30 rounded-full blur-2xl animate-pulse delay-3000"></div>
       
       {/* Geometric Background Patterns */}
       <div className="absolute inset-0 opacity-30">
-        <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-gray-500 rounded-full animate-bounce"></div>
-        <div className="absolute top-1/3 right-1/3 w-1 h-1 bg-gray-600 rounded-full animate-bounce delay-500"></div>
-        <div className="absolute bottom-1/4 left-1/3 w-3 h-3 bg-gray-700 rounded-full animate-bounce delay-1000"></div>
-        <div className="absolute bottom-1/3 right-1/4 w-2 h-2 bg-gray-800 rounded-full animate-bounce delay-1500"></div>
+        <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-[#4ca771] rounded-full animate-bounce"></div>
+        <div className="absolute top-1/3 right-1/3 w-1 h-1 bg-[#013237] rounded-full animate-bounce delay-500"></div>
+        <div className="absolute bottom-1/4 left-1/3 w-3 h-3 bg-[#4ca771] rounded-full animate-bounce delay-1000"></div>
+        <div className="absolute bottom-1/3 right-1/4 w-2 h-2 bg-[#013237] rounded-full animate-bounce delay-1500"></div>
       </div>
       
       <div className="relative z-10 max-w-7xl mx-auto px-4 md:px-8 py-12 md:py-20">
@@ -100,8 +100,7 @@ export function Hero() {
               startContent={<Crown className="w-3 h-3 md:w-5 md:h-5 animate-pulse" />}
               endContent={<Sparkles className="w-3 h-3 md:w-5 md:h-5" />}
               variant="flat"
-              color="default"
-              className="bg-gradient-to-r from-gray-100 via-gray-200 to-gray-300 text-gray-800 px-3 md:px-8 py-1 md:py-4 text-xs md:text-lg font-bold shadow-2xl border border-gray-300/50 hover:scale-105 transition-transform duration-300"
+              className="bg-gradient-to-r from-[#f0fdf9] via-[#eafae7] to-[#c0e6ba] text-[#013237] px-3 md:px-8 py-1 md:py-4 text-xs md:text-lg font-bold shadow-2xl border border-[#c0e6ba]/50 hover:scale-105 transition-transform duration-300"
             >
               <span className="hidden sm:inline">Líder en Software para Talleres V2</span>
               <span className="sm:hidden">Software para Talleres V2</span>
@@ -111,18 +110,18 @@ export function Hero() {
           {/* Enhanced Main Title with Animation */}
           <div className="mb-4 md:mb-8">
             <h1 className="text-3xl sm:text-4xl md:text-6xl lg:text-8xl font-black tracking-tight mb-2 md:mb-4 relative">
-              <span className="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-700 bg-clip-text text-transparent block">
+              <span className="bg-gradient-to-r from-[#013237] via-[#4ca771] to-[#013237] bg-clip-text text-transparent block">
                 <span className="hidden sm:inline">Software para Taller</span>
                 <span className="sm:hidden">Software Taller</span>
               </span>
-              <span className="bg-gradient-to-r from-gray-600 via-gray-700 to-gray-800 bg-clip-text text-transparent block relative">
+              <span className="bg-gradient-to-r from-[#4ca771] via-[#013237] to-[#4ca771] bg-clip-text text-transparent block relative">
                 de Reparación
-                <div className="absolute -inset-1 bg-gradient-to-r from-gray-600/20 to-gray-800/20 blur-lg rounded-lg"></div>
+                <div className="absolute -inset-1 bg-gradient-to-r from-[#4ca771]/20 to-[#013237]/20 blur-lg rounded-lg"></div>
               </span>
             </h1>
             <div className="flex justify-center mt-2 md:mt-4">
-              <div className="flex items-center gap-2 bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 px-2 md:px-4 py-1 md:py-2 rounded-full text-xs md:text-sm font-medium shadow-lg">
-                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+              <div className="flex items-center gap-2 bg-gradient-to-r from-[#eafae7] to-[#c0e6ba] text-[#013237] px-2 md:px-4 py-1 md:py-2 rounded-full text-xs md:text-sm font-medium shadow-lg">
+                <div className="w-2 h-2 bg-[#4ca771] rounded-full animate-pulse"></div>
                 <span className="hidden sm:inline">100% en la Nube</span>
                 <span className="sm:hidden">Cloud</span>
                 <Rocket className="w-3 h-3 md:w-4 md:h-4 animate-bounce" />
@@ -131,30 +130,30 @@ export function Hero() {
           </div>
           
           {/* Enhanced Subtitle */}
-          <Card className="max-w-5xl mx-auto mb-6 md:mb-12 bg-white/80 backdrop-blur-xl shadow-2xl border-0">
+          <Card className="max-w-5xl mx-auto mb-6 md:mb-12 bg-[#f0fdf9]/80 backdrop-blur-xl shadow-2xl border border-[#c0e6ba]/50">
             <CardBody className="p-3 md:p-8">
-              <p className="text-sm md:text-xl lg:text-2xl text-gray-700 leading-relaxed">
+              <p className="text-sm md:text-xl lg:text-2xl text-[#013237] leading-relaxed">
                 <span className="hidden sm:inline">La solución completa para talleres de reparación de móviles y tablets.</span>
                 <span className="sm:hidden">Solución completa para talleres móviles.</span>
-                <span className="bg-gradient-to-r from-gray-700 to-gray-900 bg-clip-text text-transparent font-semibold">
+                <span className="bg-gradient-to-r from-[#4ca771] to-[#013237] bg-clip-text text-transparent font-semibold">
                   {" "}Gestiona inventario, técnicos, reparaciones y ventas desde la nube.
                 </span>
               </p>
               <Spacer y={2} className="md:hidden" />
               <Spacer y={4} className="hidden md:block" />
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-6 text-xs md:text-sm text-gray-600">
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-6 text-xs md:text-sm text-[#4ca771]">
                 <div className="flex items-center gap-2">
-                  <Timer className="w-4 h-4 text-gray-600" />
+                  <Timer className="w-4 h-4 text-[#4ca771]" />
                   <span>Setup en 5 min</span>
                 </div>
                 <Divider orientation="vertical" className="h-4 hidden sm:block" />
                 <div className="flex items-center gap-2">
-                  <Shield className="w-4 h-4 text-gray-700" />
+                  <Shield className="w-4 h-4 text-[#013237]" />
                   <span>Datos seguros</span>
                 </div>
                 <Divider orientation="vertical" className="h-4 hidden sm:block" />
                 <div className="flex items-center gap-2">
-                  <Gauge className="w-4 h-4 text-gray-800" />
+                  <Gauge className="w-4 h-4 text-[#013237]" />
                   <span>99.9% Uptime</span>
                 </div>
               </div>
@@ -163,7 +162,7 @@ export function Hero() {
           
           {/* Enhanced Social Proof */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-6 mb-6 md:mb-12 max-w-4xl mx-auto">
-            <Card className="bg-white/90 backdrop-blur-xl shadow-xl border-0 hover:shadow-2xl hover:scale-105 transition-all duration-300 group">
+            <Card className="bg-[#f0fdf9]/90 backdrop-blur-xl shadow-xl border border-[#c0e6ba]/50 hover:shadow-2xl hover:scale-105 transition-all duration-300 group">
               <CardBody className="p-3 md:p-6 text-center">
                 <div className="flex justify-center mb-2 md:mb-3">
                   <div className="flex items-center gap-1">
@@ -173,7 +172,7 @@ export function Hero() {
                   </div>
                 </div>
                 <div className="text-lg md:text-2xl font-black bg-gradient-to-r from-yellow-500 to-orange-500 bg-clip-text text-transparent">4.9/5</div>
-                <div className="text-xs md:text-sm text-gray-600 font-medium">
+                <div className="text-xs md:text-sm text-[#4ca771] font-medium">
                   <span className="hidden sm:inline">Calificación Promedio</span>
                   <span className="sm:hidden">Calificación</span>
                 </div>
@@ -188,41 +187,51 @@ export function Hero() {
               </CardBody>
             </Card>
             
-            <Card className="bg-white/90 backdrop-blur-xl shadow-xl border-0 hover:shadow-2xl hover:scale-105 transition-all duration-300 group">
+            <Card className="bg-[#f0fdf9]/90 backdrop-blur-xl shadow-xl border border-[#c0e6ba]/50 hover:shadow-2xl hover:scale-105 transition-all duration-300 group">
               <CardBody className="p-3 md:p-6 text-center">
                 <div className="flex justify-center mb-2 md:mb-3">
                   <Avatar
                     icon={<Users className="w-4 h-4 md:w-6 md:h-6" />}
-                    className="bg-gradient-to-r from-gray-600 to-gray-700 text-white group-hover:scale-110 transition-transform duration-300"
+                    className="bg-gradient-to-r from-[#4ca771] to-[#013237] text-white group-hover:scale-110 transition-transform duration-300"
                     size="md"
                   />
                 </div>
-                <div className="text-lg md:text-2xl font-black bg-gradient-to-r from-gray-600 to-gray-800 bg-clip-text text-transparent">100+</div>
-                <div className="text-xs md:text-sm text-gray-600 font-medium">
+                <div className="text-lg md:text-2xl font-black bg-gradient-to-r from-[#4ca771] to-[#013237] bg-clip-text text-transparent">100+</div>
+                <div className="text-xs md:text-sm text-[#4ca771] font-medium">
                   <span className="hidden sm:inline">Talleres Activos</span>
                   <span className="sm:hidden">Talleres</span>
                 </div>
-                <div className="flex items-center justify-center gap-1 mt-2 text-xs text-green-600">
-                  <TrendingUp className="w-3 h-3" />
-                  <span>+25% este mes</span>
-                </div>
+                <Progress 
+                  value={85} 
+                  className="mt-2"
+                  classNames={{
+                    indicator: "bg-gradient-to-r from-[#4ca771] to-[#013237]"
+                  }}
+                />
               </CardBody>
             </Card>
             
-            <Card className="bg-white/90 backdrop-blur-xl shadow-xl border-0 hover:shadow-2xl hover:scale-105 transition-all duration-300 group">
+            <Card className="bg-[#f0fdf9]/90 backdrop-blur-xl shadow-xl border border-[#c0e6ba]/50 hover:shadow-2xl hover:scale-105 transition-all duration-300 group">
               <CardBody className="p-3 md:p-6 text-center">
                 <div className="flex justify-center mb-2 md:mb-3">
                   <Avatar
-                    icon={<Target className="w-4 h-4 md:w-6 md:h-6" />}
-                    className="bg-gradient-to-r from-green-500 to-emerald-600 text-white group-hover:scale-110 transition-transform duration-300"
+                    icon={<Zap className="w-4 h-4 md:w-6 md:h-6" />}
+                    className="bg-gradient-to-r from-[#013237] to-[#4ca771] text-white group-hover:scale-110 transition-transform duration-300"
                     size="md"
                   />
                 </div>
-                <div className="text-lg md:text-2xl font-black bg-gradient-to-r from-green-500 to-emerald-500 bg-clip-text text-transparent">3 meses</div>
-                <div className="text-xs md:text-sm text-gray-600 font-medium">En el mercado</div>
-                <Chip size="sm" color="success" variant="flat" className="mt-2">
-                  Crecimiento Rápido
-                </Chip>
+                <div className="text-lg md:text-2xl font-black bg-gradient-to-r from-[#013237] to-[#4ca771] bg-clip-text text-transparent">2.5s</div>
+                <div className="text-xs md:text-sm text-[#4ca771] font-medium">
+                  <span className="hidden sm:inline">Tiempo de Carga</span>
+                  <span className="sm:hidden">Velocidad</span>
+                </div>
+                <Progress 
+                  value={95} 
+                  className="mt-2"
+                  classNames={{
+                    indicator: "bg-gradient-to-r from-[#013237] to-[#4ca771]"
+                  }}
+                />
               </CardBody>
             </Card>
           </div>

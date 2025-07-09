@@ -126,6 +126,15 @@ export default function ClientesPage() {
   // Solo modal de detalles para técnicos
   const { isOpen: isDetailOpen, onOpen: onDetailOpen, onClose: onDetailClose } = useDisclosure()
 
+  // Estados para filtros de historial en el modal de detalles
+  const [dateFilter, setDateFilter] = useState('all') // 7d, 30d, 3m, 6m, year, all, custom
+  const [customDateRange, setCustomDateRange] = useState({
+    start: '',
+    end: ''
+  })
+  const [serviceTypeFilter, setServiceTypeFilter] = useState('all') // all, repair, unlock, sale
+  const [serviceStatusFilter, setServiceStatusFilter] = useState('all') // all, pending, completed
+
   const fetchCustomers = async (page = 1, tipo = filtroTipo, search = busqueda) => {
     try {
       setLoading(true)
@@ -196,6 +205,11 @@ export default function ClientesPage() {
   const handleViewDetails = (customer: Customer) => {
     setSelectedCustomer(customer)
     setCustomerDetail(null)
+    // Resetear filtros al abrir modal
+    setDateFilter('all')
+    setCustomDateRange({ start: '', end: '' })
+    setServiceTypeFilter('all')
+    setServiceStatusFilter('all')
     onDetailOpen()
     fetchCustomerDetail(customer.id)
   }
@@ -257,6 +271,104 @@ export default function ClientesPage() {
       case 'received': return 'Recibido'
       default: return status
     }
+  }
+
+  // Funciones para filtrado de historial
+  const getDateRangeFromFilter = (filter: string) => {
+    const now = new Date()
+    const ranges = {
+      '7d': new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000),
+      '30d': new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000),
+      '3m': new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000),
+      '6m': new Date(now.getTime() - 180 * 24 * 60 * 60 * 1000),
+      'year': new Date(now.getFullYear(), 0, 1),
+      'all': null
+    }
+    
+    return ranges[filter as keyof typeof ranges] || null
+  }
+
+  const isServiceInDateRange = (service: CustomerService) => {
+    if (dateFilter === 'all') return true
+    
+    if (dateFilter === 'custom') {
+      if (!customDateRange.start && !customDateRange.end) return true
+      
+      const serviceDate = new Date(service.created_at)
+      const start = customDateRange.start ? new Date(customDateRange.start) : null
+      const end = customDateRange.end ? new Date(customDateRange.end + 'T23:59:59') : null
+      
+      if (start && serviceDate < start) return false
+      if (end && serviceDate > end) return false
+      return true
+    }
+    
+    const startDate = getDateRangeFromFilter(dateFilter)
+    if (!startDate) return true
+    
+    return new Date(service.created_at) >= startDate
+  }
+
+  const isServiceTypeMatch = (service: CustomerService) => {
+    if (serviceTypeFilter === 'all') return true
+    return service.type === serviceTypeFilter
+  }
+
+  const isServiceStatusMatch = (service: CustomerService) => {
+    if (serviceStatusFilter === 'all') return true
+    
+    const pendingStatuses = ['pending', 'received', 'diagnosed', 'in_progress']
+    const completedStatuses = ['completed', 'delivered']
+    
+    if (serviceStatusFilter === 'pending') {
+      return pendingStatuses.includes(service.status)
+    }
+    if (serviceStatusFilter === 'completed') {
+      return completedStatuses.includes(service.status)
+    }
+    
+    return true
+  }
+
+  // Función principal de filtrado
+  const getFilteredServices = () => {
+    if (!customerDetail?.services) return []
+    
+    return customerDetail.services.filter(service => 
+      isServiceInDateRange(service) && 
+      isServiceTypeMatch(service) && 
+      isServiceStatusMatch(service)
+    ).sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+  }
+
+  // Función para calcular estadísticas filtradas
+  const getFilteredStats = () => {
+    const filteredServices = getFilteredServices()
+    
+    const totalServices = filteredServices.length
+    const totalSpent = filteredServices.reduce((sum, service) => sum + service.cost, 0)
+    const pendingServices = filteredServices.filter(s => 
+      ['pending', 'received', 'diagnosed', 'in_progress'].includes(s.status)
+    ).length
+    const completedServices = filteredServices.filter(s => 
+      ['completed', 'delivered'].includes(s.status)
+    ).length
+    
+    return {
+      totalServices,
+      totalSpent,
+      pendingServices,
+      completedServices
+    }
+  }
+
+  // Resetear filtros cuando se cierra el modal
+  const handleDetailClose = () => {
+    setDateFilter('all')
+    setCustomDateRange({ start: '', end: '' })
+    setServiceTypeFilter('all')
+    setServiceStatusFilter('all')
+    onDetailClose()
   }
 
   // Calcular estadísticas
@@ -558,13 +670,13 @@ export default function ClientesPage() {
         {/* Modal de ver detalles - Copia exacta del owner */}
         <Modal 
           isOpen={isDetailOpen} 
-          onClose={onDetailClose} 
-          size="4xl" 
+          onClose={handleDetailClose} 
+          size="2xl" 
           scrollBehavior="inside"
           classNames={{
             wrapper: "z-[1000]",
             backdrop: "z-[999]",
-            base: "max-h-[95vh] my-2 mx-2 sm:mx-6",
+            base: "max-h-[95vh] my-2 mx-2 sm:mx-6 w-full max-w-4xl",
             body: "max-h-[80vh] overflow-y-auto py-4",
             header: "border-b border-gray-200 pb-4",
             footer: "border-t border-gray-200 pt-4"
@@ -652,25 +764,25 @@ export default function ClientesPage() {
                         <div className="grid grid-cols-2 gap-3">
                           <div className="text-center p-3 bg-blue-50 rounded-lg">
                             <p className="text-xl font-bold text-blue-600">
-                              {customerDetail?.services?.length || selectedCustomer.stats.totalReparaciones}
+                              {getFilteredStats().totalServices}
                             </p>
                             <p className="text-xs text-gray-600">Total Servicios</p>
                           </div>
                           <div className="text-center p-3 bg-green-50 rounded-lg">
                             <p className="text-xl font-bold text-green-600">
-                              {formatCurrency(customerDetail?.financialSummary?.totalSpent || selectedCustomer.stats.totalGastado)}
+                              {formatCurrency(getFilteredStats().totalSpent)}
                             </p>
                             <p className="text-xs text-gray-600">Total Gastado</p>
                           </div>
                           <div className="text-center p-3 bg-orange-50 rounded-lg">
                             <p className="text-xl font-bold text-orange-600">
-                              {customerDetail?.services?.filter(s => ['pending', 'received', 'diagnosed', 'in_progress'].includes(s.status)).length || 0}
+                              {getFilteredStats().pendingServices}
                             </p>
                             <p className="text-xs text-gray-600">Pendientes</p>
                           </div>
                           <div className="text-center p-3 bg-purple-50 rounded-lg">
                             <p className="text-xl font-bold text-purple-600">
-                              {customerDetail?.services?.filter(s => ['completed', 'delivered'].includes(s.status)).length || 0}
+                              {getFilteredStats().completedServices}
                             </p>
                             <p className="text-xs text-gray-600">Completadas</p>
                           </div>
@@ -729,10 +841,112 @@ export default function ClientesPage() {
                   {/* Historial de servicios */}
                   <Card>
                     <CardHeader>
-                      <h3 className={`text-xl font-semibold flex items-center gap-2 ${textColors.primary}`}>
-                        <History className="w-6 h-6 text-purple-500" />
-                        Historial de Servicios
-                      </h3>
+                      <div className="flex flex-col gap-4">
+                        <h3 className={`text-xl font-semibold flex items-center gap-2 ${textColors.primary}`}>
+                          <History className="w-6 h-6 text-purple-500" />
+                          Historial de Servicios
+                        </h3>
+                        
+                        {/* Filtros de fecha */}
+                        <div className="flex flex-wrap gap-2">
+                          <div className="flex flex-wrap gap-2">
+                            {[
+                              { key: 'all', label: 'Todo' },
+                              { key: '7d', label: '7 días' },
+                              { key: '30d', label: '30 días' },
+                              { key: '3m', label: '3 meses' },
+                              { key: '6m', label: '6 meses' },
+                              { key: 'year', label: 'Este año' },
+                              { key: 'custom', label: 'Personalizado' }
+                            ].map(filter => (
+                              <Button
+                                key={filter.key}
+                                size="sm"
+                                variant={dateFilter === filter.key ? "solid" : "bordered"}
+                                color={dateFilter === filter.key ? "primary" : "default"}
+                                onPress={() => setDateFilter(filter.key)}
+                                className={dateFilter === filter.key ? 
+                                  "bg-gray-900 text-white border-gray-900" : 
+                                  "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"}
+                              >
+                                {filter.label}
+                              </Button>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Filtro de rango personalizado */}
+                        {dateFilter === 'custom' && (
+                          <div className="flex gap-2 flex-wrap">
+                            <Input
+                              type="date"
+                              label="Desde"
+                              value={customDateRange.start}
+                              onChange={(e) => setCustomDateRange(prev => ({ ...prev, start: e.target.value }))}
+                              size="sm"
+                              className="max-w-36"
+                              classNames={{
+                                input: "text-gray-700",
+                                inputWrapper: "bg-white border-gray-300 hover:bg-gray-50",
+                                label: "text-gray-600",
+                              }}
+                            />
+                            <Input
+                              type="date"
+                              label="Hasta"
+                              value={customDateRange.end}
+                              onChange={(e) => setCustomDateRange(prev => ({ ...prev, end: e.target.value }))}
+                              size="sm"
+                              className="max-w-36"
+                              classNames={{
+                                input: "text-gray-700",
+                                inputWrapper: "bg-white border-gray-300 hover:bg-gray-50",
+                                label: "text-gray-600",
+                              }}
+                            />
+                          </div>
+                        )}
+
+                        {/* Filtros adicionales */}
+                        <div className="flex flex-wrap gap-2">
+                          <Select
+                            size="sm"
+                            label="Tipo de servicio"
+                            selectedKeys={[serviceTypeFilter]}
+                            onSelectionChange={(keys) => setServiceTypeFilter(Array.from(keys)[0] as string)}
+                            className="max-w-48"
+                            classNames={{
+                              trigger: "bg-white border-gray-300 text-gray-700 hover:bg-gray-50",
+                              value: "text-gray-700",
+                              label: "text-gray-600",
+                              popoverContent: "bg-white border-gray-300",
+                            }}
+                          >
+                            <SelectItem key="all" className="text-gray-700">Todos los tipos</SelectItem>
+                            <SelectItem key="repair" className="text-gray-700">Reparaciones</SelectItem>
+                            <SelectItem key="unlock" className="text-gray-700">Desbloqueos</SelectItem>
+                            <SelectItem key="sale" className="text-gray-700">Ventas</SelectItem>
+                          </Select>
+                          
+                          <Select
+                            size="sm"
+                            label="Estado"
+                            selectedKeys={[serviceStatusFilter]}
+                            onSelectionChange={(keys) => setServiceStatusFilter(Array.from(keys)[0] as string)}
+                            className="max-w-48"
+                            classNames={{
+                              trigger: "bg-white border-gray-300 text-gray-700 hover:bg-gray-50",
+                              value: "text-gray-700",
+                              label: "text-gray-600",
+                              popoverContent: "bg-white border-gray-300",
+                            }}
+                          >
+                            <SelectItem key="all" className="text-gray-700">Todos los estados</SelectItem>
+                            <SelectItem key="pending" className="text-gray-700">Pendientes</SelectItem>
+                            <SelectItem key="completed" className="text-gray-700">Completados</SelectItem>
+                          </Select>
+                        </div>
+                      </div>
                     </CardHeader>
                     <CardBody>
                       {loadingDetail ? (
@@ -745,11 +959,9 @@ export default function ClientesPage() {
                             </div>
                           ))}
                         </div>
-                      ) : customerDetail && customerDetail.services.length > 0 ? (
+                      ) : customerDetail && getFilteredServices().length > 0 ? (
                         <div className="space-y-3 max-h-96 overflow-y-auto">
-                          {customerDetail.services
-                            .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
-                            .map((service) => (
+                          {getFilteredServices().map((service) => (
                             <div key={service.id} className="p-4 border rounded-lg hover:bg-gray-50 transition-colors">
                               <div className="flex justify-between items-start mb-2">
                                 <div className="flex items-center gap-2">
@@ -803,7 +1015,26 @@ export default function ClientesPage() {
                       ) : (
                         <div className="text-center py-8">
                           <FileText className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                          <p className={textColors.muted}>No hay servicios registrados para este cliente</p>
+                          <p className={textColors.muted}>
+                            {customerDetail && customerDetail.services.length > 0 
+                              ? "No hay servicios que coincidan con los filtros seleccionados" 
+                              : "No hay servicios registrados para este cliente"}
+                          </p>
+                          {customerDetail && customerDetail.services.length > 0 && (
+                            <Button 
+                              size="sm" 
+                              variant="light" 
+                              onPress={() => {
+                                setDateFilter('all')
+                                setServiceTypeFilter('all')
+                                setServiceStatusFilter('all')
+                                setCustomDateRange({ start: '', end: '' })
+                              }}
+                              className="mt-2 text-gray-700 hover:bg-gray-100"
+                            >
+                              Limpiar filtros
+                            </Button>
+                          )}
                         </div>
                       )}
                     </CardBody>
@@ -812,7 +1043,7 @@ export default function ClientesPage() {
                   )}
                 </ModalBody>
             <ModalFooter className="border-t">
-              <Button variant="flat" onPress={onDetailClose}>
+              <Button variant="flat" onPress={handleDetailClose}>
                     Cerrar
                   </Button>
                 </ModalFooter>

@@ -133,11 +133,11 @@ export default function DashboardPage() {
           <Card className="max-w-md w-full">
             <CardBody className="text-center p-8">
               <AlertTriangle className="h-16 w-16 text-red-500 mx-auto mb-4" />
-              <h2 className="text-xl font-bold text-gray-800 mb-2">Error al Cargar el Dashboard</h2>
-              <p className="text-gray-600 mb-6">{error || 'No se pudieron obtener los datos. Inténtalo de nuevo más tarde.'}</p>
+              <h2 className="text-xl font-bold text-[#013237] mb-2">Error al Cargar el Dashboard</h2>
+              <p className="text-[#4ca771] mb-6">{error || 'No se pudieron obtener los datos. Inténtalo de nuevo más tarde.'}</p>
               <button
                 onClick={fetchStats}
-                className="bg-primary-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-primary-700 transition-colors duration-300"
+                className="bg-gradient-to-r from-[#4ca771] to-[#013237] text-white font-bold py-2 px-4 rounded-lg hover:from-[#013237] hover:to-[#4ca771] transition-all duration-300"
               >
                 Reintentar
               </button>
@@ -158,11 +158,11 @@ export default function DashboardPage() {
           <Card className="max-w-md w-full">
             <CardBody className="text-center p-8">
               <AlertTriangle className="h-16 w-16 text-red-500 mx-auto mb-4" />
-              <h2 className="text-xl font-bold text-gray-800 mb-2">Datos Incompletos</h2>
-              <p className="text-gray-600 mb-6">Los datos del dashboard no están disponibles. Inténtalo de nuevo.</p>
+              <h2 className="text-xl font-bold text-[#013237] mb-2">Datos Incompletos</h2>
+              <p className="text-[#4ca771] mb-6">Los datos del dashboard no están disponibles. Inténtalo de nuevo.</p>
               <button
                 onClick={fetchStats}
-                className="bg-primary-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-primary-700 transition-colors duration-300"
+                className="bg-gradient-to-r from-[#4ca771] to-[#013237] text-white font-bold py-2 px-4 rounded-lg hover:from-[#013237] hover:to-[#4ca771] transition-all duration-300"
               >
                 Reintentar
               </button>
@@ -181,7 +181,9 @@ export default function DashboardPage() {
       trend: '+12%',
       trendDirection: 'up' as const,
       color: 'default' as const,
-      bgClass: 'bg-gradient-to-br from-green-600 to-green-700',
+      bgClass: 'bg-gradient-to-br from-emerald-100 to-emerald-200',
+      iconBg: 'bg-emerald-500',
+      textColor: 'text-emerald-800',
       description: 'Ingresos de hoy'
     },
     { 
@@ -191,7 +193,9 @@ export default function DashboardPage() {
       trend: '+8%',
       trendDirection: 'up' as const,
       color: 'primary' as const,
-      bgClass: 'bg-gradient-to-br from-blue-600 to-blue-700',
+      bgClass: 'bg-gradient-to-br from-blue-100 to-blue-200',
+      iconBg: 'bg-blue-500',
+      textColor: 'text-blue-800',
       description: 'Reparaciones iniciadas'
     },
     { 
@@ -201,7 +205,9 @@ export default function DashboardPage() {
       trend: '+15%',
       trendDirection: 'up' as const,
       color: 'secondary' as const,
-      bgClass: 'bg-gradient-to-br from-purple-600 to-purple-700',
+      bgClass: 'bg-gradient-to-br from-purple-100 to-purple-200',
+      iconBg: 'bg-purple-500',
+      textColor: 'text-purple-800',
       description: 'Desbloqueos completados'
     },
     { 
@@ -211,7 +217,9 @@ export default function DashboardPage() {
       trend: '-3%',
       trendDirection: 'down' as const,
       color: 'warning' as const,
-      bgClass: 'bg-gradient-to-br from-orange-600 to-orange-700',
+      bgClass: 'bg-gradient-to-br from-orange-100 to-orange-200',
+      iconBg: 'bg-orange-500',
+      textColor: 'text-orange-800',
       description: 'Trabajos pendientes'
     },
     { 
@@ -221,7 +229,9 @@ export default function DashboardPage() {
       trend: '0%',
       trendDirection: 'neutral' as const,
       color: 'success' as const,
-      bgClass: 'bg-gradient-to-br from-yellow-500 to-yellow-600',
+      bgClass: 'bg-gradient-to-br from-teal-100 to-teal-200',
+      iconBg: 'bg-teal-500',
+      textColor: 'text-teal-800',
       description: 'En progreso activo'
     },
     { 
@@ -231,7 +241,9 @@ export default function DashboardPage() {
       trend: '+5%',
       trendDirection: 'up' as const,
       color: 'default' as const,
-      bgClass: 'bg-gradient-to-br from-pink-600 to-pink-700',
+      bgClass: 'bg-gradient-to-br from-slate-100 to-slate-200',
+      iconBg: 'bg-slate-500',
+      textColor: 'text-slate-800',
       description: 'Base de clientes'
     },
   ]
@@ -417,15 +429,15 @@ export default function DashboardPage() {
 
   const getActivityColor = (type: string) => {
     switch(type) {
-      case 'reparacion': return 'bg-blue-500';
-      case 'desbloqueo': return 'bg-purple-500';
-      default: return 'bg-gray-500';
+      case 'reparacion': return 'bg-[#4ca771]';
+      case 'desbloqueo': return 'bg-[#013237]';
+      default: return 'bg-[#4ca771]';
     }
   }
 
   return (
     <DashboardLayout>
-      <div className="p-4 md:p-6 lg:p-8 space-y-8">
+      <div className="space-y-8 w-full h-full">
         <WelcomeHeader />
 
         {/* Enhanced Stat Cards */}
@@ -433,15 +445,15 @@ export default function DashboardPage() {
           {statsCards.map((stat, index) => (
             <Card 
               key={stat.title} 
-              className={`${stat.bgClass} text-white shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300 border-0 relative overflow-hidden group`}
+              className={`${stat.bgClass} shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 border border-gray-200 relative overflow-hidden group`}
               isHoverable
             >
               {/* Subtle glow effect */}
-              <div className="absolute inset-0 bg-gradient-to-r from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               
               <CardBody className="p-6 relative z-10">
                 <div className="flex items-start justify-between mb-4">
-                  <div className="p-3 rounded-xl bg-white/10 backdrop-blur-sm border border-white/20">
+                  <div className={`p-3 rounded-xl ${stat.iconBg} shadow-lg`}>
                     <stat.icon className="h-7 w-7 text-white" />
                   </div>
                   <div className="flex items-center gap-2">
@@ -452,7 +464,7 @@ export default function DashboardPage() {
                         size="sm"
                         variant="light"
                         onPress={() => setIsRevenueHidden(!isRevenueHidden)}
-                        className="text-white/80 hover:text-white hover:bg-white/20 transition-all"
+                        className={`${stat.textColor} hover:bg-white/20 transition-all`}
                         aria-label={isRevenueHidden ? "Mostrar monto" : "Ocultar monto"}
                       >
                         {isRevenueHidden ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -462,7 +474,7 @@ export default function DashboardPage() {
                       size="sm"
                       color={stat.trendDirection === 'up' ? 'success' : stat.trendDirection === 'down' ? 'danger' : 'default'}
                       variant="flat"
-                      className="text-xs font-semibold bg-white/20 text-white border-white/30"
+                      className={`text-xs font-semibold bg-white/60 ${stat.textColor} border border-white/30`}
                       startContent={
                         stat.trendDirection === 'up' ? <ArrowUpRight className="h-3 w-3" /> :
                         stat.trendDirection === 'down' ? <ArrowDownRight className="h-3 w-3" /> :
@@ -476,21 +488,21 @@ export default function DashboardPage() {
                 
                 <div className="space-y-3">
                   <div>
-                    <p className="text-3xl font-bold text-white mb-1 tracking-tight">
+                    <p className={`text-4xl font-extrabold ${stat.textColor} mb-2 tracking-tight`}>
                       {/* Mostrar asteriscos si es el primer card y está oculto */}
                       {index === 0 && isRevenueHidden ? '******' : stat.value}
                     </p>
-                    <p className="text-sm font-medium text-white/80 uppercase tracking-wider">
+                    <p className={`text-base font-bold ${stat.textColor} opacity-90 uppercase tracking-wider`}>
                       {stat.title}
                     </p>
                   </div>
                   
                   <div className="flex items-center justify-between">
-                    <p className="text-xs text-white/60">{stat.description}</p>
+                    <p className={`text-sm font-medium ${stat.textColor} opacity-70`}>{stat.description}</p>
                     <Chip 
                       size="sm" 
                       variant="flat" 
-                      className="text-white/80 bg-white/10 border border-white/20"
+                      className={`${stat.textColor} bg-white/60 border border-white/30 font-semibold`}
                     >
                       Hoy
                     </Chip>
@@ -505,7 +517,7 @@ export default function DashboardPage() {
                       classNames={{
                         base: "max-w-full",
                         track: "drop-shadow-md border border-white/20",
-                        indicator: "bg-gradient-to-r from-white/80 to-white/60",
+                        indicator: `${stat.iconBg}`,
                       }}
                     />
                   )}
@@ -517,17 +529,20 @@ export default function DashboardPage() {
         
         {/* Enhanced Main Charts */}
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-          <Card className="lg:col-span-3 shadow-xl hover:shadow-2xl transition-all duration-300 border-0 bg-white/95 backdrop-blur-sm">
+          <Card className="lg:col-span-3 shadow-xl hover:shadow-2xl transition-all duration-300 border border-[#c0e6ba]/50 bg-gradient-to-br from-[#f0fdf9] to-[#eafae7]/50 backdrop-blur-sm">
             <CardHeader className="flex items-center gap-3 pb-4">
-              <div className="p-2 rounded-lg bg-gradient-to-br from-gray-100 to-gray-200">
-                <TrendingUp className="h-5 w-5 text-gray-700"/>
+              <div className="p-2 rounded-lg bg-gradient-to-br from-[#4ca771] to-[#013237]">
+                <TrendingUp className="h-5 w-5 text-white"/>
               </div>
               <div>
-                <h2 className="text-xl font-bold text-gray-900">{t('dashboard.weeklyRevenue')}</h2>
-                <p className="text-sm text-gray-500">Últimos 7 días</p>
+                <h2 className="text-xl font-bold text-[#013237]">{t('dashboard.weeklyRevenue')}</h2>
+                <p className="text-sm text-[#4ca771]">Últimos 7 días</p>
               </div>
               <div className="ml-auto">
-                <Chip color="success" variant="flat" size="sm">
+                <Chip 
+                  size="sm" 
+                  className="bg-gradient-to-r from-[#4ca771] to-[#013237] text-white"
+                >
                   +12.5%
                 </Chip>
               </div>
@@ -537,14 +552,14 @@ export default function DashboardPage() {
             </CardBody>
           </Card>
           
-          <Card className="lg:col-span-2 shadow-xl hover:shadow-2xl transition-all duration-300 border-0 bg-white/95 backdrop-blur-sm">
+          <Card className="lg:col-span-2 shadow-xl hover:shadow-2xl transition-all duration-300 border border-[#c0e6ba]/50 bg-gradient-to-br from-[#f0fdf9] to-[#eafae7]/50 backdrop-blur-sm">
             <CardHeader className="flex items-center gap-3 pb-4">
-              <div className="p-2 rounded-lg bg-gradient-to-br from-gray-100 to-gray-200">
-                <BarChart className="h-5 w-5 text-gray-700"/>
+              <div className="p-2 rounded-lg bg-gradient-to-br from-[#4ca771] to-[#013237]">
+                <BarChart className="h-5 w-5 text-white"/>
               </div>
               <div>
-                <h2 className="text-xl font-bold text-gray-900">{t('dashboard.weeklyRepairs')}</h2>
-                <p className="text-sm text-gray-500">Actividad semanal</p>
+                <h2 className="text-xl font-bold text-[#013237]">{t('dashboard.weeklyRepairs')}</h2>
+                <p className="text-sm text-[#4ca771]">Actividad semanal</p>
               </div>
             </CardHeader>
             <CardBody>
@@ -555,14 +570,14 @@ export default function DashboardPage() {
 
         {/* Enhanced Donut & Pie Charts */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <Card className="shadow-xl hover:shadow-2xl transition-all duration-300 border-0 bg-white/95 backdrop-blur-sm">
+          <Card className="shadow-xl hover:shadow-2xl transition-all duration-300 border border-[#c0e6ba]/50 bg-gradient-to-br from-[#f0fdf9] to-[#eafae7]/50 backdrop-blur-sm">
             <CardHeader className="flex items-center gap-3 pb-4">
-              <div className="p-2 rounded-lg bg-gradient-to-br from-gray-100 to-gray-200">
-                <PieChart className="h-5 w-5 text-gray-700"/>
+              <div className="p-2 rounded-lg bg-gradient-to-br from-[#4ca771] to-[#013237]">
+                <PieChart className="h-5 w-5 text-white"/>
               </div>
               <div>
-                <h2 className="text-xl font-bold text-gray-900">{t('dashboard.statusDistribution')}</h2>
-                <p className="text-sm text-gray-500">Estados de reparación</p>
+                <h2 className="text-xl font-bold text-[#013237]">{t('dashboard.statusDistribution')}</h2>
+                <p className="text-sm text-[#4ca771]">Estados de reparación</p>
               </div>
             </CardHeader>
             <CardBody className="flex justify-center items-center">
@@ -572,41 +587,45 @@ export default function DashboardPage() {
             </CardBody>
           </Card>
           
-          <Card className="shadow-xl hover:shadow-2xl transition-all duration-300 border-0 bg-white/95 backdrop-blur-sm">
+          <Card className="shadow-xl hover:shadow-2xl transition-all duration-300 border border-[#c0e6ba]/50 bg-gradient-to-br from-[#f0fdf9] to-[#eafae7]/50 backdrop-blur-sm">
             <CardHeader className="flex items-center gap-3 pb-4">
-              <div className="p-2 rounded-lg bg-gradient-to-br from-gray-100 to-gray-200">
-                <Activity className="h-5 w-5 text-gray-700"/>
+              <div className="p-2 rounded-lg bg-gradient-to-br from-[#4ca771] to-[#013237]">
+                <Activity className="h-5 w-5 text-white"/>
               </div>
               <div>
-                <h2 className="text-xl font-bold text-gray-900">{t('dashboard.recentActivity')}</h2>
-                <p className="text-sm text-gray-500">Actividad reciente</p>
+                <h2 className="text-xl font-bold text-[#013237]">{t('dashboard.recentActivity')}</h2>
+                <p className="text-sm text-[#4ca771]">Actividad reciente</p>
               </div>
             </CardHeader>
             <CardBody>
               {recentActivity && recentActivity.length > 0 ? (
                 <ul className="space-y-4">
                   {recentActivity.map((activity) => (
-                    <li key={activity.id} className="flex items-center space-x-4 p-3 rounded-lg hover:bg-gray-50 transition-colors duration-200">
+                    <li key={activity.id} className="flex items-center space-x-4 p-3 rounded-lg hover:bg-[#eafae7]/30 transition-colors duration-200">
                       <div className={`p-3 rounded-full shadow-lg ${getActivityColor(activity.type)}`}>
                         {getActivityIcon(activity.type)}
                       </div>
                       <div className="flex-1">
-                        <p className="font-semibold text-gray-900 text-sm">{activity.title}</p>
-                        <p className="text-xs text-gray-500">{timeAgo(activity.timestamp)}</p>
+                        <p className="font-semibold text-[#013237] text-sm">{activity.title}</p>
+                        <p className="text-xs text-[#4ca771]">{timeAgo(activity.timestamp)}</p>
                       </div>
-                      <Chip size="sm" variant="flat" color="default">
+                      <Chip 
+                        size="sm" 
+                        variant="flat" 
+                        className="bg-[#c0e6ba]/50 text-[#013237] border border-[#c0e6ba]"
+                      >
                         Nuevo
                       </Chip>
                     </li>
                   ))}
                 </ul>
               ) : (
-                <div className="flex flex-col items-center justify-center h-full text-center text-gray-500 py-8">
-                   <div className="p-4 rounded-full bg-gray-100 mb-4">
-                     <Activity className="h-8 w-8 text-gray-400"/>
+                <div className="flex flex-col items-center justify-center h-full text-center text-[#4ca771] py-8">
+                   <div className="p-4 rounded-full bg-[#eafae7] mb-4">
+                     <Activity className="h-8 w-8 text-[#4ca771]"/>
                    </div>
-                   <p className="font-medium">{t('dashboard.noRecentActivity')}</p>
-                   <p className="text-sm text-gray-400 mt-1">La actividad aparecerá aquí</p>
+                   <p className="font-medium text-[#013237]">{t('dashboard.noRecentActivity')}</p>
+                   <p className="text-sm text-[#4ca771] mt-1">La actividad aparecerá aquí</p>
                 </div>
               )}
             </CardBody>

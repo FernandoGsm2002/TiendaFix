@@ -696,10 +696,10 @@ export default function VentasPage() {
         {/* Header */}
         <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
           <div className="space-y-2">
-            <h1 className={`text-4xl font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent`}>
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-[#4ca771] to-[#013237] bg-clip-text text-transparent">
               Sistema de Ventas
             </h1>
-            <p className={`${textColors.secondary} text-lg`}>
+            <p className="text-[#4ca771] text-lg">
               Punto de venta y gestión de transacciones
             </p>
           </div>

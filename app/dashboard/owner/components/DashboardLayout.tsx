@@ -64,7 +64,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-100 via-blue-50 to-indigo-100">
+    <div className="min-h-screen bg-gradient-to-br from-[#f0fdf9] via-[#eafae7]/50 to-[#f0fdf9]">
 
       {/* Sidebar Móvil (Drawer) - Sin overlay problemático */}
       {mobileMenuOpen && (
@@ -111,7 +111,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
               mobileMenuOpen={mobileMenuOpen}
             />
             
-            <Card className="flex-1 shadow-xl border-0 bg-white/80 backdrop-blur-sm">
+            <Card className="flex-1 shadow-xl border-0 bg-gradient-to-br from-[#f0fdf9]/95 to-[#eafae7]/80 backdrop-blur-sm">
               <CardBody className="p-3 md:p-6 h-full overflow-y-auto">
                 {children}
               </CardBody>

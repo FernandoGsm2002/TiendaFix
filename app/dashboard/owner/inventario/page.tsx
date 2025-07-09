@@ -388,31 +388,30 @@ export default function InventarioPage() {
         {/* Header */}
         <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
           <div className="space-y-2">
-            <h1 className={`text-4xl font-bold bg-gradient-to-r from-emerald-600 to-blue-600 bg-clip-text text-transparent`}>
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-[#4ca771] to-[#013237] bg-clip-text text-transparent">
               {t('inventory.title')}
             </h1>
-            <p className={`${textColors.secondary} text-lg`}>
+            <p className="text-[#4ca771] text-lg">
               {t('inventory.description')}
             </p>
           </div>
           
           <Button
-            color="primary"
             size="lg"
             startContent={<Plus className="w-5 h-5" />}
             onPress={onCreateOpen}
-            className="shadow-lg"
+            className="bg-gradient-to-r from-[#4ca771] to-[#013237] text-white hover:from-[#013237] hover:to-[#4ca771] transition-all shadow-lg"
           >
             {t('inventory.newProduct')}
           </Button>
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-6">
-          <Card className="hover:scale-105 transition-all duration-300 border-0 shadow-lg bg-gradient-to-br from-blue-50/60 to-blue-100/40 backdrop-blur-sm">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+          <Card className="hover:scale-105 transition-all duration-300 border border-gray-200 shadow-lg bg-gradient-to-br from-blue-100 to-blue-200">
             <CardBody className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <div className="p-3 rounded-xl bg-gradient-to-br from-blue-400/80 to-blue-600/80 shadow-lg">
+                <div className="p-3 rounded-xl bg-blue-500 shadow-lg">
                   <Package className="w-6 h-6 text-white" />
                 </div>
                 <div className="flex items-center gap-2">
@@ -420,23 +419,29 @@ export default function InventarioPage() {
                     <ArrowUpRight className="w-3 h-3 text-green-500" />
                     <span className="text-xs text-green-600 font-medium">+8%</span>
                   </div>
-                  <Chip color="primary" variant="flat" size="sm" className="font-medium">
+                  <Chip variant="flat" size="sm" className="font-semibold bg-white/60 text-blue-800 border border-white/30">
                     Total
                   </Chip>
                 </div>
               </div>
               <div className="space-y-2">
-                <p className="text-sm font-medium text-gray-700">{t('inventory.totalProducts')}</p>
-                <p className="text-3xl font-bold text-blue-700">{stats.totalItems}</p>
-                <Progress value={100} color="primary" size="sm" />
+                <p className="text-base font-bold text-blue-800 opacity-90 uppercase tracking-wider">{t('inventory.totalProducts')}</p>
+                <p className="text-4xl font-extrabold text-blue-800 mb-2 tracking-tight">{stats.totalItems}</p>
+                <Progress 
+                  value={100} 
+                  classNames={{
+                    indicator: "bg-blue-500",
+                  }}
+                  size="sm" 
+                />
               </div>
             </CardBody>
           </Card>
 
-          <Card className="hover:scale-105 transition-all duration-300 border-0 shadow-lg bg-gradient-to-br from-green-50/60 to-emerald-100/40 backdrop-blur-sm">
+          <Card className="hover:scale-105 transition-all duration-300 border border-gray-200 shadow-lg bg-gradient-to-br from-emerald-100 to-emerald-200">
             <CardBody className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <div className="p-3 rounded-xl bg-gradient-to-br from-green-400/80 to-green-600/80 shadow-lg">
+                <div className="p-3 rounded-xl bg-emerald-500 shadow-lg">
                   <TrendingUp className="w-6 h-6 text-white" />
                 </div>
                 <div className="flex items-center gap-2">
@@ -444,23 +449,29 @@ export default function InventarioPage() {
                     <ArrowUpRight className="w-3 h-3 text-green-500" />
                     <span className="text-xs text-green-600 font-medium">+15%</span>
                   </div>
-                  <Chip color="success" variant="flat" size="sm" className="font-medium">
+                  <Chip variant="flat" size="sm" className="font-semibold bg-white/60 text-emerald-800 border border-white/30">
                     Disponibles
                   </Chip>
                 </div>
               </div>
               <div className="space-y-2">
-                <p className="text-sm font-medium text-gray-700">{t('inventory.availableProducts')}</p>
-                <p className="text-3xl font-bold text-green-700">{stats.totalItems - stats.stockBajo - stats.agotados}</p>
-                <Progress value={((stats.totalItems - stats.stockBajo - stats.agotados) / Math.max(stats.totalItems, 1)) * 100} color="success" size="sm" />
+                <p className="text-base font-bold text-emerald-800 opacity-90 uppercase tracking-wider">{t('inventory.availableProducts')}</p>
+                <p className="text-4xl font-extrabold text-emerald-800 mb-2 tracking-tight">{stats.totalItems - stats.stockBajo - stats.agotados}</p>
+                <Progress 
+                  value={((stats.totalItems - stats.stockBajo - stats.agotados) / Math.max(stats.totalItems, 1)) * 100} 
+                  classNames={{
+                    indicator: "bg-emerald-500",
+                  }}
+                  size="sm" 
+                />
               </div>
             </CardBody>
           </Card>
 
-          <Card className="hover:scale-105 transition-all duration-300 border-0 shadow-lg bg-gradient-to-br from-yellow-50/60 to-amber-100/40 backdrop-blur-sm">
+          <Card className="hover:scale-105 transition-all duration-300 border border-gray-200 shadow-lg bg-gradient-to-br from-orange-100 to-orange-200">
             <CardBody className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <div className="p-3 rounded-xl bg-gradient-to-br from-yellow-400/80 to-yellow-600/80 shadow-lg">
+                <div className="p-3 rounded-xl bg-orange-500 shadow-lg">
                   <AlertTriangle className="w-6 h-6 text-white" />
                 </div>
                 <div className="flex items-center gap-2">
@@ -468,47 +479,31 @@ export default function InventarioPage() {
                     <ArrowDownRight className="w-3 h-3 text-red-500" />
                     <span className="text-xs text-red-600 font-medium">-3%</span>
                   </div>
-                  <Chip color="warning" variant="flat" size="sm" className="font-medium">
+                  <Chip variant="flat" size="sm" className="font-semibold bg-white/60 text-orange-800 border border-white/30">
                     Bajo
                   </Chip>
                 </div>
               </div>
               <div className="space-y-2">
-                <p className="text-sm font-medium text-gray-700">{t('inventory.lowStock')}</p>
-                <p className="text-3xl font-bold text-yellow-700">{stats.stockBajo}</p>
-                <Progress value={(stats.stockBajo / Math.max(stats.totalItems, 1)) * 100} color="warning" size="sm" />
+                <p className="text-base font-bold text-orange-800 opacity-90 uppercase tracking-wider">{t('inventory.lowStock')}</p>
+                <p className="text-4xl font-extrabold text-orange-800 mb-2 tracking-tight">{stats.stockBajo}</p>
+                <Progress 
+                  value={(stats.stockBajo / Math.max(stats.totalItems, 1)) * 100} 
+                  classNames={{
+                    indicator: "bg-orange-500",
+                  }}
+                  size="sm" 
+                />
               </div>
             </CardBody>
           </Card>
 
-          <Card className="hover:scale-105 transition-all duration-300 border-0 shadow-lg bg-gradient-to-br from-red-50/60 to-pink-100/40 backdrop-blur-sm">
-            <CardBody className="p-6">
-              <div className="flex items-center justify-between mb-4">
-                <div className="p-3 rounded-xl bg-gradient-to-br from-red-400/80 to-red-600/80 shadow-lg">
-                  <TrendingDown className="w-6 h-6 text-white" />
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="flex items-center gap-1">
-                    <Minus className="w-3 h-3 text-gray-500" />
-                    <span className="text-xs text-gray-600 font-medium">0%</span>
-                  </div>
-                  <Chip color="danger" variant="flat" size="sm" className="font-medium">
-                    Agotados
-                  </Chip>
-                </div>
-              </div>
-              <div className="space-y-2">
-                <p className="text-sm font-medium text-gray-700">{t('inventory.outOfStock')}</p>
-                <p className="text-3xl font-bold text-red-700">{stats.agotados}</p>
-                <Progress value={(stats.agotados / Math.max(stats.totalItems, 1)) * 100} color="danger" size="sm" />
-              </div>
-            </CardBody>
-          </Card>
 
-          <Card className="hover:scale-105 transition-all duration-300 border-0 shadow-lg bg-gradient-to-br from-purple-50/60 to-violet-100/40 backdrop-blur-sm">
+
+          <Card className="hover:scale-105 transition-all duration-300 border border-gray-200 shadow-lg bg-gradient-to-br from-purple-100 to-purple-200">
             <CardBody className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <div className="p-3 rounded-xl bg-gradient-to-br from-purple-400/80 to-purple-600/80 shadow-lg">
+                <div className="p-3 rounded-xl bg-purple-500 shadow-lg">
                   <DollarSign className="w-6 h-6 text-white" />
                 </div>
                 <div className="flex items-center gap-2">
@@ -516,16 +511,22 @@ export default function InventarioPage() {
                     <ArrowUpRight className="w-3 h-3 text-green-500" />
                     <span className="text-xs text-green-600 font-medium">+12%</span>
                   </div>
-                  <Chip color="secondary" variant="flat" size="sm" className="font-medium">
+                  <Chip variant="flat" size="sm" className="font-semibold bg-white/60 text-purple-800 border border-white/30">
                     Valor
                   </Chip>
                 </div>
               </div>
               <div className="space-y-2">
-                <p className="text-sm font-medium text-gray-700">{t('inventory.totalValue')}</p>
-                <p className="text-lg font-bold text-purple-700">{formatCurrency(stats.valorTotal)}</p>
-                <Progress value={75} color="secondary" size="sm" />
-                <p className="text-xs text-gray-500">Venta: {formatCurrency(stats.valorVenta)}</p>
+                <p className="text-base font-bold text-purple-800 opacity-90 uppercase tracking-wider">{t('inventory.totalValue')}</p>
+                <p className="text-3xl font-extrabold text-purple-800 mb-2 tracking-tight">{formatCurrency(stats.valorTotal)}</p>
+                <Progress 
+                  value={75} 
+                  classNames={{
+                    indicator: "bg-purple-500",
+                  }}
+                  size="sm" 
+                />
+                <p className="text-sm font-medium text-purple-800 opacity-70">Venta: {formatCurrency(stats.valorVenta)}</p>
               </div>
             </CardBody>
           </Card>
@@ -1079,11 +1080,10 @@ export default function InventarioPage() {
                 <Button variant="flat" onPress={onCreateClose} size="md" className="text-base font-medium">{t('common.cancel')}</Button>
                 <Button 
                   type="submit" 
-                  color="primary" 
                   isLoading={createLoading}
                   startContent={!createLoading ? <Plus className="w-4 h-4" /> : null}
                   size="md"
-                  className="text-base font-medium px-6"
+                  className="bg-gradient-to-r from-[#4ca771] to-[#013237] text-white hover:from-[#013237] hover:to-[#4ca771] transition-all text-base font-medium px-6"
                 >
                   {t('inventory.newProduct')}
                 </Button>
@@ -1231,10 +1231,10 @@ export default function InventarioPage() {
                 <Button 
                   type="submit" 
                   form="edit-item-form"
-                  color="primary" 
                   isLoading={updateLoading}
                   startContent={!updateLoading ? <Plus className="w-4 h-4" /> : null}
                   size="sm"
+                  className="bg-gradient-to-r from-[#4ca771] to-[#013237] text-white hover:from-[#013237] hover:to-[#4ca771] transition-all"
                 >
                   {t('common.update')} {t('common.name').toLowerCase()}
                 </Button>

@@ -54,7 +54,7 @@ export default function Header({ onMobileMenuToggle, mobileMenuOpen }: HeaderPro
   }
 
   return (
-    <header className="bg-white border-b border-gray-200 px-3 md:px-6 py-3 md:py-4 rounded-lg shadow-sm">
+    <header className="bg-[#f0fdf9] border-b border-[#c0e6ba] px-3 md:px-6 py-3 md:py-4 rounded-lg shadow-sm">
       <div className="flex items-center justify-between space-x-2 md:space-x-4">
         <div className="flex items-center space-x-3 flex-1 min-w-0">
           {/* Botón de menú móvil integrado */}
@@ -62,7 +62,7 @@ export default function Header({ onMobileMenuToggle, mobileMenuOpen }: HeaderPro
             <Button
               isIconOnly
               variant="light"
-              className="lg:hidden p-2"
+              className="lg:hidden p-2 text-[#4ca771] hover:text-[#013237] hover:bg-[#eafae7]"
               onPress={onMobileMenuToggle}
               aria-label={mobileMenuOpen ? "Cerrar menú" : "Abrir menú"}
             >
@@ -71,7 +71,7 @@ export default function Header({ onMobileMenuToggle, mobileMenuOpen }: HeaderPro
           )}
           
           <div className="flex-1 min-w-0">
-            <h1 className="text-lg md:text-2xl font-bold text-gray-900 truncate">
+            <h1 className="text-lg md:text-2xl font-bold text-[#013237] truncate">
               {userProfile?.organization_name ? `${userProfile.organization_name} - ${t('navigation.adminPanel')}` : t('navigation.adminPanel')}
             </h1>
           </div>
@@ -80,11 +80,11 @@ export default function Header({ onMobileMenuToggle, mobileMenuOpen }: HeaderPro
         <div className="flex items-center space-x-2 md:space-x-4">
           {/* Búsqueda - Solo visible en desktop */}
           <div className="relative hidden lg:block">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-[#4ca771]" />
             <input
               type="text"
               placeholder={t('header.search')}
-              className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 w-64"
+              className="pl-10 pr-4 py-2 border border-[#c0e6ba] rounded-lg text-sm focus:ring-2 focus:ring-[#4ca771] focus:border-[#4ca771] w-64 text-[#013237] placeholder-[#4ca771]"
             />
           </div>
 
@@ -92,7 +92,7 @@ export default function Header({ onMobileMenuToggle, mobileMenuOpen }: HeaderPro
           <div className="relative">
             <button 
               onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
-              className="relative p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+              className="relative p-2 text-[#4ca771] hover:text-[#013237] hover:bg-[#eafae7] rounded-lg transition-colors"
             >
               <Bell className="w-5 h-5" />
               {notifications && notifications.totalNotifications > 0 && (
@@ -105,9 +105,9 @@ export default function Header({ onMobileMenuToggle, mobileMenuOpen }: HeaderPro
               )}
             </button>
             {isNotificationsOpen && (
-              <div className="absolute right-0 mt-2 w-72 md:w-80 bg-white rounded-lg shadow-lg border border-gray-200 z-50 max-h-96 overflow-hidden">
-                <div className="px-4 py-3 border-b border-gray-100">
-                  <p className="text-sm font-semibold text-gray-900">{t('notifications.title')}</p>
+              <div className="absolute right-0 mt-2 w-72 md:w-80 bg-[#f0fdf9] rounded-lg shadow-lg border border-[#c0e6ba] z-50 max-h-96 overflow-hidden">
+                <div className="px-4 py-3 border-b border-[#c0e6ba]">
+                  <p className="text-sm font-semibold text-[#013237]">{t('notifications.title')}</p>
                 </div>
                 <div className="py-1 max-h-80 overflow-y-auto">
                   {loading ? (
@@ -122,9 +122,9 @@ export default function Header({ onMobileMenuToggle, mobileMenuOpen }: HeaderPro
                               key={item.id} 
                               href="/dashboard/owner/inventario" 
                               onClick={() => setIsNotificationsOpen(false)}
-                              className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50"
+                              className="flex items-center px-4 py-3 text-sm text-[#013237] hover:bg-[#eafae7]"
                             >
-                              <Package className="w-4 h-4 mr-3 text-amber-500 flex-shrink-0" />
+                              <Package className="w-4 h-4 mr-3 text-[#4ca771] flex-shrink-0" />
                               <div className="min-w-0 flex-1">
                                 <p className="font-medium truncate">{item.name}</p>
                                 <p className={`text-xs ${textColors.muted}`}>{t('notifications.stock')}: {item.stock}</p>
@@ -141,9 +141,9 @@ export default function Header({ onMobileMenuToggle, mobileMenuOpen }: HeaderPro
                               key={item.id} 
                               href="/dashboard/owner/reparaciones" 
                               onClick={() => setIsNotificationsOpen(false)}
-                              className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50"
+                              className="flex items-center px-4 py-3 text-sm text-[#013237] hover:bg-[#eafae7]"
                             >
-                              <Wrench className="w-4 h-4 mr-3 text-blue-500 flex-shrink-0" />
+                              <Wrench className="w-4 h-4 mr-3 text-[#4ca771] flex-shrink-0" />
                               <div className="min-w-0 flex-1">
                                 <p className="font-medium">{t('notifications.repair')} #{item.id}</p>
                                 <p className={`text-xs ${textColors.muted} truncate`}>{t('notifications.serialNumber')}: {item.serial_number}</p>
@@ -160,9 +160,9 @@ export default function Header({ onMobileMenuToggle, mobileMenuOpen }: HeaderPro
                                key={item.id} 
                                href="/dashboard/owner/desbloqueos" 
                                onClick={() => setIsNotificationsOpen(false)}
-                               className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50"
+                               className="flex items-center px-4 py-3 text-sm text-[#013237] hover:bg-[#eafae7]"
                              >
-                               <Unlock className="w-4 h-4 mr-3 text-purple-500 flex-shrink-0" />
+                               <Unlock className="w-4 h-4 mr-3 text-[#4ca771] flex-shrink-0" />
                                <div className="min-w-0 flex-1">
                                  <p className="font-medium">{t('notifications.unlock')} #{item.id}</p>
                                  <p className={`text-xs ${textColors.muted} truncate`}>IMEI: {item.imei}</p>
@@ -176,8 +176,8 @@ export default function Header({ onMobileMenuToggle, mobileMenuOpen }: HeaderPro
                     <p className={`text-sm ${textColors.secondary} px-4 py-10 text-center`}>{t('notifications.noNotifications')}</p>
                   )}
                 </div>
-                <div className="px-4 py-2 border-t border-gray-100 bg-gray-50 text-center">
-                  <button onClick={fetchNotifications} className="text-xs text-blue-600 font-semibold hover:underline">
+                <div className="px-4 py-2 border-t border-[#c0e6ba] bg-[#eafae7] text-center">
+                  <button onClick={fetchNotifications} className="text-xs text-[#4ca771] font-semibold hover:underline">
                     {t('notifications.refresh')}
                   </button>
                 </div>
@@ -189,13 +189,13 @@ export default function Header({ onMobileMenuToggle, mobileMenuOpen }: HeaderPro
           <div className="relative">
             <button
               onClick={() => setIsProfileOpen(!isProfileOpen)}
-              className="flex items-center space-x-2 md:space-x-3 p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              className="flex items-center space-x-2 md:space-x-3 p-2 hover:bg-[#eafae7] rounded-lg transition-colors"
             >
-              <div className="w-8 h-8 bg-indigo-600 rounded-full flex items-center justify-center">
+              <div className="w-8 h-8 bg-gradient-to-r from-[#4ca771] to-[#013237] rounded-full flex items-center justify-center">
                 <User className="w-4 h-4 text-white" />
               </div>
               <div className="hidden md:block text-left">
-                <p className="text-sm font-medium text-gray-900">
+                <p className="text-sm font-medium text-[#013237]">
                   {userProfile?.name || 'Usuario'}
                 </p>
                 <p className={`text-xs ${textColors.tertiary} capitalize`}>
@@ -205,16 +205,16 @@ export default function Header({ onMobileMenuToggle, mobileMenuOpen }: HeaderPro
             </button>
 
             {isProfileOpen && (
-              <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50">
-                <div className="px-4 py-2 border-b border-gray-100">
-                  <p className="text-sm font-medium text-gray-900 truncate">
+              <div className="absolute right-0 mt-2 w-48 bg-[#f0fdf9] rounded-lg shadow-lg border border-[#c0e6ba] py-1 z-50">
+                <div className="px-4 py-2 border-b border-[#c0e6ba]">
+                  <p className="text-sm font-medium text-[#013237] truncate">
                     {userProfile?.name}
                   </p>
                   <p className={`text-xs ${textColors.tertiary} truncate`}>{user?.email}</p>
                 </div>
                 
-                <Link href="/dashboard/owner/configuracion" className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center">
-                  <Settings className="w-4 h-4 mr-2" />
+                <Link href="/dashboard/owner/configuracion" className="w-full text-left px-4 py-2 text-sm text-[#013237] hover:bg-[#eafae7] flex items-center">
+                  <Settings className="w-4 h-4 mr-2 text-[#4ca771]" />
                   {t('header.configuration')}
                 </Link>
                 

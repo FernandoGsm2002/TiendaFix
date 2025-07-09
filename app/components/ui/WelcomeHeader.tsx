@@ -151,7 +151,7 @@ export default function WelcomeHeader() {
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
         <div className="flex items-center gap-3">
           <div>
-            <h1 className="text-2xl md:text-3xl font-bold text-gray-900 tracking-tight">
+            <h1 className="text-2xl md:text-3xl font-bold text-[#013237] tracking-tight">
               {getGreetingMessage()}, {userName}! 👋🏻
             </h1>
           </div>
@@ -160,17 +160,17 @@ export default function WelcomeHeader() {
         {/* Widget de Clima y Tiempo */}
         <div className="flex flex-col sm:flex-row gap-3">
           {/* Hora Actual */}
-          <Card className="bg-gradient-to-br from-blue-50 to-indigo-100 border-0 shadow-lg">
+          <Card className="bg-gradient-to-br from-[#f0fdf9] to-[#eafae7] border border-[#c0e6ba]/50 shadow-lg">
             <CardBody className="p-4">
               <div className="flex items-center gap-3">
                 <div className="text-center">
-                  <p className="text-2xl font-bold text-gray-900">
+                  <p className="text-2xl font-bold text-[#013237]">
                     {currentTime.toLocaleTimeString('es-ES', { 
                       hour: '2-digit', 
                       minute: '2-digit' 
                     })}
                   </p>
-                  <p className="text-xs text-gray-600">
+                  <p className="text-xs text-[#4ca771]">
                     {currentTime.toLocaleDateString('es-ES', { 
                       weekday: 'short', 
                       day: 'numeric', 
@@ -183,7 +183,7 @@ export default function WelcomeHeader() {
           </Card>
 
           {/* Información del Clima */}
-          <Card className="bg-gradient-to-br from-green-50 to-emerald-100 border-0 shadow-lg">
+          <Card className="bg-gradient-to-br from-[#f0fdf9] to-[#eafae7] border border-[#c0e6ba]/50 shadow-lg">
             <CardBody className="p-4">
               {weatherLoading ? (
                 <div className="flex items-center gap-3">
@@ -195,37 +195,34 @@ export default function WelcomeHeader() {
                 </div>
               ) : weather ? (
                 <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-white/60 text-gray-700">
+                  <div className="p-2 rounded-lg bg-[#c0e6ba]/50 text-[#013237]">
                     {getWeatherIcon(weather.condition)}
                   </div>
-                  <div>
+                  <div className="text-left">
                     <div className="flex items-center gap-2">
-                      <span className="text-lg font-bold text-gray-900">
-                        {weather.temperature}°C
-                      </span>
+                      <span className="text-lg font-bold text-[#013237]">{weather.temperature}°C</span>
                       <Chip 
+                        variant="flat" 
                         size="sm" 
-                        color="success" 
-                        variant="flat"
-                        className="text-xs"
+                        className="bg-[#c0e6ba]/30 text-[#013237] text-xs"
                       >
                         {weather.description}
                       </Chip>
                     </div>
-                    <div className="flex items-center gap-1 text-xs text-gray-600">
-                      <MapPin className="h-3 w-3" />
-                      <span>{weather.location}</span>
+                    <div className="flex items-center gap-1 mt-1">
+                      <MapPin className="h-3 w-3 text-[#4ca771]" />
+                      <span className="text-xs text-[#4ca771]">{weather.location}</span>
                     </div>
                   </div>
                 </div>
               ) : (
                 <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-white/60 text-gray-700">
+                  <div className="p-2 rounded-lg bg-[#c0e6ba]/50 text-[#013237]">
                     <Sun className="h-5 w-5" />
                   </div>
-                  <div>
-                    <p className="text-sm font-medium text-gray-700">Clima no disponible</p>
-                    <p className="text-xs text-gray-500">Verifica tu conexión</p>
+                  <div className="text-left">
+                    <span className="text-lg font-bold text-[#013237]">--°C</span>
+                    <p className="text-xs text-[#4ca771]">No disponible</p>
                   </div>
                 </div>
               )}
@@ -234,47 +231,7 @@ export default function WelcomeHeader() {
         </div>
       </div>
 
-      {/* Información Adicional */}
-      <div className="flex flex-wrap gap-4">
-        <Chip 
-          color="primary" 
-          variant="flat" 
-          size="sm"
-          className="font-medium"
-        >
-          Panel de Control
-        </Chip>
-        <Chip 
-          color="success" 
-          variant="flat" 
-          size="sm"
-          className="font-medium"
-        >
-          Sistema Activo
-        </Chip>
-        {userProfile?.role === 'owner' && (
-          <Chip 
-            color="warning" 
-            variant="flat" 
-            size="sm"
-            className="font-medium"
-          >
-            Propietario
-          </Chip>
-        )}
-        <Chip 
-          color="default" 
-          variant="flat" 
-          size="sm"
-          className="font-medium"
-        >
-          Hoy: {currentTime.toLocaleDateString('es-ES', { 
-            day: 'numeric', 
-            month: 'long', 
-            year: 'numeric' 
-          })}
-        </Chip>
-      </div>
+
     </div>
   )
 } 

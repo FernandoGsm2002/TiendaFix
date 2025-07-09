@@ -380,19 +380,18 @@ export default function PersonalPage() {
         {/* Header */}
         <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
           <div className="space-y-2">
-            <h1 className={`text-4xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent`}>
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-[#4ca771] to-[#013237] bg-clip-text text-transparent">
               Gestión de Personal
             </h1>
-            <p className={`${textColors.secondary} text-lg`}>
+            <p className="text-[#4ca771] text-lg">
               Administración de empleados y técnicos
             </p>
           </div>
           
           <Button
-            color="primary"
             onPress={onCreateOpen}
             startContent={<Plus className="w-4 h-4" />}
-            className="shadow-lg"
+            className="bg-gradient-to-r from-[#4ca771] to-[#013237] text-white hover:from-[#013237] hover:to-[#4ca771] transition-all shadow-lg"
           >
             Agregar Personal
           </Button>
@@ -400,62 +399,62 @@ export default function PersonalPage() {
 
         {/* Estadísticas */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <Card className="hover:scale-105 transition-transform border-0 shadow-lg">
+          <Card className="hover:scale-105 transition-all duration-300 border border-gray-200 shadow-lg bg-gradient-to-br from-blue-100 to-blue-200">
             <CardBody className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <div className="p-3 rounded-xl bg-gradient-to-br from-blue-400 to-blue-600 shadow-lg">
+                <div className="p-3 rounded-xl bg-blue-500 shadow-lg">
                   <Users className="w-6 h-6 text-white" />
                 </div>
-                <Chip color="primary" variant="flat">Total</Chip>
+                <Chip variant="flat" size="sm" className="font-semibold bg-white/60 text-blue-800 border border-white/30">Total</Chip>
               </div>
               <div className="space-y-2">
-                <p className={`text-sm font-medium ${textColors.tertiary}`}>Total Personal</p>
-                <p className={`text-3xl font-bold ${textColors.primary}`}>{stats.total}</p>
+                <p className="text-base font-bold text-blue-800 opacity-90 uppercase tracking-wider">Total Personal</p>
+                <p className="text-4xl font-extrabold text-blue-800 mb-2 tracking-tight">{stats.total}</p>
               </div>
             </CardBody>
           </Card>
 
-          <Card className="hover:scale-105 transition-transform border-0 shadow-lg">
+          <Card className="hover:scale-105 transition-all duration-300 border border-gray-200 shadow-lg bg-gradient-to-br from-emerald-100 to-emerald-200">
             <CardBody className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <div className="p-3 rounded-xl bg-gradient-to-br from-green-400 to-green-600 shadow-lg">
+                <div className="p-3 rounded-xl bg-emerald-500 shadow-lg">
                   <UserCheck className="w-6 h-6 text-white" />
                 </div>
-                <Chip color="success" variant="flat">Activos</Chip>
+                <Chip variant="flat" size="sm" className="font-semibold bg-white/60 text-emerald-800 border border-white/30">Activos</Chip>
               </div>
               <div className="space-y-2">
-                <p className={`text-sm font-medium ${textColors.tertiary}`}>{t('staff.activeTechnicians')}</p>
-                <p className={`text-3xl font-bold text-green-600`}>{stats.activos}</p>
+                <p className="text-base font-bold text-emerald-800 opacity-90 uppercase tracking-wider">{t('staff.activeTechnicians')}</p>
+                <p className="text-4xl font-extrabold text-emerald-800 mb-2 tracking-tight">{stats.activos}</p>
               </div>
             </CardBody>
           </Card>
 
-          <Card className="hover:scale-105 transition-transform border-0 shadow-lg">
+          <Card className="hover:scale-105 transition-all duration-300 border border-gray-200 shadow-lg bg-gradient-to-br from-purple-100 to-purple-200">
             <CardBody className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <div className="p-3 rounded-xl bg-gradient-to-br from-purple-400 to-purple-600 shadow-lg">
+                <div className="p-3 rounded-xl bg-purple-500 shadow-lg">
                   <Shield className="w-6 h-6 text-white" />
                 </div>
-                <Chip color="secondary" variant="flat">Técnicos</Chip>
+                <Chip variant="flat" size="sm" className="font-semibold bg-white/60 text-purple-800 border border-white/30">Técnicos</Chip>
               </div>
               <div className="space-y-2">
-                <p className={`text-sm font-medium ${textColors.tertiary}`}>{t('staff.technician')}</p>
-                <p className={`text-3xl font-bold text-purple-600`}>{stats.tecnicos}</p>
+                <p className="text-base font-bold text-purple-800 opacity-90 uppercase tracking-wider">{t('staff.technician')}</p>
+                <p className="text-4xl font-extrabold text-purple-800 mb-2 tracking-tight">{stats.tecnicos}</p>
               </div>
             </CardBody>
           </Card>
 
-          <Card className="hover:scale-105 transition-transform border-0 shadow-lg">
+          <Card className="hover:scale-105 transition-all duration-300 border border-gray-200 shadow-lg bg-gradient-to-br from-indigo-100 to-indigo-200">
             <CardBody className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <div className="p-3 rounded-xl bg-gradient-to-br from-indigo-400 to-indigo-600 shadow-lg">
+                <div className="p-3 rounded-xl bg-indigo-500 shadow-lg">
                   <Shield className="w-6 h-6 text-white" />
                 </div>
-                <Chip color="secondary" variant="flat">Admins</Chip>
+                <Chip variant="flat" size="sm" className="font-semibold bg-white/60 text-indigo-800 border border-white/30">Admins</Chip>
               </div>
               <div className="space-y-2">
-                <p className={`text-sm font-medium ${textColors.tertiary}`}>Propietarios</p>
-                <p className={`text-3xl font-bold text-indigo-600`}>{stats.propietarios}</p>
+                <p className="text-base font-bold text-indigo-800 opacity-90 uppercase tracking-wider">Propietarios</p>
+                <p className="text-4xl font-extrabold text-indigo-800 mb-2 tracking-tight">{stats.propietarios}</p>
               </div>
             </CardBody>
           </Card>
@@ -923,10 +922,10 @@ export default function PersonalPage() {
                     Cancelar
                   </Button>
                   <Button 
-                    color="primary" 
                     onPress={() => handleCreateTechnician({ preventDefault: () => {} } as any)}
                     isLoading={createLoading}
                     size="sm"
+                    className="bg-gradient-to-r from-[#4ca771] to-[#013237] text-white hover:from-[#013237] hover:to-[#4ca771] transition-all"
                   >
                     Crear Personal
                   </Button>
@@ -1117,10 +1116,10 @@ export default function PersonalPage() {
                     Cancelar
                   </Button>
                   <Button 
-                    color="primary" 
                     type="submit"
                     form="edit-technician-form"
                     isLoading={updateLoading}
+                    className="bg-gradient-to-r from-[#4ca771] to-[#013237] text-white hover:from-[#013237] hover:to-[#4ca771] transition-all"
                   >
                     Actualizar Personal
                   </Button>

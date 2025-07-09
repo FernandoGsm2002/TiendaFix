@@ -1,17 +1,17 @@
-// Sistema de colores mejorado para mejor legibilidad y contraste
+// Sistema de colores Poppins - Paleta moderna y profesional
 export const colors = {
-  // Colores principales con alto contraste
+  // Colores principales Poppins - Verde profesional
   primary: {
-    50: '#eff6ff',
-    100: '#dbeafe', 
-    200: '#bfdbfe',
-    300: '#93c5fd',
-    400: '#60a5fa',
-    500: '#3b82f6', // Azul principal
-    600: '#2563eb',
-    700: '#1d4ed8', // Más oscuro para texto
-    800: '#1e40af',
-    900: '#1e3a8a'
+    50: '#f0fdf9', // Verde muy claro
+    100: '#eafae7', // #EAF9E7 - Fondos suaves
+    200: '#d1f0cb',
+    300: '#c0e6ba', // #C0E6BA - Elementos secundarios  
+    400: '#86d19a',
+    500: '#4ca771', // #4CA771 - Verde principal
+    600: '#16a34a',
+    700: '#15803d',
+    800: '#166534',
+    900: '#013237'  // #013237 - Verde oscuro para texto
   },
   
   // Grises con mejor contraste
@@ -69,25 +69,25 @@ export const colors = {
   }
 }
 
-// Clases CSS con mejor legibilidad
+// Clases CSS con paleta Poppins
 export const textColors = {
-  // Texto principal - máximo contraste
-  primary: 'text-gray-900',
+  // Texto principal - Verde oscuro Poppins
+  primary: 'text-[#013237]',
   
-  // Texto secundario - buen contraste
-  secondary: 'text-gray-700',
+  // Texto secundario - Verde medio
+  secondary: 'text-[#4ca771]',
   
-  // Texto terciario - contraste moderado pero legible
+  // Texto terciario - Verde suave
   tertiary: 'text-gray-600',
   
-  // Texto de ayuda/placeholder - mínimo legible
+  // Texto de ayuda/placeholder - Gris suave
   muted: 'text-gray-500',
   
-  // Textos de estado con buen contraste
-  success: 'text-green-700',
+  // Textos de estado con nueva paleta
+  success: 'text-[#4ca771]',
   warning: 'text-amber-700',
   error: 'text-red-700',
-  info: 'text-blue-700'
+  info: 'text-[#4ca771]'
 }
 
 // Fondos con texto legible
@@ -121,11 +121,11 @@ export const formColors = {
   select: 'border-gray-300 text-gray-900 focus:border-blue-500 focus:ring-blue-500',
   
   button: {
-    primary: 'bg-blue-600 text-white hover:bg-blue-700 border-transparent',
-    secondary: 'bg-white text-gray-800 hover:bg-gray-50 border-gray-300',
-    success: 'bg-green-600 text-white hover:bg-green-700 border-transparent',
-    warning: 'bg-amber-600 text-white hover:bg-amber-700 border-transparent',
-    error: 'bg-red-600 text-white hover:bg-red-700 border-transparent'
+    primary: 'bg-[#4ca771] text-white hover:bg-[#013237] border-transparent transition-colors',
+    secondary: 'bg-[#eafae7] text-[#013237] hover:bg-[#c0e6ba] border-[#c0e6ba] transition-colors',
+    success: 'bg-[#4ca771] text-white hover:bg-[#013237] border-transparent transition-colors',
+    warning: 'bg-amber-600 text-white hover:bg-amber-700 border-transparent transition-colors',
+    error: 'bg-red-600 text-white hover:bg-red-700 border-transparent transition-colors'
   }
 }
 
