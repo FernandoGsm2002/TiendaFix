@@ -785,7 +785,14 @@ export default function VentasPage() {
                           <p className="text-lg font-bold text-green-600">
                             {formatCurrency(product.enduser_price)}
                           </p>
-                          <Chip size="sm" variant="bordered" color={getCategoryColor(product.category)}>
+                          <Chip 
+                            size="sm" 
+                            variant="bordered" 
+                            color={getCategoryColor(product.category)}
+                            classNames={{
+                              content: "text-gray-800 font-medium"
+                            }}
+                          >
                             {product.category}
                           </Chip>
                         </div>

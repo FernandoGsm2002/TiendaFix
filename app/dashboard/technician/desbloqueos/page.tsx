@@ -1106,7 +1106,7 @@ export default function TechnicianUnlocksPage() {
                   )}
                 </ModalHeader>
                 <ModalBody>
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {statusOptions.map((status) => (
                       <Button
                         key={status.value}
@@ -1153,20 +1153,20 @@ export default function TechnicianUnlocksPage() {
           classNames={{
             wrapper: "z-[1000]",
             backdrop: "z-[999]",
-            base: "max-h-[95vh] my-2 mx-2 sm:mx-6",
-            body: "max-h-[75vh] overflow-y-auto py-4",
-            header: "border-b border-gray-200 pb-4",
-            footer: "border-t border-gray-200 pt-4"
+            base: "max-h-[95vh] my-1 mx-1 sm:my-2 sm:mx-2 md:mx-6",
+            body: "max-h-[75vh] overflow-y-auto py-2 px-2 sm:py-4 sm:px-6",
+            header: "border-b border-gray-200 pb-2 px-2 sm:pb-4 sm:px-6",
+            footer: "border-t border-gray-200 pt-2 px-2 sm:pt-4 sm:px-6"
           }}
         >
           <ModalContent>
             <ModalHeader>
-              <h2 className={`text-xl font-bold ${textColors.primary}`}>Nuevo Servicio de Desbloqueo</h2>
-              <p className={textColors.secondary}>Complete la información del servicio</p>
+              <h2 className={`text-lg sm:text-xl md:text-2xl font-bold ${textColors.primary}`}>Nuevo Servicio de Desbloqueo</h2>
+              <p className={`text-sm sm:text-base ${textColors.secondary}`}>Complete la información del servicio</p>
             </ModalHeader>
             <ModalBody>
               <form onSubmit={handleSubmit} className="space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <FormField
                     label="Tipo de Desbloqueo"
                     name="unlock_type"
@@ -1200,7 +1200,7 @@ export default function TechnicianUnlocksPage() {
                   ]}
                   required
                 />
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <FormField
                     label="Marca"
                     name="brand"
@@ -1220,7 +1220,7 @@ export default function TechnicianUnlocksPage() {
                     required
                       />
                     </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <FormField
                       label="IMEI"
                     name="imei"

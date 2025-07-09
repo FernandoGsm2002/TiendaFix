@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from 'next/server'
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
 
-// Usar la clave de servicio para saltar RLS
+// Usar la clave de servicio para saltar RLS completamente
 const supabase = createClient(supabaseUrl, supabaseServiceKey, {
   auth: {
     autoRefreshToken: false,
@@ -31,51 +31,26 @@ export async function GET(request: NextRequest) {
     console.log('🔗 Supabase URL:', supabaseUrl.substring(0, 30) + '...')
     console.log('🔑 Service key length:', supabaseServiceKey.length)
 
-    // Obtener todas las solicitudes con logs detallados
-    console.log('🔍 Fetching organization requests...')
-    let { data: requests, error: requestsError } = await supabase
+    // Obtener todas las solicitudes directamente - usando service key para saltar RLS
+    console.log('🔍 Fetching organization requests with service key...')
+    const { data: requests, error: requestsError } = await supabase
       .from('organization_requests')
       .select('*')
       .order('created_at', { ascending: false })
 
     if (requestsError) {
       console.error('❌ Error fetching requests:', requestsError)
-      console.error('❌ RLS might be blocking access. Error details:', {
+      console.error('❌ Error details:', {
         code: requestsError.code,
         message: requestsError.message,
         details: requestsError.details,
         hint: requestsError.hint
       })
       
-      // Intentar con bypass RLS explícito
-      console.log('🔄 Trying with explicit RLS bypass...')
-      const { data: requestsRetry, error: retryError } = await supabase
-        .rpc('get_all_organization_requests_admin')
-        .then(
-          (result) => result,
-          async () => {
-            // Si no existe la función, usar query directo
-            console.log('🔄 Using direct query as fallback...')
-            return await supabase
-              .from('organization_requests')
-              .select('*')
-              .order('created_at', { ascending: false })
-          }
-        )
-      
-      if (retryError) {
-        console.error('❌ Retry also failed:', retryError)
-        return NextResponse.json(
-          { error: `Error RLS: ${requestsError.message}` },
-          { status: 500 }
-        )
-      }
-      
-      // Si el retry funcionó, usar esos datos
-      if (requestsRetry) {
-        console.log('✅ Retry successful, using retry data')
-        requests = requestsRetry
-      }
+      return NextResponse.json(
+        { error: `Error obteniendo solicitudes: ${requestsError.message}` },
+        { status: 500 }
+      )
     }
 
     // Obtener organizaciones existentes
@@ -88,7 +63,7 @@ export async function GET(request: NextRequest) {
     if (orgsError) {
       console.error('❌ Error fetching organizations:', orgsError)
       return NextResponse.json(
-        { error: orgsError.message },
+        { error: `Error obteniendo organizaciones: ${orgsError.message}` },
         { status: 500 }
       )
     }
@@ -102,7 +77,7 @@ export async function GET(request: NextRequest) {
         console.log(`  ${index + 1}. ${req.name} (${req.owner_email}) - Status: ${req.status} - Created: ${req.created_at}`)
       })
     } else {
-      console.log('⚠️  No requests found - this might indicate RLS is still blocking')
+      console.log('⚠️  No requests found in database')
     }
 
     return NextResponse.json({

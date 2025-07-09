@@ -6,7 +6,7 @@ import { createClient } from '@/lib/supabase/client'
 import { 
   Card, CardBody, CardHeader, Button, Chip, Table, TableHeader, 
   TableColumn, TableBody, TableRow, TableCell, Modal, ModalContent, 
-  ModalHeader, ModalBody, ModalFooter, useDisclosure, Tabs, Tab
+  ModalHeader, ModalBody, ModalFooter, useDisclosure, Tabs, Tab, Textarea
 } from '@heroui/react'
 import { 
   Users, Building, Clock, Check, X, Eye, 
@@ -28,6 +28,7 @@ interface OrganizationRequest {
   created_at: string
   approved_at?: string
   approved_by?: string
+  rejection_reason?: string
 }
 
 interface Organization {
@@ -50,9 +51,12 @@ export default function SuperAdminDashboard() {
   const [selectedRequest, setSelectedRequest] = useState<OrganizationRequest | null>(null)
   const [actionLoading, setActionLoading] = useState(false)
   const [approvedData, setApprovedData] = useState<any>(null)
+  const [rejectionReason, setRejectionReason] = useState('')
+  const [requestToReject, setRequestToReject] = useState<OrganizationRequest | null>(null)
   
   const { isOpen, onOpen, onOpenChange } = useDisclosure()
   const { isOpen: isApprovedOpen, onOpen: onApprovedOpen, onOpenChange: onApprovedOpenChange } = useDisclosure()
+  const { isOpen: isRejectOpen, onOpen: onRejectOpen, onOpenChange: onRejectOpenChange } = useDisclosure()
   const supabase = createClient()
 
   // Verificar permisos
@@ -159,32 +163,62 @@ export default function SuperAdminDashboard() {
     }
   }
 
-  const handleRejectRequest = async (requestId: string) => {
+  const handleRejectRequest = async (requestId: string, reason: string) => {
     setActionLoading(true)
     try {
-      const { error } = await supabase
-        .from('organization_requests')
-        .update({ 
-          status: 'rejected',
-          approved_by: user?.id,
-          approved_at: new Date().toISOString()
+      console.log('🚫 Rejecting request:', requestId)
+      
+      const response = await fetch('/api/admin/reject', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ 
+          requestId, 
+          rejectionReason: reason 
         })
-        .eq('id', requestId)
+      })
 
-      if (error) {
-        console.error('Error rejecting request:', error)
-        alert('Error al rechazar la solicitud')
+      const result = await response.json()
+
+      if (!response.ok) {
+        console.error('❌ Error rejecting request:', result.error)
+        alert('Error al rechazar la solicitud: ' + result.error)
       } else {
-        alert('Solicitud rechazada')
+        console.log('✅ Request rejected successfully')
+        alert('Solicitud rechazada exitosamente')
+        
         loadData()
-        onOpenChange()
+        onOpenChange() // Cerrar modal de detalles
+        onRejectOpenChange() // Cerrar modal de rechazo
+        
+        // Limpiar estados
+        setRejectionReason('')
+        setRequestToReject(null)
       }
     } catch (error) {
-      console.error('Error:', error)
+      console.error('❌ Error:', error)
       alert('Error al rechazar la solicitud')
     } finally {
       setActionLoading(false)
     }
+  }
+
+  const openRejectModal = (request: OrganizationRequest) => {
+    setRequestToReject(request)
+    setRejectionReason('')
+    onRejectOpen()
+  }
+
+  const submitRejection = async () => {
+    if (!requestToReject) return
+    
+    if (rejectionReason.trim().length < 10) {
+      alert('Por favor, proporciona una razón de rechazo (mínimo 10 caracteres)')
+      return
+    }
+    
+    await handleRejectRequest(requestToReject.id, rejectionReason.trim())
   }
 
   const getStatusChip = (status: string) => {
@@ -529,6 +563,22 @@ export default function SuperAdminDashboard() {
                       <h4 className="font-semibold text-indigo-900 mb-3">Fecha de Solicitud</h4>
                       <p className="text-gray-700">{new Date(selectedRequest.created_at).toLocaleString()}</p>
                     </div>
+
+                    {/* Mostrar razón de rechazo si existe */}
+                    {selectedRequest.status === 'rejected' && selectedRequest.rejection_reason && (
+                      <div className="bg-red-50 p-4 rounded-lg border border-red-200">
+                        <h4 className="font-semibold text-red-900 mb-3 flex items-center gap-2">
+                          <X className="w-4 h-4" />
+                          Razón del Rechazo
+                        </h4>
+                        <p className="text-red-800 whitespace-pre-wrap">{selectedRequest.rejection_reason}</p>
+                        {selectedRequest.approved_at && (
+                          <p className="text-red-600 text-sm mt-2">
+                            Rechazada el: {new Date(selectedRequest.approved_at).toLocaleString()}
+                          </p>
+                        )}
+                      </div>
+                    )}
                   </div>
                 )}
               </ModalBody>
@@ -546,7 +596,7 @@ export default function SuperAdminDashboard() {
                       color="danger" 
                       variant="flat"
                       isLoading={actionLoading}
-                      onClick={() => handleRejectRequest(selectedRequest.id)}
+                      onClick={() => openRejectModal(selectedRequest)}
                       className="text-red-600 hover:text-red-700 hover:bg-red-50"
                     >
                       Rechazar
@@ -731,6 +781,117 @@ export default function SuperAdminDashboard() {
                   className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium"
                 >
                   Entendido - Cerrar
+                </Button>
+              </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
+
+      {/* Modal de rechazo con razón */}
+      <Modal 
+        isOpen={isRejectOpen} 
+        onOpenChange={onRejectOpenChange} 
+        size="lg"
+        classNames={{
+          wrapper: "z-[1000]",
+          backdrop: "z-[999]",
+          base: "max-h-[95vh] my-2 mx-2 sm:mx-6",
+          body: "py-4",
+          header: "border-b border-gray-200 pb-4",
+          footer: "border-t border-gray-200 pt-4"
+        }}
+      >
+        <ModalContent className="bg-white">
+          {(onClose) => (
+            <>
+              <ModalHeader className="flex flex-col gap-1 bg-red-50 border-b border-red-200">
+                <div className="flex items-center gap-3">
+                  <div className="w-4 h-4 bg-red-500 rounded-full"></div>
+                  <span className="text-red-800 font-bold text-lg">Rechazar Solicitud</span>
+                </div>
+                {requestToReject && (
+                  <p className="text-red-600 text-sm font-medium mt-1">
+                    {requestToReject.name} - {requestToReject.owner_name}
+                  </p>
+                )}
+              </ModalHeader>
+              <ModalBody>
+                <div className="space-y-4">
+                  <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className="w-2 h-2 bg-amber-500 rounded-full"></div>
+                      <h4 className="font-semibold text-amber-800">⚠️ Importante</h4>
+                    </div>
+                    <p className="text-amber-700 text-sm">
+                      Una vez rechazada, esta solicitud no podrá ser aprobada posteriormente. 
+                      La razón del rechazo será visible para el solicitante.
+                    </p>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-sm font-semibold text-gray-700">
+                      Razón del rechazo <span className="text-red-500">*</span>
+                    </label>
+                    <Textarea
+                      value={rejectionReason}
+                      onValueChange={setRejectionReason}
+                      placeholder="Por favor, explique detalladamente la razón por la cual se rechaza esta solicitud..."
+                      minRows={4}
+                      maxRows={8}
+                      className="w-full"
+                      classNames={{
+                        input: "text-sm",
+                        inputWrapper: "border-gray-300 focus:border-red-500"
+                      }}
+                    />
+                    <p className="text-xs text-gray-500">
+                      Mínimo 10 caracteres. Caracteres actuales: {rejectionReason.length}
+                    </p>
+                  </div>
+
+                  {requestToReject && (
+                    <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                      <h4 className="font-semibold text-gray-700 mb-2">Datos de la solicitud:</h4>
+                      <div className="grid grid-cols-2 gap-2 text-sm">
+                        <div>
+                          <span className="font-medium text-gray-600">Tienda:</span>
+                          <span className="text-gray-800 ml-2">{requestToReject.name}</span>
+                        </div>
+                        <div>
+                          <span className="font-medium text-gray-600">Plan:</span>
+                          <span className="text-gray-800 ml-2">{getPlanLabel(requestToReject.subscription_plan)}</span>
+                        </div>
+                        <div>
+                          <span className="font-medium text-gray-600">Propietario:</span>
+                          <span className="text-gray-800 ml-2">{requestToReject.owner_name}</span>
+                        </div>
+                        <div>
+                          <span className="font-medium text-gray-600">Email:</span>
+                          <span className="text-gray-800 ml-2">{requestToReject.owner_email}</span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </ModalBody>
+              <ModalFooter className="bg-gray-50 border-t border-gray-200">
+                <Button 
+                  variant="flat" 
+                  onPress={onClose}
+                  className="text-gray-600 hover:text-gray-800 hover:bg-gray-100"
+                >
+                  Cancelar
+                </Button>
+                <Button 
+                  color="danger"
+                  variant="solid"
+                  isLoading={actionLoading}
+                  onClick={submitRejection}
+                  className="bg-red-600 hover:bg-red-700 text-white"
+                  isDisabled={rejectionReason.trim().length < 10}
+                >
+                  Confirmar Rechazo
                 </Button>
               </ModalFooter>
             </>

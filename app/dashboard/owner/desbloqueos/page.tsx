@@ -1053,20 +1053,20 @@ export default function DesbloqueoPage() {
           classNames={{
             wrapper: "z-[1000]",
             backdrop: "z-[999]",
-            base: "max-h-[100vh] h-full sm:max-h-[95vh] sm:h-auto my-0 mx-0 sm:my-2 sm:mx-2 md:mx-6 sm:rounded-lg",
-            body: "max-h-[calc(100vh-180px)] sm:max-h-[75vh] overflow-y-auto py-3 px-3 sm:py-4 sm:px-6",
-            header: "border-b border-gray-200 pb-3 px-3 sm:pb-4 sm:px-6",
-            footer: "border-t border-gray-200 pt-3 px-3 sm:pt-4 sm:px-6"
+            base: "max-h-[100vh] h-full sm:max-h-[95vh] sm:h-auto my-0 mx-0 sm:my-1 sm:mx-1 md:mx-6 sm:rounded-lg",
+            body: "max-h-[calc(100vh-180px)] sm:max-h-[75vh] overflow-y-auto py-2 px-2 sm:py-4 sm:px-6",
+            header: "border-b border-gray-200 pb-2 px-2 sm:pb-4 sm:px-6",
+            footer: "border-t border-gray-200 pt-2 px-2 sm:pt-4 sm:px-6"
           }}
         >
           <ModalContent>
             <ModalHeader>
-              <h2 className={`text-xl md:text-2xl font-bold ${textColors.primary}`}>Nuevo Servicio de Desbloqueo</h2>
-              <p className={`text-base ${textColors.secondary}`}>Complete la información del servicio</p>
+              <h2 className={`text-lg sm:text-xl md:text-2xl font-bold ${textColors.primary}`}>Nuevo Servicio de Desbloqueo</h2>
+              <p className={`text-sm sm:text-base ${textColors.secondary}`}>Complete la información del servicio</p>
             </ModalHeader>
             <ModalBody>
               <form onSubmit={handleSubmit} className="space-y-5 md:space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <FormField
                     label="Tipo de Desbloqueo"
                     name="unlock_type"
@@ -1100,7 +1100,7 @@ export default function DesbloqueoPage() {
                   ]}
                   required
                 />
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <FormField
                     label="Marca"
                     name="brand"
@@ -1120,7 +1120,7 @@ export default function DesbloqueoPage() {
                     required
                   />
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <FormField
                     label="IMEI"
                     name="imei"
@@ -1242,10 +1242,10 @@ export default function DesbloqueoPage() {
           classNames={{
             wrapper: "z-[1000]",
             backdrop: "z-[999]",
-            base: "max-h-[95vh] my-2 mx-2 sm:mx-6",
-            body: "max-h-[75vh] overflow-y-auto py-4",
-            header: "border-b border-gray-200 pb-4",
-            footer: "border-t border-gray-200 pt-4"
+            base: "max-h-[95vh] my-1 mx-1 sm:my-2 sm:mx-2 md:mx-6 w-full",
+            body: "max-h-[75vh] overflow-y-auto py-2 px-2 sm:py-4 sm:px-6",
+            header: "border-b border-gray-200 pb-2 px-2 sm:pb-4 sm:px-6",
+            footer: "border-t border-gray-200 pt-2 px-2 sm:pt-4 sm:px-6"
           }}
         >
           <ModalContent>
@@ -1257,7 +1257,7 @@ export default function DesbloqueoPage() {
                 <ModalBody>
                   {editingUnlock && (
                     <form id="edit-unlock-form" onSubmit={handleUpdateUnlock} className="space-y-4">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <FormField
                           label="Tipo de Desbloqueo"
                           name="unlock_type"
@@ -1285,7 +1285,7 @@ export default function DesbloqueoPage() {
                           ]}
                         />
                       </div>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <FormField
                           label="Marca"
                           name="brand"
@@ -1301,7 +1301,7 @@ export default function DesbloqueoPage() {
                           required
                         />
                       </div>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <FormField
                           label="IMEI"
                           name="imei"
@@ -1315,7 +1315,7 @@ export default function DesbloqueoPage() {
                           onChange={(value) => setEditingUnlock(prev => prev ? { ...prev, serial_number: value } : null)}
                         />
                       </div>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <FormField
                           label="Costo"
                           name="cost"

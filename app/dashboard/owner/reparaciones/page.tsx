@@ -1391,15 +1391,15 @@ export default function ReparacionesPage() {
           classNames={{
             wrapper: "z-[1000]",
             backdrop: "z-[999]",
-            base: "max-h-[95vh] my-2 mx-2 sm:mx-6 w-full max-w-4xl",
-            body: "max-h-[75vh] overflow-y-auto py-4 px-6",
-            header: "border-b border-gray-200 pb-4 px-6",
-            footer: "border-t border-gray-200 pt-4 px-6"
+            base: "max-h-[95vh] my-1 mx-1 sm:my-2 sm:mx-2 md:mx-6 w-full max-w-4xl",
+            body: "max-h-[75vh] overflow-y-auto py-2 px-2 sm:py-4 sm:px-6",
+            header: "border-b border-gray-200 pb-2 px-2 sm:pb-4 sm:px-6",
+            footer: "border-t border-gray-200 pt-2 px-2 sm:pt-4 sm:px-6"
           }}
         >
           <ModalContent>
             <ModalHeader>
-              <h2 className={`text-xl md:text-2xl font-bold ${textColors.primary}`}>{t('repairs.createTitle')}</h2>
+              <h2 className={`text-lg sm:text-xl md:text-2xl font-bold ${textColors.primary}`}>{t('repairs.createTitle')}</h2>
             </ModalHeader>
             <ModalBody>
               <form onSubmit={handleCreateRepair} className="space-y-4 md:space-y-6">
@@ -1531,7 +1531,7 @@ export default function ReparacionesPage() {
                     inputWrapper: "bg-white dark:bg-gray-800"
                   }}
                 />
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
                   <Select
                     label="Prioridad"
                     selectedKeys={[newRepair.priority]}

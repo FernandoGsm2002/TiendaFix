@@ -1196,17 +1196,17 @@ export default function TechnicianRepairsPage() {
           classNames={{
             wrapper: "z-[1000]",
             backdrop: "z-[999]",
-            base: "max-h-[95vh] my-2 mx-2 sm:mx-6 w-full max-w-4xl",
-            body: "max-h-[75vh] overflow-y-auto py-4 px-6",
-            header: "border-b border-gray-200 pb-4 px-6",
-            footer: "border-t border-gray-200 pt-4 px-6"
+            base: "max-h-[95vh] my-1 mx-1 sm:my-2 sm:mx-2 md:mx-6 w-full max-w-4xl",
+            body: "max-h-[75vh] overflow-y-auto py-2 px-2 sm:py-4 sm:px-6",
+            header: "border-b border-gray-200 pb-2 px-2 sm:pb-4 sm:px-6",
+            footer: "border-t border-gray-200 pt-2 px-2 sm:pt-4 sm:px-6"
           }}
         >
           <ModalContent>
             <form onSubmit={handleCreateRepair}>
               <ModalHeader className="flex flex-col gap-1">
-                <h2 className="text-xl md:text-2xl font-bold text-gray-900">Nueva Reparación</h2>
-                <p className="text-sm md:text-base text-gray-600">Crea una nueva reparación para un cliente</p>
+                <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">Nueva Reparación</h2>
+                <p className="text-xs sm:text-sm md:text-base text-gray-600">Crea una nueva reparación para un cliente</p>
               </ModalHeader>
               <ModalBody className="gap-3 md:gap-4">
                 <div className="space-y-3 md:space-y-4">
@@ -1294,7 +1294,7 @@ export default function TechnicianRepairsPage() {
                     </>
                   ) : (
                     // Campos para clientes registrados
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
                       <Select
                         label="Cliente"
                         placeholder="Selecciona un cliente"

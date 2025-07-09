@@ -933,19 +933,19 @@ export default function InventarioPage() {
           classNames={{
             wrapper: "z-[1000]",
             backdrop: "z-[999]",
-            base: "max-h-[100vh] h-full sm:max-h-[95vh] sm:h-auto my-0 mx-0 sm:my-2 sm:mx-2 md:mx-6 sm:rounded-lg",
-            body: "max-h-[calc(100vh-180px)] sm:max-h-[75vh] overflow-y-auto py-3 px-3 sm:py-4 sm:px-6",
-            header: "border-b border-gray-200 pb-3 px-3 sm:pb-4 sm:px-6",
-            footer: "border-t border-gray-200 pt-3 px-3 sm:pt-4 sm:px-6"
+            base: "max-h-[100vh] h-full sm:max-h-[95vh] sm:h-auto my-0 mx-0 sm:my-1 sm:mx-1 md:mx-6 sm:rounded-lg",
+            body: "max-h-[calc(100vh-180px)] sm:max-h-[75vh] overflow-y-auto py-2 px-2 sm:py-4 sm:px-6",
+            header: "border-b border-gray-200 pb-2 px-2 sm:pb-4 sm:px-6",
+            footer: "border-t border-gray-200 pt-2 px-2 sm:pt-4 sm:px-6"
           }}
         >
           <ModalContent>
             <form onSubmit={handleCreateProduct}>
               <ModalHeader>
-                <h2 className={`text-xl md:text-2xl font-bold ${textColors.primary}`}>{t('inventory.createTitle')}</h2>
+                <h2 className={`text-lg sm:text-xl md:text-2xl font-bold ${textColors.primary}`}>{t('inventory.createTitle')}</h2>
               </ModalHeader>
               <ModalBody className="space-y-6 md:space-y-8">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <FormField
                     label="Nombre del Producto"
                     name="name"
@@ -973,7 +973,7 @@ export default function InventarioPage() {
                   rows={3}
                 />
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                   <FormField
                     label="Categoría"
                     name="category"
@@ -1002,7 +1002,7 @@ export default function InventarioPage() {
                   />
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <FormField
                     label="Stock Actual"
                     name="stock_quantity"
@@ -1023,7 +1023,7 @@ export default function InventarioPage() {
                   />
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <FormField
                     label="Costo Unitario (S/)"
                     name="unit_cost"
@@ -1059,7 +1059,7 @@ export default function InventarioPage() {
                   </Card>
                 )}
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <FormField
                     label="Proveedor"
                     name="supplier"
