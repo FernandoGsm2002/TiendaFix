@@ -1,5 +1,5 @@
-import { LandingNavbar } from "./components/landing/Navbar";
-import { Hero } from "./components/landing/Hero";
+import { Navbar } from "./components/landing/Navbar";
+import Hero from "./components/landing/Hero";
 import { IndustriesSection } from "./components/landing/IndustriesSection";
 import { FeatureSection } from "./components/landing/FeatureSection";
 import { TestimonialsSection } from "./components/landing/TestimonialsSection";
@@ -7,7 +7,6 @@ import { PricingSection } from "./components/landing/PricingSection";
 import { SecuritySection } from "./components/landing/SecuritySection";
 import { RolesSection } from "./components/landing/RolesSection";
 import { Footer } from "./components/landing/Footer";
-import { Button, Link } from "@heroui/react";
 import { 
   Zap, 
   Shield, 
@@ -31,7 +30,7 @@ import {
 export default function HomePage() {
   return (
     <div className="min-h-screen bg-white">
-      <LandingNavbar />
+              <Navbar />
       <main>
         <Hero />
         
@@ -129,27 +128,22 @@ export default function HomePage() {
 
               {/* Enhanced CTA Buttons */}
               <div className="flex flex-col sm:flex-row items-center justify-center gap-6 mb-12">
-                <Button 
-                  as={Link}
+                <a 
                   href="/auth/register"
-                  size="lg"
-                  className="bg-white text-gray-900 font-bold px-12 py-6 text-xl hover:bg-gray-50 transition-all duration-300 shadow-2xl hover:shadow-3xl hover:scale-105 relative overflow-hidden group border-0"
-                  endContent={<Rocket className="w-6 h-6 group-hover:translate-x-1 transition-transform duration-300" />}
+                  className="bg-white text-gray-900 font-bold px-12 py-6 text-xl hover:bg-gray-50 transition-all duration-300 shadow-2xl hover:shadow-3xl hover:scale-105 relative overflow-hidden group border-0 rounded-lg inline-flex items-center gap-3"
                 >
                   <div className="absolute inset-0 bg-gradient-to-r from-gray-50/20 to-gray-100/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                   <span className="relative z-10">Registrate ahora</span>
-                </Button>
+                  <Rocket className="w-6 h-6 group-hover:translate-x-1 transition-transform duration-300" />
+                </a>
                 
-                <Button 
-                  as={Link}
+                <a 
                   href="/dashboard/demo"
-                  size="lg"
-                  variant="bordered"
-                  className="border-2 border-white/50 text-white font-bold px-12 py-6 text-xl hover:bg-white/10 hover:border-white transition-all duration-300 backdrop-blur-sm group"
-                  startContent={<MessageCircle className="w-6 h-6 group-hover:scale-110 transition-transform duration-300" />}
+                  className="border-2 border-white/50 text-white font-bold px-12 py-6 text-xl hover:bg-white/10 hover:border-white transition-all duration-300 backdrop-blur-sm group rounded-lg inline-flex items-center gap-3"
                 >
+                  <MessageCircle className="w-6 h-6 group-hover:scale-110 transition-transform duration-300" />
                   Ver Demo Web
-                </Button>
+                </a>
               </div>
 
               {/* Enhanced Trust Indicators */}

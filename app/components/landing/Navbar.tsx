@@ -1,349 +1,196 @@
-"use client";
+'use client'
 
-import React from "react";
-import {
-  Navbar,
-  NavbarBrand,
-  NavbarContent,
-  NavbarItem,
-  NavbarMenuToggle,
-  NavbarMenu,
-  NavbarMenuItem,
-  Button,
-  Link,
-  Dropdown,
-  DropdownTrigger,
-  DropdownMenu,
-  DropdownItem,
-  DropdownSection,
-  Chip,
-  Divider,
-  Image
-} from "@heroui/react";
-import { 
-  ChevronDown, 
-  Smartphone, 
-  Award,
-  Zap,
-  BookOpen,
-  HelpCircle,
-  Phone,
-  ExternalLink,
-  Play
-} from "lucide-react";
+import React, { useState, useEffect } from 'react'
+import Link from 'next/link'
+import Image from 'next/image'
 
-const menuItems = [
-  { name: "Inicio", href: "#inicio" },
-  { name: "TiendaFix Para Escritorio", href: "https://tiendafixpe.web.app/", external: true },
-  { name: "Precios", href: "#precios" },
-  { name: "Testimonios", href: "#testimonios" },
-  { name: "Contacto", href: "#contacto" },
-];
+interface NavItem {
+  label: string
+  href: string
+  isNew?: boolean
+}
 
+export function Navbar() {
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
 
+  // Detectar scroll para efectos
+  useEffect(() => {
+    const handleScroll = () => {
+      const isScrolled = window.scrollY > 20
+      setScrolled(isScrolled)
+    }
 
-const resourcesDropdown = [
-  {
-    key: "docs",
-    icon: <BookOpen className="w-5 h-5 text-[#013237]" />,
-    title: "Documentación",
-    description: "Guías y tutoriales completos",
-    href: "/docs"
-  },
-  {
-    key: "help",
-    icon: <HelpCircle className="w-5 h-5 text-[#013237]" />,
-    title: "Centro de Ayuda",
-    description: "Preguntas frecuentes y soporte",
-    href: "/help"
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
+
+  // Items de navegación corregidos según las secciones reales
+  const navItems: NavItem[] = [
+    {
+      label: 'Inicio',
+      href: '#hero'
+    },
+    {
+      label: 'Características',
+      href: '#features'
+    },
+    {
+      label: 'Precios',
+      href: '#precios'
+    },
+    {
+      label: 'Demo',
+      href: '/dashboard/demo',
+      isNew: true
+    }
+  ]
+
+  // Manejar click en items de navegación
+  const handleNavClick = (href: string, e: React.MouseEvent) => {
+    e.preventDefault()
+    setIsMenuOpen(false)
+    
+    if (href.startsWith('#')) {
+      const targetId = href === '#precios' ? 'pricing' : href.substring(1)
+      const element = document.getElementById(targetId) || document.querySelector(href)
+      if (element) {
+        element.scrollIntoView({ 
+          behavior: 'smooth',
+          block: 'start' 
+        })
+      }
+    } else {
+      window.location.href = href
+    }
   }
-  
-];
-
-const companyDropdown = [
-  {
-    key: "about",
-    icon: <Award className="w-5 h-5 text-[#013237]" />,
-    title: "Sobre Nosotros",
-    description: "Nuestra historia",
-    href: "/about"
-  },
-  {
-    key: "contact",
-    icon: <Phone className="w-5 h-5 text-[#013237]" />,
-    title: "Contacto",
-    description: "Habla con nuestro equipo",
-    href: "/contact"
-  }
-];
-
-export function LandingNavbar() {
-  const [isMenuOpen, setIsMenuOpen] = React.useState(false);
 
   return (
-    <Navbar 
-      onMenuOpenChange={setIsMenuOpen}
-      className="bg-[#f0fdf9]/98 backdrop-blur-xl border-b border-[#c0e6ba]/50 shadow-lg sticky top-0 left-0 right-0 z-50"
-      maxWidth="full"
-      height="5rem"
-    >
-      {/* Animated background gradient */}
-      <div className="absolute inset-0 bg-gradient-to-r from-[#eafae7]/30 via-transparent to-[#c0e6ba]/30 opacity-50"></div>
-      
-      <NavbarContent className="relative z-10">
-        <NavbarMenuToggle
-          aria-label={isMenuOpen ? "Close menu" : "Open menu"}
-          className="sm:hidden text-[#4ca771] hover:text-[#013237] transition-colors touch-target touch-feedback"
-        />
-        <NavbarBrand>
-          <div className="flex items-center group cursor-pointer">
+    <nav className={`
+      fixed top-0 left-0 right-0 z-50 transition-all duration-300
+      ${scrolled 
+        ? 'bg-white shadow-lg border-b border-gray-200' 
+        : 'bg-transparent'
+      }
+    `}>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16 lg:h-20">
+          
+          {/* Logo más grande */}
+          <Link href="/" className="flex items-center space-x-3 hover:scale-105 transition-transform duration-200">
             <Image
               src="/pngs/tiendafixlogo.png"
-              alt="TiendaFix V2 Logo"
-              width={160}
-              height={130}
-              className="transform group-hover:scale-110 transition-all duration-300"
+              alt="TiendaFix"
+              width={56}
+              height={56}
+              className="transition-all duration-300"
+              priority
             />
+            <span className="text-2xl font-bold text-gray-900 hidden sm:block">
+              TiendaFix
+            </span>
+          </Link>
+
+          {/* Navegación Desktop */}
+          <div className="hidden lg:flex items-center space-x-8">
+            {navItems.map((item, index) => (
+              <a
+                key={index}
+                href={item.href}
+                onClick={(e) => handleNavClick(item.href, e)}
+                className={`
+                  text-base font-medium transition-colors duration-200
+                  ${scrolled ? 'text-gray-700 hover:text-green-600' : 'text-gray-800 hover:text-green-600'}
+                  ${item.isNew ? 'relative' : ''}
+                `}
+              >
+                {item.label}
+                {item.isNew && (
+                  <span className="absolute -top-2 -right-6 bg-green-500 text-white text-xs px-2 py-1 rounded-full">
+                    Nuevo
+                  </span>
+                )}
+              </a>
+            ))}
           </div>
-        </NavbarBrand>
-      </NavbarContent>
 
-      <NavbarContent className="hidden sm:flex gap-8 relative z-10" justify="center">
-        <NavbarItem>
-          <Link 
-            href="#inicio" 
-            className="text-[#4ca771] hover:text-[#013237] font-medium transition-all duration-300 relative group px-3 py-2 rounded-lg hover:bg-[#eafae7]"
-          >
-            <span className="relative z-10">Inicio</span>
-            <div className="absolute inset-0 bg-gradient-to-r from-[#eafae7] to-[#c0e6ba] rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-          </Link>
-        </NavbarItem>
-        
-        <NavbarItem>
-          <Button
-            as={Link}
-            href="https://tiendafixpe.web.app/"
-            target="_blank"
-            rel="noopener noreferrer"
-            variant="flat"
-            color="default"
-            className="font-medium shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105 bg-gradient-to-r from-[#4ca771] to-[#013237] text-white border-0"
-            endContent={<ExternalLink className="w-4 h-4" />}
-          >
-            TiendaFix Para Escritorio
-          </Button>
-        </NavbarItem>
-
-        <NavbarItem>
-          <Link 
-            href="#precios" 
-            className="text-[#4ca771] hover:text-[#013237] font-medium transition-all duration-300 relative group px-3 py-2 rounded-lg hover:bg-[#eafae7]"
-          >
-            <span className="relative z-10">Precios</span>
-            <div className="absolute inset-0 bg-gradient-to-r from-[#eafae7] to-[#c0e6ba] rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-          </Link>
-        </NavbarItem>
-
-        <Dropdown 
-          backdrop="blur"
-          classNames={{
-            base: "p-0 bg-[#f0fdf9]/95 backdrop-blur-xl",
-            content: "p-0 border-0 shadow-2xl",
-          }}
-        >
-          <NavbarItem>
-            <DropdownTrigger>
-              <Button
-                disableRipple
-                className="p-0 bg-transparent data-[hover=true]:bg-transparent text-[#4ca771] hover:text-[#013237] font-medium transition-all duration-300 relative group px-3 py-2 rounded-lg hover:bg-[#eafae7]"
-                endContent={<ChevronDown className="w-4 h-4 group-hover:rotate-180 transition-transform duration-300" />}
-                radius="sm"
-                variant="light"
-              >
-                <span className="relative z-10">Tutoriales</span>
-                <div className="absolute inset-0 bg-gradient-to-r from-[#eafae7] to-[#c0e6ba] rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-              </Button>
-            </DropdownTrigger>
-          </NavbarItem>
-          <DropdownMenu 
-            aria-label="Recursos"
-            className="w-80 p-2"
-            itemClasses={{
-              base: "gap-4 p-4 data-[hover=true]:bg-gradient-to-r data-[hover=true]:from-[#eafae7] data-[hover=true]:to-[#c0e6ba] rounded-lg margin-2 transition-all duration-300 hover:scale-[1.02] hover:shadow-md",
-              title: "text-[#013237] font-semibold",
-              description: "text-[#4ca771] text-sm"
-            }}
-          >
-            {resourcesDropdown.map((item) => (
-              <DropdownItem
-                key={item.key}
-                description={item.description}
-                startContent={
-                  <div className="w-10 h-10 bg-gradient-to-r from-[#4ca771] to-[#013237] rounded-lg flex items-center justify-center shadow-md">
-                    {item.icon}
-                  </div>
-                }
-                href={item.href}
-                className="text-[#013237]"
-              >
-                {item.title}
-              </DropdownItem>
-            ))}
-          </DropdownMenu>
-        </Dropdown>
-
-        <Dropdown 
-          backdrop="blur"
-          classNames={{
-            base: "p-0 bg-[#f0fdf9]/95 backdrop-blur-xl",
-            content: "p-0 border-0 shadow-2xl",
-          }}
-        >
-          <NavbarItem>
-            <DropdownTrigger>
-              <Button
-                disableRipple
-                className="p-0 bg-transparent data-[hover=true]:bg-transparent text-[#4ca771] hover:text-[#013237] font-medium transition-all duration-300 relative group px-3 py-2 rounded-lg hover:bg-[#eafae7]"
-                endContent={<ChevronDown className="w-4 h-4 group-hover:rotate-180 transition-transform duration-300" />}
-                radius="sm"
-                variant="light"
-              >
-                <span className="relative z-10">Empresa</span>
-                <div className="absolute inset-0 bg-gradient-to-r from-[#eafae7] to-[#c0e6ba] rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-              </Button>
-            </DropdownTrigger>
-          </NavbarItem>
-          <DropdownMenu 
-            aria-label="Empresa"
-            className="w-80 p-2"
-            itemClasses={{
-              base: "gap-4 p-4 data-[hover=true]:bg-gradient-to-r data-[hover=true]:from-[#eafae7] data-[hover=true]:to-[#c0e6ba] rounded-lg margin-2 transition-all duration-300 hover:scale-[1.02] hover:shadow-md",
-              title: "text-[#013237] font-semibold",
-              description: "text-[#4ca771] text-sm"
-            }}
-          >
-            {companyDropdown.map((item) => (
-              <DropdownItem
-                key={item.key}
-                description={item.description}
-                startContent={
-                  <div className="w-10 h-10 bg-gradient-to-r from-[#4ca771] to-[#013237] rounded-lg flex items-center justify-center shadow-md">
-                    {item.icon}
-                  </div>
-                }
-                href={item.href}
-                className="text-[#013237]"
-              >
-                {item.title}
-              </DropdownItem>
-            ))}
-          </DropdownMenu>
-        </Dropdown>
-      </NavbarContent>
-
-      <NavbarContent justify="end" className="relative z-10">
-        <NavbarItem className="hidden lg:flex">
-          <Button
-            as={Link}
-            href="/auth/login"
-            variant="light"
-            className="text-[#4ca771] hover:text-[#013237] font-medium transition-all duration-300 relative group px-4 py-2 rounded-lg hover:bg-[#eafae7]"
-          >
-            <span className="relative z-10">Iniciar Sesión</span>
-            <div className="absolute inset-0 bg-gradient-to-r from-[#eafae7] to-[#c0e6ba] rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-          </Button>
-        </NavbarItem>
-        <NavbarItem className="hidden md:flex">
-          <Button
-            as={Link}
-            href="/dashboard/demo"
-            variant="flat"
-            className="text-[#013237] hover:text-[#4ca771] font-medium transition-all duration-300 relative group px-4 py-2 rounded-lg bg-[#eafae7] hover:bg-[#c0e6ba]"
-            startContent={<Play className="w-4 h-4 group-hover:scale-110 transition-transform duration-300" />}
-          >
-            <span className="relative z-10">Ver Demo</span>
-          </Button>
-        </NavbarItem>
-        <NavbarItem>
-          <Button 
-            as={Link} 
-            href="/auth/register" 
-            className="bg-gradient-to-r from-[#4ca771] to-[#013237] text-white font-semibold px-8 py-3 shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300 relative overflow-hidden group border-0"
-            endContent={<Zap className="w-4 h-4 group-hover:rotate-12 transition-transform duration-300" />}
-          >
-            <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-            <span className="relative z-10">Registrate ahora</span>
-          </Button>
-        </NavbarItem>
-      </NavbarContent>
-
-      <NavbarMenu className="bg-[#f0fdf9]/98 backdrop-blur-xl border-r border-[#c0e6ba]/50 shadow-2xl">
-        {/* Mobile Menu Background */}
-        <div className="absolute inset-0 bg-gradient-to-b from-[#eafae7]/30 via-transparent to-[#c0e6ba]/30 opacity-50"></div>
-        
-        <div className="flex flex-col gap-3 pt-8 px-2 relative z-10">
-          {menuItems.map((item, index) => (
-            <NavbarMenuItem key={`${item.name}-${index}`}>
-                          <Link
-              className="w-full text-[#4ca771] hover:text-[#013237] font-medium py-4 px-4 rounded-lg transition-all duration-300 hover:bg-gradient-to-r hover:from-[#eafae7] hover:to-[#c0e6ba] hover:shadow-md group"
-              href={item.href}
-              size="lg"
-              target={item.external ? "_blank" : undefined}
-              rel={item.external ? "noopener noreferrer" : undefined}
-            >
-              <div className="flex items-center gap-3">
-                <div className="w-2 h-2 bg-[#4ca771] rounded-full group-hover:bg-[#013237] group-hover:scale-150 transition-all duration-300"></div>
-                <span className="flex-1">{item.name}</span>
-                {item.external && <ExternalLink className="w-4 h-4 group-hover:rotate-12 transition-transform duration-300" />}
-              </div>
-            </Link>
-            </NavbarMenuItem>
-          ))}
-          
-          <Divider className="my-6 bg-gradient-to-r from-transparent via-[#c0e6ba] to-transparent" />
-          
-          <NavbarMenuItem>
-            <Button
-              as={Link}
+          {/* Botones de acción */}
+          <div className="hidden lg:flex items-center space-x-4">
+            <Link
               href="/auth/login"
-              variant="light"
-              className="w-full justify-start text-[#4ca771] hover:text-[#013237] font-medium py-4 px-4 rounded-lg transition-all duration-300 hover:bg-gradient-to-r hover:from-[#eafae7] hover:to-[#c0e6ba] hover:shadow-md group"
+              className={`
+                px-4 py-2 text-base font-medium transition-colors duration-200
+                ${scrolled ? 'text-gray-700 hover:text-green-600' : 'text-gray-800 hover:text-green-600'}
+              `}
             >
-              <div className="flex items-center gap-3">
-                <div className="w-2 h-2 bg-[#4ca771] rounded-full group-hover:bg-[#013237] group-hover:scale-150 transition-all duration-300"></div>
-                <span>Iniciar Sesión</span>
-              </div>
-            </Button>
-          </NavbarMenuItem>
-          
-          <NavbarMenuItem>
-            <Button
-              as={Link}
-              href="/dashboard/demo"
-              variant="flat"
-              className="w-full justify-start text-[#013237] hover:text-[#4ca771] font-medium py-4 px-4 rounded-lg transition-all duration-300 hover:bg-gradient-to-r hover:from-[#eafae7] hover:to-[#c0e6ba] hover:shadow-md group bg-[#eafae7]"
-              startContent={<Play className="w-4 h-4 group-hover:scale-110 transition-transform duration-300" />}
+              Iniciar Sesión
+            </Link>
+            <Link
+              href="/auth/register"
+              className="bg-green-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-green-700 transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105"
             >
-              <div className="flex items-center gap-3">
-                <div className="w-2 h-2 bg-[#4ca771] rounded-full group-hover:bg-[#013237] group-hover:scale-150 transition-all duration-300"></div>
-                <span>Ver Demo</span>
-              </div>
-            </Button>
-          </NavbarMenuItem>
-          
-          <NavbarMenuItem>
-            <Button 
-              as={Link} 
-              href="/auth/register" 
-              className="w-full bg-gradient-to-r from-[#4ca771] to-[#013237] text-white font-semibold shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300 py-4 px-6 relative overflow-hidden group border-0"
-              endContent={<Zap className="w-5 h-5 group-hover:rotate-12 transition-transform duration-300" />}
-            >
-              <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-              <span className="relative z-10">Registrarme ahora</span>
-            </Button>
-          </NavbarMenuItem>
+              Registrarse
+            </Link>
+          </div>
+
+          {/* Botón menú móvil */}
+          <button
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            className="lg:hidden p-2 rounded-md text-gray-700 hover:text-gray-900 hover:bg-gray-100 transition-colors duration-200"
+            aria-label={isMenuOpen ? 'Cerrar menú' : 'Abrir menú'}
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              {isMenuOpen ? (
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              ) : (
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              )}
+            </svg>
+          </button>
         </div>
-      </NavbarMenu>
-    </Navbar>
-  );
-} 
+
+        {/* Menú móvil */}
+        {isMenuOpen && (
+          <div className="lg:hidden absolute top-full left-0 right-0 bg-white shadow-lg border-b border-gray-200">
+            <div className="px-4 py-6 space-y-4">
+              {navItems.map((item, index) => (
+                <a
+                  key={index}
+                  href={item.href}
+                  onClick={(e) => handleNavClick(item.href, e)}
+                  className="block text-base font-medium text-gray-700 hover:text-green-600 transition-colors duration-200"
+                >
+                  <span className="flex items-center">
+                    {item.label}
+                    {item.isNew && (
+                      <span className="ml-2 bg-green-500 text-white text-xs px-2 py-1 rounded-full">
+                        Nuevo
+                      </span>
+                    )}
+                  </span>
+                </a>
+              ))}
+              
+              <div className="pt-4 space-y-3 border-t border-gray-200">
+                <Link
+                  href="/auth/login"
+                  className="block text-base font-medium text-gray-700 hover:text-green-600 transition-colors duration-200"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Iniciar Sesión
+                </Link>
+                <Link
+                  href="/auth/register"
+                  className="block bg-green-600 text-white px-4 py-2 rounded-lg font-semibold text-center hover:bg-green-700 transition-colors duration-200"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Registrarse
+                </Link>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+         </nav>
+   )
+ } 

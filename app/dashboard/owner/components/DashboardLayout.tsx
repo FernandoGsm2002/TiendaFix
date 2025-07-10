@@ -1,124 +1,270 @@
 'use client'
 
-import { useState } from 'react'
-import { useAuth } from '@/lib/auth/auth-context'
-import Sidebar from './Sidebar'
+import React, { useState, useEffect } from 'react'
+import { useRouter, usePathname } from 'next/navigation'
 import Header from './Header'
-import { Spinner, Card, CardBody, Button } from '@heroui/react'
-import { Menu, X } from 'lucide-react'
-import { useTranslations } from '@/lib/contexts/TranslationContext'
+import Sidebar from './Sidebar'
+import { Container, DashboardContainer, MobileNavContainer } from '@/app/components/ui/Container'
+import { useBreakpoint, useIsTouchDevice, useUserPreferences } from '@/lib/hooks/useBreakpoint'
+import { useNavigationLayout } from '@/lib/hooks/useAdaptiveGrid'
+import { Button, Divider } from '@heroui/react'
 
 interface DashboardLayoutProps {
   children: React.ReactNode
 }
 
-export default function DashboardLayout({ children }: DashboardLayoutProps) {
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const { loading, isOwner } = useAuth()
-  const { t } = useTranslations()
+export function DashboardLayout({ children }: DashboardLayoutProps) {
+  const { isMobile, isTablet, isDesktop, isClient, windowSize } = useBreakpoint()
+  const isTouchDevice = useIsTouchDevice()
+  const { reducedMotion } = useUserPreferences()
+  const navigationLayout = useNavigationLayout()
+  
+  const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [isLoaded, setIsLoaded] = useState(false)
+  const pathname = usePathname()
 
-  const handleToggleSidebar = () => {
-    setSidebarCollapsed(!sidebarCollapsed)
-  }
+  // Auto-cerrar sidebar en móvil cuando cambia la ruta
+  useEffect(() => {
+    if (isMobile) {
+      setSidebarOpen(false)
+    }
+  }, [pathname, isMobile])
 
-  const handleMobileMenuToggle = () => {
-    setMobileMenuOpen(!mobileMenuOpen)
-  }
+  // Configurar estado inicial del sidebar
+  useEffect(() => {
+    if (isClient) {
+      // En desktop, sidebar abierto por defecto si hay suficiente espacio
+      if (isDesktop && windowSize.width >= 1200) {
+        setSidebarOpen(true)
+      } else if (isTablet && windowSize.width >= 900) {
+        setSidebarOpen(true)
+      } else {
+        setSidebarOpen(false)
+      }
+      setIsLoaded(true)
+    }
+  }, [isClient, isDesktop, isTablet, windowSize.width])
 
-  const closeMobileMenu = () => {
-    setMobileMenuOpen(false)
-  }
+  // Auto-colapsar sidebar en pantallas medianas
+  useEffect(() => {
+    if (isDesktop && windowSize.width < 1200 && windowSize.width >= 1024) {
+      setSidebarOpen(false)
+    } else if (isTablet && windowSize.width < 900) {
+      setSidebarOpen(false)
+    }
+  }, [windowSize.width, isDesktop, isTablet])
 
-  if (loading) {
+  if (!isClient || !isLoaded) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-purple-50 p-4">
-        <Card className="w-full max-w-sm">
-          <CardBody className="text-center p-8">
-            <Spinner size="lg" color="primary" />
-            <p className="mt-4 text-gray-600 font-medium">{t('common.loading')}</p>
-          </CardBody>
-        </Card>
-      </div>
-    )
-  }
-
-  if (!isOwner) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-red-50 via-white to-orange-50 p-4">
-        <Card className="w-full max-w-md border border-red-200">
-          <CardBody className="text-center p-8">
-            <div className="text-red-500 text-4xl mb-4">🚫</div>
-            <h1 className="text-xl md:text-2xl font-bold text-gray-900 mb-2">Acceso Denegado</h1>
-            <p className="text-gray-600 mb-6 text-sm md:text-base">No tienes permisos para acceder a esta sección.</p>
-            <button 
-              onClick={() => window.history.back()}
-              className="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 transition-colors font-medium text-sm md:text-base"
-            >
-              Volver
-            </button>
-          </CardBody>
-        </Card>
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#f0fdf9] via-[#eafae7]/50 to-[#f0fdf9]">
-
-      {/* Sidebar Móvil (Drawer) - Optimizado para táctil */}
-      {mobileMenuOpen && (
+    <div className={`
+      min-h-screen bg-gray-50 dark:bg-gray-900
+      transition-colors duration-300 ease-smooth
+      ${!reducedMotion ? 'animate-fade-in' : ''}
+    `}>
+      
+            {/* Sidebar Móvil (Drawer) - Funcional para hamburguesa */}
+      {sidebarOpen && isMobile && (
         <div className="fixed inset-0 z-40 lg:hidden">
           {/* Área de fondo clickeable para cerrar */}
           <div 
             className="absolute inset-0 bg-black/40 backdrop-blur-sm"
-            onClick={closeMobileMenu}
+            onClick={() => setSidebarOpen(false)}
           />
           
           {/* Sidebar */}
           <div className="absolute top-0 left-0 h-full w-80 transform transition-transform duration-300 ease-in-out">
-            <Card className="h-full shadow-2xl border-0 bg-white rounded-none rounded-r-xl">
-              <CardBody className="p-0 h-full relative">
+            <div className="h-full shadow-2xl border-0 bg-white rounded-none rounded-r-xl">
+              <div className="p-0 h-full relative">
                 <Sidebar 
                   isCollapsed={false}
-                  onToggleCollapse={handleToggleSidebar}
-                  onMobileMenuClose={closeMobileMenu}
+                  onToggleCollapse={() => setSidebarOpen(!sidebarOpen)}
+                  onMobileMenuClose={() => setSidebarOpen(false)}
                 />
-              </CardBody>
-            </Card>
+              </div>
+            </div>
           </div>
         </div>
       )}
 
-      <div className="min-h-screen max-w-screen-2xl mx-auto p-2 md:p-4">
-        <div className="h-screen flex gap-2 md:gap-4">
-          {/* Sidebar Desktop */}
-          <div className="hidden lg:flex flex-shrink-0">
-            <Card className="h-full shadow-xl border-0 bg-white/80 backdrop-blur-sm">
-              <CardBody className="p-0 h-full">
-                <Sidebar 
-                  isCollapsed={sidebarCollapsed}
-                  onToggleCollapse={handleToggleSidebar}
-                />
-              </CardBody>
-            </Card>
-          </div>
-          
-          {/* Contenido principal */}
-          <div className="flex-1 flex flex-col gap-2 md:gap-4">
-            <Header 
-              onMobileMenuToggle={handleMobileMenuToggle}
-              mobileMenuOpen={mobileMenuOpen}
+      {/* Layout Principal */}
+      <div className="flex h-screen overflow-hidden bg-gray-50 dark:bg-gray-900">
+        
+        {/* Sidebar Desktop */}
+        {!isMobile && (
+          <div className={`
+            relative flex-shrink-0 z-30
+            transition-all duration-300 ease-smooth
+            ${sidebarOpen 
+              ? (isDesktop ? 'w-72' : 'w-64') 
+              : 'w-16'
+            }
+            ${isTablet && 'shadow-xl'}
+            border-r border-gray-200 dark:border-gray-700
+          `}>
+            <Sidebar 
+              isCollapsed={!sidebarOpen} 
+              onToggleCollapse={() => setSidebarOpen(!sidebarOpen)}
             />
-            
-            <Card className="flex-1 shadow-xl border-0 bg-gradient-to-br from-[#f0fdf9]/95 to-[#eafae7]/80 backdrop-blur-sm">
-              <CardBody className="p-3 md:p-6 h-full overflow-y-auto">
-                {children}
-              </CardBody>
-            </Card>
           </div>
+        )}
+
+        {/* Overlay para tablet cuando sidebar está abierto */}
+        {isTablet && sidebarOpen && (
+          <div 
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-20 lg:hidden"
+            onClick={() => setSidebarOpen(false)}
+          />
+        )}
+
+        {/* Contenido Principal con separación */}
+        <div className={`
+          flex-1 flex flex-col overflow-hidden
+          ${!isMobile ? 'ml-1' : ''}
+        `}>
+          
+          {/* Header con separación */}
+          <div className={`
+            flex-shrink-0 z-20
+            ${isMobile ? 'sticky top-0' : 'relative'}
+            bg-white dark:bg-gray-800
+            border-b border-gray-200 dark:border-gray-700
+            ${!isMobile ? 'mx-2 mt-2 rounded-t-lg shadow-sm' : ''}
+          `}>
+            <Header 
+              onMobileMenuToggle={() => setSidebarOpen(!sidebarOpen)}
+              mobileMenuOpen={sidebarOpen}
+            />
+          </div>
+
+          {/* Área de Contenido con espaciado optimizado */}
+          <main className={`
+            flex-1 overflow-auto
+            ${!reducedMotion ? 'animate-slide-up' : ''}
+            ${!isMobile ? 'bg-white dark:bg-gray-800 m-2 mt-0 rounded-b-lg shadow-sm' : 'bg-gray-50 dark:bg-gray-900'}
+          `}>
+            {/* Container responsivo optimizado */}
+            <div className={`
+              ${isMobile ? 'p-4' : isTablet ? 'p-6' : 'p-8'}
+              ${!isMobile ? 'pt-6' : 'pt-4'}
+              min-h-full
+            `}>
+              
+              {/* Breadcrumb compacto - solo en desktop */}
+              {!isMobile && pathname.split('/').filter(Boolean).length > 2 && (
+                <div className="mb-4">
+                  <nav className="flex" aria-label="Breadcrumb">
+                    <ol className="inline-flex items-center space-x-1 md:space-x-2">
+                      <li className="inline-flex items-center">
+                        <span className="text-sm text-gray-500 dark:text-gray-400">
+                          Dashboard
+                        </span>
+                      </li>
+                      <li>
+                        <div className="flex items-center">
+                          <svg className="w-3 h-3 text-gray-400 mx-1" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                          </svg>
+                          <span className="text-sm text-gray-700 dark:text-gray-300 capitalize">
+                            {pathname.split('/')[3]?.replace('-', ' ')}
+                          </span>
+                        </div>
+                      </li>
+                    </ol>
+                  </nav>
+                </div>
+              )}
+
+              {/* Contenido dinámico */}
+              <div className={`
+                transition-all duration-300 ease-smooth
+                ${!reducedMotion ? 'animate-fade-in' : ''}
+                ${!isMobile ? 'space-y-6' : 'space-y-4'}
+              `}>
+                {children}
+              </div>
+            </div>
+          </main>
         </div>
       </div>
+
+      {/* Indicador de conexión (opcional) */}
+      {isClient && (
+        <div className="fixed bottom-4 right-4 z-50 transition-all duration-300 ease-smooth">
+          <div className={`
+            flex items-center gap-2 px-3 py-2 rounded-full
+            bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200
+            border border-green-200 dark:border-green-700
+            shadow-sm text-xs font-medium
+            ${!reducedMotion ? 'animate-fade-in' : ''}
+          `}>
+            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+            En línea
+          </div>
+        </div>
+      )}
+
+      {/* Efectos de carga y transiciones suaves */}
+      <style jsx global>{`
+        /* Smooth scroll para toda la aplicación */
+        html {
+          scroll-behavior: ${reducedMotion ? 'auto' : 'smooth'};
+        }
+        
+        /* Optimizaciones para touch devices */
+        @media (hover: none) and (pointer: coarse) {
+          .hover\\:scale-105:hover {
+            transform: none;
+          }
+          
+          .hover\\:shadow-lg:hover {
+            box-shadow: none;
+          }
+        }
+        
+        /* Transiciones optimizadas */
+        * {
+          transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow, transform;
+          transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+          transition-duration: ${reducedMotion ? '0ms' : '150ms'};
+        }
+        
+        /* Mejores scrollbars */
+        ::-webkit-scrollbar {
+          width: 6px;
+          height: 6px;
+        }
+        
+        ::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+          background: rgb(203 213 225 / 0.5);
+          border-radius: 3px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+          background: rgb(203 213 225 / 0.8);
+        }
+        
+        /* Dark mode scrollbars */
+        .dark ::-webkit-scrollbar-thumb {
+          background: rgb(75 85 99 / 0.5);
+        }
+        
+        .dark ::-webkit-scrollbar-thumb:hover {
+          background: rgb(75 85 99 / 0.8);
+        }
+      `}</style>
     </div>
   )
-} 
+}
+
+export default DashboardLayout 

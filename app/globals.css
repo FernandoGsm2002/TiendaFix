@@ -2,126 +2,614 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ===== VARIABLES CSS MODERNAS ===== */
 :root {
-  --foreground: #000000;
+  /* Colores del sistema */
   --background: #ffffff;
+  --foreground: #171717;
+  
+  /* Paleta primaria verde profesional */
+  --primary-50: #f0fdf9;
+  --primary-100: #eafae7;
+  --primary-200: #c0e6ba;
+  --primary-300: #4ca771;
+  --primary-400: #22c55e;
+  --primary-500: #16a34a;
+  --primary-600: #15803d;
+  --primary-700: #166534;
+  --primary-800: #014737;
+  --primary-900: #013237;
+  
+  /* Grises modernos */
+  --gray-25: #fcfcfd;
+  --gray-50: #f9fafb;
+  --gray-100: #f3f4f6;
+  --gray-200: #e5e7eb;
+  --gray-300: #d1d5db;
+  --gray-400: #9ca3af;
+  --gray-500: #6b7280;
+  --gray-600: #4b5563;
+  --gray-700: #374151;
+  --gray-800: #1f2937;
+  --gray-900: #111827;
+  --gray-925: #0c1219;
+  --gray-950: #030712;
+  
+  /* Espaciado fluido responsive */
+  --spacing-fluid-xs: clamp(0.25rem, 0.2rem + 0.25vw, 0.5rem);
+  --spacing-fluid-sm: clamp(0.5rem, 0.4rem + 0.5vw, 1rem);
+  --spacing-fluid-md: clamp(1rem, 0.8rem + 1vw, 2rem);
+  --spacing-fluid-lg: clamp(1.5rem, 1.2rem + 1.5vw, 3rem);
+  --spacing-fluid-xl: clamp(2rem, 1.6rem + 2vw, 4rem);
+  --spacing-fluid-2xl: clamp(2.5rem, 2rem + 2.5vw, 5rem);
+  --spacing-fluid-3xl: clamp(3rem, 2.4rem + 3vw, 6rem);
+  
+  /* Container padding responsive */
+  --container-xs: clamp(1rem, 4vw, 1.5rem);
+  --container-sm: clamp(1.5rem, 5vw, 2rem);
+  --container-md: clamp(2rem, 6vw, 3rem);
+  --container-lg: clamp(2.5rem, 8vw, 4rem);
+  
+  /* Tipografía fluida */
+  --text-fluid-xs: clamp(0.75rem, 0.7rem + 0.25vw, 0.875rem);
+  --text-fluid-sm: clamp(0.875rem, 0.8rem + 0.375vw, 1rem);
+  --text-fluid-base: clamp(1rem, 0.9rem + 0.5vw, 1.125rem);
+  --text-fluid-lg: clamp(1.125rem, 1rem + 0.625vw, 1.25rem);
+  --text-fluid-xl: clamp(1.25rem, 1.1rem + 0.75vw, 1.5rem);
+  --text-fluid-2xl: clamp(1.5rem, 1.3rem + 1vw, 2rem);
+  --text-fluid-3xl: clamp(1.875rem, 1.6rem + 1.375vw, 2.5rem);
+  --text-fluid-4xl: clamp(2.25rem, 1.9rem + 1.75vw, 3rem);
+  --text-fluid-5xl: clamp(3rem, 2.5rem + 2.5vw, 4rem);
+  
+  /* Sombras modernas */
+  --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+  --shadow-card: 0 4px 6px -1px rgb(0 0 0 / 0.07), 0 2px 4px -1px rgb(0 0 0 / 0.06);
+  --shadow-card-hover: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -2px rgb(0 0 0 / 0.05);
+  --shadow-glow: 0 0 20px rgb(34 197 94 / 0.3);
+  --shadow-glow-lg: 0 0 40px rgb(34 197 94 / 0.4);
+  --shadow-float: 0 8px 32px rgb(0 0 0 / 0.12);
+  
+  /* Timing functions modernos */
+  --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-bounce-soft: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  
+  /* Safe areas para dispositivos móviles */
+  --safe-area-inset-top: env(safe-area-inset-top);
+  --safe-area-inset-right: env(safe-area-inset-right);
+  --safe-area-inset-bottom: env(safe-area-inset-bottom);
+  --safe-area-inset-left: env(safe-area-inset-left);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground: #ffffff;
-    --background: #000000;
-  }
+/* ===== TEMA OSCURO ===== */
+.dark {
+  --background: #030712;
+  --foreground: #f9fafb;
+  
+  /* Ajustar sombras para tema oscuro */
+  --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+  --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.4), 0 1px 2px -1px rgb(0 0 0 / 0.4);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4), 0 2px 4px -2px rgb(0 0 0 / 0.4);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.4), 0 4px 6px -4px rgb(0 0 0 / 0.4);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.5), 0 8px 10px -6px rgb(0 0 0 / 0.4);
+  --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.6);
+  --shadow-card: 0 4px 6px -1px rgb(0 0 0 / 0.3), 0 2px 4px -1px rgb(0 0 0 / 0.2);
+  --shadow-card-hover: 0 10px 15px -3px rgb(0 0 0 / 0.4), 0 4px 6px -2px rgb(0 0 0 / 0.3);
+  --shadow-glow: 0 0 20px rgb(34 197 94 / 0.4);
+  --shadow-glow-lg: 0 0 40px rgb(34 197 94 / 0.5);
+}
+
+/* ===== ESTILOS BASE MODERNOS ===== */
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+html {
+  /* Mejoras para smooth scroll */
+  scroll-behavior: smooth;
+  scroll-padding-top: 2rem;
+  
+  /* Optimizaciones de rendering */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  
+  /* Prevenir zoom en inputs en iOS */
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
   
-  /* Optimizaciones móviles */
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-rendering: optimizeLegibility;
+  /* Tipografía fluida base */
+  font-size: var(--text-fluid-base);
+  line-height: 1.6;
   
-  /* Prevenir rebote en iOS */
-  overscroll-behavior: none;
+  /* Mejor scrolling en dispositivos táctiles */
   -webkit-overflow-scrolling: touch;
   
-  /* Mejorar rendimiento en móviles */
-  -webkit-transform: translate3d(0, 0, 0);
-  transform: translate3d(0, 0, 0);
+  /* Optimizaciones para rendimiento */
+  font-feature-settings: 'kern' 1, 'liga' 1, 'calt' 1;
+  text-rendering: optimizeSpeed;
 }
 
-/* Estilos específicos para dispositivos táctiles */
+/* ===== OPTIMIZACIONES PARA DISPOSITIVOS TÁCTILES ===== */
 @media (hover: none) and (pointer: coarse) {
-  /* Mejorar interacciones táctiles */
+  /* Deshabilitar hover effects en touch devices */
+  .hover\:scale-105:hover {
+    transform: none !important;
+  }
+  
+  .hover\:shadow-lg:hover {
+    box-shadow: var(--shadow-md) !important;
+  }
+  
+  .hover\:shadow-card-hover:hover {
+    box-shadow: var(--shadow-card) !important;
+  }
+  
+  /* Aumentar áreas táctiles */
   button, 
-  [role="button"], 
-  input[type="button"], 
-  input[type="submit"], 
-  .cursor-pointer {
-    cursor: default;
-    -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
-    tap-highlight-color: rgba(0, 0, 0, 0.1);
-  }
-  
-  /* Feedback táctil mejorado */
-  .touch-feedback {
-    transition: all 0.15s ease;
-  }
-  
-  .touch-feedback:active {
-    transform: scale(0.98);
-    opacity: 0.8;
-  }
-}
-
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
-  
-  /* Line clamp utilities for dashboard cards */
-  .line-clamp-1 {
-    overflow: hidden;
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 1;
-  }
-  
-  .line-clamp-2 {
-    overflow: hidden;
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
-  }
-  
-  .line-clamp-3 {
-    overflow: hidden;
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 3;
-  }
-  
-  /* Dashboard card animations */
-  .card-hover {
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-  
-  .card-hover:hover {
-    transform: translateY(-4px) scale(1.02);
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-  }
-  
-  /* Optimizaciones móviles */
-  .mobile-optimized {
-    -webkit-overflow-scrolling: touch;
-    overscroll-behavior: contain;
-  }
-  
-  /* Área táctil mínima */
-  .touch-target {
+  a,
+  [role="button"],
+  input[type="submit"],
+  input[type="button"] {
     min-height: 44px;
     min-width: 44px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
   }
   
-  /* Scroll suave en móviles */
-  .smooth-scroll {
-    scroll-behavior: smooth;
-    -webkit-overflow-scrolling: touch;
+  /* Mejorar feedback táctil */
+  button:active,
+  [role="button"]:active {
+    transform: scale(0.98);
+    transition: transform 0.1s ease;
+  }
+}
+
+/* ===== SCROLLBARS MODERNOS ===== */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgb(203 213 225 / 0.5);
+  border-radius: 3px;
+  transition: background-color 0.2s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgb(203 213 225 / 0.8);
+}
+
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* Scrollbars para tema oscuro */
+.dark ::-webkit-scrollbar-thumb {
+  background: rgb(75 85 99 / 0.5);
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: rgb(75 85 99 / 0.8);
+}
+
+/* ===== UTILIDADES MODERNAS ===== */
+.container-fluid {
+  width: 100%;
+  padding-left: var(--container-xs);
+  padding-right: var(--container-xs);
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 100%;
+}
+
+@media (min-width: 640px) {
+  .container-fluid {
+    padding-left: var(--container-sm);
+    padding-right: var(--container-sm);
+  }
+}
+
+@media (min-width: 768px) {
+  .container-fluid {
+    padding-left: var(--container-md);
+    padding-right: var(--container-md);
+  }
+}
+
+@media (min-width: 1024px) {
+  .container-fluid {
+    padding-left: var(--container-lg);
+    padding-right: var(--container-lg);
+  }
+}
+
+/* ===== ANIMACIONES OPTIMIZADAS ===== */
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.animate-fade-out {
+  animation: fadeOut 0.3s ease-in;
+}
+
+.animate-slide-up {
+  animation: slideUp 0.3s ease-out;
+}
+
+.animate-slide-down {
+  animation: slideDown 0.3s ease-out;
+}
+
+.animate-slide-left {
+  animation: slideLeft 0.3s ease-out;
+}
+
+.animate-slide-right {
+  animation: slideRight 0.3s ease-out;
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.2s ease-out;
+}
+
+.animate-scale-out {
+  animation: scaleOut 0.2s ease-in;
+}
+
+.animate-bounce-soft {
+  animation: bounceSoft 0.6s ease-out;
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-pulse-slow {
+  animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.animate-wiggle {
+  animation: wiggle 1s ease-in-out infinite;
+}
+
+/* ===== KEYFRAMES ===== */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(10px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideDown {
+  from {
+    transform: translateY(-10px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideLeft {
+  from {
+    transform: translateX(10px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideRight {
+  from {
+    transform: translateX(-10px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes scaleOut {
+  from {
+    transform: scale(1);
+    opacity: 1;
+  }
+  to {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+}
+
+@keyframes bounceSoft {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes wiggle {
+  0%, 100% {
+    transform: rotate(-3deg);
+  }
+  50% {
+    transform: rotate(3deg);
+  }
+}
+
+/* ===== ASPECTOS RATIO MODERNOS ===== */
+.aspect-card {
+  aspect-ratio: 3 / 4;
+}
+
+.aspect-hero {
+  aspect-ratio: 16 / 9;
+}
+
+.aspect-square {
+  aspect-ratio: 1 / 1;
+}
+
+/* ===== SAFE AREAS PARA MÓVILES ===== */
+.safe-area-top {
+  padding-top: var(--safe-area-inset-top);
+}
+
+.safe-area-bottom {
+  padding-bottom: var(--safe-area-inset-bottom);
+}
+
+.safe-area-left {
+  padding-left: var(--safe-area-inset-left);
+}
+
+.safe-area-right {
+  padding-right: var(--safe-area-inset-right);
+}
+
+.safe-area-all {
+  padding: var(--safe-area-inset-top) var(--safe-area-inset-right) var(--safe-area-inset-bottom) var(--safe-area-inset-left);
+}
+
+/* ===== OPTIMIZACIONES DE PERFORMANCE ===== */
+.gpu-accelerated {
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+.will-change-transform {
+  will-change: transform;
+}
+
+.will-change-auto {
+  will-change: auto;
+}
+
+/* ===== MEJORAS PARA ACCESIBILIDAD ===== */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
   
-  /* Padding seguro para notch */
-  .safe-padding {
-    padding-top: env(safe-area-inset-top);
-    padding-bottom: env(safe-area-inset-bottom);
-    padding-left: env(safe-area-inset-left);
-    padding-right: env(safe-area-inset-right);
+  .animate-pulse,
+  .animate-spin,
+  .animate-bounce,
+  .animate-float,
+  .animate-pulse-slow {
+    animation: none !important;
   }
-} 
+}
+
+@media (prefers-contrast: high) {
+  :root {
+    --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+    --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.4), 0 1px 2px -1px rgb(0 0 0 / 0.3);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4), 0 2px 4px -2px rgb(0 0 0 / 0.3);
+  }
+}
+
+/* ===== FOCUS STATES MODERNOS ===== */
+.focus-visible {
+  outline: 2px solid var(--primary-500);
+  outline-offset: 2px;
+}
+
+button:focus-visible,
+[role="button"]:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--primary-500);
+  outline-offset: 2px;
+}
+
+/* ===== MEJORAS PARA PRINT ===== */
+@media print {
+  *,
+  *::before,
+  *::after {
+    background: transparent !important;
+    color: black !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+  
+  .no-print {
+    display: none !important;
+  }
+  
+  body {
+    font-size: 12pt;
+    line-height: 1.4;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    page-break-after: avoid;
+  }
+  
+  p, blockquote {
+    orphans: 3;
+    widows: 3;
+  }
+  
+  blockquote, pre {
+    page-break-inside: avoid;
+  }
+}
+
+/* ===== GRID BACKGROUND PATTERN ===== */
+.bg-grid-pattern {
+  background-image: radial-gradient(circle at 1px 1px, rgb(34 197 94 / 0.15) 1px, transparent 0);
+  background-size: 50px 50px;
+}
+
+/* ===== BACKDROP BLUR UTILITIES ===== */
+.backdrop-blur-xs {
+  backdrop-filter: blur(2px);
+}
+
+.backdrop-blur-4xl {
+  backdrop-filter: blur(72px);
+}
+
+/* ===== TOUCH ACTION UTILITIES ===== */
+.touch-pan-x {
+  touch-action: pan-x;
+}
+
+.touch-pan-y {
+  touch-action: pan-y;
+}
+
+.touch-none {
+  touch-action: none;
+}
+
+/* ===== LOADING STATES ===== */
+.loading-skeleton {
+  background: linear-gradient(
+    110deg,
+    var(--gray-200) 8%,
+    var(--gray-100) 18%,
+    var(--gray-200) 33%
+  );
+  background-size: 200% 100%;
+  animation: loading-skeleton 1.5s ease-in-out infinite;
+}
+
+.dark .loading-skeleton {
+  background: linear-gradient(
+    110deg,
+    var(--gray-800) 8%,
+    var(--gray-700) 18%,
+    var(--gray-800) 33%
+  );
+  background-size: 200% 100%;
+}
+
+@keyframes loading-skeleton {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* ===== ERROR BOUNDARIES Y ESTADOS ===== */
+.error-boundary {
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  padding: var(--spacing-fluid-lg);
+  border: 2px dashed var(--gray-300);
+  border-radius: 12px;
+  background: var(--gray-50);
+}
+
+.dark .error-boundary {
+  border-color: var(--gray-700);
+  background: var(--gray-900);
+}
+
+/* ===== RESPONSIVE TYPOGRAPHY SCALE ===== */
+.text-fluid-xs { font-size: var(--text-fluid-xs); }
+.text-fluid-sm { font-size: var(--text-fluid-sm); }
+.text-fluid-base { font-size: var(--text-fluid-base); }
+.text-fluid-lg { font-size: var(--text-fluid-lg); }
+.text-fluid-xl { font-size: var(--text-fluid-xl); }
+.text-fluid-2xl { font-size: var(--text-fluid-2xl); }
+.text-fluid-3xl { font-size: var(--text-fluid-3xl); }
+.text-fluid-4xl { font-size: var(--text-fluid-4xl); }
+.text-fluid-5xl { font-size: var(--text-fluid-5xl); } 
