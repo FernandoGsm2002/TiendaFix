@@ -361,7 +361,8 @@
     "COP": "Peso Colombiano",
     "BRL": "Real Brasileiro",
     "MXN": "Peso Mexicano",
-    "USD": "Dólar Americano"
+    "USD": "Dólar Americano",
+    "CRC": "Colón Costa-riquenho"
   },
   "filters": {
     "all": "Todos",

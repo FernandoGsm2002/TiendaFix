@@ -93,7 +93,7 @@ export function LandingNavbar() {
       <NavbarContent className="relative z-10">
         <NavbarMenuToggle
           aria-label={isMenuOpen ? "Close menu" : "Open menu"}
-          className="sm:hidden text-[#4ca771] hover:text-[#013237] transition-colors"
+          className="sm:hidden text-[#4ca771] hover:text-[#013237] transition-colors touch-target touch-feedback"
         />
         <NavbarBrand>
           <div className="flex items-center group cursor-pointer">

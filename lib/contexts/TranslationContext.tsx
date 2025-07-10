@@ -155,7 +155,8 @@ export function TranslationProvider({ children }: TranslationProviderProps) {
         COP: 'Peso Colombiano', 
         BRL: 'Real Brasileño',
         MXN: 'Peso Mexicano',
-        USD: 'Dólar Americano'
+        USD: 'Dólar Americano',
+        CRC: 'Colón Costarricense'
       },
       en: {
         PEN: 'Peruvian Sol',
@@ -163,7 +164,8 @@ export function TranslationProvider({ children }: TranslationProviderProps) {
         COP: 'Colombian Peso',
         BRL: 'Brazilian Real', 
         MXN: 'Mexican Peso',
-        USD: 'US Dollar'
+        USD: 'US Dollar',
+        CRC: 'Costa Rican Colón'
       },
       pt: {
         PEN: 'Sol Peruano',
@@ -171,7 +173,8 @@ export function TranslationProvider({ children }: TranslationProviderProps) {
         COP: 'Peso Colombiano',
         BRL: 'Real Brasileiro',
         MXN: 'Peso Mexicano', 
-        USD: 'Dólar Americano'
+        USD: 'Dólar Americano',
+        CRC: 'Colón Costa-riquenho'
       }
     }
     

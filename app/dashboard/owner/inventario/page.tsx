@@ -581,11 +581,11 @@ export default function InventarioPage() {
                   popoverContent: "bg-white",
                 }}
               >
-                                  <SelectItem key="todas" className="text-gray-900">{t('inventory.allCategories')}</SelectItem>
-                <SelectItem key="Repuestos" className="text-gray-900">Repuestos</SelectItem>
-                <SelectItem key="Accesorios" className="text-gray-900">Accesorios</SelectItem>
-                <SelectItem key="Dispositivos" className="text-gray-900">Dispositivos</SelectItem>
-                <SelectItem key="Herramientas" className="text-gray-900">Herramientas</SelectItem>
+                {categorias.map(categoria => (
+                  <SelectItem key={categoria} className="text-gray-900">
+                    {categoria === 'todas' ? t('inventory.allCategories') : categoria.charAt(0).toUpperCase() + categoria.slice(1)}
+                  </SelectItem>
+                ))}
               </Select>
               <Select
                 placeholder="Estado de Stock"
@@ -691,11 +691,6 @@ export default function InventarioPage() {
                             <span className={`text-sm ${textColors.secondary}`}>Venta:</span>
                             <span className="text-sm font-medium text-green-600">{formatCurrency(item.enduser_price)}</span>
                           </div>
-                          {item.unit_cost && item.enduser_price && (
-                            <Chip size="sm" color="success" variant="flat">
-                              {calculateMargin(item.unit_cost, item.enduser_price)}
-                            </Chip>
-                          )}
                         </div>
                       </TableCell>
                       <TableCell>
@@ -882,13 +877,6 @@ export default function InventarioPage() {
                               </p>
                             </div>
                           </div>
-                          {item.unit_cost && item.enduser_price && (
-                            <div className="mt-3">
-                              <Chip size="sm" color="success" variant="flat">
-                                {t('inventory.margin')}: {calculateMargin(item.unit_cost, item.enduser_price)}
-                              </Chip>
-                            </div>
-                          )}
                         </div>
 
                         {/* Acciones */}
@@ -1189,6 +1177,23 @@ export default function InventarioPage() {
                       <p className={`text-sm md:text-base font-bold ${textColors.primary}`}>{selectedItem.min_stock}</p>
                     </div>
                   </div>
+                  
+                  {/* Margen de Ganancia */}
+                  {selectedItem.unit_cost && selectedItem.enduser_price && (
+                    <div className="bg-green-50 rounded-lg p-4 border border-green-200">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className={`text-xs md:text-sm font-medium text-green-800`}>Margen de Ganancia</p>
+                          <p className="text-xs text-green-600">
+                            Diferencia entre precio de venta y costo
+                          </p>
+                        </div>
+                        <Chip color="success" variant="flat" size="md" className="font-bold">
+                          {calculateMargin(selectedItem.unit_cost, selectedItem.enduser_price)}
+                        </Chip>
+                      </div>
+                    </div>
+                  )}
                 </ModalBody>
                 <ModalFooter className="gap-2">
                   <Button variant="flat" onPress={onDetailClose} size="sm">{t('common.close')}</Button>

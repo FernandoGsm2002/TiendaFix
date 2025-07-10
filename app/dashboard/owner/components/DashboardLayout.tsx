@@ -66,12 +66,12 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#f0fdf9] via-[#eafae7]/50 to-[#f0fdf9]">
 
-      {/* Sidebar Móvil (Drawer) - Sin overlay problemático */}
+      {/* Sidebar Móvil (Drawer) - Optimizado para táctil */}
       {mobileMenuOpen && (
         <div className="fixed inset-0 z-40 lg:hidden">
           {/* Área de fondo clickeable para cerrar */}
           <div 
-            className="absolute inset-0 bg-black/30"
+            className="absolute inset-0 bg-black/40 backdrop-blur-sm"
             onClick={closeMobileMenu}
           />
           

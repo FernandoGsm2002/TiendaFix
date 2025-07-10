@@ -13,6 +13,10 @@ module.exports = {
       screens: {
         'xs': '475px',
       },
+      spacing: {
+        'touch': '44px',   // Tamaño mínimo recomendado para elementos táctiles
+        'safe': 'env(safe-area-inset-top)', // Para notch de iPhone
+      },
       colors: {
         background: 'var(--background)',
         foreground: 'var(--foreground)',

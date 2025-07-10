@@ -120,7 +120,7 @@ interface NewRepairForm {
 }
 
 export default function TechnicianRepairsPage() {
-  const { formatCurrency } = useCurrency()
+  const { formatCurrency, symbol } = useCurrency()
   const { t } = useTranslations()
   const [repairs, setRepairs] = useState<Repair[]>([])
   const [customers, setCustomers] = useState<Customer[]>([])
@@ -1403,7 +1403,7 @@ export default function TechnicianRepairsPage() {
                     </Select>
 
                     <Input
-                      label="Costo (S/)"
+                      label={`Costo (${symbol})`}
                       type="number"
                       min="0"
                       step="0.01"
