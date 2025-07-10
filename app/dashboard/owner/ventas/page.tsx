@@ -38,7 +38,7 @@ import {
   ShoppingCart, Plus, Minus, Search, Filter, CreditCard, 
   Calculator, Trash2, Receipt, Clock, DollarSign, TrendingUp,
   AlertTriangle, Package, Wrench, Unlock, X, User, Calendar,
-  Camera, Eye, Printer
+  Camera, Eye, Printer, FileText
 } from 'lucide-react'
 import { useZxing } from 'react-zxing';
 import { Result, Exception } from '@zxing/library';
@@ -672,6 +672,328 @@ export default function VentasPage() {
     URL.revokeObjectURL(url)
   }
 
+  // Generar cotización en formato A4
+  const generateQuotationTicket = (organizationInfo: any) => {
+    const currentDate = new Date().toLocaleString('es-ES', {
+      day: '2-digit',
+      month: '2-digit', 
+      year: 'numeric'
+    })
+
+    const customerInfo = selectedCustomer ? 
+      customers.find(c => c.id === selectedCustomer) : null
+
+    const quotationNumber = `000${Math.floor(Math.random() * 9999)}-${new Date().getFullYear()}`
+
+    // HTML para cotización (formato A4)
+    const quotationHTML = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="UTF-8">
+        <style>
+          @page {
+            size: A4;
+            margin: 20mm;
+          }
+          body {
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+            line-height: 1.4;
+            margin: 0;
+            padding: 0;
+            color: black;
+          }
+          .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #2563eb;
+            padding-bottom: 15px;
+          }
+          .company-info {
+            flex: 1;
+          }
+          .quotation-info {
+            text-align: right;
+            border: 2px dashed #2563eb;
+            padding: 15px;
+            background-color: #f8fafc;
+          }
+          .company-name {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2563eb;
+            margin-bottom: 5px;
+          }
+          .company-details {
+            font-size: 11px;
+            color: #64748b;
+            margin-bottom: 2px;
+          }
+          .quotation-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #2563eb;
+            margin-bottom: 5px;
+          }
+          .quotation-number {
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 10px;
+          }
+          .sections {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+          }
+          .section {
+            flex: 1;
+            border: 1px solid #e5e7eb;
+            padding: 15px;
+            background-color: #f9fafb;
+          }
+          .section-title {
+            font-size: 14px;
+            font-weight: bold;
+            color: #374151;
+            margin-bottom: 10px;
+            border-bottom: 1px solid #d1d5db;
+            padding-bottom: 5px;
+          }
+          .section-content {
+            font-size: 12px;
+            color: #4b5563;
+          }
+          .products-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+          }
+          .products-table th {
+            background-color: #2563eb;
+            color: white;
+            padding: 12px 8px;
+            text-align: left;
+            font-weight: bold;
+            font-size: 11px;
+          }
+          .products-table td {
+            padding: 10px 8px;
+            border-bottom: 1px solid #e5e7eb;
+            font-size: 11px;
+          }
+          .products-table tr:nth-child(even) {
+            background-color: #f9fafb;
+          }
+          .text-right {
+            text-align: right;
+          }
+          .text-center {
+            text-align: center;
+          }
+          .total-section {
+            text-align: right;
+            margin-top: 20px;
+            border: 2px solid #2563eb;
+            padding: 15px;
+            background-color: #f8fafc;
+          }
+          .total-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+          }
+          .total-final {
+            font-size: 18px;
+            font-weight: bold;
+            color: #2563eb;
+            border-top: 2px solid #2563eb;
+            padding-top: 10px;
+            margin-top: 10px;
+          }
+          .notes {
+            margin-top: 30px;
+            padding: 15px;
+            border: 1px solid #e5e7eb;
+            background-color: #fef3c7;
+            border-left: 4px solid #f59e0b;
+          }
+          .notes-title {
+            font-weight: bold;
+            color: #92400e;
+            margin-bottom: 10px;
+          }
+          .notes-content {
+            font-size: 11px;
+            color: #78350f;
+            line-height: 1.5;
+          }
+          .footer {
+            margin-top: 40px;
+            text-align: center;
+            font-size: 10px;
+            color: #6b7280;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <div class="company-info">
+            <div class="company-name">${organizationInfo.name || 'EMPRESA DE SERVICIOS'}</div>
+            <div class="company-details">RUC: ${organizationInfo.ruc || 'N/A'}</div>
+            <div class="company-details">ATENCIÓN: ${organizationInfo.owner_name || 'Admin'}</div>
+            <div class="company-details">CEL/TLF: ${organizationInfo.phone || 'N/A'}</div>
+            <div class="company-details">E-MAIL: ${organizationInfo.email || 'N/A'}</div>
+            <div class="company-details">CONDICIÓN: ${organizationInfo.legal_status || 'N/A'}</div>
+          </div>
+          <div class="quotation-info">
+            <div class="quotation-title">COTIZACIÓN</div>
+            <div class="quotation-number">${quotationNumber}</div>
+          </div>
+        </div>
+
+        <div class="sections">
+          <div class="section">
+            <div class="section-title">EMISOR</div>
+            <div class="section-content">
+              <div><strong>${organizationInfo.name || 'EMPRESA DE SERVICIOS'}</strong></div>
+              <div>RUC: ${organizationInfo.ruc || 'N/A'}</div>
+              <div>ATENCIÓN: ${organizationInfo.owner_name || 'Admin'}</div>
+              <div>CEL/TLF: ${organizationInfo.phone || 'N/A'}</div>
+              <div>E-MAIL: ${organizationInfo.email || 'N/A'}</div>
+              <div>CONDICIÓN: ${organizationInfo.legal_status || 'N/A'}</div>
+              <div>T. ENTREGA: ${organizationInfo.delivery_time || 'N/A'}</div>
+            </div>
+          </div>
+          <div class="section">
+            <div class="section-title">PARA</div>
+            <div class="section-content">
+                             <div><strong>CLIENTE:</strong> ${customerInfo?.name || 'PÚBLICO GENERAL'}</div>
+               <div><strong>OTROS:</strong> ${customerInfo?.phone || 'N/A'}</div>
+               <div><strong>DIRECCIÓN:</strong> N/A</div>
+               <div><strong>CEL/TLF:</strong> ${customerInfo?.phone || 'N/A'}</div>
+               <div><strong>E-MAIL:</strong> N/A</div>
+              <div><strong>F. EMISIÓN:</strong> ${currentDate}</div>
+              <div><strong>EXPIRA:</strong> ${new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toLocaleString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' })}</div>
+              <div><strong>MONEDA:</strong> SOLES</div>
+            </div>
+          </div>
+        </div>
+
+        <table class="products-table">
+          <thead>
+            <tr>
+              <th>N.</th>
+              <th>CANT.</th>
+              <th>U.M</th>
+              <th>DESCRIPCIÓN</th>
+              <th>UNIT.</th>
+              <th>DESC.</th>
+              <th>TOTAL</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${cart.map((item, index) => `
+              <tr>
+                <td class="text-center">${index + 1}</td>
+                <td class="text-center">${item.quantity.toFixed(2)}</td>
+                <td class="text-center">UND</td>
+                <td>${item.name}</td>
+                <td class="text-right">${item.price.toFixed(2)}</td>
+                <td class="text-right">0.00</td>
+                <td class="text-right">${(item.quantity * item.price).toFixed(2)}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+
+        <div class="total-section">
+          <div class="total-row">
+            <span><strong>TOTAL</strong></span>
+            <span><strong>S/ ${getTotal().toFixed(2)}</strong></span>
+          </div>
+        </div>
+
+        <div class="notes">
+          <div class="notes-title">Notas:</div>
+          <div class="notes-content">
+            1.- Esperamos su autorización y/o orden de compra para su programación importación.<br/>
+            2.- Importante:<br/>
+            Una vez realizada el abono, agradeceremos envíarnos por correo o whatsapp la copia del voucher de abono o constancia de transferencia y estará reservado su pedido.
+          </div>
+        </div>
+
+        <div class="footer">
+          <div>Fecha de impresión: ${new Date().toLocaleString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</div>
+        </div>
+      </body>
+      </html>
+    `
+
+    return quotationHTML
+  }
+
+  // Función para imprimir cotización
+  const handlePrintQuotation = async () => {
+    if (cart.length === 0) {
+      alert('El carrito está vacío')
+      return
+    }
+
+    try {
+      setPrintLoading(true)
+      
+      // Obtener información de la organización
+      const organizationInfo = await fetchOrganizationInfo()
+      
+      // Generar el HTML de la cotización
+      const quotationHTML = generateQuotationTicket(organizationInfo)
+      
+      // Crear iframe para impresión
+      const printFrame = document.createElement('iframe')
+      printFrame.style.position = 'fixed'
+      printFrame.style.top = '-1000px'
+      printFrame.style.left = '-1000px'
+      
+      document.body.appendChild(printFrame)
+      
+      const frameDoc = printFrame.contentDocument || printFrame.contentWindow?.document
+      if (frameDoc) {
+        frameDoc.open()
+        frameDoc.write(quotationHTML)
+        frameDoc.close()
+        
+        // Esperar a que cargue el contenido
+        await new Promise(resolve => setTimeout(resolve, 1000))
+        
+        // Imprimir
+        printFrame.contentWindow?.print()
+        
+        // Limpiar después de un tiempo
+        setTimeout(() => {
+          document.body.removeChild(printFrame)
+        }, 1000)
+      }
+      
+    } catch (error) {
+      console.error('Error printing quotation:', error)
+      
+      // Fallback: descargar como archivo
+      try {
+        const organizationInfo = await fetchOrganizationInfo()
+        const quotationHTML = generateQuotationTicket(organizationInfo)
+        downloadTicketAsFile(quotationHTML, 'cotizacion')
+      } catch (fallbackError) {
+        console.error('Error in fallback download:', fallbackError)
+        alert('Error al imprimir la cotización. Por favor, intente nuevamente.')
+      }
+    } finally {
+      setPrintLoading(false)
+    }
+  }
+
   const filteredProducts = products.filter(product =>
     product.name.toLowerCase().includes(searchProducts.toLowerCase()) ||
     (product.brand && product.brand.toLowerCase().includes(searchProducts.toLowerCase())) ||
@@ -928,16 +1250,28 @@ export default function VentasPage() {
                         </div>
                       </div>
 
-                      <Button
-                        color="primary"
-                        size="lg"
-                        className="w-full"
-                        startContent={<CreditCard className="w-5 h-5" />}
-                        onPress={processSale}
-                        isLoading={loading}
-                      >
-                        {t('sales.checkout')}
-                      </Button>
+                      <div className="flex gap-3">
+                        <Button
+                          color="secondary"
+                          size="lg"
+                          className="flex-1"
+                          startContent={<FileText className="w-5 h-5" />}
+                          onPress={handlePrintQuotation}
+                          isLoading={printLoading}
+                        >
+                          Cotización
+                        </Button>
+                        <Button
+                          color="primary"
+                          size="lg"
+                          className="flex-1"
+                          startContent={<CreditCard className="w-5 h-5" />}
+                          onPress={processSale}
+                          isLoading={loading}
+                        >
+                          {t('sales.checkout')}
+                        </Button>
+                      </div>
                     </CardBody>
                   </Card>
                 )}

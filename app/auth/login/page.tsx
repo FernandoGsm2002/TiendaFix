@@ -185,6 +185,15 @@ export default function LoginPage() {
               </Button>
             </form>
 
+            {/* Enlace para recuperar contraseña */}
+            <div className="mt-4 text-center">
+              <Link href="/auth/reset-password">
+                <span className="text-sm text-gray-600 hover:text-gray-900 underline cursor-pointer">
+                  ¿Olvidaste tu contraseña?
+                </span>
+              </Link>
+            </div>
+
             <Divider className="my-6" />
 
             {/* Sección de registro simple */}

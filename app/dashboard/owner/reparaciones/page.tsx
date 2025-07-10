@@ -244,18 +244,19 @@ export default function ReparacionesPage() {
     }
   }
 
-  const debouncedFetch = useCallback(debounce(() => {
-    fetchRepairs(1, filtroEstado, busqueda, fechaInicio, fechaFin);
-  }, 300), [filtroEstado, busqueda, fechaInicio, fechaFin]);
+  const debouncedFetch = useCallback(
+    debounce((search: string) => {
+      fetchRepairs(1, filtroEstado, search, fechaInicio, fechaFin);
+    }, 300),
+    [filtroEstado, fechaInicio, fechaFin]
+  );
 
   useEffect(() => {
     fetchRepairs(1, filtroEstado, busqueda, fechaInicio, fechaFin);
   }, [filtroEstado, fechaInicio, fechaFin]);
 
   useEffect(() => {
-    if (busqueda.trim() || busqueda === '') {
-      debouncedFetch();
-    }
+    debouncedFetch(busqueda);
   }, [busqueda, debouncedFetch]);
 
   const fetchCustomers = async () => {
@@ -1054,16 +1055,16 @@ export default function ReparacionesPage() {
             <div className="flex flex-col lg:flex-row gap-4">
               <div className="flex-1 lg:flex-none lg:w-96">
                 <Input
-                  placeholder="Buscar por cliente, dispositivo..."
+                  placeholder="Buscar por cliente, dispositivo, estado..."
                   value={busqueda}
                   onChange={(e) => handleBusquedaChange(e.target.value)}
-                  startContent={<Search className="h-4 w-4 text-[#4ca771]" />}
+                  startContent={<Search className="h-3 w-3 xs:h-4 xs:w-4 text-[#4ca771]" />}
                   variant="bordered"
-                  size="lg"
-                  className="w-full"
+                  size="md"
+                  className="w-full xs:size-lg"
                   classNames={{
-                    input: "text-sm text-gray-800 placeholder:text-gray-400",
-                    inputWrapper: "border-gray-300 hover:border-[#4ca771] focus-within:border-[#4ca771]"
+                    input: "text-xs xs:text-sm text-gray-800 placeholder:text-gray-400",
+                    inputWrapper: "border-gray-300 hover:border-[#4ca771] focus-within:border-[#4ca771] min-h-10 xs:min-h-12"
                   }}
                 />
               </div>
@@ -1075,12 +1076,12 @@ export default function ReparacionesPage() {
                     value={fechaInicio}
                     onChange={(e) => setFechaInicio(e.target.value)}
                     variant="bordered"
-                    size="lg"
-                    className="w-40"
+                    size="sm"
+                    className="w-32 xs:w-40 xs:size-md lg:size-lg"
                     classNames={{
-                      input: "text-sm text-gray-800",
-                      inputWrapper: "border-gray-300 hover:border-[#4ca771] focus-within:border-[#4ca771]",
-                      label: "text-gray-700 font-medium"
+                      input: "text-xs xs:text-sm text-gray-800",
+                      inputWrapper: "border-gray-300 hover:border-[#4ca771] focus-within:border-[#4ca771] min-h-9 xs:min-h-10 lg:min-h-12",
+                      label: "text-xs xs:text-sm text-gray-700 font-medium"
                     }}
                   />
                   <Input
@@ -1089,12 +1090,12 @@ export default function ReparacionesPage() {
                     value={fechaFin}
                     onChange={(e) => setFechaFin(e.target.value)}
                     variant="bordered"
-                    size="lg"
-                    className="w-40"
+                    size="sm"
+                    className="w-32 xs:w-40 xs:size-md lg:size-lg"
                     classNames={{
-                      input: "text-sm text-gray-800",
-                      inputWrapper: "border-gray-300 hover:border-[#4ca771] focus-within:border-[#4ca771]",
-                      label: "text-gray-700 font-medium"
+                      input: "text-xs xs:text-sm text-gray-800",
+                      inputWrapper: "border-gray-300 hover:border-[#4ca771] focus-within:border-[#4ca771] min-h-9 xs:min-h-10 lg:min-h-12",
+                      label: "text-xs xs:text-sm text-gray-700 font-medium"
                     }}
                   />
                 </div>
@@ -1102,13 +1103,13 @@ export default function ReparacionesPage() {
                   placeholder="Estado"
                   selectedKeys={[filtroEstado]}
                   onSelectionChange={handleFiltroChange}
-                  startContent={<Filter className="h-4 w-4 text-[#4ca771]" />}
+                  startContent={<Filter className="h-3 w-3 xs:h-4 xs:w-4 text-[#4ca771]" />}
                   variant="bordered"
-                  size="lg"
-                  className="w-full sm:w-48"
+                  size="md"
+                  className="w-full xs:size-lg sm:w-48"
                   classNames={{
-                    trigger: "border-gray-300 hover:border-[#4ca771] focus:border-[#4ca771]",
-                    value: "text-gray-800",
+                    trigger: "border-gray-300 hover:border-[#4ca771] focus:border-[#4ca771] min-h-10 xs:min-h-12",
+                    value: "text-xs xs:text-sm text-gray-800",
                     popoverContent: "bg-white border border-gray-200"
                   }}
                 >
@@ -1386,15 +1387,15 @@ export default function ReparacionesPage() {
         <Modal 
           isOpen={isCreateOpen} 
           onClose={onCreateClose}
-          size="2xl"
+          size="full"
           scrollBehavior="inside"
           classNames={{
             wrapper: "z-[1000]",
             backdrop: "z-[999]",
-            base: "max-h-[95vh] my-1 mx-1 sm:my-2 sm:mx-2 md:mx-6 w-full max-w-4xl",
-            body: "max-h-[75vh] overflow-y-auto py-2 px-2 sm:py-4 sm:px-6",
-            header: "border-b border-gray-200 pb-2 px-2 sm:pb-4 sm:px-6",
-            footer: "border-t border-gray-200 pt-2 px-2 sm:pt-4 sm:px-6"
+            base: "max-h-[100vh] h-full w-full m-0 xs:max-h-[95vh] xs:h-auto xs:w-auto xs:my-1 xs:mx-1 sm:my-2 sm:mx-2 md:mx-4 lg:mx-6 xl:max-w-5xl",
+            body: "max-h-[calc(100vh-120px)] xs:max-h-[80vh] sm:max-h-[75vh] overflow-y-auto p-2 xs:p-3 sm:p-4 md:p-5 lg:p-6",
+            header: "border-b border-gray-200 p-2 xs:p-3 sm:p-4 md:p-5 lg:p-6",
+            footer: "border-t border-gray-200 p-2 xs:p-3 sm:p-4 md:p-5 lg:p-6"
           }}
         >
           <ModalContent>
@@ -1594,15 +1595,15 @@ export default function ReparacionesPage() {
         <Modal 
           isOpen={isDetailOpen} 
           onClose={onDetailClose} 
-          size="xl"
+          size="full"
           scrollBehavior="inside"
           classNames={{
             wrapper: "z-[1000]",
             backdrop: "z-[999]",
-            base: "max-h-[95vh] my-1 mx-1 sm:my-2 sm:mx-2 md:mx-6",
-            body: "max-h-[75vh] overflow-y-auto py-2 md:py-4",
-            header: "border-b border-gray-200 pb-2 md:pb-4",
-            footer: "border-t border-gray-200 pt-2 md:pt-4"
+            base: "max-h-[100vh] h-full w-full m-0 xs:max-h-[95vh] xs:h-auto xs:w-auto xs:my-1 xs:mx-1 sm:my-2 sm:mx-2 md:mx-4 lg:mx-6 xl:max-w-4xl",
+            body: "max-h-[calc(100vh-120px)] xs:max-h-[80vh] sm:max-h-[75vh] overflow-y-auto p-2 xs:p-3 sm:p-4 md:p-5 lg:p-6",
+            header: "border-b border-gray-200 p-2 xs:p-3 sm:p-4 md:p-5 lg:p-6",
+            footer: "border-t border-gray-200 p-2 xs:p-3 sm:p-4 md:p-5 lg:p-6"
           }}
         >
           <ModalContent>
@@ -1615,53 +1616,55 @@ export default function ReparacionesPage() {
                 </ModalHeader>
                 <ModalBody>
                   {selectedRepair && (
-                   <div className="space-y-3 md:space-y-6">
-                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
-                       <div>
-                         <p className={`text-xs md:text-sm font-medium ${textColors.tertiary}`}>Título</p>
-                         <p className={`text-sm md:text-lg font-semibold ${textColors.primary}`}>{selectedRepair.title}</p>
-                       </div>
-                       <div>
-                         <p className={`text-xs md:text-sm font-medium ${textColors.tertiary}`}>Estado</p>
-                         <Chip color={getStatusColor(selectedRepair.status)} variant="flat" size="sm">
-                           {getStatusLabel(selectedRepair.status)}
-                         </Chip>
-                       </div>
+                   <div className="space-y-3 xs:space-y-4 sm:space-y-5 md:space-y-6">
+                     <div className="grid grid-cols-1 gap-3 xs:gap-4 sm:grid-cols-2 sm:gap-5 md:gap-6">
+                                                <div className="bg-gray-50 p-2 xs:p-3 rounded-lg">
+                           <p className={`text-xs xs:text-sm font-medium ${textColors.tertiary} mb-1`}>Título</p>
+                           <p className={`text-sm xs:text-base sm:text-lg font-semibold ${textColors.primary}`}>{selectedRepair.title}</p>
+                         </div>
+                         <div className="bg-gray-50 p-2 xs:p-3 rounded-lg">
+                           <p className={`text-xs xs:text-sm font-medium ${textColors.tertiary} mb-1`}>Estado</p>
+                           <Chip color={getStatusColor(selectedRepair.status)} variant="flat" size="sm" className="xs:text-sm">
+                             {getStatusLabel(selectedRepair.status)}
+                           </Chip>
+                         </div>
                      </div>
 
                      {/* Información del creador */}
-                     <div className="bg-blue-50 p-3 md:p-4 rounded-lg border border-blue-200">
-                       <div className="flex items-center gap-3">
-                         <div className="p-2 bg-blue-100 rounded-full">
-                           {selectedRepair.technician?.email.includes('admin') || selectedRepair.technician?.name?.toLowerCase().includes('admin') ? (
-                             <Shield className="w-3 h-3 md:w-4 md:h-4 text-blue-600" />
-                           ) : (
-                             <User className="w-3 h-3 md:w-4 md:h-4 text-blue-600" />
-                           )}
+                     <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                       <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+                         <div className="flex items-center gap-3 flex-1">
+                           <div className="p-2 bg-blue-100 rounded-full flex-shrink-0">
+                             {selectedRepair.technician?.email.includes('admin') || selectedRepair.technician?.name?.toLowerCase().includes('admin') ? (
+                               <Shield className="w-4 h-4 text-blue-600" />
+                             ) : (
+                               <User className="w-4 h-4 text-blue-600" />
+                             )}
+                           </div>
+                           <div className="flex-1 min-w-0">
+                             <p className="text-sm font-medium text-blue-800">Creado por</p>
+                             <p className="text-base font-semibold text-blue-900 truncate">
+                               {selectedRepair.technician ? selectedRepair.technician.name : 'Usuario desconocido'}
+                             </p>
+                             <p className="text-sm text-blue-600 truncate">
+                               {selectedRepair.technician ? selectedRepair.technician.email : 'Sin información de contacto'}
+                             </p>
+                             <p className="text-sm text-blue-500 mt-1">
+                               {new Date(selectedRepair.created_at).toLocaleString('es-ES', {
+                                 day: '2-digit',
+                                 month: 'short',
+                                 year: 'numeric',
+                                 hour: '2-digit',
+                                 minute: '2-digit'
+                               })}
+                             </p>
+                           </div>
                          </div>
-                         <div className="flex-1">
-                           <p className="text-xs md:text-sm font-medium text-blue-800">Creado por</p>
-                           <p className="text-sm md:text-base font-semibold text-blue-900">
-                             {selectedRepair.technician ? selectedRepair.technician.name : 'Usuario desconocido'}
-                           </p>
-                           <p className="text-xs text-blue-600">
-                             {selectedRepair.technician ? selectedRepair.technician.email : 'Sin información de contacto'}
-                           </p>
-                           <p className="text-xs text-blue-500 mt-1">
-                             {new Date(selectedRepair.created_at).toLocaleString('es-ES', {
-                               day: '2-digit',
-                               month: 'short',
-                               year: 'numeric',
-                               hour: '2-digit',
-                               minute: '2-digit'
-                             })}
-                           </p>
-                         </div>
-                         <div className="ml-auto">
+                         <div className="flex-shrink-0">
                            <Chip 
                              color={selectedRepair.technician?.email.includes('admin') || selectedRepair.technician?.name?.toLowerCase().includes('admin') ? 'warning' : 'primary'}
                              variant="flat" 
-                             size="sm"
+                             size="md"
                              startContent={selectedRepair.technician?.email.includes('admin') || selectedRepair.technician?.name?.toLowerCase().includes('admin') ? 
                                <Shield className="w-3 h-3" /> : 
                                <User className="w-3 h-3" />
@@ -1676,54 +1679,60 @@ export default function ReparacionesPage() {
                        </div>
                      </div>
                      
-                     <div>
-                       <p className={`text-xs md:text-sm font-medium ${textColors.tertiary} mb-2`}>Cliente</p>
-                       <p className={`text-sm md:text-base ${textColors.primary}`}>{getCustomerName(selectedRepair.customers, selectedRepair.unregistered_customer_name)}</p>
+                     <div className="bg-gray-50 p-2 xs:p-3 rounded-lg">
+                       <p className={`text-xs xs:text-sm font-medium ${textColors.tertiary} mb-1 xs:mb-2`}>Cliente</p>
+                       <p className={`text-sm xs:text-base font-semibold ${textColors.primary}`}>{getCustomerName(selectedRepair.customers, selectedRepair.unregistered_customer_name)}</p>
                      </div>
 
-                     <div>
-                       <p className={`text-xs md:text-sm font-medium ${textColors.tertiary} mb-2`}>Dispositivo</p>
-                       <p className={`text-sm md:text-base ${textColors.primary}`}>{getDeviceName(selectedRepair.devices, selectedRepair.unregistered_device_info)}</p>
+                     <div className="bg-gray-50 p-2 xs:p-3 rounded-lg">
+                       <p className={`text-xs xs:text-sm font-medium ${textColors.tertiary} mb-1 xs:mb-2`}>Dispositivo</p>
+                       <p className={`text-sm xs:text-base font-semibold ${textColors.primary}`}>{getDeviceName(selectedRepair.devices, selectedRepair.unregistered_device_info)}</p>
                      </div>
 
-                     <div>
-                       <p className={`text-xs md:text-sm font-medium ${textColors.tertiary} mb-2`}>Problema Reportado</p>
-                       <p className={`text-sm md:text-base ${textColors.primary}`}>{selectedRepair.problem_description}</p>
+                     <div className="bg-gray-50 p-2 xs:p-3 rounded-lg">
+                       <p className={`text-xs xs:text-sm font-medium ${textColors.tertiary} mb-1 xs:mb-2`}>Problema Reportado</p>
+                       <p className={`text-sm xs:text-base ${textColors.primary} leading-relaxed`}>{selectedRepair.problem_description}</p>
                      </div>
 
                      {selectedRepair.solution_description && (
-                       <div>
-                         <p className={`text-xs md:text-sm font-medium ${textColors.tertiary} mb-2`}>Solución</p>
-                         <p className={`text-sm md:text-base ${textColors.primary}`}>{selectedRepair.solution_description}</p>
+                       <div className="bg-green-50 p-2 xs:p-3 rounded-lg border border-green-200">
+                         <p className={`text-xs xs:text-sm font-medium ${textColors.tertiary} mb-1 xs:mb-2`}>Solución</p>
+                         <p className={`text-sm xs:text-base ${textColors.primary} leading-relaxed`}>{selectedRepair.solution_description}</p>
                        </div>
                      )}
 
-                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
-                       <div>
-                         <p className={`text-xs md:text-sm font-medium ${textColors.tertiary}`}>Costo</p>
-                         <p className={`text-sm md:text-lg font-semibold ${textColors.primary}`}>{formatCurrency(selectedRepair.cost)}</p>
+                     <div className="grid grid-cols-1 gap-3 xs:gap-4 sm:grid-cols-2 sm:gap-5 md:gap-6">
+                       <div className="bg-gray-50 p-2 xs:p-3 rounded-lg">
+                         <p className={`text-xs xs:text-sm font-medium ${textColors.tertiary} mb-1`}>Costo</p>
+                         <p className={`text-base xs:text-lg font-bold ${textColors.primary}`}>{formatCurrency(selectedRepair.cost)}</p>
                        </div>
-                       <div>
-                         <p className={`text-xs md:text-sm font-medium ${textColors.tertiary}`}>Estado</p>
-                         <p className={`text-sm md:text-lg font-semibold ${textColors.primary}`}>{selectedRepair.status}</p>
+                       <div className="bg-gray-50 p-2 xs:p-3 rounded-lg">
+                         <p className={`text-xs xs:text-sm font-medium ${textColors.tertiary} mb-1`}>Estado</p>
+                         <p className={`text-base xs:text-lg font-bold ${textColors.primary}`}>{selectedRepair.status}</p>
                        </div>
                      </div>
                    </div>
                   )}
                 </ModalBody>
-                <ModalFooter className="gap-2">
-                  <Button color="default" variant="light" onPress={onDetailClose} size="sm">
+                <ModalFooter className="gap-2 xs:gap-3 flex flex-col xs:flex-row">
+                  <Button 
+                    color="default" 
+                    variant="light" 
+                    onPress={onDetailClose} 
+                    size="sm"
+                    className="w-full xs:w-auto xs:size-md"
+                  >
                     Cerrar
                   </Button>
                   <Button 
                     color="secondary" 
-                    startContent={<Printer className="h-3 w-3 md:h-4 md:w-4" />}
+                    startContent={<Printer className="h-3 w-3 xs:h-4 xs:w-4" />}
                     onPress={() => selectedRepair && handlePrintTicket(selectedRepair)}
                     isLoading={printLoading}
                     size="sm"
+                    className="w-full xs:w-auto xs:size-md"
                   >
-                    <span className="hidden md:inline">Imprimir Ticket</span>
-                    <span className="md:hidden">Imprimir</span>
+                    <span className="text-xs xs:text-sm">Imprimir Ticket</span>
                   </Button>
                 </ModalFooter>
               </>
@@ -1735,15 +1744,15 @@ export default function ReparacionesPage() {
         <Modal 
           isOpen={isDeleteOpen} 
           onClose={onDeleteClose}
-          size="sm"
+          size="md"
           scrollBehavior="inside"
           classNames={{
             wrapper: "z-[1000]",
             backdrop: "z-[999]",
-            base: "max-h-[95vh] my-1 mx-1 sm:my-2 sm:mx-2 md:mx-6",
-            body: "max-h-[60vh] overflow-y-auto py-2 md:py-4",
-            header: "border-b border-gray-200 pb-2 md:pb-4",
-            footer: "border-t border-gray-200 pt-2 md:pt-4"
+            base: "max-h-[100vh] h-full w-full m-0 xs:max-h-[95vh] xs:h-auto xs:w-auto xs:my-1 xs:mx-1 sm:my-2 sm:mx-2 md:mx-4 lg:mx-6 xl:max-w-2xl",
+            body: "max-h-[calc(100vh-120px)] xs:max-h-[70vh] sm:max-h-[60vh] overflow-y-auto p-2 xs:p-3 sm:p-4 md:p-5 lg:p-6",
+            header: "border-b border-gray-200 p-2 xs:p-3 sm:p-4 md:p-5 lg:p-6",
+            footer: "border-t border-gray-200 p-2 xs:p-3 sm:p-4 md:p-5 lg:p-6"
           }}
         >
           <ModalContent>
@@ -1783,15 +1792,15 @@ export default function ReparacionesPage() {
         <Modal 
           isOpen={isStatusOpen} 
           onClose={onStatusClose}
-          size="md"
+          size="lg"
           scrollBehavior="inside"
           classNames={{
             wrapper: "z-[1000]",
             backdrop: "z-[999]",
-            base: "max-h-[95vh] my-1 mx-1 sm:my-2 sm:mx-2 md:mx-6",
-            body: "max-h-[70vh] overflow-y-auto py-2 md:py-4",
-            header: "border-b border-gray-200 pb-2 md:pb-4",
-            footer: "border-t border-gray-200 pt-2 md:pt-4"
+            base: "max-h-[100vh] h-full w-full m-0 xs:max-h-[95vh] xs:h-auto xs:w-auto xs:my-1 xs:mx-1 sm:my-2 sm:mx-2 md:mx-4 lg:mx-6 xl:max-w-3xl",
+            body: "max-h-[calc(100vh-120px)] xs:max-h-[75vh] sm:max-h-[70vh] overflow-y-auto p-2 xs:p-3 sm:p-4 md:p-5 lg:p-6",
+            header: "border-b border-gray-200 p-2 xs:p-3 sm:p-4 md:p-5 lg:p-6",
+            footer: "border-t border-gray-200 p-2 xs:p-3 sm:p-4 md:p-5 lg:p-6"
           }}
         >
           <ModalContent>

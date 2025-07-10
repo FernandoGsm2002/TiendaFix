@@ -96,61 +96,88 @@ const uniqueFeatures = [
 export function IndustriesSection() {
   return (
     <section className="relative py-28 overflow-hidden">
-      {/* Ultra Modern Background Effects */}
-      <div className="absolute inset-0 bg-gradient-to-br from-blue-50/60 via-indigo-50/40 to-purple-50/60"></div>
-      <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-gradient-to-r from-blue-400/15 to-cyan-400/15 rounded-full blur-3xl animate-pulse"></div>
-      <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-gradient-to-r from-purple-400/15 to-pink-400/15 rounded-full blur-3xl animate-pulse delay-1000"></div>
-      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-gradient-to-r from-indigo-400/10 to-blue-400/10 rounded-full blur-2xl animate-pulse delay-2000"></div>
+      {/* Elegant Background Effects - Hero Style */}
+      <div className="absolute inset-0 bg-gradient-to-br from-[#f0fdf9] via-[#eafae7] to-[#c0e6ba]">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_800px_at_100%_200px,#eafae7,transparent)]"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(circle_600px_at_0%_100%,#c0e6ba,transparent)]"></div>
+      </div>
+      
+      {/* Professional Floating Elements */}
+      <div className="absolute top-20 left-10 w-32 h-32 bg-gradient-to-r from-[#4ca771]/30 to-[#013237]/30 rounded-full blur-2xl animate-pulse"></div>
+      <div className="absolute top-40 right-20 w-48 h-48 bg-gradient-to-r from-[#013237]/30 to-[#4ca771]/30 rounded-full blur-3xl animate-pulse delay-1000"></div>
+      <div className="absolute bottom-20 left-20 w-40 h-40 bg-gradient-to-r from-[#4ca771]/30 to-[#013237]/30 rounded-full blur-2xl animate-pulse delay-2000"></div>
+      <div className="absolute bottom-40 right-10 w-36 h-36 bg-gradient-to-r from-[#013237]/30 to-[#4ca771]/30 rounded-full blur-2xl animate-pulse delay-3000"></div>
+      
+      {/* Subtle Geometric Patterns */}
+      <div className="absolute inset-0 opacity-30">
+        <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-[#4ca771] rounded-full animate-bounce"></div>
+        <div className="absolute top-1/3 right-1/3 w-1 h-1 bg-[#013237] rounded-full animate-bounce delay-500"></div>
+        <div className="absolute bottom-1/4 left-1/3 w-3 h-3 bg-[#4ca771] rounded-full animate-bounce delay-1000"></div>
+        <div className="absolute bottom-1/3 right-1/4 w-2 h-2 bg-[#013237] rounded-full animate-bounce delay-1500"></div>
+      </div>
       
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Ultra Modern Header */}
+        {/* Professional Header - Hero Style */}
         <div className="text-center mb-24">
           <Badge
-            content="HOT"
+            content="NEW"
             color="danger"
             placement="top-right"
-            className="mb-8"
+            className="mb-4 md:mb-8"
           >
             <Chip
-              startContent={<Crown className="w-5 h-5 animate-pulse" />}
-              endContent={<Sparkles className="w-5 h-5 animate-pulse" />}
+              startContent={<Crown className="w-3 h-3 md:w-5 md:h-5 animate-pulse" />}
+              endContent={<Sparkles className="w-3 h-3 md:w-5 md:h-5" />}
               variant="flat"
-              color="primary"
-              className="bg-gradient-to-r from-blue-100 via-purple-100 to-pink-100 text-blue-800 px-8 py-4 text-lg font-bold shadow-2xl border border-blue-200/50 hover:scale-105 transition-transform duration-300"
+              className="bg-gradient-to-r from-[#f0fdf9] via-[#eafae7] to-[#c0e6ba] text-[#013237] px-3 md:px-8 py-1 md:py-4 text-xs md:text-lg font-bold shadow-2xl border border-[#c0e6ba]/50 hover:scale-105 transition-transform duration-300"
             >
-              Especialización Única en el Mercado
+              <span className="hidden sm:inline">Especialización Única en el Mercado</span>
+              <span className="sm:hidden">Único en el Mercado</span>
             </Chip>
           </Badge>
           
-          <h2 className="text-5xl md:text-6xl font-black tracking-tight text-gray-900 mb-8 leading-tight">
-            <span className="bg-gradient-to-r from-gray-900 via-blue-900 to-purple-900 bg-clip-text text-transparent block">
-              Solo Móviles y Tablets
-            </span>
-          </h2>
+          <div className="mb-4 md:mb-8">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tight mb-2 md:mb-4 relative">
+              <span className="bg-gradient-to-r from-[#013237] via-[#4ca771] to-[#013237] bg-clip-text text-transparent block">
+                <span className="hidden sm:inline">Solo Móviles y Tablets</span>
+                <span className="sm:hidden">Móviles y Tablets</span>
+              </span>
+            </h2>
+            <div className="flex justify-center mt-2 md:mt-4">
+              <div className="flex items-center gap-2 bg-gradient-to-r from-[#eafae7] to-[#c0e6ba] text-[#013237] px-2 md:px-4 py-1 md:py-2 rounded-full text-xs md:text-sm font-medium shadow-lg">
+                <div className="w-2 h-2 bg-[#4ca771] rounded-full animate-pulse"></div>
+                <span className="hidden sm:inline">Especialización Total</span>
+                <span className="sm:hidden">Especializado</span>
+                <Target className="w-3 h-3 md:w-4 md:h-4 animate-bounce" />
+              </div>
+            </div>
+          </div>
           
-          <Card className="max-w-5xl mx-auto bg-white/80 backdrop-blur-xl shadow-2xl border-0">
-            <CardBody className="p-8">
-              <p className="text-xl md:text-2xl text-gray-700 leading-relaxed">
-                TiendaFix es el único software especializado 
-                <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent font-semibold">
+          <Card className="max-w-5xl mx-auto mb-6 md:mb-12 bg-[#f0fdf9]/80 backdrop-blur-xl shadow-2xl border border-[#c0e6ba]/50">
+            <CardBody className="p-3 md:p-8">
+              <p className="text-sm md:text-xl lg:text-2xl text-[#013237] leading-relaxed">
+                <span className="hidden sm:inline">TiendaFix es el único software especializado</span>
+                <span className="sm:hidden">Software especializado</span>
+                <span className="bg-gradient-to-r from-[#4ca771] to-[#013237] bg-clip-text text-transparent font-semibold">
                   {" "}100% en reparación de dispositivos móviles y tablets,
                 </span>
                 {" "}con funcionalidades exclusivas que ningún otro taller tiene.
               </p>
-              <Spacer y={4} />
-              <div className="flex items-center justify-center gap-6 text-sm text-gray-600">
+              <Spacer y={2} className="md:hidden" />
+              <Spacer y={4} className="hidden md:block" />
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-6 text-xs md:text-sm text-[#4ca771]">
                 <div className="flex items-center gap-2">
-                  <Target className="w-4 h-4 text-blue-500" />
+                  <Target className="w-4 h-4 text-[#4ca771]" />
                   <span>100% Especializado</span>
                 </div>
-                <Divider orientation="vertical" className="h-4" />
+                <Divider orientation="vertical" className="h-4 hidden sm:block" />
                 <div className="flex items-center gap-2">
-                  <Heart className="w-4 h-4 text-red-500" />
+                  <Heart className="w-4 h-4 text-[#013237]" />
                   <span>Funciones Exclusivas</span>
                 </div>
-                <Divider orientation="vertical" className="h-4" />
+                <Divider orientation="vertical" className="h-4 hidden sm:block" />
                 <div className="flex items-center gap-2">
-                  <Rocket className="w-4 h-4 text-purple-500" />
+                  <Rocket className="w-4 h-4 text-[#013237]" />
                   <span>Líder del Mercado</span>
                 </div>
               </div>
@@ -158,24 +185,24 @@ export function IndustriesSection() {
           </Card>
         </div>
 
-        {/* Ultra Modern Device Specialization */}
+        {/* Professional Device Specialization - Hero Style */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-10 mb-24">
           {specialties.map((specialty, index) => (
             <Card 
               key={specialty.id}
-              className="bg-white/90 backdrop-blur-xl shadow-2xl border-0 hover:shadow-3xl transition-all duration-500 hover:scale-[1.02] group overflow-hidden relative"
+              className="bg-white/90 backdrop-blur-xl shadow-xl border-0 hover:shadow-2xl transition-all duration-500 hover:scale-[1.02] group overflow-hidden relative"
             >
-              <div className={`absolute inset-0 bg-gradient-to-br ${specialty.bgGradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500`}></div>
+              <div className="absolute inset-0 bg-gradient-to-br from-gray-50 to-gray-100 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
               
               <CardHeader className="relative z-10 pb-6 pt-8">
                 <div className="flex items-center gap-6 mb-6">
                   <Avatar
                     icon={specialty.icon}
-                    className={`bg-gradient-to-r ${specialty.gradient} text-white group-hover:scale-125 transition-all duration-500`}
+                    className="bg-gradient-to-r from-gray-600 to-gray-700 text-white group-hover:scale-125 transition-all duration-500"
                     size="lg"
                   />
                   <div className="flex-1">
-                    <h3 className="text-2xl font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors duration-300">
+                    <h3 className="text-2xl font-bold text-gray-900 mb-2 group-hover:text-gray-800 transition-colors duration-300">
                       {specialty.title}
                     </h3>
                     <p className="text-gray-600 leading-relaxed">{specialty.description}</p>
@@ -190,10 +217,9 @@ export function IndustriesSection() {
                   </div>
                   <Progress 
                     value={100} 
-                    color={index === 0 ? "primary" : "success"}
                     className="h-2"
                     classNames={{
-                      indicator: `bg-gradient-to-r ${specialty.gradient}`
+                      indicator: "bg-gradient-to-r from-gray-600 to-gray-700"
                     }}
                   />
                 </div>
@@ -217,35 +243,45 @@ export function IndustriesSection() {
           ))}
         </div>
 
-        {/* Ultra Modern Unique Features */}
+        {/* Professional Unique Features - Hero Style */}
         <div className="mb-24">
           <div className="text-center mb-16">
             <Badge
               content="NEW"
               color="danger"
               placement="top-right"
-              className="mb-8"
+              className="mb-4 md:mb-8"
             >
               <Chip
-                startContent={<Award className="w-5 h-5 animate-bounce" />}
-                endContent={<Sparkles className="w-5 h-5 animate-pulse" />}
+                startContent={<Award className="w-3 h-3 md:w-5 md:h-5 animate-bounce" />}
+                endContent={<Sparkles className="w-3 h-3 md:w-5 md:h-5 animate-pulse" />}
                 variant="flat"
-                color="secondary"
-                className="bg-gradient-to-r from-purple-100 via-orange-100 to-pink-100 text-purple-800 px-8 py-4 text-lg font-bold shadow-2xl border border-purple-200/50 hover:scale-105 transition-transform duration-300"
+                className="bg-gradient-to-r from-[#f0fdf9] via-[#eafae7] to-[#c0e6ba] text-[#013237] px-3 md:px-8 py-1 md:py-4 text-xs md:text-lg font-bold shadow-2xl border border-[#c0e6ba]/50 hover:scale-105 transition-transform duration-300"
               >
-                Funcionalidades que Solo TiendaFix Tiene
+                <span className="hidden sm:inline">Funcionalidades que Solo TiendaFix Tiene</span>
+                <span className="sm:hidden">Solo TiendaFix</span>
               </Chip>
             </Badge>
             
-            <h3 className="text-4xl md:text-5xl font-black text-gray-900 mb-6 leading-tight">
-              <span className="bg-gradient-to-r from-purple-600 via-pink-600 to-orange-600 bg-clip-text text-transparent">
-                Ventajas Competitivas Únicas
-              </span>
-            </h3>
+            <div className="mb-4 md:mb-8">
+              <h3 className="text-3xl sm:text-4xl md:text-4xl lg:text-5xl font-black mb-2 md:mb-4 relative">
+                <span className="bg-gradient-to-r from-[#013237] via-[#4ca771] to-[#013237] bg-clip-text text-transparent">
+                  Ventajas Competitivas Únicas
+                </span>
+              </h3>
+              <div className="flex justify-center mt-2 md:mt-4">
+                <div className="flex items-center gap-2 bg-gradient-to-r from-[#eafae7] to-[#c0e6ba] text-[#013237] px-2 md:px-4 py-1 md:py-2 rounded-full text-xs md:text-sm font-medium shadow-lg">
+                  <div className="w-2 h-2 bg-[#4ca771] rounded-full animate-pulse"></div>
+                  <span className="hidden sm:inline">Funcionalidades Exclusivas</span>
+                  <span className="sm:hidden">Exclusivas</span>
+                  <Award className="w-3 h-3 md:w-4 md:h-4 animate-bounce" />
+                </div>
+              </div>
+            </div>
             
-            <Card className="max-w-4xl mx-auto bg-white/80 backdrop-blur-xl shadow-xl border-0">
-              <CardBody className="p-6">
-                <p className="text-lg text-gray-600 leading-relaxed">
+            <Card className="max-w-4xl mx-auto bg-[#f0fdf9]/80 backdrop-blur-xl shadow-xl border border-[#c0e6ba]/50">
+              <CardBody className="p-3 md:p-6">
+                <p className="text-sm md:text-lg text-[#013237] leading-relaxed">
                   Estas funcionalidades nos diferencian de cualquier otro software del mercado
                 </p>
               </CardBody>
@@ -255,36 +291,35 @@ export function IndustriesSection() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
             {uniqueFeatures.map((feature, index) => (
               <div key={feature.id} className="relative">
-                {/* Badge Outside the Card */}
+                {/* Badge Outside the Card - Hero Style */}
                 <div className="flex justify-center mb-6">
                   <Badge
                     content=""
-                    color={index === 0 ? "danger" : "warning"}
+                    color="danger"
                     placement="top-right"
                   >
                     <Chip
                       startContent={index === 0 ? <Crown className="w-5 h-5 animate-pulse" /> : <Target className="w-5 h-5 animate-bounce" />}
                       variant="solid"
-                      color={index === 0 ? "danger" : "warning"}
-                      className="px-6 py-3 text-sm font-black shadow-2xl hover:scale-110 transition-transform duration-300"
+                      className="bg-gradient-to-r from-gray-700 to-gray-800 text-white px-6 py-3 text-sm font-black shadow-2xl hover:scale-110 transition-transform duration-300"
                     >
                       {feature.badge}
                     </Chip>
                   </Badge>
                 </div>
 
-                <Card className="bg-white/90 backdrop-blur-xl shadow-2xl border-0 hover:shadow-3xl transition-all duration-500 hover:scale-[1.02] group overflow-hidden relative h-full">
-                  <div className={`absolute inset-0 bg-gradient-to-br ${feature.bgGradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500`}></div>
+                <Card className="bg-white/90 backdrop-blur-xl shadow-xl border-0 hover:shadow-2xl transition-all duration-500 hover:scale-[1.02] group overflow-hidden relative h-full">
+                  <div className="absolute inset-0 bg-gradient-to-br from-gray-50 to-gray-100 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                   
                   <CardHeader className="relative z-10 pb-6 pt-8">
                     <div className="flex items-center gap-6 mb-6">
                       <Avatar
                         icon={feature.icon}
-                        className={`bg-gradient-to-r ${feature.gradient} text-white group-hover:scale-125 transition-all duration-500`}
+                        className="bg-gradient-to-r from-gray-600 to-gray-700 text-white group-hover:scale-125 transition-all duration-500"
                         size="lg"
                       />
                       <div className="flex-1">
-                        <h3 className="text-2xl font-bold text-gray-900 mb-2 group-hover:text-purple-600 transition-colors duration-300">
+                        <h3 className="text-2xl font-bold text-gray-900 mb-2 group-hover:text-gray-800 transition-colors duration-300">
                           {feature.title}
                         </h3>
                         <p className="text-gray-600 leading-relaxed">{feature.description}</p>
@@ -299,10 +334,9 @@ export function IndustriesSection() {
                       </div>
                       <Progress 
                         value={100} 
-                        color={index === 0 ? "secondary" : "warning"}
                         className="h-2"
                         classNames={{
-                          indicator: `bg-gradient-to-r ${feature.gradient}`
+                          indicator: "bg-gradient-to-r from-gray-600 to-gray-700"
                         }}
                       />
                     </div>
@@ -328,8 +362,8 @@ export function IndustriesSection() {
           </div>
         </div>
 
-        {/* Ultra Modern Stats Section */}
-        <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 rounded-3xl p-16 text-white relative overflow-hidden mb-24">
+        {/* Professional Stats Section - Hero Style */}
+        <div className="bg-gradient-to-r from-gray-800 via-gray-900 to-black rounded-3xl p-16 text-white relative overflow-hidden mb-24">
           <div className="absolute inset-0 bg-[radial-gradient(circle_500px_at_50%_200px,rgba(255,255,255,0.1),transparent)]"></div>
           <div className="absolute top-10 left-10 w-32 h-32 bg-white/10 rounded-full blur-2xl animate-pulse"></div>
           <div className="absolute bottom-10 right-10 w-40 h-40 bg-white/5 rounded-full blur-2xl animate-pulse delay-1000"></div>
@@ -341,7 +375,7 @@ export function IndustriesSection() {
             </div>
             
             <h3 className="text-4xl md:text-5xl font-black mb-12 leading-tight">
-              <span className="bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-white via-gray-100 to-gray-200 bg-clip-text text-transparent">
                 ¿Por qué elegir TiendaFix?
               </span>
             </h3>
@@ -355,7 +389,7 @@ export function IndustriesSection() {
                     size="lg"
                   />
                   <div className="text-4xl font-black mb-2">100%</div>
-                  <div className="text-blue-100 font-medium">Especializado en móviles</div>
+                  <div className="text-gray-100 font-medium">Especializado en móviles</div>
                 </CardBody>
               </Card>
               
@@ -367,7 +401,7 @@ export function IndustriesSection() {
                     size="lg"
                   />
                   <div className="text-4xl font-black mb-2">2</div>
-                  <div className="text-blue-100 font-medium">Funcionalidades únicas</div>
+                  <div className="text-gray-100 font-medium">Unico pensado en llevar tus unlocks</div>
                 </CardBody>
               </Card>
               
@@ -379,34 +413,34 @@ export function IndustriesSection() {
                     size="lg"
                   />
                   <div className="text-4xl font-black mb-2">3</div>
-                  <div className="text-blue-100 font-medium">Meses en el mercado</div>
+                  <div className="text-gray-100 font-medium">interfaz moderna y responsiva</div>
                 </CardBody>
               </Card>
             </div>
           </div>
         </div>
 
-        {/* Ultra Modern CTA Section */}
+        {/* Professional CTA Section - Hero Style */}
         <div className="text-center">
           <Card className="bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl border-0 relative overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 to-purple-50/50"></div>
-            <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-r from-blue-400/10 to-purple-400/10 rounded-full blur-2xl"></div>
-            <div className="absolute bottom-0 left-0 w-80 h-80 bg-gradient-to-r from-purple-400/10 to-pink-400/10 rounded-full blur-2xl"></div>
+            <div className="absolute inset-0 bg-gradient-to-br from-[#f0fdf9] to-[#eafae7]"></div>
+            <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-r from-[#4ca771]/10 to-[#013237]/10 rounded-full blur-2xl"></div>
+            <div className="absolute bottom-0 left-0 w-80 h-80 bg-gradient-to-r from-[#013237]/10 to-[#4ca771]/10 rounded-full blur-2xl"></div>
             
             <CardBody className="p-16 relative z-10">
-              <div className="inline-flex items-center gap-2 bg-gradient-to-r from-green-100 to-blue-100 text-green-800 px-6 py-3 rounded-full text-sm font-semibold mb-8 shadow-lg">
+              <div className="inline-flex items-center gap-2 bg-gradient-to-r from-[#eafae7] to-[#c0e6ba] text-[#013237] px-6 py-3 rounded-full text-sm font-semibold mb-8 shadow-lg">
                 <Rocket className="w-4 h-4 animate-bounce" />
                 <span>Únete a la Revolución</span>
               </div>
               
               <h3 className="text-4xl md:text-5xl font-black text-gray-900 mb-6 leading-tight">
-                <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-[#013237] via-[#4ca771] to-[#013237] bg-clip-text text-transparent">
                   ¿Listo para la diferencia TiendaFix?
                 </span>
               </h3>
               
               <p className="text-xl text-gray-600 mb-12 max-w-3xl mx-auto leading-relaxed">
-                Únete a los <span className="font-bold text-blue-600">100+ talleres</span> que ya disfrutan de funcionalidades exclusivas 
+                Únete a los <span className="font-bold text-[#4ca771]">100+ talleres</span> que ya disfrutan de funcionalidades exclusivas 
                 para móviles y tablets que ningún otro software ofrece.
               </p>
               
@@ -414,14 +448,13 @@ export function IndustriesSection() {
                 <Tooltip 
                   content="Comienza tu prueba gratuita de 7 días"
                   placement="top"
-                  color="primary"
-                  className="text-white"
+                  className="bg-gradient-to-r from-gray-700 to-gray-800 text-white"
                 >
                   <Button 
                     as={Link}
                     href="/auth/register"
                     size="lg"
-                    className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white font-bold px-12 py-6 text-xl shadow-2xl hover:shadow-3xl hover:scale-110 transition-all duration-300 relative overflow-hidden group border-0"
+                    className="bg-gradient-to-r from-gray-800 via-gray-900 to-black text-white font-bold px-12 py-6 text-xl shadow-2xl hover:shadow-3xl hover:scale-110 transition-all duration-300 relative overflow-hidden group border-0"
                     endContent={<Rocket className="w-6 h-6 group-hover:translate-x-1 group-hover:scale-110 transition-transform duration-300" />}
                   >
                     <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -440,7 +473,7 @@ export function IndustriesSection() {
                     href="/dashboard/demo"
                     size="lg"
                     variant="bordered"
-                    className="border-2 border-gray-300 text-gray-700 font-bold px-12 py-6 text-lg hover:bg-gradient-to-r hover:from-gray-50 hover:to-blue-50 hover:border-blue-400 hover:text-blue-600 transition-all duration-300 group"
+                    className="border-2 border-gray-300 text-gray-700 font-bold px-12 py-6 text-lg hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100 hover:border-gray-500 hover:text-gray-800 transition-all duration-300 group"
                     startContent={<Lightbulb className="w-5 h-5 group-hover:scale-110 transition-transform duration-300" />}
                   >
                     Ver Demo de Funcionalidades

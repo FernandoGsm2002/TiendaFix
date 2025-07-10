@@ -6,7 +6,6 @@ import { TestimonialsSection } from "./components/landing/TestimonialsSection";
 import { PricingSection } from "./components/landing/PricingSection";
 import { SecuritySection } from "./components/landing/SecuritySection";
 import { RolesSection } from "./components/landing/RolesSection";
-import { FaqSection } from "./components/landing/FaqSection";
 import { Footer } from "./components/landing/Footer";
 import { Button, Link } from "@heroui/react";
 import { 
@@ -48,18 +47,18 @@ export default function HomePage() {
           backgroundColor="bg-white"
           features={[
             {
-              icon: <Wrench className="w-8 h-8 text-blue-600" />,
+              icon: <Wrench className="w-8 h-8 text-gray-700" />,
               title: "Gestión completa de reparaciones",
               description: "Registra, asigna y da seguimiento a todas las reparaciones de tu taller. Desde la recepción del equipo hasta la entrega al cliente, todo bajo control."
             },
             
             {
-              icon: <Receipt className="w-8 h-8 text-purple-600" />,
+              icon: <Receipt className="w-8 h-8 text-gray-600" />,
               title: "Impresion de tickets de reparcion y tickets de venta",
               description: "Genera tickets y boletas, para que tus clientes puedan llevar su equipo."
             },
             {
-              icon: <Database className="w-8 h-8 text-blue-700" />,
+              icon: <Database className="w-8 h-8 text-gray-800" />,
               title: "Historial completo de clientes",
               description: "Mantén un registro detallado de todos los equipos y reparaciones de cada cliente. Ideal para garantías y reparaciones recurrentes."
             }
@@ -78,17 +77,17 @@ export default function HomePage() {
           backgroundColor="bg-gray-50"
           features={[
             {
-              icon: <Package className="w-8 h-8 text-purple-600" />,
+              icon: <Package className="w-8 h-8 text-gray-600" />,
               title: "Control de stock en tiempo real",
               description: "Sabe exactamente qué tienes en stock, qué se está agotando y qué necesitas comprar. Todo actualizado automáticamente con cada venta o reparación."
             },
             {
-              icon: <TrendingUp className="w-8 h-8 text-blue-600" />,
+              icon: <TrendingUp className="w-8 h-8 text-gray-700" />,
               title: "Alertas de stock mínimo",
               description: "Recibe notificaciones cuando un producto esté llegando a su stock mínimo. Nunca más pierdas una venta por falta de repuestos."
             },
             {
-              icon: <BarChart3 className="w-8 h-8 text-purple-700" />,
+              icon: <BarChart3 className="w-8 h-8 text-gray-800" />,
               title: "Reportes de rentabilidad",
               description: "Conoce qué productos te dan más ganancia, cuáles rotan más rápido y optimiza tus compras basándote en datos reales."
             }
@@ -99,8 +98,8 @@ export default function HomePage() {
 
         <PricingSection />
 
-        {/* Ultra Modern Final CTA Section */}
-        <section className="py-24 bg-gradient-to-br from-blue-800 via-purple-900 to-black text-white relative overflow-hidden">
+        {/* Professional Final CTA Section - Hero Style */}
+        <section className="py-24 bg-gradient-to-br from-gray-800 via-gray-900 to-black text-white relative overflow-hidden">
           {/* Background Effects */}
           <div className="absolute inset-0 bg-[radial-gradient(circle_500px_at_50%_200px,rgba(255,255,255,0.1),transparent)]"></div>
           <div className="absolute top-20 left-20 w-64 h-64 bg-white/10 rounded-full blur-3xl animate-pulse"></div>
@@ -118,12 +117,12 @@ export default function HomePage() {
                 
                 <h2 className="text-4xl md:text-6xl font-black mb-6 leading-tight">
                   <span className="block">¿Listo para</span>
-                  <span className="bg-gradient-to-r from-white via-blue-100 to-purple-200 bg-clip-text text-transparent block">
+                  <span className="bg-gradient-to-r from-white via-gray-100 to-gray-200 bg-clip-text text-transparent block">
                     revolucionar tu taller?
                   </span>
                 </h2>
                 
-                                 <p className="text-xl md:text-2xl mb-8 text-blue-100 leading-relaxed">
+                                 <p className="text-xl md:text-2xl mb-8 text-gray-100 leading-relaxed">
                    Únete a los <span className="font-bold text-white">100+ talleres sudamericanos</span> que ya confían en TiendaFix para gestionar sus reparaciones de móviles y tablets.
                  </p>
               </div>
@@ -134,10 +133,10 @@ export default function HomePage() {
                   as={Link}
                   href="/auth/register"
                   size="lg"
-                  className="bg-white text-blue-900 font-bold px-12 py-6 text-xl hover:bg-blue-50 transition-all duration-300 shadow-2xl hover:shadow-3xl hover:scale-105 relative overflow-hidden group border-0"
+                  className="bg-white text-gray-900 font-bold px-12 py-6 text-xl hover:bg-gray-50 transition-all duration-300 shadow-2xl hover:shadow-3xl hover:scale-105 relative overflow-hidden group border-0"
                   endContent={<Rocket className="w-6 h-6 group-hover:translate-x-1 transition-transform duration-300" />}
                 >
-                  <div className="absolute inset-0 bg-gradient-to-r from-blue-50/20 to-purple-100/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  <div className="absolute inset-0 bg-gradient-to-r from-gray-50/20 to-gray-100/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                   <span className="relative z-10">Registrate ahora</span>
                 </Button>
                 
@@ -157,10 +156,10 @@ export default function HomePage() {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
                 <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 hover:bg-white/20 transition-all duration-300 group">
                   <div className="flex items-center justify-center gap-3 mb-2">
-                    <Globe className="w-6 h-6 text-blue-300 group-hover:scale-110 transition-transform duration-300" />
+                    <Globe className="w-6 h-6 text-gray-300 group-hover:scale-110 transition-transform duration-300" />
                     <span className="text-lg font-semibold">Sudamérica</span>
                   </div>
-                  <p className="text-sm text-blue-200">Solución para tu taller</p>
+                  <p className="text-sm text-gray-200">Solución para tu taller</p>
                 </div>
                 
                 <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 hover:bg-white/20 transition-all duration-300 group">
@@ -168,15 +167,15 @@ export default function HomePage() {
                     <CheckCircle className="w-6 h-6 text-green-300 group-hover:scale-110 transition-transform duration-300" />
                     <span className="text-lg font-semibold">Desde $9.99</span>
                   </div>
-                  <p className="text-sm text-purple-200">USDT / S/. 37</p>
+                  <p className="text-sm text-gray-200">USDT / S/. 37</p>
                 </div>
                 
                 <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 hover:bg-white/20 transition-all duration-300 group">
                   <div className="flex items-center justify-center gap-3 mb-2">
-                    <Headphones className="w-6 h-6 text-purple-300 group-hover:scale-110 transition-transform duration-300" />
+                    <Headphones className="w-6 h-6 text-gray-300 group-hover:scale-110 transition-transform duration-300" />
                     <span className="text-lg font-semibold">Soporte 24/7</span>
                   </div>
-                  <p className="text-sm text-blue-200">En español</p>
+                  <p className="text-sm text-gray-200">En español</p>
                 </div>
               </div>
 
@@ -185,19 +184,19 @@ export default function HomePage() {
                                  <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
                    <div className="text-center">
                      <div className="text-3xl font-bold text-white mb-2">100+</div>
-                     <div className="text-sm text-blue-200">Talleres Activos</div>
+                     <div className="text-sm text-gray-200">Talleres Activos</div>
                    </div>
                    <div className="text-center">
                      <div className="text-3xl font-bold text-white mb-2">4.9★</div>
-                     <div className="text-sm text-purple-200">Calificación</div>
+                     <div className="text-sm text-gray-200">Calificación</div>
                    </div>
                    <div className="text-center">
                      <div className="text-3xl font-bold text-white mb-2">99.9%</div>
-                     <div className="text-sm text-blue-200">Uptime</div>
+                     <div className="text-sm text-gray-200">Uptime</div>
                    </div>
                    <div className="text-center">
                      <div className="text-3xl font-bold text-white mb-2">7 días</div>
-                     <div className="text-sm text-purple-200">Prueba Gratis</div>
+                     <div className="text-sm text-gray-200">Prueba Gratis</div>
                    </div>
                  </div>
               </div>

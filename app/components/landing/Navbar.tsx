@@ -100,8 +100,8 @@ export function LandingNavbar() {
             <Image
               src="/pngs/tiendafixlogo.png"
               alt="TiendaFix V2 Logo"
-              width={180}
-              height={135}
+              width={160}
+              height={130}
               className="transform group-hover:scale-110 transition-all duration-300"
             />
           </div>

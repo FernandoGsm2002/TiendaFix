@@ -14,6 +14,8 @@ interface AuthContextType {
   signIn: (email: string, password: string) => Promise<{ error: AuthError | null }>
   signUp: (email: string, password: string, userData: SignUpData) => Promise<{ error: AuthError | null }>
   signOut: () => Promise<void>
+  resetPassword: (email: string) => Promise<{ error: AuthError | null }>
+  updatePassword: (newPassword: string) => Promise<{ error: AuthError | null }>
   isSuperAdmin: boolean
   isOwner: boolean
   isTechnician: boolean
@@ -171,6 +173,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
+  const resetPassword = async (email: string) => {
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/auth/reset-password/confirm`
+    })
+    return { error }
+  }
+
+  const updatePassword = async (newPassword: string) => {
+    const { error } = await supabase.auth.updateUser({
+      password: newPassword
+    })
+    return { error }
+  }
+
   const value = {
     user,
     userProfile,
@@ -178,6 +194,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     signIn,
     signUp,
     signOut,
+    resetPassword,
+    updatePassword,
     isSuperAdmin,
     isOwner,
     isTechnician

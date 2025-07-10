@@ -74,13 +74,13 @@ const faqs = [
   {
     key: "printing",
     question: "¿Puedo imprimir tickets de reparación?",
-    answer: "Sí, TiendaFix incluye un sistema completo de impresión:\n\n• **Tickets de Reparación:** Comprobantes profesionales para cada servicio\n• **Recibos de Pago:** Documentos oficiales para cobros\n• **Facturas:** Comprobantes fiscales cuando sea necesario\n• **Etiquetas:** Para identificar equipos en reparación\n• **Reportes:** Impresión de estadísticas e informes\n\n**Compatibilidad:**\n• Impresoras térmicas (58mm y 80mm)\n• Impresoras de inyección de tinta\n• Impresoras láser\n• Configuración automática de drivers\n\nTodos los documentos incluyen tu logo, información del taller y datos del cliente de forma automática.",
+    answer: "Sí, TiendaFix incluye un sistema completo de impresión:\n\n• **Tickets de Reparación:** Comprobantes profesionales para cada servicio\n• **Recibos de Pago:** Documentos oficiales para cobros\n• **Facturas:** Comprobantes fiscales cuando sea necesario\n• **Etiquetas:** Para identificar equipos en reparación\n• **Reportes:** Impresión de estadísticas e informes\n\n**Compatibilidad:**\n• Impresoras térmicas (58mm y 80mm)\n• Impresoras de inyección de tinta\n• Impresoras láser\n• Configuración automática de drivers\n\nTodos los documentos incluyen información del taller y datos del cliente de forma automática.",
     icon: <Printer className="w-6 h-6 text-purple-600" />
   },
   {
     key: "sales-tracking",
     question: "¿Las ventas se ven por el usuario que la hizo?",
-    answer: "Absolutamente sí. TiendaFix registra detalladamente:\n\n• **Ventas por Usuario:** Cada venta se asocia automáticamente al usuario que la realizó\n• **Comisiones:** Cálculo automático de comisiones por vendedor\n• **Reportes Individuales:** Estadísticas de ventas por técnico/vendedor\n• **Ranking de Vendedores:** Clasificación por rendimiento\n• **Metas y Objetivos:** Seguimiento de objetivos individuales\n• **Historial Completo:** Acceso a todas las transacciones realizadas\n\nEsto te permite:\n• Motivar a tu equipo con datos concretos\n• Identificar a los mejores vendedores\n• Optimizar la asignación de tareas\n• Calcular comisiones de forma justa y transparente",
+    answer: "Absolutamente sí. TiendaFix registra detalladamente:\n\n• **Ventas por Usuario:** Cada venta se asocia automáticamente al usuario que la realizó\n• **Comisiones:** Cálculo automático de comisiones por vendedor\n• **Reportes Individuales:** Estadísticas de ventas por técnico/vendedor",
     icon: <Eye className="w-6 h-6 text-orange-600" />
   }
 ];
@@ -91,7 +91,7 @@ const contactMethods = [
     title: "WhatsApp",
     description: "Soporte directo 9AM - 8PM",
     action: "Contactar por WhatsApp",
-    href: "https://wa.me/message/XXXXXX", // Reemplazar con el número real
+    href: "https://wa.me/message/51998936755", // Reemplazar con el número real
     color: "success" as const
   },
   {
@@ -99,7 +99,7 @@ const contactMethods = [
     title: "Email",
     description: "Respuesta en 24 horas",
     action: "Enviar Email",
-    href: "mailto:soporte@tiendafix.com",
+    href: "mailto:fernandoapple2002@gmail.com",
     color: "primary" as const
   },
   {
@@ -107,7 +107,7 @@ const contactMethods = [
     title: "Teléfono",
     description: "Atención personalizada",
     action: "Llamar Ahora",
-    href: "tel:+51XXXXXXXXX", // Reemplazar con el número real
+    href: "tel:+51998936755", // Reemplazar con el número real
     color: "secondary" as const
   }
 ];

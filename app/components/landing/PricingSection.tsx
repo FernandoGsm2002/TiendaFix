@@ -161,7 +161,7 @@ export function PricingSection() {
         {/* Ultra Modern Header */}
         <div className="text-center mb-24">
           <Badge
-            content="HOT"
+            content=""
             color="danger"
             placement="top-right"
             className="mb-8"

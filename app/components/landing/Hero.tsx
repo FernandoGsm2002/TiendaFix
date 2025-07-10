@@ -90,22 +90,17 @@ export function Hero() {
       <div className="relative z-10 max-w-7xl mx-auto px-4 md:px-8 py-12 md:py-20">
         <div className="text-center">
           {/* Ultra Modern Badge */}
-          <Badge
-            content="NEW"
-            color="danger"
-            placement="top-right"
-            className="mb-4 md:mb-8"
-          >
+          
             <Chip
               startContent={<Crown className="w-3 h-3 md:w-5 md:h-5 animate-pulse" />}
               endContent={<Sparkles className="w-3 h-3 md:w-5 md:h-5" />}
               variant="flat"
               className="bg-gradient-to-r from-[#f0fdf9] via-[#eafae7] to-[#c0e6ba] text-[#013237] px-3 md:px-8 py-1 md:py-4 text-xs md:text-lg font-bold shadow-2xl border border-[#c0e6ba]/50 hover:scale-105 transition-transform duration-300"
             >
-              <span className="hidden sm:inline">Líder en Software para Talleres V2</span>
+              <span className="hidden sm:inline">Software para Talleres </span>
               <span className="sm:hidden">Software para Talleres V2</span>
             </Chip>
-          </Badge>
+          
           
           {/* Enhanced Main Title with Animation */}
           <div className="mb-4 md:mb-8">

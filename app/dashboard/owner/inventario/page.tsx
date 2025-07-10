@@ -1,6 +1,7 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
+import debounce from 'lodash.debounce'
 import DashboardLayout from '../components/DashboardLayout'
 import { useTranslations, useCurrency } from '@/lib/contexts/TranslationContext'
 import { 
@@ -89,6 +90,7 @@ interface NewProductForm {
   name: string
   description: string
   category: string
+  customCategory: string
   brand: string
   model: string
   stock_quantity: number
@@ -132,6 +134,7 @@ export default function InventarioPage() {
     name: '',
     description: '',
     category: '',
+    customCategory: '',
     brand: '',
     model: '',
     stock_quantity: 0,
@@ -196,10 +199,20 @@ export default function InventarioPage() {
     fetchInventory(1, filtroCategoria, estado, busqueda)
   }
 
+  const debouncedFetch = useCallback(
+    debounce((search: string) => {
+      setPagination(prev => ({ ...prev, page: 1 }))
+      fetchInventory(1, filtroCategoria, filtroEstado, search);
+    }, 300),
+    [filtroCategoria, filtroEstado]
+  );
+
+  useEffect(() => {
+    debouncedFetch(busqueda);
+  }, [busqueda, debouncedFetch]);
+
   const handleBusquedaChange = (search: string) => {
     setBusqueda(search)
-    setPagination(prev => ({ ...prev, page: 1 }))
-    fetchInventory(1, filtroCategoria, filtroEstado, search)
   }
 
   const handleCreateProduct = async (e: React.FormEvent) => {
@@ -207,12 +220,18 @@ export default function InventarioPage() {
     setCreateLoading(true)
 
     try {
+      // Usar categoría personalizada si fue seleccionada
+      const productData = {
+        ...newProduct,
+        category: newProduct.category === 'personalizado' ? newProduct.customCategory : newProduct.category
+      }
+
       const response = await fetch('/api/inventory', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(newProduct),
+        body: JSON.stringify(productData),
       })
 
       if (!response.ok) {
@@ -223,6 +242,7 @@ export default function InventarioPage() {
         name: '',
         description: '',
         category: '',
+        customCategory: '',
         brand: '',
         model: '',
         stock_quantity: 0,
@@ -265,9 +285,10 @@ export default function InventarioPage() {
       'cables': 'danger',
       'cargadores': 'warning',
       'herramientas': 'default',
-      'componentes': 'primary'
+      'componentes': 'primary',
+      'personalizado': 'secondary'
     }
-    return colors[category] || 'default'
+    return colors[category] || 'secondary'
   }
 
 
@@ -280,7 +301,7 @@ export default function InventarioPage() {
 
   const categorias = [
     'todas', 'pantallas', 'baterias', 'accesorios', 'puertos', 
-    'cables', 'cargadores', 'herramientas', 'componentes'
+    'cables', 'cargadores', 'herramientas', 'componentes', 'personalizado'
   ]
 
   // Funciones CRUD
@@ -979,7 +1000,7 @@ export default function InventarioPage() {
                     name="category"
                     type="select"
                     value={newProduct.category}
-                    onChange={(value) => setNewProduct(prev => ({ ...prev, category: value }))}
+                    onChange={(value) => setNewProduct(prev => ({ ...prev, category: value, customCategory: '' }))}
                     required
                     options={categorias.filter(cat => cat !== 'todas').map(cat => ({
                       value: cat,
@@ -1001,6 +1022,18 @@ export default function InventarioPage() {
                     placeholder="Ej: iPhone 14 Pro, Galaxy S23"
                   />
                 </div>
+
+                {/* Campo de categoría personalizada */}
+                {newProduct.category === 'personalizado' && (
+                  <FormField
+                    label="Escriba la categoría personalizada"
+                    name="customCategory"
+                    value={newProduct.customCategory}
+                    onChange={(value) => setNewProduct(prev => ({ ...prev, customCategory: value }))}
+                    placeholder="Ej: Mouse, Teclado, Auriculares, etc."
+                    required
+                  />
+                )}
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <FormField
@@ -1046,18 +1079,37 @@ export default function InventarioPage() {
                   />
                 </div>
 
-                {newProduct.unit_cost > 0 && newProduct.enduser_price > 0 && (
-                  <Card className="bg-green-50 border border-green-200">
-                    <CardBody className="p-4">
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium text-green-700">Margen de ganancia:</span>
-                        <Chip color="success" variant="flat">
-                          {calculateMargin(newProduct.unit_cost, newProduct.enduser_price)}
-                        </Chip>
+                {/* Margen de ganancia - Siempre visible */}
+                <Card className="bg-gradient-to-r from-gray-50 to-gray-100 border border-gray-200">
+                  <CardBody className="p-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-semibold text-gray-700">💰 Margen de ganancia:</span>
+                        {newProduct.unit_cost > 0 && newProduct.enduser_price > 0 && newProduct.enduser_price > newProduct.unit_cost && (
+                          <span className="text-xs text-green-600">
+                            (Ganancia: S/ {(newProduct.enduser_price - newProduct.unit_cost).toFixed(2)})
+                          </span>
+                        )}
                       </div>
-                    </CardBody>
-                  </Card>
-                )}
+                      <Chip 
+                        color={newProduct.unit_cost > 0 && newProduct.enduser_price > 0 && newProduct.enduser_price > newProduct.unit_cost ? "success" : "default"} 
+                        variant="flat"
+                        size="lg"
+                        className="font-bold"
+                      >
+                        {newProduct.unit_cost > 0 && newProduct.enduser_price > 0 
+                          ? calculateMargin(newProduct.unit_cost, newProduct.enduser_price)
+                          : '0%'
+                        }
+                      </Chip>
+                    </div>
+                    {newProduct.unit_cost > 0 && newProduct.enduser_price > 0 && newProduct.enduser_price <= newProduct.unit_cost && (
+                      <p className="text-xs text-red-600 mt-2">
+                        ⚠️ El precio de venta debe ser mayor al costo para obtener ganancia
+                      </p>
+                    )}
+                  </CardBody>
+                </Card>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <FormField
@@ -1096,15 +1148,15 @@ export default function InventarioPage() {
         <Modal 
           isOpen={isDetailOpen} 
           onClose={onDetailClose} 
-          size="xl"
+          size="full"
           scrollBehavior="inside"
           classNames={{
             wrapper: "z-[1000]",
             backdrop: "z-[999]",
-            base: "max-h-[95vh] my-1 mx-1 sm:my-2 sm:mx-2 md:mx-6",
-            body: "max-h-[75vh] overflow-y-auto py-2 md:py-4",
-            header: "border-b border-gray-200 pb-2 md:pb-4",
-            footer: "border-t border-gray-200 pt-2 md:pt-4"
+            base: "max-h-[100vh] h-full w-full m-0 sm:max-h-[95vh] sm:h-auto sm:w-auto sm:my-2 sm:mx-2 md:mx-6 md:max-w-4xl",
+            body: "max-h-[calc(100vh-120px)] sm:max-h-[75vh] overflow-y-auto p-3 sm:p-4 md:p-6",
+            header: "border-b border-gray-200 p-3 sm:p-4 md:p-6",
+            footer: "border-t border-gray-200 p-3 sm:p-4 md:p-6"
           }}
         >
           <ModalContent>

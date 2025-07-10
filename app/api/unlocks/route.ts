@@ -75,7 +75,7 @@ export async function GET(request: NextRequest) {
     }
 
     if (search) {
-      query = query.or(`brand.ilike.%${search}%,model.ilike.%${search}%,imei.ilike.%${search}%,serial_number.ilike.%${search}%`)
+      query = query.or(`brand.ilike.%${search}%,model.ilike.%${search}%,imei.ilike.%${search}%,serial_number.ilike.%${search}%,customer_name.ilike.%${search}%,customer_phone.ilike.%${search}%,customer_email.ilike.%${search}%`)
     }
 
     // 6. Ejecutar query con paginación

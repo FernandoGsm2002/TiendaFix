@@ -1,6 +1,7 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
+import debounce from 'lodash.debounce'
 import DashboardLayout from '../components/DashboardLayout'
 import { useTranslations } from '@/lib/contexts/TranslationContext'
 import { 
@@ -198,6 +199,17 @@ export default function DesbloqueoPage() {
       setLoading(false)
     }
   }
+
+  const debouncedFetch = useCallback(
+    debounce((search: string) => {
+      fetchUnlocks(1, filtroEstado, filtroTipo, search);
+    }, 300),
+    [filtroEstado, filtroTipo]
+  );
+
+  useEffect(() => {
+    debouncedFetch(busqueda);
+  }, [busqueda, debouncedFetch]);
 
   const fetchCustomers = async () => {
     try {
@@ -585,12 +597,11 @@ export default function DesbloqueoPage() {
             <div className="flex flex-col md:flex-row gap-4">
               <div className="flex-1">
                 <Input
-                  placeholder="Buscar por tipo, marca, modelo, IMEI..."
+                  placeholder="Buscar por cliente, marca, modelo, IMEI..."
                   startContent={<Search className="w-4 h-4 text-gray-400" />}
                   value={busqueda}
                   onValueChange={(value) => {
                     setBusqueda(value)
-                    fetchUnlocks(1, filtroEstado, filtroTipo, value)
                   }}
                   variant="bordered"
                   size="lg"
@@ -1363,15 +1374,15 @@ export default function DesbloqueoPage() {
         <Modal 
           isOpen={isDetailOpen} 
           onClose={onDetailClose} 
-          size="2xl"
+          size="full"
           scrollBehavior="inside"
           classNames={{
             wrapper: "z-[1000]",
             backdrop: "z-[999]",
-            base: "max-h-[95vh] my-2 mx-2 sm:mx-6",
-            body: "max-h-[75vh] overflow-y-auto py-4",
-            header: "border-b border-gray-200 pb-4",
-            footer: "border-t border-gray-200 pt-4"
+            base: "max-h-[100vh] h-full w-full m-0 sm:max-h-[95vh] sm:h-auto sm:w-auto sm:my-2 sm:mx-2 md:mx-6 md:max-w-4xl",
+            body: "max-h-[calc(100vh-120px)] sm:max-h-[75vh] overflow-y-auto p-3 sm:p-4 md:p-6",
+            header: "border-b border-gray-200 p-3 sm:p-4 md:p-6",
+            footer: "border-t border-gray-200 p-3 sm:p-4 md:p-6"
           }}
         >
           <ModalContent>

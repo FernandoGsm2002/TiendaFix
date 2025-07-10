@@ -879,15 +879,15 @@ export default function ClientesPage() {
         <Modal 
           isOpen={isDetailOpen} 
           onClose={handleDetailClose} 
-          size="2xl" 
+          size="full" 
           scrollBehavior="inside"
           classNames={{
             wrapper: "z-[1000]",
             backdrop: "z-[999]",
-            base: "max-h-[95vh] my-2 mx-2 sm:mx-6 w-full max-w-4xl",
-            body: "max-h-[80vh] overflow-y-auto py-4",
-            header: "border-b border-gray-200 pb-4",
-            footer: "border-t border-gray-200 pt-4"
+            base: "max-h-[100vh] h-full w-full m-0 sm:max-h-[95vh] sm:h-auto sm:w-auto sm:my-2 sm:mx-2 md:mx-6 md:max-w-4xl",
+            body: "max-h-[calc(100vh-120px)] sm:max-h-[80vh] overflow-y-auto p-3 sm:p-4 md:p-6",
+            header: "border-b border-gray-200 p-3 sm:p-4 md:p-6",
+            footer: "border-t border-gray-200 p-3 sm:p-4 md:p-6"
           }}
         >
           <ModalContent>

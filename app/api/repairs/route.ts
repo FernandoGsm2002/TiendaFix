@@ -88,7 +88,7 @@ export async function GET(request: NextRequest) {
     }
 
     if (search) {
-      query = query.or(`title.ilike.%${search}%,description.ilike.%${search}%,problem_description.ilike.%${search}%`)
+      query = query.or(`title.ilike.%${search}%,description.ilike.%${search}%,problem_description.ilike.%${search}%,customer_name.ilike.%${search}%,unregistered_customer_name.ilike.%${search}%,device_brand.ilike.%${search}%,device_model.ilike.%${search}%,unregistered_device_info.ilike.%${search}%,status.ilike.%${search}%`)
     }
 
     // Filtros de fecha
