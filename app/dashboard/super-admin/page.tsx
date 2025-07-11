@@ -88,13 +88,16 @@ export default function SuperAdminDashboard() {
       const response = await fetch('/api/admin/requests', {
         cache: 'no-store', // Forzar recarga sin caché
         headers: {
-          'Cache-Control': 'no-cache',
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0'
         }
       })
       const result = await response.json()
 
       if (!response.ok) {
         console.error('❌ Error loading data:', result.error)
+        console.error('❌ Debug info:', result.debug)
         alert(`Error cargando datos: ${result.error}`)
         return
       }
@@ -102,7 +105,8 @@ export default function SuperAdminDashboard() {
       console.log('✅ Data loaded successfully:', {
         requests: result.data.requests.length,
         organizations: result.data.organizations.length,
-        timestamp: new Date().toLocaleString()
+        timestamp: new Date().toLocaleString(),
+        meta: result.meta
       })
 
       // Log detallado de las solicitudes
@@ -111,8 +115,20 @@ export default function SuperAdminDashboard() {
         result.data.requests.slice(0, 3).forEach((req: any, index: number) => {
           console.log(`  ${index + 1}. ${req.name} (${req.owner_email}) - ${req.status} - ${new Date(req.created_at).toLocaleString()}`)
         })
+        
+        // Log estadísticas
+        const statusStats = result.data.requests.reduce((acc: any, req: any) => {
+          acc[req.status] = (acc[req.status] || 0) + 1
+          return acc
+        }, {})
+        console.log('📊 Status statistics:', statusStats)
       } else {
         console.log('⚠️  No requests found - this may indicate an RLS or caching issue')
+        console.log('🔍 Troubleshooting steps:')
+        console.log('  1. Check if you have pending organization requests in Supabase')
+        console.log('  2. Verify your user is configured as super_admin')
+        console.log('  3. Try running the fix script again')
+        console.log('  4. Check browser developer tools for network errors')
       }
 
       setPendingRequests(result.data.requests || [])
@@ -121,7 +137,8 @@ export default function SuperAdminDashboard() {
       console.error('❌ Error loading data:', error)
       alert(`Error de conexión: ${error}`)
     } finally {
-      setLoading(false)
+      // Delay mínimo para evitar parpadeo
+      setTimeout(() => setLoading(false), 200)
     }
   }
 

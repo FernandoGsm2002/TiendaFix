@@ -585,6 +585,183 @@ select:focus-visible {
   }
 }
 
+/* ===== TRANSICIONES ANTI-PARPADEO ===== */
+.smooth-transition {
+  transition: all 0.2s ease-in-out;
+}
+
+.fade-in {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.fade-out {
+  animation: fadeOut 0.2s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+
+/* ===== OPTIMIZACIONES DE LOADING ===== */
+.loading-container {
+  min-height: 200px;
+  position: relative;
+  overflow: hidden;
+}
+
+.loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(1px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+.content-transition {
+  transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
+}
+
+.content-loading {
+  opacity: 0.6;
+  transform: scale(0.99);
+  pointer-events: none;
+}
+
+.content-loaded {
+  opacity: 1;
+  transform: scale(1);
+  pointer-events: auto;
+}
+
+/* ===== SKELETON MEJORADOS ===== */
+.skeleton-pulse {
+  animation: skeleton-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes skeleton-pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+.skeleton-shimmer {
+  position: relative;
+  overflow: hidden;
+  background: #f0f0f0;
+}
+
+.skeleton-shimmer::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.6),
+    transparent
+  );
+  animation: skeleton-shimmer 1.5s ease-in-out infinite;
+}
+
+@keyframes skeleton-shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* ===== PREVENCIÓN DE LAYOUT SHIFT ===== */
+.stable-height {
+  min-height: 1rem;
+}
+
+.stable-width {
+  min-width: 1rem;
+}
+
+.preserve-dimensions {
+  aspect-ratio: attr(data-aspect-ratio);
+}
+
+/* ===== OPTIMIZACIONES DE TABLA ===== */
+.table-container {
+  contain: layout style;
+  will-change: contents;
+}
+
+.table-row {
+  transition: background-color 0.15s ease;
+  contain: layout;
+}
+
+.table-row:hover {
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+/* ===== OPTIMIZACIONES DE BOTONES ===== */
+.btn-optimized {
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  transform: translateZ(0); /* Forzar aceleración por hardware */
+  backface-visibility: hidden;
+}
+
+.btn-optimized:hover {
+  transform: translateY(-1px) translateZ(0);
+}
+
+.btn-optimized:active {
+  transform: translateY(0) translateZ(0);
+}
+
+/* ===== OPTIMIZACIONES DE MODAL ===== */
+.modal-content {
+  animation: modalSlideIn 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
 /* ===== ERROR BOUNDARIES Y ESTADOS ===== */
 .error-boundary {
   min-height: 200px;

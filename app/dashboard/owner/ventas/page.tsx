@@ -1250,11 +1250,11 @@ export default function VentasPage() {
                         </div>
                       </div>
 
-                      <div className="flex gap-3">
+                      <div className="flex flex-col gap-3">
                         <Button
                           color="secondary"
                           size="lg"
-                          className="flex-1"
+                          className="w-full"
                           startContent={<FileText className="w-5 h-5" />}
                           onPress={handlePrintQuotation}
                           isLoading={printLoading}
@@ -1264,7 +1264,7 @@ export default function VentasPage() {
                         <Button
                           color="primary"
                           size="lg"
-                          className="flex-1"
+                          className="w-full font-semibold bg-gradient-to-r from-green-500 to-green-600 text-white hover:from-green-600 hover:to-green-700"
                           startContent={<CreditCard className="w-5 h-5" />}
                           onPress={processSale}
                           isLoading={loading}

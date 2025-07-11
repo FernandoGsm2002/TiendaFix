@@ -105,7 +105,7 @@ export function Footer() {
                 <div className="w-8 h-8 bg-gray-800 rounded-lg flex items-center justify-center group-hover:bg-blue-600 transition-colors">
                   <Mail className="w-4 h-4" />
                 </div>
-                <span className="text-sm font-medium">fernandoapple2002@gmail.com</span>
+                <span className="text-sm font-medium">support@tiendafix.com</span>
               </div>
               <div className="flex items-center gap-3 text-gray-300 group hover:text-white transition-colors">
                 <div className="w-8 h-8 bg-gray-800 rounded-lg flex items-center justify-center group-hover:bg-green-600 transition-colors">

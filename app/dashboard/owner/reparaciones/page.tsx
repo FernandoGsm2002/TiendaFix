@@ -377,12 +377,92 @@ export default function ReparacionesPage() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'pending': return 'default'
+      case 'received': return 'default'
       case 'diagnosed': return 'warning'
       case 'in_progress': return 'primary'
       case 'completed': return 'success'
       case 'delivered': return 'success'
       case 'cancelled': return 'danger'
       default: return 'default'
+    }
+  }
+
+  // Nueva función para obtener el color del botón de cambio de estado
+  const getStatusButtonColor = (status: string) => {
+    switch (status) {
+      case 'pending': return 'orange-500'
+      case 'diagnosed': return 'blue-500'
+      case 'in_progress': return 'blue-600'
+      case 'completed': return 'green-500'
+      case 'delivered': return 'green-600'
+      case 'cancelled': return 'red-500'
+      default: return 'gray-500'
+    }
+  }
+
+  // Nueva función para obtener el color de hover del botón de cambio de estado
+  const getStatusButtonHoverColor = (status: string) => {
+    switch (status) {
+      case 'pending': return 'orange-600'
+      case 'diagnosed': return 'blue-600'
+      case 'in_progress': return 'blue-700'
+      case 'completed': return 'green-600'
+      case 'delivered': return 'green-700'
+      case 'cancelled': return 'red-600'
+      default: return 'gray-600'
+    }
+  }
+
+  // Nueva función para obtener el color de fondo del botón de cambio de estado
+  const getStatusButtonBgColor = (status: string) => {
+    switch (status) {
+      case 'pending': return 'orange-100'
+      case 'diagnosed': return 'blue-100'
+      case 'in_progress': return 'blue-100'
+      case 'completed': return 'green-100'
+      case 'delivered': return 'green-100'
+      case 'cancelled': return 'red-100'
+      default: return 'gray-100'
+    }
+  }
+
+  // Nueva función para obtener colores específicos para los botones del modal
+  const getModalButtonColor = (status: string) => {
+    switch (status) {
+      case 'received': return 'default'
+      case 'diagnosed': return 'warning'
+      case 'in_progress': return 'primary'
+      case 'completed': return 'success'
+      case 'delivered': return 'success'
+      case 'cancelled': return 'danger'
+      default: return 'default'
+    }
+  }
+
+  // Nueva función para obtener colores CSS específicos para los botones del modal
+  const getModalButtonClass = (status: string, isSelected: boolean) => {
+    const baseClass = 'w-full text-sm font-medium transition-all duration-200'
+    
+    if (isSelected) {
+      switch (status) {
+        case 'received': return `${baseClass} bg-gray-500 text-white border-gray-500 hover:bg-gray-600`
+        case 'diagnosed': return `${baseClass} bg-orange-500 text-white border-orange-500 hover:bg-orange-600`
+        case 'in_progress': return `${baseClass} bg-blue-500 text-white border-blue-500 hover:bg-blue-600`
+        case 'completed': return `${baseClass} bg-green-500 text-white border-green-500 hover:bg-green-600`
+        case 'delivered': return `${baseClass} bg-green-600 text-white border-green-600 hover:bg-green-700`
+        case 'cancelled': return `${baseClass} bg-red-500 text-white border-red-500 hover:bg-red-600`
+        default: return `${baseClass} bg-gray-500 text-white border-gray-500 hover:bg-gray-600`
+      }
+    } else {
+      switch (status) {
+        case 'received': return `${baseClass} bg-gray-50 text-gray-700 border-gray-300 hover:bg-gray-100 hover:border-gray-400`
+        case 'diagnosed': return `${baseClass} bg-orange-50 text-orange-700 border-orange-300 hover:bg-orange-100 hover:border-orange-400`
+        case 'in_progress': return `${baseClass} bg-blue-50 text-blue-700 border-blue-300 hover:bg-blue-100 hover:border-blue-400`
+        case 'completed': return `${baseClass} bg-green-50 text-green-700 border-green-300 hover:bg-green-100 hover:border-green-400`
+        case 'delivered': return `${baseClass} bg-green-50 text-green-800 border-green-400 hover:bg-green-100 hover:border-green-500`
+        case 'cancelled': return `${baseClass} bg-red-50 text-red-700 border-red-300 hover:bg-red-100 hover:border-red-400`
+        default: return `${baseClass} bg-gray-50 text-gray-700 border-gray-300 hover:bg-gray-100 hover:border-gray-400`
+      }
     }
   }
 
@@ -824,7 +904,7 @@ export default function ReparacionesPage() {
                 variant="light"
                 size="sm"
                 onPress={() => handleStatusChange(repair)}
-                className="text-orange-600 hover:text-orange-700 hover:bg-orange-100"
+                className={`text-${getStatusButtonColor(repair.status)} hover:text-${getStatusButtonHoverColor(repair.status)} hover:bg-${getStatusButtonBgColor(repair.status)}`}
               >
                 <ClipboardList className="h-4 w-4" />
               </Button>
@@ -1220,8 +1300,8 @@ export default function ReparacionesPage() {
                               isIconOnly
                               variant="light"
                               size="sm"
-                              color="warning"
                               onPress={() => handleStatusChange(repair)}
+                              className={`text-${getStatusButtonColor(repair.status)} hover:text-${getStatusButtonHoverColor(repair.status)} hover:bg-${getStatusButtonBgColor(repair.status)}`}
                             >
                               <ClipboardList className="h-4 w-4" />
                             </Button>
@@ -1318,8 +1398,8 @@ export default function ReparacionesPage() {
                             isIconOnly
                             variant="light"
                             size="sm"
-                            color="warning"
                             onPress={() => handleStatusChange(repair)}
+                            className={`text-${getStatusButtonColor(repair.status)} hover:text-${getStatusButtonHoverColor(repair.status)} hover:bg-${getStatusButtonBgColor(repair.status)}`}
                           >
                             <ClipboardList className="h-4 w-4" />
                           </Button>
@@ -1818,15 +1898,14 @@ export default function ReparacionesPage() {
                   </div>
                   <div className="flex flex-col gap-2 pt-2">
                     <p className={`text-xs md:text-sm font-medium ${textColors.primary}`}>Seleccionar nuevo estado:</p>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                       {['received', 'diagnosed', 'in_progress', 'completed', 'delivered', 'cancelled'].map(status => (
                         <Button
                           key={status}
-                          variant={selectedRepair.status === status ? "solid" : "bordered"}
-                          color={getStatusColor(status) as any}
+                          variant="bordered"
                           onClick={() => confirmUpdateStatus(status)}
-                          className="w-full"
-                          size="sm"
+                          size="md"
+                          className={getModalButtonClass(status, selectedRepair.status === status)}
                         >
                           {getStatusLabel(status)}
                         </Button>

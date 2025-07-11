@@ -99,7 +99,7 @@ const contactMethods = [
     title: "Email",
     description: "Respuesta en 24 horas",
     action: "Enviar Email",
-    href: "mailto:fernandoapple2002@gmail.com",
+    href: "mailto:support@tiendafix.com",
     color: "primary" as const
   },
   {

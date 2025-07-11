@@ -269,6 +269,50 @@ export default function DesbloqueoPage() {
     return statusOptions.find(s => s.value === status) || statusOptions[0]
   }
 
+  // Funciones para colores de botones de cambio de estado
+  const getStatusButtonColor = (status: string) => {
+    switch (status) {
+      case 'pending': return 'orange-500'
+      case 'in_progress': return 'blue-500'
+      case 'completed': return 'green-500'
+      case 'failed': return 'red-500'
+      default: return 'gray-500'
+    }
+  }
+
+  const getStatusButtonHoverColor = (status: string) => {
+    switch (status) {
+      case 'pending': return 'orange-600'
+      case 'in_progress': return 'blue-600'
+      case 'completed': return 'green-600'
+      case 'failed': return 'red-600'
+      default: return 'gray-600'
+    }
+  }
+
+  const getStatusButtonBgColor = (status: string) => {
+    switch (status) {
+      case 'pending': return 'orange-100'
+      case 'in_progress': return 'blue-100'
+      case 'completed': return 'green-100'
+      case 'failed': return 'red-100'
+      default: return 'gray-100'
+    }
+  }
+
+  // Nueva función para obtener colores CSS específicos para los botones del modal
+  const getModalButtonClass = (status: string) => {
+    const baseClass = 'h-16 flex-col font-semibold transition-all duration-200 min-w-0'
+    
+    switch (status) {
+      case 'pending': return `${baseClass} bg-orange-50 text-orange-700 border-orange-300 hover:bg-orange-100 hover:border-orange-400`
+      case 'in_progress': return `${baseClass} bg-blue-50 text-blue-700 border-blue-300 hover:bg-blue-100 hover:border-blue-400`
+      case 'completed': return `${baseClass} bg-green-50 text-green-700 border-green-300 hover:bg-green-100 hover:border-green-400`
+      case 'failed': return `${baseClass} bg-red-50 text-red-700 border-red-300 hover:bg-red-100 hover:border-red-400`
+      default: return `${baseClass} bg-gray-50 text-gray-700 border-gray-300 hover:bg-gray-100 hover:border-gray-400`
+    }
+  }
+
   const getUnlockTypeLabel = (type: string) => {
     return unlockTypes.find(t => t.value === type)?.label || type
   }
@@ -803,8 +847,8 @@ export default function DesbloqueoPage() {
                               isIconOnly
                               size="sm"
                               variant="flat"
-                              color="warning"
                               onPress={() => handleStatusChange(unlock)}
+                              className={`text-${getStatusButtonColor(unlock.status)} hover:text-${getStatusButtonHoverColor(unlock.status)} hover:bg-${getStatusButtonBgColor(unlock.status)}`}
                             >
                               <Edit className="w-4 h-4" />
                             </Button>
@@ -1001,10 +1045,9 @@ export default function DesbloqueoPage() {
                           <Button 
                             variant="flat" 
                             size="sm" 
-                            color="warning"
                             startContent={<Edit className="w-4 h-4" />}
                             onPress={() => handleStatusChange(unlock)}
-                            className="flex-1"
+                            className={`flex-1 text-${getStatusButtonColor(unlock.status)} hover:text-${getStatusButtonHoverColor(unlock.status)} hover:bg-${getStatusButtonBgColor(unlock.status)}`}
                           >
                             Estado
                           </Button>
@@ -1210,8 +1253,7 @@ export default function DesbloqueoPage() {
                     {statusOptions.map((status) => (
                       <Button
                         key={status.value}
-                        variant="flat"
-                        color={status.color as any}
+                        variant="bordered"
                         size="lg"
                         startContent={React.createElement(status.icon, { className: "w-5 h-5" })}
                         onPress={() => {
@@ -1221,7 +1263,7 @@ export default function DesbloqueoPage() {
                           }
                         }}
                         isLoading={statusLoading}
-                        className="h-16 flex-col"
+                        className={getModalButtonClass(status.value)}
                       >
                         <span className="font-semibold">{status.label}</span>
                         <span className="text-xs opacity-70">

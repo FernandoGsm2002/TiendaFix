@@ -1,20 +1,14 @@
-# Configuración de Supabase - TiendaFix
-# Copiar el contenido de este archivo a un nuevo archivo llamado .env.local
+# Supabase Configuration
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
 
-NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key-here
-SUPABASE_SERVICE_ROLE_KEY=your-service-role-key-here
+# App Configuration
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+NEXT_PUBLIC_APP_NAME=TiendaFix
 
-# Base de datos directa (opcional)
-DATABASE_URL=postgresql://postgres:password@localhost:54322/postgres
+# Super Admin Configuration
+NEXT_PUBLIC_SUPER_ADMIN_EMAIL=admin@yourdomain.com
 
-# Configuración de desarrollo
-NODE_ENV=development
-
-# INSTRUCCIONES:
-# 1. Crear proyecto en https://supabase.com
-# 2. Ir a Settings > API
-# 3. Copiar Project URL y Project API Key (anon key)
-# 4. Copiar este archivo como .env.local
-# 5. Reemplazar los valores con los reales de tu proyecto
-# 6. Ejecutar el script: scripts/insert-sample-data.sql en Supabase SQL Editor 
+# Production URL (for Vercel deployment)
+# NEXT_PUBLIC_APP_URL=https://your-domain.vercel.app 
