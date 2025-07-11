@@ -6,6 +6,7 @@ import TechnicianSidebar from './TechnicianSidebar'
 import TechnicianHeader from './TechnicianHeader'
 import { Spinner, Card, CardBody, Button } from '@heroui/react'
 import { AlertTriangle, ArrowLeft, Menu, X } from 'lucide-react'
+import { AnnouncementModal, useAnnouncements } from '@/app/components/AnnouncementModal'
 
 interface TechnicianDashboardLayoutProps {
   children: React.ReactNode
@@ -15,6 +16,9 @@ export default function TechnicianDashboardLayout({ children }: TechnicianDashbo
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const { loading, userProfile } = useAuth()
+  
+  // Hook para manejar anuncios
+  const { isOpen: isAnnouncementOpen, onClose: onAnnouncementClose, currentVersion, markAsSeen } = useAnnouncements()
 
   const handleToggleSidebar = () => {
     setSidebarCollapsed(!sidebarCollapsed)
@@ -183,6 +187,16 @@ export default function TechnicianDashboardLayout({ children }: TechnicianDashbo
           </div>
         </div>
       </div>
+
+      {/* Modal de Anuncios */}
+      {currentVersion && (
+        <AnnouncementModal
+          isOpen={isAnnouncementOpen}
+          onClose={onAnnouncementClose}
+          version={currentVersion}
+          onMarkAsSeen={markAsSeen}
+        />
+      )}
 
       <style jsx>{`
         @keyframes blob {

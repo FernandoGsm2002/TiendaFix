@@ -7,6 +7,7 @@ import DemoHeader from './DemoHeader'
 import DemoSidebar from './DemoSidebar'
 import { Card, CardBody, Spinner } from '@heroui/react'
 import { Menu, X } from 'lucide-react'
+import { AnnouncementModal, useAnnouncements } from '@/app/components/AnnouncementModal'
 
 interface DemoLayoutProps {
   children: React.ReactNode
@@ -16,6 +17,9 @@ export default function DemoLayout({ children }: DemoLayoutProps) {
   const { t } = useTranslations()
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  
+  // Hook para manejar anuncios
+  const { isOpen: isAnnouncementOpen, onClose: onAnnouncementClose, currentVersion, markAsSeen } = useAnnouncements()
 
   const handleToggleSidebar = () => {
     setSidebarCollapsed(!sidebarCollapsed)
@@ -84,6 +88,16 @@ export default function DemoLayout({ children }: DemoLayoutProps) {
           </div>
         </div>
       </div>
+
+      {/* Modal de Anuncios */}
+      {currentVersion && (
+        <AnnouncementModal
+          isOpen={isAnnouncementOpen}
+          onClose={onAnnouncementClose}
+          version={currentVersion}
+          onMarkAsSeen={markAsSeen}
+        />
+      )}
     </div>
   )
 } 

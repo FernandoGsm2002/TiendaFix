@@ -54,6 +54,12 @@ import {
   FileText,
   History
 } from 'lucide-react'
+import { 
+  getTaxIdType, 
+  getTaxIdDescription, 
+  type CountryCode,
+  isValidCountry
+} from '@/lib/utils/tax-identification'
 
 interface Customer {
   id: string
@@ -63,6 +69,8 @@ interface Customer {
   address: string | null
   customer_type: string
   anonymous_identifier: string | null
+  customer_tax_id: string | null
+  customer_tax_id_type: string | null
   created_at: string
   updated_at: string
   is_recurrent: boolean
@@ -116,6 +124,8 @@ interface NewCustomerForm {
   address: string
   customer_type: string
   anonymous_identifier: string
+  customer_tax_id: string
+  customer_tax_id_type: string
 }
 
 export default function ClientesPage() {
@@ -148,7 +158,9 @@ export default function ClientesPage() {
     phone: '',
     address: '',
     customer_type: 'identified',
-    anonymous_identifier: ''
+    anonymous_identifier: '',
+    customer_tax_id: '',
+    customer_tax_id_type: ''
   })
 
   // Controles para los modales
@@ -165,6 +177,40 @@ export default function ClientesPage() {
   })
   const [serviceTypeFilter, setServiceTypeFilter] = useState('all') // all, repair, unlock, sale
   const [serviceStatusFilter, setServiceStatusFilter] = useState('all') // all, pending, completed
+  
+  // Estados para información de la organización (para identificación tributaria)
+  const [organizationCountry, setOrganizationCountry] = useState<CountryCode>('PE')
+  const [organizationTaxIdType, setOrganizationTaxIdType] = useState<string>('RUC')
+
+  // Función para obtener información de la organización
+  const fetchOrganizationInfo = async () => {
+    try {
+      // Obtener el organization_id del usuario actual
+      const userResponse = await fetch('/api/user/profile')
+      const userData = await userResponse.json()
+      
+      if (!userData.success) {
+        console.error('No se pudo obtener el perfil del usuario')
+        return
+      }
+
+      const organizationId = userData.data.organization_id
+      
+      // Obtener la información de la organización
+      const orgResponse = await fetch(`/api/organizations/${organizationId}`)
+      const orgData = await orgResponse.json()
+      
+      if (orgData.success && orgData.data) {
+        const { country, tax_id_type } = orgData.data
+        if (country && isValidCountry(country)) {
+          setOrganizationCountry(country as CountryCode)
+          setOrganizationTaxIdType(tax_id_type || getTaxIdType(country as CountryCode))
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching organization info:', error)
+    }
+  }
 
   const fetchCustomers = async (page = 1, tipo = filtroTipo, search = busqueda) => {
     try {
@@ -196,6 +242,7 @@ export default function ClientesPage() {
 
   useEffect(() => {
     fetchCustomers()
+    fetchOrganizationInfo()
   }, [])
 
   const handleTipoChange = (keys: any) => {
@@ -220,12 +267,19 @@ export default function ClientesPage() {
     setCreateLoading(true)
 
     try {
+      // Preparar datos del cliente con información tributaria
+      const customerData = {
+        ...newCustomer,
+        customer_tax_id_type: newCustomer.customer_tax_id.trim() ? organizationTaxIdType : null,
+        customer_tax_id: newCustomer.customer_tax_id.trim() || null
+      }
+
       const response = await fetch('/api/customers', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(newCustomer),
+        body: JSON.stringify(customerData),
       })
 
       if (!response.ok) {
@@ -240,7 +294,9 @@ export default function ClientesPage() {
         phone: '',
         address: '',
         customer_type: 'identified',
-        anonymous_identifier: ''
+        anonymous_identifier: '',
+        customer_tax_id: '',
+        customer_tax_id_type: ''
       })
       onCreateClose()
       fetchCustomers()
@@ -297,12 +353,19 @@ export default function ClientesPage() {
     setUpdateLoading(true)
 
     try {
+      // Preparar datos del cliente con información tributaria
+      const customerData = {
+        ...editingCustomer,
+        customer_tax_id_type: editingCustomer.customer_tax_id?.trim() ? organizationTaxIdType : null,
+        customer_tax_id: editingCustomer.customer_tax_id?.trim() || null
+      }
+
       const response = await fetch(`/api/customers/${editingCustomer.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(editingCustomer),
+        body: JSON.stringify(customerData),
       })
 
       if (!response.ok) {
@@ -848,6 +911,29 @@ export default function ClientesPage() {
                   onChange={(value) => setNewCustomer(prev => ({ ...prev, address: value }))}
                   placeholder="Dirección del cliente"
                 />
+                
+                {/* Campo de identificación tributaria */}
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-gray-700">
+                    {organizationTaxIdType} (Opcional)
+                  </label>
+                  <Input
+                    type="text"
+                    placeholder={`Ejemplo: ${getTaxIdDescription(organizationCountry).replace('Formato: ', '')}`}
+                    value={newCustomer.customer_tax_id}
+                    onChange={(e) => setNewCustomer(prev => ({ ...prev, customer_tax_id: e.target.value }))}
+                    variant="bordered"
+                    startContent={<FileText className="w-4 h-4 text-gray-400" />}
+                    classNames={{
+                      input: "text-gray-900",
+                      inputWrapper: "border-gray-300 hover:border-gray-400 focus-within:border-blue-500"
+                    }}
+                  />
+                  <p className="text-xs text-gray-500">
+                    Solo para clientes empresariales que requieren facturación formal
+                  </p>
+                </div>
+                
                 <FormField
                   label="Tipo de cliente"
                   name="customer_type"
@@ -940,6 +1026,14 @@ export default function ClientesPage() {
                           <div>
                             <label className={`text-sm font-medium ${textColors.tertiary}`}>Dirección:</label>
                             <p className={`text-base ${textColors.primary}`}>{selectedCustomer.address}</p>
+                          </div>
+                        )}
+                        {selectedCustomer.customer_tax_id && (
+                          <div>
+                            <label className={`text-sm font-medium ${textColors.tertiary}`}>
+                              {selectedCustomer.customer_tax_id_type || 'ID Tributario'}:
+                            </label>
+                            <p className={`text-base ${textColors.primary}`}>{selectedCustomer.customer_tax_id}</p>
                           </div>
                         )}
                         <div>
@@ -1324,6 +1418,29 @@ export default function ClientesPage() {
                       onChange={(value) => setEditingCustomer(prev => prev ? ({ ...prev, address: value }) : null)}
                       placeholder="Dirección del cliente"
                     />
+                    
+                    {/* Campo de identificación tributaria */}
+                    <div className="space-y-2">
+                      <label className="block text-sm font-medium text-gray-700">
+                        {organizationTaxIdType} (Opcional)
+                      </label>
+                      <Input
+                        type="text"
+                        placeholder={`Ejemplo: ${getTaxIdDescription(organizationCountry).replace('Formato: ', '')}`}
+                        value={editingCustomer.customer_tax_id || ''}
+                        onChange={(e) => setEditingCustomer(prev => prev ? ({ ...prev, customer_tax_id: e.target.value }) : null)}
+                        variant="bordered"
+                        startContent={<FileText className="w-4 h-4 text-gray-400" />}
+                        classNames={{
+                          input: "text-gray-900",
+                          inputWrapper: "border-gray-300 hover:border-gray-400 focus-within:border-blue-500"
+                        }}
+                      />
+                      <p className="text-xs text-gray-500">
+                        Solo para clientes empresariales que requieren facturación formal
+                      </p>
+                    </div>
+                    
                     <FormField
                       label="Tipo de cliente"
                       name="customer_type"
@@ -1342,7 +1459,7 @@ export default function ClientesPage() {
                 <Button variant="flat" onPress={onEditClose}>Cancelar</Button>
                 <Button 
                   type="submit" 
-                  color="primary" 
+                  className="bg-gradient-to-r from-[#4ca771] to-[#013237] text-white"
                   isLoading={updateLoading}
                   startContent={!updateLoading ? <Edit className="w-4 h-4" /> : null}
                 >

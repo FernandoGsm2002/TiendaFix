@@ -526,6 +526,12 @@ export default function VentasPage() {
         </style>
       </head>
       <body>
+        ${organizationInfo.logo_url ? `
+        <div class="center" style="margin-bottom: 8px;">
+          <img src="${organizationInfo.logo_url}" alt="Logo" style="max-width: 60mm; max-height: 30mm; object-fit: contain;" />
+        </div>
+        ` : ''}
+        
         <div class="center bold large">
           ${organizationInfo.name || 'TIENDA DE VENTAS'}
         </div>
@@ -533,6 +539,7 @@ export default function VentasPage() {
         ${organizationInfo.address ? `<div class="center">${organizationInfo.address}</div>` : ''}
         ${organizationInfo.phone ? `<div class="center">Tel: ${organizationInfo.phone}</div>` : ''}
         ${organizationInfo.email ? `<div class="center">${organizationInfo.email}</div>` : ''}
+        ${organizationInfo.tax_id ? `<div class="center">${organizationInfo.tax_id_type || 'RUC'}: ${organizationInfo.tax_id}</div>` : ''}
         
         <div class="border-top"></div>
         
@@ -549,6 +556,7 @@ export default function VentasPage() {
         <div class="space">
           <div class="bold">CLIENTE:</div>
           <div>${customerName}</div>
+          ${selectedCustomer && customers.find(c => c.id === selectedCustomer)?.customer_tax_id ? `<div>${customers.find(c => c.id === selectedCustomer)?.customer_tax_id_type || 'RUC'}: ${customers.find(c => c.id === selectedCustomer)?.customer_tax_id}</div>` : ''}
         </div>
         
         <div class="space">
@@ -841,8 +849,13 @@ export default function VentasPage() {
       <body>
         <div class="header">
           <div class="company-info">
+            ${organizationInfo.logo_url ? `
+            <div style="margin-bottom: 10px;">
+              <img src="${organizationInfo.logo_url}" alt="Logo" style="max-width: 150px; max-height: 80px; object-fit: contain;" />
+            </div>
+            ` : ''}
             <div class="company-name">${organizationInfo.name || 'EMPRESA DE SERVICIOS'}</div>
-            <div class="company-details">RUC: ${organizationInfo.ruc || 'N/A'}</div>
+            <div class="company-details">${organizationInfo.tax_id_type || 'RUC'}: ${organizationInfo.tax_id || 'N/A'}</div>
             <div class="company-details">ATENCIÓN: ${organizationInfo.owner_name || 'Admin'}</div>
             <div class="company-details">CEL/TLF: ${organizationInfo.phone || 'N/A'}</div>
             <div class="company-details">E-MAIL: ${organizationInfo.email || 'N/A'}</div>
@@ -859,7 +872,7 @@ export default function VentasPage() {
             <div class="section-title">EMISOR</div>
             <div class="section-content">
               <div><strong>${organizationInfo.name || 'EMPRESA DE SERVICIOS'}</strong></div>
-              <div>RUC: ${organizationInfo.ruc || 'N/A'}</div>
+              <div>${organizationInfo.tax_id_type || 'RUC'}: ${organizationInfo.tax_id || 'N/A'}</div>
               <div>ATENCIÓN: ${organizationInfo.owner_name || 'Admin'}</div>
               <div>CEL/TLF: ${organizationInfo.phone || 'N/A'}</div>
               <div>E-MAIL: ${organizationInfo.email || 'N/A'}</div>

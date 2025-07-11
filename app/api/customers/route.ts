@@ -41,6 +41,8 @@ export async function GET(request: NextRequest) {
         address,
         anonymous_identifier,
         customer_type,
+        customer_tax_id,
+        customer_tax_id_type,
         created_at,
         updated_at
       `, { count: 'exact' })

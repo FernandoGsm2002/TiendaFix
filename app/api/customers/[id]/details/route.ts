@@ -20,7 +20,12 @@ export async function GET(
     // Obtener información básica del cliente
     const { data: customer, error: customerError } = await supabase
       .from('customers')
-      .select('*')
+      .select(`
+        id, name, email, phone, address, customer_type,
+        anonymous_identifier, is_recurrent, notes,
+        customer_tax_id, customer_tax_id_type,
+        created_at, updated_at
+      `)
       .eq('id', customerId)
       .single()
 

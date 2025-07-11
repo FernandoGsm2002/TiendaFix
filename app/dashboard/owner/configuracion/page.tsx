@@ -21,6 +21,15 @@ import { SUPPORTED_LOCALES, LOCALE_NAMES, type Locale } from '@/lib/utils/i18n'
 import { CURRENCIES, getCurrencyName } from '@/lib/utils/currency'
 import { useTranslations } from '@/lib/contexts/TranslationContext'
 import { 
+  getAllCountries, 
+  getTaxIdType, 
+  getTaxIdFullName, 
+  getTaxIdDescription, 
+  formatCountryOption,
+  type CountryCode,
+  isValidCountry
+} from '@/lib/utils/tax-identification'
+import { 
   Building, 
   User, 
   Globe,
@@ -32,7 +41,12 @@ import {
   DollarSign,
   Shield,
   Eye,
-  EyeOff
+  EyeOff,
+  ImageIcon,
+  Upload,
+  X,
+  FileText,
+  MapPin
 } from 'lucide-react'
 
 interface OrganizationData {
@@ -42,12 +56,16 @@ interface OrganizationData {
   email: string
   phone: string | null
   address: string | null
+  logo_url: string | null
   subscription_plan: string
   subscription_status: string
   subscription_start_date: string | null
   subscription_end_date: string | null
   max_users: number
   max_devices: number
+  country: string | null
+  tax_id: string | null
+  tax_id_type: string | null
   created_at: string
   updated_at: string
 }
@@ -71,6 +89,20 @@ export default function ConfiguracionPage() {
   const [passwordLoading, setPasswordLoading] = useState(false)
   const [passwordError, setPasswordError] = useState<string | null>(null)
   const [passwordSuccess, setPasswordSuccess] = useState<string | null>(null)
+  
+  // Estados para la carga de logo
+  const [logoLoading, setLogoLoading] = useState(false)
+  const [logoError, setLogoError] = useState<string | null>(null)
+  const [logoSuccess, setLogoSuccess] = useState<string | null>(null)
+  const [selectedFile, setSelectedFile] = useState<File | null>(null)
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null)
+  
+  // Estados para la identificación tributaria
+  const [taxIdLoading, setTaxIdLoading] = useState(false)
+  const [taxIdError, setTaxIdError] = useState<string | null>(null)
+  const [taxIdSuccess, setTaxIdSuccess] = useState<string | null>(null)
+  const [selectedCountry, setSelectedCountry] = useState<CountryCode>('PE')
+  const [taxIdValue, setTaxIdValue] = useState<string>('')
 
   // Debug logging
   console.log('🔍 ConfiguracionPage - userProfile:', userProfile)
@@ -136,6 +168,14 @@ export default function ConfiguracionPage() {
 
       console.log('✅ Organization data loaded:', result.data)
       setOrganizationData(result.data)
+      
+      // Cargar información tributaria en los estados
+      if (result.data.country && isValidCountry(result.data.country)) {
+        setSelectedCountry(result.data.country as CountryCode)
+      }
+      if (result.data.tax_id) {
+        setTaxIdValue(result.data.tax_id)
+      }
     } catch (err) {
       console.error('Error loading configuration data:', err)
       setError(err instanceof Error ? err.message : 'Error desconocido')
@@ -238,6 +278,178 @@ export default function ConfiguracionPage() {
       case 'monthly_6': return 'Plan Estándar (6 meses)'
       case 'yearly': return 'Plan Premium (1 año)'
       default: return plan
+    }
+  }
+
+  // Funciones para manejar la carga de logo
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (!file) return
+
+    // Validar tipo de archivo
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp']
+    if (!allowedTypes.includes(file.type)) {
+      setLogoError('Tipo de archivo no permitido. Solo se permiten: JPG, PNG, GIF, WEBP')
+      return
+    }
+
+    // Validar tamaño del archivo (máximo 5MB)
+    const maxSize = 5 * 1024 * 1024 // 5MB
+    if (file.size > maxSize) {
+      setLogoError('El archivo es demasiado grande. Máximo permitido: 5MB')
+      return
+    }
+
+    setSelectedFile(file)
+    setLogoError(null)
+    
+    // Crear preview
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      setPreviewUrl(e.target?.result as string)
+    }
+    reader.readAsDataURL(file)
+  }
+
+  const handleUploadLogo = async () => {
+    if (!selectedFile || !userProfile?.organization_id) {
+      setLogoError('No se ha seleccionado archivo o no hay organización')
+      return
+    }
+
+    setLogoLoading(true)
+    setLogoError(null)
+    setLogoSuccess(null)
+
+    try {
+      const formData = new FormData()
+      formData.append('logo', selectedFile)
+
+      const response = await fetch(`/api/organizations/${userProfile.organization_id}/upload-logo`, {
+        method: 'POST',
+        body: formData
+      })
+
+      const result = await response.json()
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Error al subir el logo')
+      }
+
+      setLogoSuccess('Logo subido exitosamente')
+      setSelectedFile(null)
+      setPreviewUrl(null)
+      
+      // Recargar datos de la organización para obtener la nueva URL
+      await fetchOrganizationData()
+      
+      // Limpiar mensaje de éxito después de 5 segundos
+      setTimeout(() => {
+        setLogoSuccess(null)
+      }, 5000)
+
+    } catch (error) {
+      console.error('Error uploading logo:', error)
+      setLogoError(error instanceof Error ? error.message : 'Error al subir el logo')
+    } finally {
+      setLogoLoading(false)
+    }
+  }
+
+  const handleRemoveLogo = async () => {
+    if (!userProfile?.organization_id) {
+      setLogoError('No hay organización disponible')
+      return
+    }
+
+    if (!confirm('¿Está seguro de que desea eliminar el logo?')) {
+      return
+    }
+
+    setLogoLoading(true)
+    setLogoError(null)
+    setLogoSuccess(null)
+
+    try {
+      const response = await fetch(`/api/organizations/${userProfile.organization_id}/upload-logo`, {
+        method: 'DELETE'
+      })
+
+      const result = await response.json()
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Error al eliminar el logo')
+      }
+
+      setLogoSuccess('Logo eliminado exitosamente')
+      
+      // Recargar datos de la organización
+      await fetchOrganizationData()
+      
+      // Limpiar mensaje de éxito después de 5 segundos
+      setTimeout(() => {
+        setLogoSuccess(null)
+      }, 5000)
+
+    } catch (error) {
+      console.error('Error removing logo:', error)
+      setLogoError(error instanceof Error ? error.message : 'Error al eliminar el logo')
+    } finally {
+      setLogoLoading(false)
+    }
+  }
+
+  const clearPreview = () => {
+    setSelectedFile(null)
+    setPreviewUrl(null)
+    setLogoError(null)
+  }
+
+  // Función para actualizar la información tributaria
+  const handleUpdateTaxId = async () => {
+    if (!userProfile?.organization_id) {
+      setTaxIdError('No hay organización disponible')
+      return
+    }
+
+    setTaxIdLoading(true)
+    setTaxIdError(null)
+    setTaxIdSuccess(null)
+
+    try {
+      const response = await fetch(`/api/organizations/${userProfile.organization_id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          country: selectedCountry,
+          tax_id: taxIdValue.trim() || null,
+          tax_id_type: getTaxIdType(selectedCountry)
+        })
+      })
+
+      const result = await response.json()
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Error al actualizar información tributaria')
+      }
+
+      setTaxIdSuccess('Información tributaria actualizada exitosamente')
+      
+      // Recargar datos de la organización
+      await fetchOrganizationData()
+      
+      // Limpiar mensaje de éxito después de 5 segundos
+      setTimeout(() => {
+        setTaxIdSuccess(null)
+      }, 5000)
+
+    } catch (error) {
+      console.error('Error updating tax ID:', error)
+      setTaxIdError(error instanceof Error ? error.message : 'Error al actualizar información tributaria')
+    } finally {
+      setTaxIdLoading(false)
     }
   }
 
@@ -393,6 +605,262 @@ export default function ConfiguracionPage() {
               </CardBody>
             </Card>
           </div>
+
+          {/* Logo del Local */}
+          <Card className="shadow-lg border-0 bg-gradient-to-br from-white to-gray-50">
+            <CardBody className="p-6">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="p-2 rounded-lg bg-indigo-100">
+                  <ImageIcon className="w-5 h-5 text-indigo-600" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-semibold text-gray-800">Logo del Local</h3>
+                  <p className="text-sm text-gray-500">Imagen que aparecerá en las impresiones</p>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                {/* Logo actual */}
+                {!dataLoading && organizationData?.logo_url && (
+                  <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
+                    <img
+                      src={organizationData.logo_url}
+                      alt="Logo actual"
+                      className="w-16 h-16 object-contain bg-white rounded-lg border border-gray-200"
+                    />
+                    <div className="flex-1">
+                      <p className="text-sm font-medium text-gray-800">Logo actual</p>
+                      <p className="text-xs text-gray-500">Este logo aparece en las impresiones</p>
+                    </div>
+                    <Button
+                      color="danger"
+                      variant="flat"
+                      size="sm"
+                      startContent={<X className="w-4 h-4" />}
+                      onPress={handleRemoveLogo}
+                      isLoading={logoLoading}
+                    >
+                      Eliminar
+                    </Button>
+                  </div>
+                )}
+
+                {/* Preview del archivo seleccionado */}
+                {previewUrl && (
+                  <div className="flex items-center gap-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                    <img
+                      src={previewUrl}
+                      alt="Vista previa"
+                      className="w-16 h-16 object-contain bg-white rounded-lg border border-blue-200"
+                    />
+                    <div className="flex-1">
+                      <p className="text-sm font-medium text-blue-800">Vista previa</p>
+                      <p className="text-xs text-blue-600">
+                        {selectedFile?.name} ({Math.round((selectedFile?.size || 0) / 1024)} KB)
+                      </p>
+                    </div>
+                    <Button
+                      color="default"
+                      variant="flat"
+                      size="sm"
+                      startContent={<X className="w-4 h-4" />}
+                      onPress={clearPreview}
+                    >
+                      Cancelar
+                    </Button>
+                  </div>
+                )}
+
+                {/* Selector de archivo */}
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <div className="flex-1">
+                    <Input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleFileSelect}
+                      variant="bordered"
+                      classNames={{
+                        label: "text-gray-700",
+                        inputWrapper: "border-gray-300 hover:border-gray-400 focus-within:border-indigo-500"
+                      }}
+                    />
+                  </div>
+                  
+                  {selectedFile && (
+                    <Button
+                      color="primary"
+                      variant="solid"
+                      startContent={<Upload className="w-4 h-4" />}
+                      onPress={handleUploadLogo}
+                      isLoading={logoLoading}
+                      className="bg-gradient-to-r from-[#4ca771] to-[#013237] text-white hover:from-[#013237] hover:to-[#4ca771] transition-all font-semibold"
+                    >
+                      {logoLoading ? 'Subiendo...' : 'Subir Logo'}
+                    </Button>
+                  )}
+                </div>
+
+                {/* Mensajes de error y éxito */}
+                {logoError && (
+                  <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+                    <div className="flex items-center gap-2">
+                      <AlertTriangle className="w-4 h-4 text-red-600" />
+                      <span className="text-sm font-medium text-red-800">Error</span>
+                    </div>
+                    <p className="text-sm text-red-700 mt-1">{logoError}</p>
+                  </div>
+                )}
+
+                {logoSuccess && (
+                  <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className="w-4 h-4 text-green-600" />
+                      <span className="text-sm font-medium text-green-800">Éxito</span>
+                    </div>
+                    <p className="text-sm text-green-700 mt-1">{logoSuccess}</p>
+                  </div>
+                )}
+
+                {/* Información adicional */}
+                <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
+                  <div className="flex items-start gap-2">
+                    <AlertTriangle className="w-4 h-4 text-amber-600 mt-0.5" />
+                    <div className="text-sm text-amber-800">
+                      <p className="font-medium mb-1">Recomendaciones:</p>
+                      <ul className="text-xs space-y-1">
+                        <li>• Tamaño recomendado: 200x200 píxeles</li>
+                        <li>• Formato: JPG, PNG, GIF o WEBP</li>
+                        <li>• Tamaño máximo: 5MB</li>
+                        <li>• Fondo transparente para mejor presentación</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </CardBody>
+          </Card>
+
+          {/* Identificación Tributaria */}
+          <Card className="shadow-lg border-0 bg-gradient-to-br from-white to-gray-50">
+            <CardBody className="p-6">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="p-2 rounded-lg bg-cyan-100">
+                  <FileText className="w-5 h-5 text-cyan-600" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-semibold text-gray-800">Identificación Tributaria</h3>
+                  <p className="text-sm text-gray-500">Información fiscal para comprobantes</p>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Selector de país */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      País
+                    </label>
+                    <Select
+                      size="md"
+                      variant="bordered"
+                      selectedKeys={[selectedCountry]}
+                      onSelectionChange={(keys) => {
+                        const selectedKey = Array.from(keys)[0] as CountryCode
+                        if (selectedKey) {
+                          setSelectedCountry(selectedKey)
+                          setTaxIdValue('') // Limpiar el valor cuando cambie el país
+                        }
+                      }}
+                      startContent={<MapPin className="w-4 h-4 text-gray-400" />}
+                      classNames={{
+                        trigger: "border-gray-300 bg-white hover:border-gray-400 focus:border-cyan-500",
+                        value: "text-gray-700 font-medium",
+                        listbox: "bg-white shadow-lg",
+                        popoverContent: "bg-white shadow-xl border border-gray-200"
+                      }}
+                    >
+                      {getAllCountries().map(country => (
+                        <SelectItem 
+                          key={country.code}
+                          className="text-gray-700 hover:bg-gray-50"
+                        >
+                          {formatCountryOption(country.code)}
+                        </SelectItem>
+                      ))}
+                    </Select>
+                  </div>
+
+                  {/* Número de identificación tributaria */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      {getTaxIdType(selectedCountry)} {organizationData?.tax_id && organizationData.tax_id.trim() !== '' ? '(Opcional)' : '(Opcional)'}
+                    </label>
+                    <Input
+                      type="text"
+                      placeholder={`Ejemplo: ${getTaxIdDescription(selectedCountry).replace('Formato: ', '')}`}
+                      value={taxIdValue}
+                      onChange={(e) => setTaxIdValue(e.target.value)}
+                      variant="bordered"
+                      startContent={<FileText className="w-4 h-4 text-gray-400" />}
+                      classNames={{
+                        label: "text-gray-700",
+                        input: "text-gray-900",
+                        inputWrapper: "border-gray-300 hover:border-gray-400 focus-within:border-cyan-500"
+                      }}
+                    />
+                  </div>
+                </div>
+
+                {/* Información del tipo de identificación */}
+                <div className="bg-cyan-50 border border-cyan-200 rounded-lg p-3">
+                  <div className="flex items-start gap-2">
+                    <AlertTriangle className="w-4 h-4 text-cyan-600 mt-0.5" />
+                    <div className="text-sm text-cyan-800">
+                      <p className="font-medium mb-1">Información sobre {getTaxIdType(selectedCountry)}:</p>
+                      <p className="text-xs">{getTaxIdFullName(selectedCountry)}</p>
+                      <p className="text-xs">{getTaxIdDescription(selectedCountry)}</p>
+                      <p className="text-xs mt-1">Esta información aparecerá en los comprobantes de reparación, cotización y venta.</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Botón de guardar */}
+                <div className="flex justify-end">
+                  <Button
+                    color="primary"
+                    variant="solid"
+                    startContent={<CheckCircle className="w-4 h-4" />}
+                    onPress={handleUpdateTaxId}
+                    isLoading={taxIdLoading}
+                    className="bg-gradient-to-r from-cyan-500 to-blue-600 text-white hover:from-cyan-600 hover:to-blue-700 transition-all font-semibold"
+                  >
+                    {taxIdLoading ? 'Guardando...' : 'Guardar Información'}
+                  </Button>
+                </div>
+
+                {/* Mensajes de error y éxito */}
+                {taxIdError && (
+                  <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+                    <div className="flex items-center gap-2">
+                      <AlertTriangle className="w-4 h-4 text-red-600" />
+                      <span className="text-sm font-medium text-red-800">Error</span>
+                    </div>
+                    <p className="text-sm text-red-700 mt-1">{taxIdError}</p>
+                  </div>
+                )}
+
+                {taxIdSuccess && (
+                  <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className="w-4 h-4 text-green-600" />
+                      <span className="text-sm font-medium text-green-800">Éxito</span>
+                    </div>
+                    <p className="text-sm text-green-700 mt-1">{taxIdSuccess}</p>
+                  </div>
+                )}
+              </div>
+            </CardBody>
+          </Card>
 
           {/* Seguridad - Cambio de Contraseña */}
           <Card className="shadow-lg border-0 bg-gradient-to-br from-white to-gray-50">

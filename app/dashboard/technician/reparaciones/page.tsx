@@ -472,6 +472,12 @@ export default function TechnicianRepairsPage() {
         </style>
       </head>
       <body>
+        ${organizationInfo.logo_url ? `
+        <div class="center" style="margin-bottom: 8px;">
+          <img src="${organizationInfo.logo_url}" alt="Logo" style="max-width: 60mm; max-height: 30mm; object-fit: contain;" />
+        </div>
+        ` : ''}
+        
         <div class="center bold large">
           ${organizationInfo.name || 'TIENDA DE REPARACIONES'}
         </div>
@@ -479,6 +485,7 @@ export default function TechnicianRepairsPage() {
         ${organizationInfo.address ? `<div class="center">${organizationInfo.address}</div>` : ''}
         ${organizationInfo.phone ? `<div class="center">Tel: ${organizationInfo.phone}</div>` : ''}
         ${organizationInfo.email ? `<div class="center">${organizationInfo.email}</div>` : ''}
+        ${organizationInfo.tax_id ? `<div class="center">${organizationInfo.tax_id_type || 'RUC'}: ${organizationInfo.tax_id}</div>` : ''}
         
         <div class="border-top"></div>
         

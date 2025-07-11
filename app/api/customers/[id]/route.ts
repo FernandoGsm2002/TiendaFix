@@ -40,6 +40,7 @@ export async function GET(
       .select(`
         id, name, email, phone, address, customer_type,
         anonymous_identifier, is_recurrent, notes,
+        customer_tax_id, customer_tax_id_type,
         created_at, updated_at
       `)
       .eq('id', customerId)
@@ -101,6 +102,8 @@ export async function PUT(
       anonymous_identifier: body.anonymous_identifier || null,
       is_recurrent: body.is_recurrent || false,
       notes: body.notes || null,
+      customer_tax_id: body.customer_tax_id || null,
+      customer_tax_id_type: body.customer_tax_id_type || null,
       updated_at: new Date().toISOString()
     }
 

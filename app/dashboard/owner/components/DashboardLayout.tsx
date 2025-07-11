@@ -8,6 +8,7 @@ import { Container, DashboardContainer, MobileNavContainer } from '@/app/compone
 import { useBreakpoint, useIsTouchDevice, useUserPreferences } from '@/lib/hooks/useBreakpoint'
 import { useNavigationLayout } from '@/lib/hooks/useAdaptiveGrid'
 import { Button, Divider } from '@heroui/react'
+import { AnnouncementModal, useAnnouncements } from '@/app/components/AnnouncementModal'
 
 interface DashboardLayoutProps {
   children: React.ReactNode
@@ -22,6 +23,9 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [isLoaded, setIsLoaded] = useState(false)
   const pathname = usePathname()
+  
+  // Hook para manejar anuncios
+  const { isOpen: isAnnouncementOpen, onClose: onAnnouncementClose, currentVersion, markAsSeen } = useAnnouncements()
 
   // Auto-cerrar sidebar en móvil cuando cambia la ruta
   useEffect(() => {
@@ -208,6 +212,16 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
             En línea
           </div>
         </div>
+      )}
+
+      {/* Modal de Anuncios */}
+      {currentVersion && (
+        <AnnouncementModal
+          isOpen={isAnnouncementOpen}
+          onClose={onAnnouncementClose}
+          version={currentVersion}
+          onMarkAsSeen={markAsSeen}
+        />
       )}
 
       {/* Efectos de carga y transiciones suaves */}

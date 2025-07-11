@@ -295,10 +295,47 @@ export default function TechnicianSalesPage() {
     }
   }
 
+  // Función para obtener información de la organización
+  const fetchOrganizationInfo = async () => {
+    try {
+      const response = await fetch('/api/user/profile')
+      const profileResult = await response.json()
+      
+      if (profileResult.success && profileResult.data.organization_id) {
+        const orgResponse = await fetch(`/api/organizations/${profileResult.data.organization_id}`)
+        const orgResult = await orgResponse.json()
+        
+        if (orgResult.success) {
+          return orgResult.data
+        }
+      }
+      
+      return {
+        name: 'TIENDA DE SERVICIOS',
+        email: '',
+        phone: '',
+        address: '',
+        logo_url: null
+      }
+    } catch (error) {
+      console.error('Error fetching organization info:', error)
+      return {
+        name: 'TIENDA DE SERVICIOS',
+        email: '',
+        phone: '',
+        address: '',
+        logo_url: null
+      }
+    }
+  }
+
   // Función simplificada para imprimir ticket
   const handlePrintSaleTicket = async () => {
     try {
       setPrintLoading(true)
+      
+      // Obtener información de la organización
+      const organizationInfo = await fetchOrganizationInfo()
       
       const customerName = selectedCustomer?.name || 'Cliente de mostrador'
       const currentDate = new Date().toLocaleString('es-ES')
@@ -321,8 +358,18 @@ export default function TechnicianSalesPage() {
           </style>
         </head>
         <body>
-          <div class="center bold large">COMPROBANTE DE VENTA</div>
+          ${organizationInfo.logo_url ? `
+          <div class="center" style="margin-bottom: 8px;">
+            <img src="${organizationInfo.logo_url}" alt="Logo" style="max-width: 60mm; max-height: 30mm; object-fit: contain;" />
+          </div>
+          ` : ''}
+          
+          <div class="center bold large">${organizationInfo.name || 'COMPROBANTE DE VENTA'}</div>
           <div class="center">TÉCNICO</div>
+          ${organizationInfo.address ? `<div class="center">${organizationInfo.address}</div>` : ''}
+          ${organizationInfo.phone ? `<div class="center">Tel: ${organizationInfo.phone}</div>` : ''}
+          ${organizationInfo.email ? `<div class="center">${organizationInfo.email}</div>` : ''}
+          ${organizationInfo.tax_id ? `<div class="center">${organizationInfo.tax_id_type || 'RUC'}: ${organizationInfo.tax_id}</div>` : ''}
           <div class="border-top"></div>
           <div class="space">
             <div class="bold">FECHA:</div>

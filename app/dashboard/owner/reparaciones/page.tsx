@@ -645,6 +645,12 @@ export default function ReparacionesPage() {
         </style>
       </head>
       <body>
+        ${organizationInfo.logo_url ? `
+        <div class="center" style="margin-bottom: 8px;">
+          <img src="${organizationInfo.logo_url}" alt="Logo" style="max-width: 60mm; max-height: 30mm; object-fit: contain;" />
+        </div>
+        ` : ''}
+        
         <div class="center bold large">
           ${organizationInfo.name || 'TIENDA DE REPARACIONES'}
         </div>
@@ -652,6 +658,7 @@ export default function ReparacionesPage() {
         ${organizationInfo.address ? `<div class="center">${organizationInfo.address}</div>` : ''}
         ${organizationInfo.phone ? `<div class="center">Tel: ${organizationInfo.phone}</div>` : ''}
         ${organizationInfo.email ? `<div class="center">${organizationInfo.email}</div>` : ''}
+        ${organizationInfo.tax_id ? `<div class="center">${organizationInfo.tax_id_type || 'RUC'}: ${organizationInfo.tax_id}</div>` : ''}
         
         <div class="border-top"></div>
         
@@ -669,6 +676,7 @@ export default function ReparacionesPage() {
           <div class="bold">CLIENTE:</div>
           <div>${customerName}</div>
           <div>Tel: ${customerPhone}</div>
+          ${repair.customers?.customer_tax_id ? `<div>${repair.customers.customer_tax_id_type || 'RUC'}: ${repair.customers.customer_tax_id}</div>` : ''}
         </div>
         
         <div class="space">
@@ -1664,7 +1672,13 @@ export default function ReparacionesPage() {
             </ModalBody>
             <ModalFooter className="gap-3 py-4">
               <Button variant="flat" onClick={onCreateClose} size="md" className="text-base font-medium">Cancelar</Button>
-              <Button color="primary" onClick={handleCreateRepair} isLoading={createLoading} size="md" className="text-base font-medium px-6">
+              <Button 
+                onClick={handleCreateRepair} 
+                isLoading={createLoading} 
+                size="md" 
+                startContent={!createLoading ? <Plus className="w-4 h-4" /> : null}
+                className="bg-gradient-to-r from-[#4ca771] to-[#013237] text-white hover:from-[#013237] hover:to-[#4ca771] transition-all text-base font-medium px-6"
+              >
                 Crear Reparación
               </Button>
             </ModalFooter>
