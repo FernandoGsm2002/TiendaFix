@@ -86,6 +86,8 @@ interface Repair {
     email: string | null
     anonymous_identifier: string | null
     customer_type: string
+    customer_tax_id: string | null
+    customer_tax_id_type: string | null
   } | null
   devices: {
     id: string
@@ -110,6 +112,8 @@ interface Customer {
   phone: string | null
   anonymous_identifier: string | null
   customer_type: string
+  customer_tax_id: string | null
+  customer_tax_id_type: string | null
 }
 
 interface Device {
