@@ -55,6 +55,8 @@ export async function GET(request: NextRequest) {
         customer_phone,
         customer_anonymous_identifier,
         customer_type,
+        customer_cedula_dni,
+        customer_country_code,
         created_by_name,
         created_by_email
       `, { count: 'exact' })
@@ -126,7 +128,9 @@ export async function GET(request: NextRequest) {
         phone: unlock.customer_phone,
         email: unlock.customer_email,
         anonymous_identifier: unlock.customer_anonymous_identifier,
-        customer_type: unlock.customer_type
+        customer_type: unlock.customer_type,
+        cedula_dni: unlock.customer_cedula_dni,
+        country_code: unlock.customer_country_code
       } : null,
       technician: unlock.created_by_name ? {
         id: unlock.created_by,
@@ -239,7 +243,11 @@ export async function POST(request: NextRequest) {
           id,
           name,
           phone,
-          email
+          email,
+          anonymous_identifier,
+          customer_type,
+          cedula_dni,
+          country_code
         ),
         users!unlocks_created_by_fkey (
           id,

@@ -43,6 +43,8 @@ export async function GET(request: NextRequest) {
         customer_type,
         customer_tax_id,
         customer_tax_id_type,
+        cedula_dni,
+        country_code,
         created_at,
         updated_at
       `, { count: 'exact' })

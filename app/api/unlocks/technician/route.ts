@@ -41,14 +41,15 @@ export async function GET(request: Request) {
     try {
       // Consultar desbloqueos reales de la base de datos creados por este técnico
       let query = supabase
-        .from('unlocks')
+        .from('unlocks_view')
         .select(`
           id, unlock_type, brand, model, imei, serial_number,
           status, cost, provider, provider_order_id, completion_time,
           notes, created_at, updated_at,
-          customers(id, name, email, phone, anonymous_identifier, customer_type),
-          devices(id, brand, model, device_type, color),
-          users!unlocks_created_by_fkey(id, name, email)
+          customer_name, customer_email, customer_phone, 
+          customer_anonymous_identifier, customer_type,
+          customer_cedula_dni, customer_country_code,
+          created_by_name, created_by_email
         `)
         .eq('organization_id', userProfile.organization_id)
         .eq('created_by', userProfile.id) // Solo desbloqueos creados por este técnico
@@ -81,11 +82,12 @@ export async function GET(request: Request) {
 
       // Transformar datos al formato que espera la página del técnico
       const transformedUnlocks = (unlocks || []).map(unlock => {
-        const customer = Array.isArray(unlock.customers) ? unlock.customers[0] : unlock.customers
         return {
           id: unlock.id,
-          customer_name: customer?.name || 'Cliente General',
-          customer_phone: customer?.phone || '',
+          customer_name: unlock.customer_name || unlock.customer_anonymous_identifier || 'Cliente General',
+          customer_phone: unlock.customer_phone || '',
+          customer_cedula_dni: unlock.customer_cedula_dni || '',
+          customer_country_code: unlock.customer_country_code || '+51',
           brand: unlock.brand,
           model: unlock.model,
           imei: unlock.imei || '',

@@ -54,7 +54,7 @@ export async function GET(
         estimated_completion_date, actual_completion_date, received_date, delivered_date,
         warranty_days, internal_notes, customer_notes,
         created_at, updated_at,
-        customers(id, name, email, phone, anonymous_identifier, customer_type),
+        customers(id, name, email, phone, anonymous_identifier, customer_type, cedula_dni, country_code),
         devices(id, brand, model, device_type, serial_number, imei, color),
         users!repairs_created_by_fkey(id, name, email)
       `)

@@ -24,6 +24,7 @@ export async function GET(
         id, name, email, phone, address, customer_type,
         anonymous_identifier, is_recurrent, notes,
         customer_tax_id, customer_tax_id_type,
+        cedula_dni, country_code,
         created_at, updated_at
       `)
       .eq('id', customerId)

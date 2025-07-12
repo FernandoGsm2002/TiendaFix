@@ -55,8 +55,15 @@ import {
   Settings,
   Printer,
   ArrowUpRight,
-  ArrowDownRight
+  ArrowDownRight,
+  MessageCircle
 } from 'lucide-react'
+import {
+  generateWhatsAppURL,
+  generateRepairStatusMessage,
+  formatDisplayPhone,
+  isValidPhoneNumber
+} from '@/lib/utils/country-codes'
 
 interface Repair {
   id: string
@@ -88,6 +95,8 @@ interface Repair {
     customer_type: string
     customer_tax_id: string | null
     customer_tax_id_type: string | null
+    cedula_dni: string | null
+    country_code: string | null
   } | null
   devices: {
     id: string
@@ -114,6 +123,8 @@ interface Customer {
   customer_type: string
   customer_tax_id: string | null
   customer_tax_id_type: string | null
+  cedula_dni: string | null
+  country_code: string | null
 }
 
 interface Device {
@@ -680,6 +691,7 @@ export default function ReparacionesPage() {
           <div class="bold">CLIENTE:</div>
           <div>${customerName}</div>
           <div>Tel: ${customerPhone}</div>
+          ${repair.customers?.cedula_dni ? `<div>Cédula/DNI: ${repair.customers.cedula_dni}</div>` : ''}
           ${repair.customers?.customer_tax_id ? `<div>${repair.customers.customer_tax_id_type || 'RUC'}: ${repair.customers.customer_tax_id}</div>` : ''}
         </div>
         
@@ -817,6 +829,52 @@ export default function ReparacionesPage() {
     a.click()
     document.body.removeChild(a)
     URL.revokeObjectURL(url)
+  }
+
+  // Función para enviar mensaje de WhatsApp
+  const handleSendWhatsApp = async (repair: Repair) => {
+    try {
+      // Verificar que el cliente tenga teléfono y código de país
+      if (!repair.customers?.phone || !repair.customers?.country_code) {
+        alert('El cliente no tiene información de teléfono o código de país configurado.')
+        return
+      }
+
+      // Validar que el número de teléfono sea válido
+      if (!isValidPhoneNumber(repair.customers.phone)) {
+        alert('El número de teléfono del cliente no es válido.')
+        return
+      }
+
+      // Obtener información de la organización para el mensaje
+      const organizationInfo = await fetchOrganizationInfo()
+      
+      // Generar el mensaje automático
+      const customerName = getCustomerName(repair.customers, repair.unregistered_customer_name)
+      const deviceInfo = getDeviceName(repair.devices, repair.unregistered_device_info)
+      const organizationName = organizationInfo.name || 'TiendaFix'
+      
+      const message = generateRepairStatusMessage(
+        customerName,
+        deviceInfo,
+        repair.status,
+        organizationName
+      )
+
+      // Generar URL de WhatsApp
+      const whatsappURL = generateWhatsAppURL(
+        repair.customers.phone,
+        repair.customers.country_code,
+        message
+      )
+
+      // Abrir WhatsApp en una nueva ventana
+      window.open(whatsappURL, '_blank')
+      
+    } catch (error) {
+      console.error('Error al enviar WhatsApp:', error)
+      alert('Error al generar el mensaje de WhatsApp. Por favor, intente nuevamente.')
+    }
   }
 
   const allStats = {
@@ -1809,6 +1867,9 @@ export default function ReparacionesPage() {
                          <p className={`text-base xs:text-lg font-bold ${textColors.primary}`}>{selectedRepair.status}</p>
                        </div>
                      </div>
+                     
+                     {/* Botón de WhatsApp */}
+
                    </div>
                   )}
                 </ModalBody>
@@ -1822,6 +1883,19 @@ export default function ReparacionesPage() {
                   >
                     Cerrar
                   </Button>
+                  
+                  {/* Botón de WhatsApp - Solo si el cliente tiene teléfono registrado */}
+                  {selectedRepair?.customers?.phone && selectedRepair?.customers?.country_code && (
+                    <Button 
+                      className="bg-green-500 hover:bg-green-600 text-white w-full xs:w-auto xs:size-md"
+                      startContent={<MessageCircle className="h-3 w-3 xs:h-4 xs:w-4" />}
+                      onPress={() => selectedRepair && handleSendWhatsApp(selectedRepair)}
+                      size="sm"
+                    >
+                      <span className="text-xs xs:text-sm">Enviar WhatsApp</span>
+                    </Button>
+                  )}
+                  
                   <Button 
                     color="secondary" 
                     startContent={<Printer className="h-3 w-3 xs:h-4 xs:w-4" />}

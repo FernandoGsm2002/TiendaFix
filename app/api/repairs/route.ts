@@ -63,6 +63,8 @@ export async function GET(request: NextRequest) {
         customer_phone,
         customer_anonymous_identifier,
         customer_type,
+        customer_cedula_dni,
+        customer_country_code,
         device_brand,
         device_model,
         device_type,
@@ -195,7 +197,9 @@ export async function GET(request: NextRequest) {
         phone: repair.customer_phone,
         email: repair.customer_email,
         anonymous_identifier: repair.customer_anonymous_identifier,
-        customer_type: repair.customer_type
+        customer_type: repair.customer_type,
+        cedula_dni: repair.customer_cedula_dni,
+        country_code: repair.customer_country_code
       } : null,
       devices: repair.device_brand ? {
         id: repair.device_id,

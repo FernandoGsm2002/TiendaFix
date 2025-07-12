@@ -97,6 +97,8 @@ interface Customer {
   customer_type: string
   customer_tax_id: string | null
   customer_tax_id_type: string | null
+  cedula_dni: string | null
+  country_code: string | null
 }
 
 interface PaginationInfo {
@@ -558,6 +560,7 @@ export default function VentasPage() {
         <div class="space">
           <div class="bold">CLIENTE:</div>
           <div>${customerName}</div>
+          ${selectedCustomer && customers.find(c => c.id === selectedCustomer)?.cedula_dni ? `<div>Cédula/DNI: ${customers.find(c => c.id === selectedCustomer)?.cedula_dni}</div>` : ''}
           ${selectedCustomer && customers.find(c => c.id === selectedCustomer)?.customer_tax_id ? `<div>${customers.find(c => c.id === selectedCustomer)?.customer_tax_id_type || 'RUC'}: ${customers.find(c => c.id === selectedCustomer)?.customer_tax_id}</div>` : ''}
         </div>
         
@@ -882,14 +885,16 @@ export default function VentasPage() {
               <div>T. ENTREGA: ${organizationInfo.delivery_time || 'N/A'}</div>
             </div>
           </div>
-          <div class="section">
+                    <div class="section">
             <div class="section-title">PARA</div>
             <div class="section-content">
-                             <div><strong>CLIENTE:</strong> ${customerInfo?.name || 'PÚBLICO GENERAL'}</div>
-               <div><strong>OTROS:</strong> ${customerInfo?.phone || 'N/A'}</div>
-               <div><strong>DIRECCIÓN:</strong> N/A</div>
-               <div><strong>CEL/TLF:</strong> ${customerInfo?.phone || 'N/A'}</div>
-               <div><strong>E-MAIL:</strong> N/A</div>
+              <div><strong>CLIENTE:</strong> ${customerInfo?.name || 'PÚBLICO GENERAL'}</div>
+              ${customerInfo?.cedula_dni ? `<div><strong>Cédula/DNI:</strong> ${customerInfo.cedula_dni}</div>` : ''}
+              ${customerInfo?.customer_tax_id ? `<div><strong>${customerInfo.customer_tax_id_type || 'RUC'}:</strong> ${customerInfo.customer_tax_id}</div>` : ''}
+              <div><strong>OTROS:</strong> ${customerInfo?.phone || 'N/A'}</div>
+              <div><strong>DIRECCIÓN:</strong> N/A</div>
+              <div><strong>CEL/TLF:</strong> ${customerInfo?.phone || 'N/A'}</div>
+              <div><strong>E-MAIL:</strong> N/A</div>
               <div><strong>F. EMISIÓN:</strong> ${currentDate}</div>
               <div><strong>EXPIRA:</strong> ${new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toLocaleString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' })}</div>
               <div><strong>MONEDA:</strong> SOLES</div>

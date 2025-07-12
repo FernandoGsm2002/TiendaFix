@@ -103,7 +103,9 @@ export async function PUT(
           phone,
           email,
           anonymous_identifier,
-          customer_type
+          customer_type,
+          cedula_dni,
+          country_code
         ),
         users!unlocks_created_by_fkey (
           id,
@@ -152,7 +154,9 @@ export async function PUT(
         phone: unlock.customers.phone,
         email: unlock.customers.email,
         anonymous_identifier: unlock.customers.anonymous_identifier,
-        customer_type: unlock.customers.customer_type
+        customer_type: unlock.customers.customer_type,
+        cedula_dni: unlock.customers.cedula_dni,
+        country_code: unlock.customers.country_code
       } : null,
       technician: unlock.users ? {
         id: unlock.users.id,

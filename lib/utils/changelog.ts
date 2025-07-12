@@ -16,16 +16,75 @@ export interface VersionInfo {
   showAnnouncement: boolean
 }
 
-export const APP_VERSION = '1.2.0'
+export const APP_VERSION = '1.2.2'
 
 export const CHANGELOG: VersionInfo[] = [
+  {
+    version: '1.2.2',
+    releaseDate: '2025-07-11',
+    title: 'Integración Completa de WhatsApp',
+    description: 'Implementación completa de WhatsApp para reparaciones y desbloqueos con mensajes personalizados y soporte multi-país',
+    priority: 'high',
+    showAnnouncement: true,
+    changes: [
+      {
+        id: 'whatsapp-unlocks',
+        type: 'feature',
+        title: 'WhatsApp para Desbloqueos',
+        description: 'Agregamos botones de WhatsApp en modales de desbloqueos con mensajes específicos según el tipo y estado del desbloqueo',
+        icon: 'star'
+      },
+      {
+        id: 'whatsapp-messages',
+        type: 'improvement',
+        title: 'Mensajes WhatsApp Personalizados',
+        description: 'Mensajes específicos para cada tipo de desbloqueo (iCloud, FRP, Network, etc.) con estados contextuales (Pendiente, En Proceso, Completado, Fallido)',
+        icon: 'star'
+      },
+      {
+        id: 'duplicate-buttons-fix',
+        type: 'fix',
+        title: 'Eliminación de Botones Duplicados',
+        description: 'Corregimos los botones de WhatsApp duplicados en modales de reparaciones y desbloqueos, manteniendo solo uno por modal',
+        icon: 'bug'
+      },
+      {
+        id: 'country-code-support',
+        type: 'feature',
+        title: 'Soporte Multi-País',
+        description: 'Implementamos soporte completo para códigos de país en clientes con validación adecuada para mostrar WhatsApp',
+        icon: 'globe'
+      },
+      {
+        id: 'database-views-update',
+        type: 'improvement',
+        title: 'Actualización de Vistas de Base de Datos',
+        description: 'Actualizamos las vistas de repairs y unlocks para incluir campos de cédula/DNI y código de país del cliente',
+        icon: 'database'
+      },
+      {
+        id: 'api-optimization',
+        type: 'improvement',
+        title: 'Optimización de APIs',
+        description: 'Mejoramos las APIs de técnicos para usar vistas optimizadas en lugar de consultas directas a tablas',
+        icon: 'zap'
+      },
+      {
+        id: 'typescript-fixes',
+        type: 'fix',
+        title: 'Correcciones TypeScript',
+        description: 'Corregimos interfaces de Customer para incluir campos de cédula/DNI y código de país, eliminando errores de TypeScript',
+        icon: 'tool'
+      }
+    ]
+  },
   {
     version: '1.2.0',
     releaseDate: '2025-07-11',
     title: 'Sistema de Identificación Tributaria',
     description: 'Implementación completa del sistema de identificación tributaria para organizaciones y clientes',
     priority: 'high',
-    showAnnouncement: true,
+    showAnnouncement: false,
     changes: [
       {
         id: 'org-tax-id',

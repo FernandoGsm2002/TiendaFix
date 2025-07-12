@@ -60,6 +60,12 @@ import {
   type CountryCode,
   isValidCountry
 } from '@/lib/utils/tax-identification'
+import { 
+  SOUTH_AMERICAN_COUNTRIES, 
+  type CountryInfo,
+  formatPhoneNumber,
+  isValidPhoneNumber
+} from '@/lib/utils/country-codes'
 
 interface Customer {
   id: string
@@ -71,6 +77,8 @@ interface Customer {
   anonymous_identifier: string | null
   customer_tax_id: string | null
   customer_tax_id_type: string | null
+  cedula_dni: string | null
+  country_code: string | null
   created_at: string
   updated_at: string
   is_recurrent: boolean
@@ -126,6 +134,8 @@ interface NewCustomerForm {
   anonymous_identifier: string
   customer_tax_id: string
   customer_tax_id_type: string
+  cedula_dni: string
+  country_code: string
 }
 
 export default function ClientesPage() {
@@ -160,7 +170,9 @@ export default function ClientesPage() {
     customer_type: 'identified',
     anonymous_identifier: '',
     customer_tax_id: '',
-    customer_tax_id_type: ''
+    customer_tax_id_type: '',
+    cedula_dni: '',
+    country_code: '+51'
   })
 
   // Controles para los modales
@@ -296,7 +308,9 @@ export default function ClientesPage() {
         customer_type: 'identified',
         anonymous_identifier: '',
         customer_tax_id: '',
-        customer_tax_id_type: ''
+        customer_tax_id_type: '',
+        cedula_dni: '',
+        country_code: '+51'
       })
       onCreateClose()
       fetchCustomers()
@@ -912,6 +926,45 @@ export default function ClientesPage() {
                   placeholder="Dirección del cliente"
                 />
                 
+                {/* Campo de cédula/DNI */}
+                <FormField
+                  label="Cédula / DNI (Opcional)"
+                  name="cedula_dni"
+                  value={newCustomer.cedula_dni}
+                  onChange={(value) => setNewCustomer(prev => ({ ...prev, cedula_dni: value }))}
+                  placeholder="Número de cédula o DNI"
+                />
+                
+                {/* Campo de código de país para WhatsApp */}
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Código de País WhatsApp
+                  </label>
+                  <Select
+                    selectedKeys={new Set([newCustomer.country_code])}
+                    defaultSelectedKeys={new Set([newCustomer.country_code])}
+                    placeholder="Seleccionar país"
+                    onSelectionChange={(keys) => {
+                      const selectedCode = Array.from(keys)[0] as string
+                      setNewCustomer(prev => ({ ...prev, country_code: selectedCode }))
+                    }}
+                    variant="bordered"
+                    classNames={{
+                      trigger: "border-gray-300 hover:border-gray-400 focus-within:border-blue-500",
+                      value: "text-gray-900"
+                    }}
+                  >
+                    {SOUTH_AMERICAN_COUNTRIES.map((country) => (
+                      <SelectItem key={country.whatsappCode}>
+                        {country.flag} {country.name} ({country.whatsappCode})
+                      </SelectItem>
+                    ))}
+                  </Select>
+                  <p className="text-xs text-gray-500">
+                    Código de país para enviar mensajes de WhatsApp automáticos
+                  </p>
+                </div>
+                
                 {/* Campo de identificación tributaria */}
                 <div className="space-y-2">
                   <label className="block text-sm font-medium text-gray-700">
@@ -1026,6 +1079,18 @@ export default function ClientesPage() {
                           <div>
                             <label className={`text-sm font-medium ${textColors.tertiary}`}>Dirección:</label>
                             <p className={`text-base ${textColors.primary}`}>{selectedCustomer.address}</p>
+                          </div>
+                        )}
+                        {selectedCustomer.cedula_dni && (
+                          <div>
+                            <label className={`text-sm font-medium ${textColors.tertiary}`}>Cédula / DNI:</label>
+                            <p className={`text-base ${textColors.primary}`}>{selectedCustomer.cedula_dni}</p>
+                          </div>
+                        )}
+                        {selectedCustomer.country_code && (
+                          <div>
+                            <label className={`text-sm font-medium ${textColors.tertiary}`}>Código País WhatsApp:</label>
+                            <p className={`text-base ${textColors.primary}`}>{selectedCustomer.country_code}</p>
                           </div>
                         )}
                         {selectedCustomer.customer_tax_id && (
@@ -1418,6 +1483,45 @@ export default function ClientesPage() {
                       onChange={(value) => setEditingCustomer(prev => prev ? ({ ...prev, address: value }) : null)}
                       placeholder="Dirección del cliente"
                     />
+                    
+                    {/* Campo de cédula/DNI */}
+                    <FormField
+                      label="Cédula / DNI (Opcional)"
+                      name="cedula_dni"
+                      value={editingCustomer.cedula_dni || ''}
+                      onChange={(value) => setEditingCustomer(prev => prev ? ({ ...prev, cedula_dni: value }) : null)}
+                      placeholder="Número de cédula o DNI"
+                    />
+                    
+                    {/* Campo de código de país para WhatsApp */}
+                    <div className="space-y-2">
+                      <label className="block text-sm font-medium text-gray-700">
+                        Código de País WhatsApp
+                      </label>
+                      <Select
+                        selectedKeys={new Set([editingCustomer.country_code || '+51'])}
+                        defaultSelectedKeys={new Set([editingCustomer.country_code || '+51'])}
+                        placeholder="Seleccionar país"
+                        onSelectionChange={(keys) => {
+                          const selectedCode = Array.from(keys)[0] as string
+                          setEditingCustomer(prev => prev ? ({ ...prev, country_code: selectedCode }) : null)
+                        }}
+                        variant="bordered"
+                        classNames={{
+                          trigger: "border-gray-300 hover:border-gray-400 focus-within:border-blue-500",
+                          value: "text-gray-900"
+                        }}
+                      >
+                        {SOUTH_AMERICAN_COUNTRIES.map((country) => (
+                          <SelectItem key={country.whatsappCode}>
+                            {country.flag} {country.name} ({country.whatsappCode})
+                          </SelectItem>
+                        ))}
+                      </Select>
+                      <p className="text-xs text-gray-500">
+                        Código de país para enviar mensajes de WhatsApp automáticos
+                      </p>
+                    </div>
                     
                     {/* Campo de identificación tributaria */}
                     <div className="space-y-2">
