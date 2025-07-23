@@ -48,6 +48,8 @@ import {
   Printer,
   MessageCircle
 } from 'lucide-react'
+import PatternLock from '@/app/components/ui/PatternLock'
+import DeviceTicket from '@/app/components/ui/DeviceTicket'
 import {
   generateWhatsAppURL,
   generateRepairStatusMessage,
@@ -69,6 +71,9 @@ interface Repair {
   unregistered_customer_name: string | null
   unregistered_customer_phone: string | null
   unregistered_device_info: string | null
+  device_pin: string | null
+  device_pattern: string | null
+  unlock_type: string | null
   customers: {
     id: string
     name: string | null
@@ -132,6 +137,69 @@ interface NewRepairForm {
   internal_notes: string
   unregistered_customer_name?: string
   unregistered_customer_phone?: string
+  unlock_type: string
+  device_pin: string
+  device_pattern: number[]
+}
+
+// Componente wrapper para DeviceTicket que obtiene la información de la organización
+const DeviceTicketWrapper: React.FC<{
+  repair: Repair
+  customerName: string
+}> = ({ repair, customerName }) => {
+  const [orgInfo, setOrgInfo] = useState<any>(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchOrgInfo = async () => {
+      try {
+        const response = await fetch('/api/user/profile')
+        const userData = await response.json()
+        
+        if (userData.success) {
+          const orgResponse = await fetch(`/api/organizations/${userData.data.organization_id}`)
+          const orgData = await orgResponse.json()
+          
+          if (orgData.success) {
+            setOrgInfo(orgData.data)
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching organization info:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+    
+    fetchOrgInfo()
+  }, [])
+
+  if (loading) {
+    return <div className="text-center py-4">Cargando vista previa...</div>
+  }
+
+  let devicePattern: number[] = []
+  try {
+    if (repair.device_pattern) {
+      devicePattern = JSON.parse(repair.device_pattern)
+    }
+  } catch (error) {
+    console.error('Error parsing device pattern:', error)
+  }
+
+  return (
+    <DeviceTicket
+      organizationInfo={{
+        name: orgInfo?.name || 'TiendaFix',
+        logo_url: orgInfo?.logo_url
+      }}
+      customerName={customerName}
+      repairId={repair.id}
+      unlockType={(repair.unlock_type as any) || 'none'}
+      devicePin={repair.device_pin || ''}
+      devicePattern={devicePattern}
+    />
+  )
 }
 
 export default function TechnicianRepairsPage() {
@@ -148,6 +216,7 @@ export default function TechnicianRepairsPage() {
   const [error, setError] = useState<string | null>(null)
   const [isUnregistered, setIsUnregistered] = useState(false)
   const [selectedRepair, setSelectedRepair] = useState<Repair | null>(null)
+  const [repairToPrint, setRepairToPrint] = useState<Repair | null>(null)
   const [stats, setStats] = useState({
     total: 0,
     received: 0,
@@ -168,18 +237,37 @@ export default function TechnicianRepairsPage() {
     cost: 0,
     internal_notes: '',
     unregistered_customer_name: '',
-    unregistered_customer_phone: ''
+    unregistered_customer_phone: '',
+    unlock_type: 'none',
+    device_pin: '',
+    device_pattern: []
   })
 
   const { isOpen: isCreateOpen, onOpen: onCreateOpen, onClose: onCreateClose } = useDisclosure()
   const { isOpen: isDetailOpen, onOpen: onDetailOpen, onClose: onDetailClose } = useDisclosure()
   const { isOpen: isStatusOpen, onOpen: onStatusOpen, onClose: onStatusClose } = useDisclosure()
+  const { isOpen: isPrintModalOpen, onOpen: onPrintModalOpen, onClose: onPrintModalClose } = useDisclosure()
 
   useEffect(() => {
     fetchRepairs()
     fetchCustomers()
     // Eliminado: Ya no necesitamos cargar dispositivos
   }, [filtroEstado, busqueda])
+
+  // Debug para el modal de impresión
+  useEffect(() => {
+    // Modal state tracking removed for production
+  }, [isPrintModalOpen, repairToPrint])
+
+  // Debug adicional para verificar cuando se abre el modal de detalles
+  useEffect(() => {
+    // Detail modal tracking removed for production
+  }, [isDetailOpen, selectedRepair])
+
+  // Debug adicional para verificar renders
+  useEffect(() => {
+    // Component render tracking removed for production
+  })
 
   const fetchRepairs = async () => {
     try {
@@ -193,6 +281,12 @@ export default function TechnicianRepairsPage() {
       if (!response.ok) throw new Error('Error al cargar reparaciones')
       
       const data = await response.json()
+      console.log('🔍 API Response - First repair:', data.data?.[0])
+      console.log('🔍 API Response - Unlock fields for first repair:', {
+        unlock_type: data.data?.[0]?.unlock_type,
+        device_pin: data.data?.[0]?.device_pin,
+        device_pattern: data.data?.[0]?.device_pattern
+      })
       setRepairs(data.data || [])
       setStats(data.stats || stats)
     } catch (error) {
@@ -235,6 +329,9 @@ export default function TechnicianRepairsPage() {
           unregistered_customer_phone: newRepair.unregistered_customer_phone,
           unregistered_device_info: newRepair.device_description,
           customer_id: null,
+          unlock_type: newRepair.unlock_type,
+          device_pin: newRepair.device_pin,
+          device_pattern: JSON.stringify(newRepair.device_pattern),
         }
       : {
           customer_id: newRepair.customer_id,
@@ -247,6 +344,9 @@ export default function TechnicianRepairsPage() {
           // Para clientes registrados, guardamos la info del dispositivo en unregistered_device_info
           // pero mantenemos customer_id para que se identifique como registrado
           unregistered_device_info: newRepair.device_description,
+          unlock_type: newRepair.unlock_type,
+          device_pin: newRepair.device_pin,
+          device_pattern: JSON.stringify(newRepair.device_pattern),
         }
     
     // Validaciones específicas
@@ -297,7 +397,10 @@ export default function TechnicianRepairsPage() {
         cost: 0,
         internal_notes: '',
         unregistered_customer_name: '',
-        unregistered_customer_phone: ''
+        unregistered_customer_phone: '',
+        unlock_type: 'none',
+        device_pin: '',
+        device_pattern: []
       })
       // Eliminado: Ya no usamos filteredDevices
       setIsUnregistered(false)
@@ -578,8 +681,25 @@ export default function TechnicianRepairsPage() {
     return ticketHTML
   }
 
-  // Función para imprimir el ticket
-  const handlePrintTicket = async (repair: Repair) => {
+  // Función para abrir el modal de impresión
+  const handlePrintTicket = (repair: Repair) => {
+    setRepairToPrint(repair)
+    onPrintModalOpen()
+  }
+
+  // Función para imprimir ticket del dispositivo  
+  const handlePrintDeviceTicket = (repair: Repair) => {
+    // Simplemente cerrar el modal por ahora y usar la vista previa existente
+    onPrintModalClose()
+    
+    // Mostrar mensaje al usuario sobre cómo imprimir
+    setTimeout(() => {
+      alert('Use Ctrl+P (o Cmd+P en Mac) en la vista previa del ticket del dispositivo para imprimir.')
+    }, 100)
+  }
+
+  // Función para imprimir el ticket del cliente (tradicional)
+  const handlePrintCustomerTicket = async (repair: Repair) => {
     setPrintLoading(true)
     try {
       // Obtener información de la organización
@@ -1504,6 +1624,75 @@ export default function TechnicianRepairsPage() {
                       inputWrapper: "border-gray-300",
                     }}
                   />
+
+                  {/* Campos de desbloqueo del dispositivo */}
+                  <div className="border-t border-gray-200 pt-4 mt-4">
+                    <h4 className="text-lg font-semibold text-gray-800 mb-3">
+                      Información de Desbloqueo del Dispositivo
+                    </h4>
+                    
+                    <Select
+                      label="Tipo de Desbloqueo"
+                      placeholder="Seleccionar tipo de bloqueo"
+                      selectedKeys={new Set([newRepair.unlock_type])}
+                      onSelectionChange={(keys) => {
+                        const unlockType = Array.from(keys)[0] as string
+                        setNewRepair(prev => ({ 
+                          ...prev, 
+                          unlock_type: unlockType,
+                          device_pin: unlockType !== 'pin' ? '' : prev.device_pin,
+                          device_pattern: unlockType !== 'pattern' ? [] : prev.device_pattern
+                        }))
+                      }}
+                      variant="bordered"
+                      size="md"
+                      className="mb-4"
+                      classNames={{
+                        label: "text-gray-700 text-base",
+                        value: "text-gray-900 text-base",
+                        trigger: "border-gray-300 min-h-12",
+                      }}
+                    >
+                      <SelectItem key="none">Sin bloqueo</SelectItem>
+                      <SelectItem key="pin">PIN numérico</SelectItem>
+                      <SelectItem key="pattern">Patrón de puntos</SelectItem>
+                      <SelectItem key="fingerprint">Huella dactilar</SelectItem>
+                      <SelectItem key="face">Reconocimiento facial</SelectItem>
+                      <SelectItem key="other">Otro método</SelectItem>
+                    </Select>
+
+                    {newRepair.unlock_type === 'pin' && (
+                      <Input
+                        label="PIN del Dispositivo"
+                        placeholder="Ej: 1234, 123456"
+                        value={newRepair.device_pin}
+                        onValueChange={(value) => setNewRepair(prev => ({ ...prev, device_pin: value }))}
+                        variant="bordered"
+                        size="md"
+                        maxLength={20}
+                        classNames={{
+                          label: "text-gray-700 text-base",
+                          input: "text-gray-900 placeholder:text-gray-500 text-base text-center",
+                          inputWrapper: "border-gray-300 min-h-12",
+                        }}
+                      />
+                    )}
+
+                    {newRepair.unlock_type === 'pattern' && (
+                      <div className="space-y-3">
+                        <label className="block text-base font-medium text-gray-700">
+                          Patrón de Desbloqueo
+                        </label>
+                        <div className="flex justify-center">
+                          <PatternLock
+                            value={newRepair.device_pattern}
+                            onChange={(pattern) => setNewRepair(prev => ({ ...prev, device_pattern: pattern }))}
+                            size="md"
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </ModalBody>
               <ModalFooter className="gap-3 py-4">
@@ -1609,6 +1798,55 @@ export default function TechnicianRepairsPage() {
                      <p className="text-xs md:text-sm text-gray-600">{selectedRepair.devices.device_type}</p>
                    )}
                  </div>
+
+                 {/* Información de desbloqueo */}
+                 {selectedRepair.unlock_type && selectedRepair.unlock_type !== 'none' && (
+                   <div>
+                     <p className="text-xs md:text-sm font-medium text-gray-500 mb-2">Información de Desbloqueo</p>
+                     <div className="space-y-2">
+                       <div>
+                         <span className="text-xs font-medium text-gray-600">Tipo: </span>
+                         <Chip size="sm" variant="flat" color="secondary">
+                           {selectedRepair.unlock_type === 'pin' ? 'PIN' :
+                            selectedRepair.unlock_type === 'pattern' ? 'Patrón' :
+                            selectedRepair.unlock_type === 'fingerprint' ? 'Huella' :
+                            selectedRepair.unlock_type === 'face' ? 'Facial' :
+                            'Otro'}
+                         </Chip>
+                       </div>
+                       
+                       {selectedRepair.unlock_type === 'pin' && selectedRepair.device_pin && (
+                         <div>
+                           <span className="text-xs font-medium text-gray-600">PIN: </span>
+                           <span className="text-sm bg-gray-100 px-2 py-1 rounded font-mono">
+                             {selectedRepair.device_pin}
+                           </span>
+                         </div>
+                       )}
+                       
+                       {selectedRepair.unlock_type === 'pattern' && selectedRepair.device_pattern && (
+                         <div>
+                           <span className="text-xs font-medium text-gray-600 block mb-2">Patrón:</span>
+                           <div className="flex justify-start">
+                             <PatternLock
+                               value={
+                                 (() => {
+                                   try {
+                                     return JSON.parse(selectedRepair.device_pattern)
+                                   } catch {
+                                     return []
+                                   }
+                                 })()
+                               }
+                               size="sm"
+                               disabled={true}
+                             />
+                           </div>
+                         </div>
+                       )}
+                     </div>
+                   </div>
+                 )}
 
                  <div>
                    <p className="text-xs md:text-sm font-medium text-gray-500 mb-2">Problema Reportado</p>
@@ -1730,6 +1968,99 @@ export default function TechnicianRepairsPage() {
             <ModalFooter>
               <Button variant="light" onPress={onStatusClose}>
                 Cancelar
+              </Button>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
+
+        {/* Modal de selección de tickets */}
+        <Modal 
+          isOpen={isPrintModalOpen} 
+          onClose={onPrintModalClose}
+          size="3xl"
+          scrollBehavior="inside"
+          classNames={{
+            wrapper: "z-[1000]",
+            backdrop: "z-[999]",
+            base: "max-h-[95vh] my-2 mx-2 sm:mx-6 bg-white border border-gray-200",
+            body: "max-h-[75vh] overflow-y-auto py-6",
+            header: "border-b border-gray-200 pb-4",
+            footer: "border-t border-gray-200 pt-4"
+          }}
+        >
+          <ModalContent>
+            <ModalHeader>
+              <h2 className="text-xl font-bold text-gray-800">
+                Opciones de Impresión - Reparación #{repairToPrint?.id.slice(0, 8).toUpperCase()}
+              </h2>
+            </ModalHeader>
+            <ModalBody>
+              {repairToPrint && (
+                <div className="space-y-6">
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    {/* Ticket del Cliente */}
+                    <div className="border border-gray-200 rounded-lg p-4">
+                      <h3 className="text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                        <ClipboardList className="w-5 h-5" />
+                        Ticket del Cliente
+                      </h3>
+                      <p className="text-sm text-gray-600 mb-4">
+                        Ticket completo con todos los detalles para el cliente
+                      </p>
+                      <Button
+                        color="primary"
+                        onPress={() => {
+                          handlePrintCustomerTicket(repairToPrint)
+                          onPrintModalClose()
+                        }}
+                        isLoading={printLoading}
+                        className="w-full"
+                        startContent={<Printer className="w-4 h-4" />}
+                      >
+                        Imprimir Ticket Cliente
+                      </Button>
+                    </div>
+
+                    {/* Ticket del Dispositivo */}
+                    <div className="border border-gray-200 rounded-lg p-4">
+                      <h3 className="text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                        <Smartphone className="w-5 h-5" />
+                        Ticket del Dispositivo
+                      </h3>
+                      <p className="text-sm text-gray-600 mb-4">
+                        Ticket horizontal para pegar al dispositivo con PIN/patrón
+                      </p>
+                      <Button
+                        color="secondary"
+                        onPress={() => repairToPrint && handlePrintDeviceTicket(repairToPrint)}
+                        className="w-full"
+                        startContent={<Smartphone className="w-4 h-4" />}
+                      >
+                        Ver/Imprimir Ticket Dispositivo
+                      </Button>
+                    </div>
+                  </div>
+
+                  {/* Vista previa del ticket del dispositivo */}
+                  <div className="border-t border-gray-200 pt-6">
+                    <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                      Vista Previa - Ticket del Dispositivo
+                    </h3>
+                                         <DeviceTicketWrapper
+                       repair={repairToPrint}
+                       customerName={getCustomerName(repairToPrint.customers, repairToPrint.unregistered_customer_name)}
+                     />
+                  </div>
+                </div>
+              )}
+            </ModalBody>
+            <ModalFooter>
+              <Button 
+                color="danger" 
+                variant="flat" 
+                onPress={onPrintModalClose}
+              >
+                Cerrar
               </Button>
             </ModalFooter>
           </ModalContent>

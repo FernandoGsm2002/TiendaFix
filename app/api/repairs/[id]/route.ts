@@ -53,8 +53,10 @@ export async function GET(
         status, priority, cost,
         estimated_completion_date, actual_completion_date, received_date, delivered_date,
         warranty_days, internal_notes, customer_notes,
+        device_pin, device_pattern, unlock_type,
+        unregistered_customer_name, unregistered_customer_phone, unregistered_device_info,
         created_at, updated_at,
-        customers(id, name, email, phone, anonymous_identifier, customer_type, cedula_dni, country_code),
+        customers(id, name, email, phone, anonymous_identifier, customer_type, cedula_dni, country_code, customer_tax_id, customer_tax_id_type),
         devices(id, brand, model, device_type, serial_number, imei, color),
         users!repairs_created_by_fkey(id, name, email)
       `)

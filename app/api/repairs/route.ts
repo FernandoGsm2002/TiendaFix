@@ -58,6 +58,9 @@ export async function GET(request: NextRequest) {
         unregistered_customer_name,
         unregistered_customer_phone,
         unregistered_device_info,
+        device_pin,
+        device_pattern,
+        unlock_type,
         customer_name,
         customer_email,
         customer_phone,
@@ -65,6 +68,8 @@ export async function GET(request: NextRequest) {
         customer_type,
         customer_cedula_dni,
         customer_country_code,
+        customer_tax_id,
+        customer_tax_id_type,
         device_brand,
         device_model,
         device_type,
@@ -191,6 +196,9 @@ export async function GET(request: NextRequest) {
       unregistered_customer_name: repair.unregistered_customer_name,
       unregistered_customer_phone: repair.unregistered_customer_phone,
       unregistered_device_info: repair.unregistered_device_info,
+      device_pin: repair.device_pin,
+      device_pattern: repair.device_pattern,
+      unlock_type: repair.unlock_type,
       customers: repair.customer_name ? {
         id: repair.customer_id,
         name: repair.customer_name,
@@ -199,7 +207,9 @@ export async function GET(request: NextRequest) {
         anonymous_identifier: repair.customer_anonymous_identifier,
         customer_type: repair.customer_type,
         cedula_dni: repair.customer_cedula_dni,
-        country_code: repair.customer_country_code
+        country_code: repair.customer_country_code,
+        customer_tax_id: repair.customer_tax_id,
+        customer_tax_id_type: repair.customer_tax_id_type
       } : null,
       devices: repair.device_brand ? {
         id: repair.device_id,

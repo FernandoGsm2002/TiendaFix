@@ -88,8 +88,7 @@ export default function TechnicianHeader({ onMobileMenuToggle, mobileMenuOpen }:
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
     if (searchValue.trim()) {
-      console.log('Buscando:', searchValue)
-      // Aquí puedes implementar la lógica de búsqueda
+      // Search functionality can be implemented here
     }
   }
 
