@@ -648,10 +648,10 @@ export default function ClientesPage() {
         {/* Header mejorado */}
         <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
           <div className="space-y-2">
-            <h1 className={`text-4xl font-bold bg-gradient-to-r from-[#4ca771] to-[#013237] bg-clip-text text-transparent`}>
+            <h1 className={`text-4xl font-bold bg-gradient-to-r from-[#004085] to-[#003366] bg-clip-text text-transparent`}>
               {t('customers.title')}
             </h1>
-            <p className={`text-[#4ca771] text-lg`}>
+            <p className={`text-[#6C757D] text-lg`}>
               {t('customers.description')}
             </p>
           </div>
@@ -660,7 +660,7 @@ export default function ClientesPage() {
             size="lg"
             startContent={<Plus className="w-5 h-5" />}
             onPress={onCreateOpen}
-            className="bg-gradient-to-r from-[#4ca771] to-[#013237] text-white shadow-lg hover:from-[#013237] hover:to-[#4ca771] transition-all"
+            className="bg-gradient-to-r from-[#004085] to-[#003366] text-white shadow-lg hover:from-[#003366] hover:to-[#004085] transition-all"
           >
             {t('customers.new')}
           </Button>
@@ -668,62 +668,62 @@ export default function ClientesPage() {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
-          <Card className="hover:scale-105 transition-all duration-300 border border-gray-200 shadow-lg bg-gradient-to-br from-blue-100 to-blue-200">
+          <Card className="hover:scale-105 transition-all duration-300 border border-[#6C757D]/20 shadow-lg bg-gradient-to-br from-[#F8F9FA] to-[#E9ECEF]">
             <CardBody className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <div className="p-3 rounded-xl bg-blue-500 shadow-lg">
+                <div className="p-3 rounded-xl bg-gradient-to-br from-[#6C757D] to-[#495057] shadow-lg">
                   <Users className="w-6 h-6 text-white" />
                 </div>
-                <Chip variant="flat" size="sm" className="font-semibold bg-white/60 text-blue-800 border border-white/30">Total</Chip>
+                <Chip variant="flat" size="sm" className="font-semibold bg-white/60 text-[#343A40] border border-white/30">Total</Chip>
               </div>
               <div className="space-y-2">
-                <p className="text-base font-bold text-blue-800 opacity-90 uppercase tracking-wider">{t('customers.totalClients')}</p>
-                <p className="text-4xl font-extrabold text-blue-800 mb-2 tracking-tight">{stats.total}</p>
+                <p className="text-base font-bold text-[#343A40] opacity-90 uppercase tracking-wider">{t('customers.totalClients')}</p>
+                <p className="text-4xl font-extrabold text-[#343A40] mb-2 tracking-tight">{stats.total}</p>
               </div>
             </CardBody>
           </Card>
 
-          <Card className="hover:scale-105 transition-all duration-300 border border-gray-200 shadow-lg bg-gradient-to-br from-emerald-100 to-emerald-200">
+          <Card className="hover:scale-105 transition-all duration-300 border border-[#004085]/20 shadow-lg bg-gradient-to-br from-[#E8F0FE] to-[#D1E7FF]">
             <CardBody className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <div className="p-3 rounded-xl bg-emerald-500 shadow-lg">
+                <div className="p-3 rounded-xl bg-gradient-to-br from-[#004085] to-[#003366] shadow-lg">
                   <UserCheck className="w-6 h-6 text-white" />
                 </div>
-                <Chip variant="flat" size="sm" className="font-semibold bg-white/60 text-emerald-800 border border-white/30">Registrados</Chip>
+                <Chip variant="flat" size="sm" className="font-semibold bg-white/60 text-[#343A40] border border-white/30">Registrados</Chip>
               </div>
               <div className="space-y-2">
-                <p className="text-base font-bold text-emerald-800 opacity-90 uppercase tracking-wider">{t('customers.registeredClients')}</p>
-                <p className="text-4xl font-extrabold text-emerald-800 mb-2 tracking-tight">{stats.identificados}</p>
+                <p className="text-base font-bold text-[#343A40] opacity-90 uppercase tracking-wider">{t('customers.registeredClients')}</p>
+                <p className="text-4xl font-extrabold text-[#343A40] mb-2 tracking-tight">{stats.identificados}</p>
               </div>
             </CardBody>
           </Card>
 
-          <Card className="hover:scale-105 transition-all duration-300 border border-gray-200 shadow-lg bg-gradient-to-br from-purple-100 to-purple-200">
+          <Card className="hover:scale-105 transition-all duration-300 border border-[#6C757D]/20 shadow-lg bg-gradient-to-br from-[#F8F9FA] to-[#E9ECEF]">
             <CardBody className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <div className="p-3 rounded-xl bg-purple-500 shadow-lg">
+                <div className="p-3 rounded-xl bg-gradient-to-br from-[#6C757D] to-[#495057] shadow-lg">
                   <Star className="w-6 h-6 text-white" />
                 </div>
-                <Chip variant="flat" size="sm" className="font-semibold bg-white/60 text-purple-800 border border-white/30">VIP</Chip>
+                <Chip variant="flat" size="sm" className="font-semibold bg-white/60 text-[#343A40] border border-white/30">VIP</Chip>
               </div>
               <div className="space-y-2">
-                <p className="text-base font-bold text-purple-800 opacity-90 uppercase tracking-wider">{t('customers.vipClients')}</p>
-                <p className="text-4xl font-extrabold text-purple-800 mb-2 tracking-tight">{stats.vip}</p>
+                <p className="text-base font-bold text-[#343A40] opacity-90 uppercase tracking-wider">{t('customers.vipClients')}</p>
+                <p className="text-4xl font-extrabold text-[#343A40] mb-2 tracking-tight">{stats.vip}</p>
               </div>
             </CardBody>
           </Card>
 
-          <Card className="hover:scale-105 transition-all duration-300 border border-gray-200 shadow-lg bg-gradient-to-br from-orange-100 to-orange-200">
+          <Card className="hover:scale-105 transition-all duration-300 border border-[#004085]/20 shadow-lg bg-gradient-to-br from-[#E8F0FE] to-[#D1E7FF]">
             <CardBody className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <div className="p-3 rounded-xl bg-orange-500 shadow-lg">
+                <div className="p-3 rounded-xl bg-gradient-to-br from-[#004085] to-[#003366] shadow-lg">
                   <User className="w-6 h-6 text-white" />
                 </div>
-                <Chip variant="flat" size="sm" className="font-semibold bg-white/60 text-orange-800 border border-white/30">Anónimos</Chip>
+                <Chip variant="flat" size="sm" className="font-semibold bg-white/60 text-[#343A40] border border-white/30">Anónimos</Chip>
               </div>
               <div className="space-y-2">
-                <p className="text-base font-bold text-orange-800 opacity-90 uppercase tracking-wider">{t('customers.anonymousClients')}</p>
-                <p className="text-4xl font-extrabold text-orange-800 mb-2 tracking-tight">{stats.anonimos}</p>
+                <p className="text-base font-bold text-[#343A40] opacity-90 uppercase tracking-wider">{t('customers.anonymousClients')}</p>
+                <p className="text-4xl font-extrabold text-[#343A40] mb-2 tracking-tight">{stats.anonimos}</p>
               </div>
             </CardBody>
           </Card>
@@ -738,11 +738,11 @@ export default function ClientesPage() {
                   placeholder={t('customers.searchPlaceholder')}
                   value={busqueda}
                   onValueChange={handleBusquedaChange}
-                  startContent={<Search className="w-4 h-4 text-[#4ca771]" />}
+                  startContent={<Search className="w-4 h-4 text-[#6C757D]" />}
                   variant="bordered"
                   classNames={{
-                    input: "text-gray-800 placeholder:text-gray-400",
-                    inputWrapper: "border-gray-300 hover:border-[#4ca771] focus-within:border-[#4ca771]",
+                    input: "text-[#343A40] placeholder:text-[#6C757D]",
+                    inputWrapper: "border-[#E8F0FE] hover:border-[#004085] focus-within:border-[#004085]",
                   }}
                 />
               </div>
@@ -753,15 +753,15 @@ export default function ClientesPage() {
                   onSelectionChange={handleTipoChange}
                   variant="bordered"
                   classNames={{
-                    trigger: "text-gray-800 border-gray-300 hover:border-[#4ca771] focus:border-[#4ca771]",
-                    value: "text-gray-800",
-                    popoverContent: "bg-white border border-gray-200",
+                    trigger: "text-[#343A40] border-[#E8F0FE] hover:border-[#004085] focus:border-[#004085]",
+                    value: "text-[#343A40]",
+                    popoverContent: "bg-white border border-[#E8F0FE]",
                   }}
                 >
-                  <SelectItem key="todos" className="text-gray-800 hover:bg-gray-50">{t('customers.allTypes')}</SelectItem>
-                  <SelectItem key="identified" className="text-gray-800 hover:bg-gray-50">{t('customers.identified')}</SelectItem>
-                  <SelectItem key="anonymous" className="text-gray-800 hover:bg-gray-50">{t('customers.anonymous')}</SelectItem>
-                  <SelectItem key="recurrent" className="text-gray-800 hover:bg-gray-50">{t('customers.recurrent')}</SelectItem>
+                  <SelectItem key="todos" className="text-[#343A40] hover:bg-[#E8F0FE]">{t('customers.allTypes')}</SelectItem>
+                  <SelectItem key="identified" className="text-[#343A40] hover:bg-[#E8F0FE]">{t('customers.identified')}</SelectItem>
+                  <SelectItem key="anonymous" className="text-[#343A40] hover:bg-[#E8F0FE]">{t('customers.anonymous')}</SelectItem>
+                  <SelectItem key="recurrent" className="text-[#343A40] hover:bg-[#E8F0FE]">{t('customers.recurrent')}</SelectItem>
                 </Select>
               </div>
             </div>
@@ -779,8 +779,8 @@ export default function ClientesPage() {
                       name={getCustomerDisplayName(customer).charAt(0)}
                       classNames={{
                         base: customer.is_recurrent 
-                          ? "bg-gradient-to-br from-purple-400 to-purple-500" 
-                          : "bg-gradient-to-br from-blue-400 to-blue-500",
+                          ? "bg-gradient-to-br from-[#6C757D] to-[#495057]" 
+                          : "bg-gradient-to-br from-[#004085] to-[#003366]",
                         name: "text-white font-bold"
                       }}
                       size="lg"
@@ -819,7 +819,7 @@ export default function ClientesPage() {
                 <div className="space-y-3 mb-4">
                   <div className="flex justify-between">
                     <span className={`text-sm text-gray-500`}>Total gastado:</span>
-                    <span className="text-sm font-semibold text-green-600">
+                    <span className="text-sm font-semibold text-gray-900">
                       {formatCurrency(customer.stats?.totalGastado || 0)}
                     </span>
                   </div>
@@ -863,17 +863,17 @@ export default function ClientesPage() {
               showControls
               size="lg"
               classNames={{
-                wrapper: "gap-0 overflow-visible h-fit rounded-lg border border-gray-300",
-                item: "w-10 h-10 text-small rounded-none bg-transparent text-gray-700 hover:bg-gray-100",
-                cursor: "bg-gradient-to-r from-[#4ca771] to-[#013237] shadow-lg font-bold text-white",
-                prev: "bg-transparent hover:bg-gray-100 text-gray-700",
-                next: "bg-transparent hover:bg-gray-100 text-gray-700",
+                wrapper: "gap-0 overflow-visible h-fit rounded-lg border border-[#E8F0FE]",
+                item: "w-10 h-10 text-small rounded-none bg-transparent text-[#6C757D] hover:bg-[#E8F0FE]",
+                cursor: "bg-gradient-to-r from-[#004085] to-[#003366] shadow-lg font-bold text-white",
+                prev: "bg-transparent hover:bg-[#E8F0FE] text-[#6C757D]",
+                next: "bg-transparent hover:bg-[#E8F0FE] text-[#6C757D]",
               }}
             />
           </div>
         )}
 
-        {/* Modal de crear cliente */}
+        {/* Modal para crear cliente */}
         <Modal 
           isOpen={isCreateOpen} 
           onClose={onCreateClose} 
@@ -881,11 +881,11 @@ export default function ClientesPage() {
           scrollBehavior="inside"
           classNames={{
             wrapper: "z-[1000]",
-            backdrop: "z-[999]",
-            base: "max-h-[95vh] my-2 mx-2 sm:mx-6 bg-white border border-gray-200",
-            body: "max-h-[70vh] overflow-y-auto py-4",
-            header: "border-b border-gray-200 pb-4",
-            footer: "border-t border-gray-200 pt-4"
+            backdrop: "z-[999] bg-black/40 backdrop-blur-sm",
+            base: "!rounded-3xl shadow-2xl border-0 bg-white my-4 mx-4 sm:my-6 sm:mx-6 md:mx-8 lg:mx-12",
+            body: "max-h-[70vh] overflow-y-auto p-6 md:p-8",
+            header: "border-b border-gray-200/50 p-6 md:p-8 bg-gradient-to-r from-green-50/50 to-white !rounded-t-3xl",
+            footer: "border-t border-gray-200/50 p-6 md:p-8 bg-gradient-to-r from-green-50/50 to-white !rounded-b-3xl"
           }}
         >
           <ModalContent>
@@ -999,13 +999,13 @@ export default function ClientesPage() {
                   ]}
                 />
               </ModalBody>
-              <ModalFooter>
-                <Button variant="flat" onPress={onCreateClose} className="hover:bg-gray-100 text-gray-600">Cancelar</Button>
+              <ModalFooter className="bg-[#F8F9FA] border-t border-[#E8F0FE]/50">
+                <Button variant="flat" onPress={onCreateClose} className="hover:bg-[#E8F0FE] text-[#6C757D]">Cancelar</Button>
                 <Button 
                   type="submit" 
                   isLoading={createLoading}
                   startContent={!createLoading ? <Plus className="w-4 h-4" /> : null}
-                  className="bg-gradient-to-r from-[#4ca771] to-[#013237] text-white hover:from-[#013237] hover:to-[#4ca771]"
+                  className="bg-gradient-to-r from-[#004085] to-[#003366] text-white hover:from-[#003366] hover:to-[#004085]"
                 >
                   {t('customers.new')}
                 </Button>
@@ -1022,11 +1022,11 @@ export default function ClientesPage() {
           scrollBehavior="inside"
           classNames={{
             wrapper: "z-[1000]",
-            backdrop: "z-[999]",
-            base: "max-h-[100vh] h-full w-full m-0 sm:max-h-[95vh] sm:h-auto sm:w-auto sm:my-2 sm:mx-2 md:mx-6 md:max-w-4xl",
-            body: "max-h-[calc(100vh-120px)] sm:max-h-[80vh] overflow-y-auto p-3 sm:p-4 md:p-6",
-            header: "border-b border-gray-200 p-3 sm:p-4 md:p-6",
-            footer: "border-t border-gray-200 p-3 sm:p-4 md:p-6"
+            backdrop: "z-[999] bg-black/40 backdrop-blur-sm",
+            base: "!rounded-3xl shadow-2xl border-0 bg-white max-h-[100vh] h-full w-full m-0 sm:max-h-[95vh] sm:h-auto sm:w-auto sm:my-6 sm:mx-6 md:mx-8 lg:mx-12 md:max-w-4xl",
+            body: "max-h-[calc(100vh-120px)] sm:max-h-[80vh] overflow-y-auto p-4 sm:p-6 md:p-8",
+            header: "border-b border-[#E8F0FE]/50 p-4 sm:p-6 md:p-8 bg-gradient-to-r from-[#F8F9FA]/50 to-white !rounded-t-3xl",
+            footer: "border-t border-[#E8F0FE]/50 p-4 sm:p-6 md:p-8 bg-gradient-to-r from-[#F8F9FA]/50 to-white !rounded-b-3xl"
           }}
         >
           <ModalContent>
@@ -1035,7 +1035,7 @@ export default function ClientesPage() {
                 <Avatar
                   name={selectedCustomer ? getCustomerDisplayName(selectedCustomer).charAt(0) : '?'}
                   size="lg"
-                  className="bg-gradient-to-br from-blue-500 to-purple-600"
+                  className="bg-gradient-to-br from-[#004085] to-[#003366]"
                 />
                 <div>
                   <h2 className={`text-xl font-bold ${textColors.primary}`}>
@@ -1123,35 +1123,35 @@ export default function ClientesPage() {
                     <Card>
                       <CardHeader className="pb-3">
                         <h3 className={`text-lg font-semibold flex items-center gap-2 ${textColors.primary}`}>
-                          <Activity className="w-5 h-5 text-green-500" />
+                          <Activity className="w-5 h-5 text-gray-500" />
                           Estadísticas Básicas
                         </h3>
                       </CardHeader>
                       <CardBody className="pt-0">
                         <div className="grid grid-cols-2 gap-3">
-                          <div className="text-center p-3 bg-blue-50 rounded-lg">
-                            <p className="text-xl font-bold text-blue-600">
+                          <div className="text-center p-3 bg-[#E8F0FE] rounded-lg">
+                            <p className="text-xl font-bold text-[#343A40]">
                               {getFilteredStats().totalServices}
                             </p>
-                            <p className="text-xs text-gray-600">Total Servicios</p>
+                            <p className="text-xs text-[#6C757D]">Total Servicios</p>
                           </div>
-                          <div className="text-center p-3 bg-green-50 rounded-lg">
-                            <p className="text-xl font-bold text-green-600">
+                          <div className="text-center p-3 bg-[#F8F9FA] rounded-lg">
+                            <p className="text-xl font-bold text-[#343A40]">
                               {formatCurrency(getFilteredStats().totalSpent)}
                             </p>
-                            <p className="text-xs text-gray-600">Total Gastado</p>
+                            <p className="text-xs text-[#6C757D]">Total Gastado</p>
                           </div>
-                          <div className="text-center p-3 bg-orange-50 rounded-lg">
-                            <p className="text-xl font-bold text-orange-600">
+                          <div className="text-center p-3 bg-[#E8F0FE] rounded-lg">
+                            <p className="text-xl font-bold text-[#343A40]">
                               {getFilteredStats().pendingServices}
                             </p>
-                            <p className="text-xs text-gray-600">Pendientes</p>
+                            <p className="text-xs text-[#6C757D]">Pendientes</p>
                           </div>
-                          <div className="text-center p-3 bg-purple-50 rounded-lg">
-                            <p className="text-xl font-bold text-purple-600">
+                          <div className="text-center p-3 bg-[#F8F9FA] rounded-lg">
+                            <p className="text-xl font-bold text-[#343A40]">
                               {getFilteredStats().completedServices}
                             </p>
-                            <p className="text-xs text-gray-600">Completadas</p>
+                            <p className="text-xs text-[#6C757D]">Completadas</p>
                           </div>
                         </div>
                       </CardBody>
@@ -1161,7 +1161,7 @@ export default function ClientesPage() {
                     <Card>
                       <CardHeader className="pb-3">
                         <h3 className={`text-lg font-semibold flex items-center gap-2 ${textColors.primary}`}>
-                          <CreditCard className="w-5 h-5 text-green-500" />
+                          <CreditCard className="w-5 h-5 text-gray-500" />
                           Resumen Financiero
                         </h3>
                       </CardHeader>
@@ -1176,19 +1176,19 @@ export default function ClientesPage() {
                           <div className="space-y-3">
                             <div className="flex justify-between">
                               <span className={`text-sm ${textColors.secondary}`}>Total gastado:</span>
-                              <span className="font-semibold text-green-600">
+                              <span className="font-semibold text-gray-900">
                                 {formatCurrency(customerDetail.financialSummary.totalSpent)}
                               </span>
                             </div>
                             <div className="flex justify-between">
                               <span className={`text-sm ${textColors.secondary}`}>Pendiente:</span>
-                              <span className="font-semibold text-orange-600">
+                              <span className="font-semibold text-gray-900">
                                 {formatCurrency(customerDetail.financialSummary.totalPending)}
                               </span>
                             </div>
                             <div className="flex justify-between">
                               <span className={`text-sm ${textColors.secondary}`}>Pagado:</span>
-                              <span className="font-semibold text-blue-600">
+                              <span className="font-semibold text-gray-900">
                                 {formatCurrency(customerDetail.financialSummary.totalPaid)}
                               </span>
                             </div>
@@ -1334,7 +1334,7 @@ export default function ClientesPage() {
                                 <div className="flex items-center gap-2">
                                   {service.type === 'repair' && <Wrench className="w-4 h-4 text-blue-500" />}
                                   {service.type === 'unlock' && <Unlock className="w-4 h-4 text-purple-500" />}
-                                  {service.type === 'sale' && <ShoppingBag className="w-4 h-4 text-green-500" />}
+                                  {service.type === 'sale' && <ShoppingBag className="w-4 h-4 text-gray-500" />}
                                   <Chip
                                     size="sm"
                                     color={getServiceTypeColor(service.type)}
@@ -1350,7 +1350,7 @@ export default function ClientesPage() {
                                     {getStatusLabel(service.status)}
                                   </Chip>
                                 </div>
-                                <span className="font-semibold text-green-600">
+                                <span className="font-semibold text-gray-900">
                                   {formatCurrency(service.cost)}
                                 </span>
                               </div>
@@ -1437,11 +1437,11 @@ export default function ClientesPage() {
           scrollBehavior="inside"
           classNames={{
             wrapper: "z-[1000]",
-            backdrop: "z-[999]",
-            base: "max-h-[95vh] my-2 mx-2 sm:mx-6",
-            body: "max-h-[75vh] overflow-y-auto py-4",
-            header: "border-b border-gray-200 pb-4",
-            footer: "border-t border-gray-200 pt-4"
+            backdrop: "z-[999] bg-black/40 backdrop-blur-sm",
+            base: "!rounded-3xl shadow-2xl border-0 bg-white my-4 mx-4 sm:my-6 sm:mx-6 md:mx-8 lg:mx-12",
+            body: "max-h-[75vh] overflow-y-auto p-6 md:p-8",
+            header: "border-b border-gray-200/50 p-6 md:p-8 bg-gradient-to-r from-yellow-50/50 to-white !rounded-t-3xl",
+            footer: "border-t border-gray-200/50 p-6 md:p-8 bg-gradient-to-r from-yellow-50/50 to-white !rounded-b-3xl"
           }}
         >
           <ModalContent>
@@ -1559,11 +1559,11 @@ export default function ClientesPage() {
                   </>
                 )}
               </ModalBody>
-              <ModalFooter>
-                <Button variant="flat" onPress={onEditClose}>Cancelar</Button>
+              <ModalFooter className="bg-[#F8F9FA] border-t border-[#E8F0FE]/50">
+                <Button variant="flat" onPress={onEditClose} className="hover:bg-[#E8F0FE] text-[#6C757D]">Cancelar</Button>
                 <Button 
                   type="submit" 
-                  className="bg-gradient-to-r from-[#4ca771] to-[#013237] text-white"
+                  className="bg-gradient-to-r from-[#004085] to-[#003366] text-white hover:from-[#003366] hover:to-[#004085]"
                   isLoading={updateLoading}
                   startContent={!updateLoading ? <Edit className="w-4 h-4" /> : null}
                 >

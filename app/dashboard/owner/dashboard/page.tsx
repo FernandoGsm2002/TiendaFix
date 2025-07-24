@@ -133,11 +133,11 @@ export default function DashboardPage() {
           <Card className="max-w-md w-full">
             <CardBody className="text-center p-8">
               <AlertTriangle className="h-16 w-16 text-red-500 mx-auto mb-4" />
-              <h2 className="text-xl font-bold text-[#013237] mb-2">Error al Cargar el Dashboard</h2>
-              <p className="text-[#4ca771] mb-6">{error || 'No se pudieron obtener los datos. Inténtalo de nuevo más tarde.'}</p>
+              <h2 className="text-xl font-bold text-slate-800 mb-2">Error al Cargar el Dashboard</h2>
+              <p className="text-slate-600 mb-6">{error || 'No se pudieron obtener los datos. Inténtalo de nuevo más tarde.'}</p>
               <button
                 onClick={fetchStats}
-                className="bg-gradient-to-r from-[#4ca771] to-[#013237] text-white font-bold py-2 px-4 rounded-lg hover:from-[#013237] hover:to-[#4ca771] transition-all duration-300"
+                className="bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold py-2 px-4 rounded-lg hover:from-blue-600 hover:to-blue-700 shadow-lg hover:shadow-xl transition-all duration-300"
               >
                 Reintentar
               </button>
@@ -158,11 +158,11 @@ export default function DashboardPage() {
           <Card className="max-w-md w-full">
             <CardBody className="text-center p-8">
               <AlertTriangle className="h-16 w-16 text-red-500 mx-auto mb-4" />
-              <h2 className="text-xl font-bold text-[#013237] mb-2">Datos Incompletos</h2>
-              <p className="text-[#4ca771] mb-6">Los datos del dashboard no están disponibles. Inténtalo de nuevo.</p>
+              <h2 className="text-xl font-bold text-slate-800 mb-2">Datos Incompletos</h2>
+              <p className="text-slate-600 mb-6">Los datos del dashboard no están disponibles. Inténtalo de nuevo.</p>
               <button
                 onClick={fetchStats}
-                className="bg-gradient-to-r from-[#4ca771] to-[#013237] text-white font-bold py-2 px-4 rounded-lg hover:from-[#013237] hover:to-[#4ca771] transition-all duration-300"
+                className="bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold py-2 px-4 rounded-lg hover:from-blue-600 hover:to-blue-700 shadow-lg hover:shadow-xl transition-all duration-300"
               >
                 Reintentar
               </button>
@@ -181,9 +181,9 @@ export default function DashboardPage() {
       trend: '+12%',
       trendDirection: 'up' as const,
       color: 'default' as const,
-      bgClass: 'bg-gradient-to-br from-emerald-100 to-emerald-200',
-      iconBg: 'bg-emerald-500',
-      textColor: 'text-emerald-800',
+      bgClass: 'bg-gradient-to-br from-[#E8F0FE] to-[#D1E7FF] border border-[#004085]/20',
+      iconBg: 'bg-gradient-to-br from-[#004085] to-[#003366]',
+      textColor: 'text-[#343A40]',
       description: 'Ingresos de hoy'
     },
     { 
@@ -193,9 +193,9 @@ export default function DashboardPage() {
       trend: '+8%',
       trendDirection: 'up' as const,
       color: 'primary' as const,
-      bgClass: 'bg-gradient-to-br from-blue-100 to-blue-200',
-      iconBg: 'bg-blue-500',
-      textColor: 'text-blue-800',
+          bgClass: 'bg-gradient-to-br from-[#F8F9FA] to-[#E9ECEF] border border-[#6C757D]/20',
+    iconBg: 'bg-gradient-to-br from-[#004085] to-[#003366]',
+    textColor: 'text-[#343A40]',
       description: 'Reparaciones iniciadas'
     },
     { 
@@ -205,9 +205,9 @@ export default function DashboardPage() {
       trend: '+15%',
       trendDirection: 'up' as const,
       color: 'secondary' as const,
-      bgClass: 'bg-gradient-to-br from-purple-100 to-purple-200',
-      iconBg: 'bg-purple-500',
-      textColor: 'text-purple-800',
+      bgClass: 'bg-gradient-to-br from-[#E8F0FE] to-[#D1E7FF] border border-[#004085]/20',
+      iconBg: 'bg-gradient-to-br from-[#004085] to-[#003366]',
+      textColor: 'text-[#343A40]',
       description: 'Desbloqueos completados'
     },
     { 
@@ -217,9 +217,9 @@ export default function DashboardPage() {
       trend: '-3%',
       trendDirection: 'down' as const,
       color: 'warning' as const,
-      bgClass: 'bg-gradient-to-br from-orange-100 to-orange-200',
-      iconBg: 'bg-orange-500',
-      textColor: 'text-orange-800',
+      bgClass: 'bg-gradient-to-br from-[#F8F9FA] to-[#E9ECEF] border border-[#6C757D]/20',
+      iconBg: 'bg-gradient-to-br from-[#6C757D] to-[#495057]',
+      textColor: 'text-[#343A40]',
       description: 'Trabajos pendientes'
     },
     { 
@@ -229,9 +229,9 @@ export default function DashboardPage() {
       trend: '0%',
       trendDirection: 'neutral' as const,
       color: 'success' as const,
-      bgClass: 'bg-gradient-to-br from-teal-100 to-teal-200',
-      iconBg: 'bg-teal-500',
-      textColor: 'text-teal-800',
+      bgClass: 'bg-gradient-to-br from-[#E8F0FE] to-[#D1E7FF] border border-[#004085]/20',
+      iconBg: 'bg-gradient-to-br from-[#004085] to-[#003366]',
+      textColor: 'text-[#343A40]',
       description: 'En progreso activo'
     },
     { 
@@ -241,9 +241,9 @@ export default function DashboardPage() {
       trend: '+5%',
       trendDirection: 'up' as const,
       color: 'default' as const,
-      bgClass: 'bg-gradient-to-br from-slate-100 to-slate-200',
-      iconBg: 'bg-slate-500',
-      textColor: 'text-slate-800',
+      bgClass: 'bg-gradient-to-br from-[#F8F9FA] to-[#E9ECEF] border border-[#6C757D]/20',
+      iconBg: 'bg-gradient-to-br from-[#6C757D] to-[#495057]',
+      textColor: 'text-[#343A40]',
       description: 'Base de clientes'
     },
   ]
@@ -317,18 +317,18 @@ export default function DashboardPage() {
         colorStops: [
             {
               offset: 0,
-              color: 'rgba(52, 211, 153, 0.4)',
+              color: 'rgba(34, 197, 94, 0.4)',
               opacity: 1
             },
             {
               offset: 100,
-              color: 'rgba(52, 211, 153, 0)',
+              color: 'rgba(34, 197, 94, 0)',
               opacity: 1
             }
         ]
       }
     },
-    colors: ['#34D399'],
+    colors: ['#10b981'],
     stroke: { width: 3, curve: 'smooth' },
     tooltip: { ...baseChartOptions.tooltip, y: { formatter: val => format(val) }}
   }
@@ -354,7 +354,7 @@ export default function DashboardPage() {
       }
     },
     plotOptions: { bar: { columnWidth: '45%', borderRadius: 6, distributed: true }},
-    colors: ['#60a5fa', '#818cf8', '#a78bfa', '#f472b6', '#fb923c', '#facc15', '#4ade80'],
+    colors: ['#004085', '#6C757D', '#28A745', '#FF8C00', '#004085', '#6C757D', '#28A745'],
     tooltip: { ...baseChartOptions.tooltip, y: { formatter: val => `${Math.round(val)} Reparaciones` }}
   }
 
@@ -365,7 +365,7 @@ export default function DashboardPage() {
     ...baseChartOptions,
     chart: { ...baseChartOptions.chart, type: 'donut' },
     labels: statusChartLabels,
-    colors: ['#f97316', '#eab308', '#22c55e'],
+    colors: ['#64748b', '#3b82f6', '#475569', '#2563eb', '#1d4ed8'],
     plotOptions: {
       pie: {
         donut: {
@@ -397,7 +397,7 @@ export default function DashboardPage() {
       ...baseChartOptions,
       chart: { ...baseChartOptions.chart, type: 'pie' },
       labels: deviceTypesLabels,
-      colors: ['#38bdf8', '#a78bfa', '#f472b6', '#34d399', '#fbbf24'],
+      colors: ['#3b82f6', '#64748b', '#475569', '#334155', '#1e293b'],
       stroke: { width: 0 },
       plotOptions: { pie: {
         dataLabels: {
@@ -429,9 +429,9 @@ export default function DashboardPage() {
 
   const getActivityColor = (type: string) => {
     switch(type) {
-      case 'reparacion': return 'bg-[#4ca771]';
-      case 'desbloqueo': return 'bg-[#013237]';
-      default: return 'bg-[#4ca771]';
+      case 'reparacion': return 'bg-[#004085]';
+      case 'desbloqueo': return 'bg-[#28A745]';
+      default: return 'bg-[#6C757D]';
     }
   }
 
@@ -517,7 +517,7 @@ export default function DashboardPage() {
                       classNames={{
                         base: "max-w-full",
                         track: "drop-shadow-md border border-white/20",
-                        indicator: `${stat.iconBg}`,
+                        indicator: stat.iconBg.replace('bg-gradient-to-br', '').replace('from-', 'bg-').split(' ')[0],
                       }}
                     />
                   )}
@@ -529,19 +529,19 @@ export default function DashboardPage() {
         
         {/* Enhanced Main Charts */}
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-          <Card className="lg:col-span-3 shadow-xl hover:shadow-2xl transition-all duration-300 border border-[#c0e6ba]/50 bg-gradient-to-br from-[#f0fdf9] to-[#eafae7]/50 backdrop-blur-sm">
+          <Card className="lg:col-span-3 shadow-xl hover:shadow-2xl transition-all duration-300 border border-[#6C757D]/20 bg-gradient-to-br from-[#F8F9FA] to-[#E9ECEF] backdrop-blur-sm">
             <CardHeader className="flex items-center gap-3 pb-4">
-              <div className="p-2 rounded-lg bg-gradient-to-br from-[#4ca771] to-[#013237]">
+              <div className="p-2 rounded-lg bg-gradient-to-br from-[#6C757D] to-[#495057] shadow-lg">
                 <TrendingUp className="h-5 w-5 text-white"/>
               </div>
               <div>
-                <h2 className="text-xl font-bold text-[#013237]">{t('dashboard.weeklyRevenue')}</h2>
-                <p className="text-sm text-[#4ca771]">Últimos 7 días</p>
+                <h2 className="text-xl font-bold text-[#343A40]">{t('dashboard.weeklyRevenue')}</h2>
+                <p className="text-sm text-[#6C757D]">Últimos 7 días</p>
               </div>
               <div className="ml-auto">
                 <Chip 
                   size="sm" 
-                  className="bg-gradient-to-r from-[#4ca771] to-[#013237] text-white"
+                  className="bg-gradient-to-r from-[#6C757D] to-[#495057] text-white shadow-sm"
                 >
                   +12.5%
                 </Chip>
@@ -552,14 +552,14 @@ export default function DashboardPage() {
             </CardBody>
           </Card>
           
-          <Card className="lg:col-span-2 shadow-xl hover:shadow-2xl transition-all duration-300 border border-[#c0e6ba]/50 bg-gradient-to-br from-[#f0fdf9] to-[#eafae7]/50 backdrop-blur-sm">
+          <Card className="lg:col-span-2 shadow-xl hover:shadow-2xl transition-all duration-300 border border-[#004085]/20 bg-gradient-to-br from-[#E8F0FE] to-[#D1E7FF] backdrop-blur-sm">
             <CardHeader className="flex items-center gap-3 pb-4">
-              <div className="p-2 rounded-lg bg-gradient-to-br from-[#4ca771] to-[#013237]">
+              <div className="p-2 rounded-lg bg-gradient-to-br from-[#004085] to-[#003366] shadow-lg">
                 <BarChart className="h-5 w-5 text-white"/>
               </div>
               <div>
-                <h2 className="text-xl font-bold text-[#013237]">{t('dashboard.weeklyRepairs')}</h2>
-                <p className="text-sm text-[#4ca771]">Actividad semanal</p>
+                <h2 className="text-xl font-bold text-[#343A40]">{t('dashboard.weeklyRepairs')}</h2>
+                <p className="text-sm text-[#6C757D]">Actividad semanal</p>
               </div>
             </CardHeader>
             <CardBody>
@@ -570,14 +570,14 @@ export default function DashboardPage() {
 
         {/* Enhanced Donut & Pie Charts */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <Card className="shadow-xl hover:shadow-2xl transition-all duration-300 border border-[#c0e6ba]/50 bg-gradient-to-br from-[#f0fdf9] to-[#eafae7]/50 backdrop-blur-sm">
+          <Card className="shadow-xl hover:shadow-2xl transition-all duration-300 border border-[#004085]/20 bg-gradient-to-br from-[#E8F0FE] to-[#D1E7FF] backdrop-blur-sm">
             <CardHeader className="flex items-center gap-3 pb-4">
-              <div className="p-2 rounded-lg bg-gradient-to-br from-[#4ca771] to-[#013237]">
+              <div className="p-2 rounded-lg bg-gradient-to-br from-[#004085] to-[#003366] shadow-lg">
                 <PieChart className="h-5 w-5 text-white"/>
               </div>
               <div>
-                <h2 className="text-xl font-bold text-[#013237]">{t('dashboard.statusDistribution')}</h2>
-                <p className="text-sm text-[#4ca771]">Estados de reparación</p>
+                <h2 className="text-xl font-bold text-[#343A40]">{t('dashboard.statusDistribution')}</h2>
+                <p className="text-sm text-[#6C757D]">Estados de reparación</p>
               </div>
             </CardHeader>
             <CardBody className="flex justify-center items-center">
@@ -587,32 +587,32 @@ export default function DashboardPage() {
             </CardBody>
           </Card>
           
-          <Card className="shadow-xl hover:shadow-2xl transition-all duration-300 border border-[#c0e6ba]/50 bg-gradient-to-br from-[#f0fdf9] to-[#eafae7]/50 backdrop-blur-sm">
+          <Card className="shadow-xl hover:shadow-2xl transition-all duration-300 border border-[#6C757D]/20 bg-gradient-to-br from-[#F8F9FA] to-[#E9ECEF] backdrop-blur-sm">
             <CardHeader className="flex items-center gap-3 pb-4">
-              <div className="p-2 rounded-lg bg-gradient-to-br from-[#4ca771] to-[#013237]">
+              <div className="p-2 rounded-lg bg-gradient-to-br from-[#6C757D] to-[#495057] shadow-lg">
                 <Activity className="h-5 w-5 text-white"/>
               </div>
               <div>
-                <h2 className="text-xl font-bold text-[#013237]">{t('dashboard.recentActivity')}</h2>
-                <p className="text-sm text-[#4ca771]">Actividad reciente</p>
+                <h2 className="text-xl font-bold text-[#343A40]">{t('dashboard.recentActivity')}</h2>
+                <p className="text-sm text-[#6C757D]">Actividad reciente</p>
               </div>
             </CardHeader>
             <CardBody>
               {recentActivity && recentActivity.length > 0 ? (
                 <ul className="space-y-4">
                   {recentActivity.map((activity) => (
-                    <li key={activity.id} className="flex items-center space-x-4 p-3 rounded-lg hover:bg-[#eafae7]/30 transition-colors duration-200">
+                    <li key={activity.id} className="flex items-center space-x-4 p-3 rounded-lg hover:bg-[#E8F0FE]/30 transition-colors duration-200">
                       <div className={`p-3 rounded-full shadow-lg ${getActivityColor(activity.type)}`}>
                         {getActivityIcon(activity.type)}
                       </div>
                       <div className="flex-1">
-                        <p className="font-semibold text-[#013237] text-sm">{activity.title}</p>
-                        <p className="text-xs text-[#4ca771]">{timeAgo(activity.timestamp)}</p>
+                        <p className="font-semibold text-[#343A40] text-sm">{activity.title}</p>
+                        <p className="text-xs text-[#6C757D]">{timeAgo(activity.timestamp)}</p>
                       </div>
                       <Chip 
                         size="sm" 
                         variant="flat" 
-                        className="bg-[#c0e6ba]/50 text-[#013237] border border-[#c0e6ba]"
+                        className="bg-[#E8F0FE] text-[#004085] border border-[#004085]/20"
                       >
                         Nuevo
                       </Chip>
@@ -620,12 +620,12 @@ export default function DashboardPage() {
                   ))}
                 </ul>
               ) : (
-                <div className="flex flex-col items-center justify-center h-full text-center text-[#4ca771] py-8">
-                   <div className="p-4 rounded-full bg-[#eafae7] mb-4">
-                     <Activity className="h-8 w-8 text-[#4ca771]"/>
+                <div className="flex flex-col items-center justify-center h-full text-center text-[#6C757D] py-8">
+                   <div className="p-4 rounded-full bg-[#E8F0FE] mb-4">
+                     <Activity className="h-8 w-8 text-[#6C757D]"/>
                    </div>
-                   <p className="font-medium text-[#013237]">{t('dashboard.noRecentActivity')}</p>
-                   <p className="text-sm text-[#4ca771] mt-1">La actividad aparecerá aquí</p>
+                   <p className="font-medium text-[#343A40]">{t('dashboard.noRecentActivity')}</p>
+                   <p className="text-sm text-[#6C757D] mt-1">La actividad aparecerá aquí</p>
                 </div>
               )}
             </CardBody>

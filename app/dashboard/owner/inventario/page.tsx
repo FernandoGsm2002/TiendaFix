@@ -31,7 +31,6 @@ import {
       TableCell
 } from '@heroui/react'
 import FormField from '@/app/components/ui/FormField'
-import { textColors } from '@/lib/utils/colors'
 import { 
   Search, 
   Filter, 
@@ -267,7 +266,7 @@ export default function InventarioPage() {
   const getStatusColor = (item: InventoryItem) => {
     if (item.stock_quantity === 0) return 'danger'
     if (item.stock_quantity <= item.min_stock) return 'warning'
-    return 'success'
+    return 'primary'
   }
 
   const getStatusLabel = (item: InventoryItem) => {
@@ -409,10 +408,10 @@ export default function InventarioPage() {
         {/* Header */}
         <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
           <div className="space-y-2">
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-[#4ca771] to-[#013237] bg-clip-text text-transparent">
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-[#004085] to-[#003366] bg-clip-text text-transparent">
               {t('inventory.title')}
             </h1>
-            <p className="text-[#4ca771] text-lg">
+            <p className="text-[#6C757D] text-lg">
               {t('inventory.description')}
             </p>
           </div>
@@ -421,7 +420,7 @@ export default function InventarioPage() {
             size="lg"
             startContent={<Plus className="w-5 h-5" />}
             onPress={onCreateOpen}
-            className="bg-gradient-to-r from-[#4ca771] to-[#013237] text-white hover:from-[#013237] hover:to-[#4ca771] transition-all shadow-lg"
+            className="bg-gradient-to-r from-[#004085] to-[#003366] text-white hover:from-[#003366] hover:to-[#004085] transition-all shadow-lg"
           >
             {t('inventory.newProduct')}
           </Button>
@@ -429,29 +428,29 @@ export default function InventarioPage() {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
-          <Card className="hover:scale-105 transition-all duration-300 border border-gray-200 shadow-lg bg-gradient-to-br from-blue-100 to-blue-200">
+          <Card className="hover:scale-105 transition-all duration-300 border border-[#6C757D]/20 shadow-lg bg-gradient-to-br from-[#F8F9FA] to-[#E9ECEF]">
             <CardBody className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <div className="p-3 rounded-xl bg-blue-500 shadow-lg">
+                <div className="p-3 rounded-xl bg-gradient-to-br from-[#6C757D] to-[#495057] shadow-lg">
                   <Package className="w-6 h-6 text-white" />
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="flex items-center gap-1">
-                    <ArrowUpRight className="w-3 h-3 text-green-500" />
-                    <span className="text-xs text-green-600 font-medium">+8%</span>
+                    <ArrowUpRight className="w-3 h-3 text-[#004085]" />
+                    <span className="text-xs text-[#004085] font-medium">+8%</span>
                   </div>
-                  <Chip variant="flat" size="sm" className="font-semibold bg-white/60 text-blue-800 border border-white/30">
+                  <Chip variant="flat" size="sm" className="font-semibold bg-white/60 text-[#343A40] border border-white/30">
                     Total
                   </Chip>
                 </div>
               </div>
               <div className="space-y-2">
-                <p className="text-base font-bold text-blue-800 opacity-90 uppercase tracking-wider">{t('inventory.totalProducts')}</p>
-                <p className="text-4xl font-extrabold text-blue-800 mb-2 tracking-tight">{stats.totalItems}</p>
+                <p className="text-base font-bold text-[#343A40] opacity-90 uppercase tracking-wider">{t('inventory.totalProducts')}</p>
+                <p className="text-4xl font-extrabold text-[#343A40] mb-2 tracking-tight">{stats.totalItems}</p>
                 <Progress 
                   value={100} 
                   classNames={{
-                    indicator: "bg-blue-500",
+                    indicator: "bg-[#6C757D]",
                   }}
                   size="sm" 
                 />
@@ -459,29 +458,29 @@ export default function InventarioPage() {
             </CardBody>
           </Card>
 
-          <Card className="hover:scale-105 transition-all duration-300 border border-gray-200 shadow-lg bg-gradient-to-br from-emerald-100 to-emerald-200">
+          <Card className="hover:scale-105 transition-all duration-300 border border-[#004085]/20 shadow-lg bg-gradient-to-br from-[#E8F0FE] to-[#D1E7FF]">
             <CardBody className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <div className="p-3 rounded-xl bg-emerald-500 shadow-lg">
+                <div className="p-3 rounded-xl bg-gradient-to-br from-[#004085] to-[#003366] shadow-lg">
                   <TrendingUp className="w-6 h-6 text-white" />
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="flex items-center gap-1">
-                    <ArrowUpRight className="w-3 h-3 text-green-500" />
-                    <span className="text-xs text-green-600 font-medium">+15%</span>
+                    <ArrowUpRight className="w-3 h-3 text-[#004085]" />
+                    <span className="text-xs text-[#004085] font-medium">+15%</span>
                   </div>
-                  <Chip variant="flat" size="sm" className="font-semibold bg-white/60 text-emerald-800 border border-white/30">
+                  <Chip variant="flat" size="sm" className="font-semibold bg-white/60 text-[#343A40] border border-white/30">
                     Disponibles
                   </Chip>
                 </div>
               </div>
               <div className="space-y-2">
-                <p className="text-base font-bold text-emerald-800 opacity-90 uppercase tracking-wider">{t('inventory.availableProducts')}</p>
-                <p className="text-4xl font-extrabold text-emerald-800 mb-2 tracking-tight">{stats.totalItems - stats.stockBajo - stats.agotados}</p>
+                <p className="text-base font-bold text-[#343A40] opacity-90 uppercase tracking-wider">{t('inventory.availableProducts')}</p>
+                <p className="text-4xl font-extrabold text-[#343A40] mb-2 tracking-tight">{stats.totalItems - stats.stockBajo - stats.agotados}</p>
                 <Progress 
                   value={((stats.totalItems - stats.stockBajo - stats.agotados) / Math.max(stats.totalItems, 1)) * 100} 
                   classNames={{
-                    indicator: "bg-emerald-500",
+                    indicator: "bg-[#004085]",
                   }}
                   size="sm" 
                 />
@@ -489,29 +488,29 @@ export default function InventarioPage() {
             </CardBody>
           </Card>
 
-          <Card className="hover:scale-105 transition-all duration-300 border border-gray-200 shadow-lg bg-gradient-to-br from-orange-100 to-orange-200">
+          <Card className="hover:scale-105 transition-all duration-300 border border-[#6C757D]/20 shadow-lg bg-gradient-to-br from-[#F8F9FA] to-[#E9ECEF]">
             <CardBody className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <div className="p-3 rounded-xl bg-orange-500 shadow-lg">
+                <div className="p-3 rounded-xl bg-gradient-to-br from-[#6C757D] to-[#495057] shadow-lg">
                   <AlertTriangle className="w-6 h-6 text-white" />
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="flex items-center gap-1">
-                    <ArrowDownRight className="w-3 h-3 text-red-500" />
-                    <span className="text-xs text-red-600 font-medium">-3%</span>
+                    <ArrowDownRight className="w-3 h-3 text-[#FF8C00]" />
+                    <span className="text-xs text-[#FF8C00] font-medium">-3%</span>
                   </div>
-                  <Chip variant="flat" size="sm" className="font-semibold bg-white/60 text-orange-800 border border-white/30">
+                  <Chip variant="flat" size="sm" className="font-semibold bg-white/60 text-[#343A40] border border-white/30">
                     Bajo
                   </Chip>
                 </div>
               </div>
               <div className="space-y-2">
-                <p className="text-base font-bold text-orange-800 opacity-90 uppercase tracking-wider">{t('inventory.lowStock')}</p>
-                <p className="text-4xl font-extrabold text-orange-800 mb-2 tracking-tight">{stats.stockBajo}</p>
+                <p className="text-base font-bold text-[#343A40] opacity-90 uppercase tracking-wider">{t('inventory.lowStock')}</p>
+                <p className="text-4xl font-extrabold text-[#343A40] mb-2 tracking-tight">{stats.stockBajo}</p>
                 <Progress 
                   value={(stats.stockBajo / Math.max(stats.totalItems, 1)) * 100} 
                   classNames={{
-                    indicator: "bg-orange-500",
+                    indicator: "bg-[#6C757D]",
                   }}
                   size="sm" 
                 />
@@ -521,33 +520,33 @@ export default function InventarioPage() {
 
 
 
-          <Card className="hover:scale-105 transition-all duration-300 border border-gray-200 shadow-lg bg-gradient-to-br from-purple-100 to-purple-200">
+          <Card className="hover:scale-105 transition-all duration-300 border border-[#004085]/20 shadow-lg bg-gradient-to-br from-[#E8F0FE] to-[#D1E7FF]">
             <CardBody className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <div className="p-3 rounded-xl bg-purple-500 shadow-lg">
+                <div className="p-3 rounded-xl bg-gradient-to-br from-[#004085] to-[#003366] shadow-lg">
                   <DollarSign className="w-6 h-6 text-white" />
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="flex items-center gap-1">
-                    <ArrowUpRight className="w-3 h-3 text-green-500" />
-                    <span className="text-xs text-green-600 font-medium">+12%</span>
+                    <ArrowUpRight className="w-3 h-3 text-[#004085]" />
+                    <span className="text-xs text-[#004085] font-medium">+12%</span>
                   </div>
-                  <Chip variant="flat" size="sm" className="font-semibold bg-white/60 text-purple-800 border border-white/30">
+                  <Chip variant="flat" size="sm" className="font-semibold bg-white/60 text-[#343A40] border border-white/30">
                     Valor
                   </Chip>
                 </div>
               </div>
               <div className="space-y-2">
-                <p className="text-base font-bold text-purple-800 opacity-90 uppercase tracking-wider">{t('inventory.totalValue')}</p>
-                <p className="text-3xl font-extrabold text-purple-800 mb-2 tracking-tight">{formatCurrency(stats.valorTotal)}</p>
+                <p className="text-base font-bold text-[#343A40] opacity-90 uppercase tracking-wider">{t('inventory.totalValue')}</p>
+                <p className="text-3xl font-extrabold text-[#343A40] mb-2 tracking-tight">{formatCurrency(stats.valorTotal)}</p>
                 <Progress 
                   value={75} 
                   classNames={{
-                    indicator: "bg-purple-500",
+                    indicator: "bg-[#004085]",
                   }}
                   size="sm" 
                 />
-                <p className="text-sm font-medium text-purple-800 opacity-70">Venta: {formatCurrency(stats.valorVenta)}</p>
+                <p className="text-sm font-medium text-[#6C757D] opacity-70">Venta: {formatCurrency(stats.valorVenta)}</p>
               </div>
             </CardBody>
           </Card>
@@ -561,13 +560,13 @@ export default function InventarioPage() {
                 placeholder={t('inventory.searchPlaceholder')}
                 value={busqueda}
                 onValueChange={handleBusquedaChange}
-                startContent={<Search className="w-4 h-4 text-gray-400" />}
+                startContent={<Search className="w-4 h-4 text-[#6C757D]" />}
                 className="flex-1"
                 variant="bordered"
-                classNames={{
-                  input: "text-gray-900 placeholder:text-gray-500",
-                  inputWrapper: "border-gray-300",
-                }}
+                                  classNames={{
+                    input: "text-[#343A40] placeholder:text-[#6C757D]",
+                    inputWrapper: "border-[#E8F0FE] hover:border-[#004085] focus-within:border-[#004085]",
+                  }}
               />
               <Select
                 placeholder="Categoría"
@@ -617,7 +616,7 @@ export default function InventarioPage() {
                 aria-label="Tabla de inventario"
                 classNames={{
                   wrapper: "min-h-[400px]",
-                  th: "bg-gray-50 text-gray-700 font-semibold",
+                  th: "bg-[#004085] text-white font-bold text-base",
                   td: "py-4"
                 }}
               >
@@ -635,26 +634,26 @@ export default function InventarioPage() {
                       <TableCell>
                         <div className="flex items-center gap-3">
                           <Avatar
-                            icon={<Package className="w-5 h-5" />}
+                            icon={<Package className="w-5 h-5 text-[#004085]" />}
                             classNames={{
-                              base: `bg-gradient-to-br ${getCategoryColor(item.category)}`,
-                              icon: "text-white"
+                              base: `bg-gradient-to-br from-[#E8F0FE] to-[#D1E7FF]`,
+                              icon: "text-[#004085]"
                             }}
                             size="md"
                           />
                           <div>
-                            <p className={`font-semibold ${textColors.primary}`}>{item.name}</p>
+                            <p className={`font-semibold text-[#343A40]`}>{item.name}</p>
                             {item.brand && item.model && (
-                              <p className={`text-sm ${textColors.secondary}`}>
+                              <p className={`text-sm text-[#6C757D]`}>
                                 {item.brand} {item.model}
                               </p>
                             )}
                             <div className="flex gap-2 mt-1">
-                              <Chip size="sm" variant="flat" color="default">
+                              <Chip size="sm" variant="flat" color="primary" className="bg-[#E8F0FE] text-[#004085]">
                                 {item.category}
                               </Chip>
                               {item.sku && (
-                                <Chip size="sm" variant="flat" color="primary">
+                                <Chip size="sm" variant="flat" color="primary" className="bg-[#004085] text-white">
                                   {item.sku}
                                 </Chip>
                               )}
@@ -670,13 +669,13 @@ export default function InventarioPage() {
                             ) : item.stock_quantity <= item.min_stock ? (
                               <AlertTriangle className="w-4 h-4 text-yellow-500" />
                             ) : (
-                              <TrendingUp className="w-4 h-4 text-green-500" />
+                              <TrendingUp className="w-4 h-4 text-[#004085]" />
                             )}
-                            <span className={`font-medium ${textColors.primary}`}>
+                            <span className={`font-medium text-[#343A40]`}>
                               {item.stock_quantity} unidades
                             </span>
                           </div>
-                          <p className={`text-xs ${textColors.muted}`}>
+                          <p className={`text-xs text-[#6C757D]`}>
                             Mín: {item.min_stock}
                           </p>
                         </div>
@@ -684,22 +683,22 @@ export default function InventarioPage() {
                       <TableCell>
                         <div className="space-y-1">
                           <div className="flex items-center gap-2">
-                            <span className={`text-sm ${textColors.secondary}`}>Costo:</span>
-                            <span className="text-sm font-medium">{formatCurrency(item.unit_cost)}</span>
+                            <span className="text-sm text-[#6C757D]">Precio de Venta:</span>
+                            <span className="text-sm font-medium text-[#343A40]">{formatCurrency(item.enduser_price)}</span>
                           </div>
-                          <div className="flex items-center gap-2">
-                            <span className={`text-sm ${textColors.secondary}`}>Venta:</span>
-                            <span className="text-sm font-medium text-green-600">{formatCurrency(item.enduser_price)}</span>
-                          </div>
+                                                      <div className="flex items-center gap-2">
+                              <span className="text-sm text-[#6C757D]">Total:</span>
+                              <span className="text-sm font-medium text-[#343A40]">{formatCurrency((item.enduser_price || 0) * item.stock_quantity)}</span>
+                            </div>
                         </div>
                       </TableCell>
                       <TableCell>
                         <div className="space-y-1">
                           {item.location && (
-                            <p className={`text-sm ${textColors.primary}`}>{item.location}</p>
+                            <p className={`text-sm text-[#343A40]`}>{item.location}</p>
                           )}
                           {item.supplier && (
-                            <p className={`text-xs ${textColors.muted}`}>
+                            <p className={`text-xs text-[#6C757D]`}>
                               Proveedor: {item.supplier}
                             </p>
                           )}
@@ -710,6 +709,7 @@ export default function InventarioPage() {
                           color={getStatusColor(item)}
                           variant="flat"
                           size="sm"
+                          className={item.stock_quantity > 0 && item.stock_quantity > item.min_stock ? "bg-[#E8F0FE] text-[#004085]" : ""}
                         >
                           {getStatusLabel(item)}
                         </Chip>
@@ -762,11 +762,11 @@ export default function InventarioPage() {
                 </div>
               ) : items.length === 0 ? (
                 <div className="text-center py-12 px-4">
-                  <Package className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                  <h3 className={`text-lg font-semibold ${textColors.primary} mb-2`}>
+                  <Package className="w-16 h-16 text-[#6C757D] mx-auto mb-4" />
+                  <h3 className={`text-lg font-semibold text-[#343A40] mb-2`}>
                     No hay productos
                   </h3>
-                  <p className={`${textColors.muted} mb-6`}>
+                  <p className={`text-[#6C757D] mb-6`}>
                     No se encontraron productos en el inventario
                   </p>
                   <Button color="primary" startContent={<Plus className="w-4 h-4" />} onPress={onCreateOpen}>
@@ -781,28 +781,28 @@ export default function InventarioPage() {
                         {/* Header del producto */}
                         <div className="flex items-start gap-3 mb-4">
                           <Avatar
-                            icon={<Package className="w-5 h-5" />}
+                            icon={<Package className="w-5 h-5 text-[#004085]" />}
                             classNames={{
-                              base: `bg-gradient-to-br ${getCategoryColor(item.category)}`,
-                              icon: "text-white"
+                              base: `bg-gradient-to-br from-[#E8F0FE] to-[#D1E7FF]`,
+                              icon: "text-[#004085]"
                             }}
                             size="md"
                           />
                           <div className="flex-1 min-w-0">
-                            <h4 className={`font-semibold ${textColors.primary} truncate`}>
+                            <h4 className={`font-semibold text-[#343A40] truncate`}>
                               {item.name}
                             </h4>
                             {item.brand && item.model && (
-                              <p className={`text-sm ${textColors.secondary} truncate`}>
+                              <p className={`text-sm text-[#6C757D] truncate`}>
                                 {item.brand} {item.model}
                               </p>
                             )}
                             <div className="flex gap-2 mt-2">
-                              <Chip size="sm" variant="flat" color="default">
+                              <Chip size="sm" variant="flat" color="primary" className="bg-[#E8F0FE] text-[#004085]">
                                 {item.category}
                               </Chip>
                               {item.sku && (
-                                <Chip size="sm" variant="flat" color="primary">
+                                <Chip size="sm" variant="flat" color="primary" className="bg-[#004085] text-white">
                                   {item.sku}
                                 </Chip>
                               )}
@@ -812,6 +812,7 @@ export default function InventarioPage() {
                             color={getStatusColor(item)}
                             variant="flat"
                             size="sm"
+                            className={item.stock_quantity > 0 && item.stock_quantity > item.min_stock ? "bg-[#E8F0FE] text-[#004085]" : ""}
                           >
                             {getStatusLabel(item)}
                           </Chip>
@@ -821,7 +822,7 @@ export default function InventarioPage() {
                         <div className="grid grid-cols-2 gap-4 mb-4">
                           {/* Stock */}
                           <div className="space-y-1">
-                            <p className={`text-xs font-medium ${textColors.tertiary} uppercase tracking-wide`}>
+                            <p className={`text-xs font-medium text-[#6C757D] uppercase tracking-wide`}>
                               Stock
                             </p>
                             <div className="flex items-center gap-2">
@@ -830,27 +831,27 @@ export default function InventarioPage() {
                               ) : item.stock_quantity <= item.min_stock ? (
                                 <AlertTriangle className="w-3 h-3 text-yellow-500" />
                               ) : (
-                                <TrendingUp className="w-3 h-3 text-green-500" />
+                                <TrendingUp className="w-3 h-3 text-[#004085]" />
                               )}
-                              <span className={`font-medium ${textColors.primary}`}>
+                              <span className={`font-medium text-[#343A40]`}>
                                 {item.stock_quantity}
                               </span>
                             </div>
-                            <p className={`text-xs ${textColors.muted}`}>
+                            <p className={`text-xs text-[#6C757D]`}>
                               Mín: {item.min_stock}
                             </p>
                           </div>
 
                           {/* Ubicación */}
                           <div className="space-y-1">
-                            <p className={`text-xs font-medium ${textColors.tertiary} uppercase tracking-wide`}>
+                            <p className={`text-xs font-medium text-[#6C757D] uppercase tracking-wide`}>
                               {t('inventory.location')}
                             </p>
-                            <p className={`text-sm ${textColors.primary}`}>
+                            <p className={`text-sm text-[#343A40]`}>
                               {item.location || t('inventory.location')}
                             </p>
                             {item.supplier && (
-                              <p className={`text-xs ${textColors.muted}`}>
+                              <p className={`text-xs text-[#6C757D]`}>
                                 {item.supplier}
                               </p>
                             )}
@@ -858,22 +859,22 @@ export default function InventarioPage() {
                         </div>
 
                         {/* Precios */}
-                        <div className="bg-gray-50 rounded-lg p-3 mb-4">
+                        <div className="bg-[#E8F0FE] rounded-lg p-3 mb-4">
                           <div className="grid grid-cols-2 gap-3">
                             <div>
-                              <p className={`text-xs font-medium ${textColors.tertiary} mb-1`}>
-                                {t('inventory.unitCost')}
+                              <p className={`text-xs font-medium text-[#6C757D] mb-1`}>
+                                Precio de Venta
                               </p>
-                              <p className="text-sm font-medium">
-                                {formatCurrency(item.unit_cost)}
+                              <p className="text-sm font-medium text-[#343A40]">
+                                {formatCurrency(item.enduser_price)}
                               </p>
                             </div>
                             <div>
-                              <p className={`text-xs font-medium ${textColors.tertiary} mb-1`}>
-                                {t('inventory.endUserPrice')}
+                              <p className={`text-xs font-medium text-[#6C757D] mb-1`}>
+                                Total en Stock
                               </p>
-                              <p className="text-sm font-medium text-green-600">
-                                {formatCurrency(item.enduser_price)}
+                              <p className="text-sm font-medium text-[#343A40]">
+                                {formatCurrency((item.enduser_price || 0) * item.stock_quantity)}
                               </p>
                             </div>
                           </div>
@@ -941,17 +942,17 @@ export default function InventarioPage() {
           scrollBehavior="inside"
           classNames={{
             wrapper: "z-[1000]",
-            backdrop: "z-[999]",
-            base: "max-h-[100vh] h-full sm:max-h-[95vh] sm:h-auto my-0 mx-0 sm:my-1 sm:mx-1 md:mx-6 sm:rounded-lg",
-            body: "max-h-[calc(100vh-180px)] sm:max-h-[75vh] overflow-y-auto py-2 px-2 sm:py-4 sm:px-6",
-            header: "border-b border-gray-200 pb-2 px-2 sm:pb-4 sm:px-6",
-            footer: "border-t border-gray-200 pt-2 px-2 sm:pt-4 sm:px-6"
+            backdrop: "z-[999] bg-black/40 backdrop-blur-sm",
+            base: "!rounded-3xl shadow-2xl border-0 bg-white max-h-[100vh] h-full sm:max-h-[95vh] sm:h-auto my-0 mx-0 sm:my-6 sm:mx-6 md:mx-8 lg:mx-12",
+            body: "max-h-[calc(100vh-180px)] sm:max-h-[75vh] overflow-y-auto p-4 sm:p-6 md:p-8",
+            header: "border-b border-[#E8F0FE]/50 p-4 sm:p-6 md:p-8 bg-gradient-to-r from-[#F8F9FA]/50 to-white !rounded-t-3xl",
+            footer: "border-t border-[#E8F0FE]/50 p-4 sm:p-6 md:p-8 bg-gradient-to-r from-[#F8F9FA]/50 to-white !rounded-b-3xl"
           }}
         >
           <ModalContent>
             <form onSubmit={handleCreateProduct}>
               <ModalHeader>
-                <h2 className={`text-lg sm:text-xl md:text-2xl font-bold ${textColors.primary}`}>{t('inventory.createTitle')}</h2>
+                <h2 className={`text-lg sm:text-xl md:text-2xl font-bold text-[#343A40]`}>{t('inventory.createTitle')}</h2>
               </ModalHeader>
               <ModalBody className="space-y-6 md:space-y-8">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -1074,16 +1075,16 @@ export default function InventarioPage() {
                       <div className="flex items-center gap-2">
                         <span className="text-sm font-semibold text-gray-700">💰 Margen de ganancia:</span>
                         {newProduct.unit_cost > 0 && newProduct.enduser_price > 0 && newProduct.enduser_price > newProduct.unit_cost && (
-                          <span className="text-xs text-green-600">
+                          <span className="text-xs text-[#004085]">
                             (Ganancia: S/ {(newProduct.enduser_price - newProduct.unit_cost).toFixed(2)})
                           </span>
                         )}
                       </div>
                       <Chip 
-                        color={newProduct.unit_cost > 0 && newProduct.enduser_price > 0 && newProduct.enduser_price > newProduct.unit_cost ? "success" : "default"} 
+                        color={newProduct.unit_cost > 0 && newProduct.enduser_price > 0 && newProduct.enduser_price > newProduct.unit_cost ? "primary" : "default"} 
                         variant="flat"
                         size="lg"
-                        className="font-bold"
+                        className={`font-bold ${newProduct.unit_cost > 0 && newProduct.enduser_price > 0 && newProduct.enduser_price > newProduct.unit_cost ? "bg-[#E8F0FE] text-[#004085]" : ""}`}
                       >
                         {newProduct.unit_cost > 0 && newProduct.enduser_price > 0 
                           ? calculateMargin(newProduct.unit_cost, newProduct.enduser_price)
@@ -1116,14 +1117,14 @@ export default function InventarioPage() {
                   />
                 </div>
               </ModalBody>
-              <ModalFooter className="gap-3 py-4">
-                <Button variant="flat" onPress={onCreateClose} size="md" className="text-base font-medium">{t('common.cancel')}</Button>
+              <ModalFooter className="gap-3 py-4 bg-[#F8F9FA] border-t border-[#E8F0FE]/50">
+                <Button variant="flat" onPress={onCreateClose} size="md" className="text-base font-medium text-[#6C757D] hover:bg-[#E8F0FE]">{t('common.cancel')}</Button>
                 <Button 
                   type="submit" 
                   isLoading={createLoading}
                   startContent={!createLoading ? <Plus className="w-4 h-4" /> : null}
                   size="md"
-                  className="bg-gradient-to-r from-[#4ca771] to-[#013237] text-white hover:from-[#013237] hover:to-[#4ca771] transition-all text-base font-medium px-6"
+                  className="bg-gradient-to-r from-[#004085] to-[#003366] text-white hover:from-[#003366] hover:to-[#004085] transition-all text-base font-medium px-6"
                 >
                   {t('inventory.newProduct')}
                 </Button>
@@ -1140,55 +1141,55 @@ export default function InventarioPage() {
           scrollBehavior="inside"
           classNames={{
             wrapper: "z-[1000]",
-            backdrop: "z-[999]",
-            base: "max-h-[100vh] h-full w-full m-0 sm:max-h-[95vh] sm:h-auto sm:w-auto sm:my-2 sm:mx-2 md:mx-6 md:max-w-4xl",
-            body: "max-h-[calc(100vh-120px)] sm:max-h-[75vh] overflow-y-auto p-3 sm:p-4 md:p-6",
-            header: "border-b border-gray-200 p-3 sm:p-4 md:p-6",
-            footer: "border-t border-gray-200 p-3 sm:p-4 md:p-6"
+            backdrop: "z-[999] bg-black/40 backdrop-blur-sm",
+            base: "!rounded-3xl shadow-2xl border-0 bg-white max-h-[100vh] h-full w-full m-0 sm:max-h-[95vh] sm:h-auto sm:w-auto sm:my-6 sm:mx-6 md:mx-8 lg:mx-12 md:max-w-4xl",
+            body: "max-h-[calc(100vh-120px)] sm:max-h-[75vh] overflow-y-auto p-4 sm:p-6 md:p-8",
+            header: "border-b border-gray-200/50 p-4 sm:p-6 md:p-8 bg-gradient-to-r from-gray-50/50 to-white !rounded-t-3xl",
+            footer: "border-t border-gray-200/50 p-4 sm:p-6 md:p-8 bg-gradient-to-r from-gray-50/50 to-white !rounded-b-3xl"
           }}
         >
           <ModalContent>
             {selectedItem && (
               <>
                 <ModalHeader>
-                  <h2 className={`text-lg md:text-xl font-bold ${textColors.primary}`}>{selectedItem.name}</h2>
+                  <h2 className={`text-lg md:text-xl font-bold text-[#343A40]`}>{selectedItem.name}</h2>
                 </ModalHeader>
                 <ModalBody className="space-y-3 md:space-y-4">
                   <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
-                    <Chip color={getCategoryColor(selectedItem.category)} variant="flat" size="sm">{selectedItem.category}</Chip>
-                    <Chip color={getStatusColor(selectedItem)} variant="flat" size="sm">{getStatusLabel(selectedItem)}</Chip>
+                                            <Chip color="primary" variant="flat" size="sm" className="bg-[#E8F0FE] text-[#004085]">{selectedItem.category}</Chip>
+                                          <Chip color={getStatusColor(selectedItem)} variant="flat" size="sm" className={selectedItem.stock_quantity > 0 && selectedItem.stock_quantity > selectedItem.min_stock ? "bg-[#E8F0FE] text-[#004085]" : ""}>{getStatusLabel(selectedItem)}</Chip>
                   </div>
                   {selectedItem.description && <p className="text-sm md:text-base">{selectedItem.description}</p>}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
                     <div>
-                      <p className={`text-xs md:text-sm ${textColors.tertiary}`}>Precio de Costo</p>
-                      <p className={`text-sm md:text-base font-bold ${textColors.primary}`}>{formatCurrency(selectedItem.unit_cost)}</p>
+                      <p className={`text-xs md:text-sm text-[#6C757D]`}>Precio de Costo</p>
+                      <p className={`text-sm md:text-base font-bold text-[#343A40]`}>{formatCurrency(selectedItem.unit_cost)}</p>
                     </div>
                     <div>
-                      <p className={`text-xs md:text-sm ${textColors.tertiary}`}>Precio de Venta</p>
-                      <p className={`text-sm md:text-base font-bold ${textColors.primary}`}>{formatCurrency(selectedItem.enduser_price)}</p>
+                      <p className={`text-xs md:text-sm text-[#6C757D]`}>Precio de Venta</p>
+                      <p className={`text-sm md:text-base font-bold text-[#343A40]`}>{formatCurrency(selectedItem.enduser_price)}</p>
                     </div>
                     <div>
-                      <p className={`text-xs md:text-sm ${textColors.tertiary}`}>Cantidad en Stock</p>
-                      <p className={`text-sm md:text-base font-bold ${textColors.primary}`}>{selectedItem.stock_quantity}</p>
+                      <p className={`text-xs md:text-sm text-[#6C757D]`}>Cantidad en Stock</p>
+                      <p className={`text-sm md:text-base font-bold text-[#343A40]`}>{selectedItem.stock_quantity}</p>
                     </div>
                     <div>
-                      <p className={`text-xs md:text-sm ${textColors.tertiary}`}>Stock Mínimo</p>
-                      <p className={`text-sm md:text-base font-bold ${textColors.primary}`}>{selectedItem.min_stock}</p>
+                      <p className={`text-xs md:text-sm text-[#6C757D]`}>Stock Mínimo</p>
+                      <p className={`text-sm md:text-base font-bold text-[#343A40]`}>{selectedItem.min_stock}</p>
                     </div>
                   </div>
                   
                   {/* Margen de Ganancia */}
                   {selectedItem.unit_cost && selectedItem.enduser_price && (
-                    <div className="bg-green-50 rounded-lg p-4 border border-green-200">
+                    <div className="bg-[#E8F0FE] rounded-lg p-4 border border-[#004085]/20">
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className={`text-xs md:text-sm font-medium text-green-800`}>Margen de Ganancia</p>
-                          <p className="text-xs text-green-600">
+                          <p className="text-xs md:text-sm font-medium text-[#343A40]">Margen de Ganancia</p>
+                          <p className="text-xs text-[#6C757D]">
                             Diferencia entre precio de venta y costo
                           </p>
                         </div>
-                        <Chip color="success" variant="flat" size="md" className="font-bold">
+                        <Chip color="primary" variant="flat" size="md" className="font-bold bg-[#004085] text-white">
                           {calculateMargin(selectedItem.unit_cost, selectedItem.enduser_price)}
                         </Chip>
                       </div>
@@ -1221,7 +1222,7 @@ export default function InventarioPage() {
           <ModalContent>
             <form id="edit-item-form" onSubmit={handleUpdateItem}>
               <ModalHeader>
-                <h2 className={`text-lg md:text-xl font-bold ${textColors.primary}`}>{t('inventory.editTitle')}</h2>
+                <h2 className={`text-lg md:text-xl font-bold text-[#343A40]`}>{t('inventory.editTitle')}</h2>
               </ModalHeader>
               {editingItem && (
                 <ModalBody className="space-y-3 md:space-y-6">
@@ -1283,15 +1284,15 @@ export default function InventarioPage() {
                   </div>
                 </ModalBody>
               )}
-              <ModalFooter className="gap-2">
-                <Button variant="flat" onPress={onEditClose} size="sm">{t('common.cancel')}</Button>
+              <ModalFooter className="gap-2 bg-[#F8F9FA] border-t border-[#E8F0FE]/50">
+                <Button variant="flat" onPress={onEditClose} size="sm" className="text-[#6C757D] hover:bg-[#E8F0FE]">{t('common.cancel')}</Button>
                 <Button 
                   type="submit" 
                   form="edit-item-form"
                   isLoading={updateLoading}
                   startContent={!updateLoading ? <Plus className="w-4 h-4" /> : null}
                   size="sm"
-                  className="bg-gradient-to-r from-[#4ca771] to-[#013237] text-white hover:from-[#013237] hover:to-[#4ca771] transition-all"
+                  className="bg-gradient-to-r from-[#004085] to-[#003366] text-white hover:from-[#003366] hover:to-[#004085] transition-all"
                 >
                   {t('common.update')} {t('common.name').toLowerCase()}
                 </Button>
@@ -1308,20 +1309,20 @@ export default function InventarioPage() {
           scrollBehavior="inside"
           classNames={{
             wrapper: "z-[1000]",
-            backdrop: "z-[999]",
-            base: "max-h-[95vh] my-2 mx-2 sm:mx-6",
-            body: "max-h-[60vh] overflow-y-auto py-4",
-            header: "border-b border-gray-200 pb-4",
-            footer: "border-t border-gray-200 pt-4"
+            backdrop: "z-[999] bg-black/40 backdrop-blur-sm",
+            base: "!rounded-3xl shadow-2xl border-0 bg-white my-4 mx-4 sm:my-6 sm:mx-6 md:mx-8 lg:mx-12",
+            body: "p-6 md:p-8",
+            header: "border-b border-gray-200/50 p-6 md:p-8 bg-gradient-to-r from-red-50/50 to-white !rounded-t-3xl",
+            footer: "border-t border-gray-200/50 p-6 md:p-8 bg-gradient-to-r from-red-50/50 to-white !rounded-b-3xl"
           }}
         >
           <ModalContent>
             <ModalHeader>
-              <h2 className={`text-xl font-bold ${textColors.primary}`}>{t('inventory.deleteTitle')}</h2>
+              <h2 className={`text-xl font-bold text-[#343A40]`}>{t('inventory.deleteTitle')}</h2>
             </ModalHeader>
             <ModalBody className="space-y-6">
-              <p className={textColors.secondary}>{t('inventory.deleteMessage')}</p>
-              {selectedItem && <p className={`font-bold ${textColors.primary}`}>{selectedItem.name}</p>}
+              <p className="text-[#6C757D]">{t('inventory.deleteMessage')}</p>
+              {selectedItem && <p className={`font-bold text-[#343A40]`}>{selectedItem.name}</p>}
             </ModalBody>
             <ModalFooter>
               <Button variant="flat" onPress={onDeleteClose}>{t('common.cancel')}</Button>

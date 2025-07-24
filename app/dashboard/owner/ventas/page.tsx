@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import DashboardLayout from '../components/DashboardLayout'
 import { useTranslations } from '@/lib/contexts/TranslationContext'
 import { useCurrency } from '@/lib/contexts/TranslationContext'
-import { textColors } from '@/lib/utils/colors'
+
 import { 
   Card, 
   CardBody, 
@@ -71,20 +71,37 @@ interface Sale {
   status: string
   created_at: string
   customer: {
+    id: string
     name: string | null
     phone: string | null
     anonymous_identifier: string | null
+    type: string
+    email: string | null
   } | null
   seller: {
+    id: string
     name: string
     email: string
-  }
+  } | null
   sale_items: {
     quantity: number
     unit_price: number
     inventory: {
       name: string
       category: string
+    } | null
+  }[]
+  items: {
+    id: string
+    quantity: number
+    unit_price: number
+    total_price: number
+    product: {
+      id: string
+      name: string
+      category: string
+      brand: string | null
+      model: string | null
     } | null
   }[]
 }
@@ -154,8 +171,10 @@ export default function VentasPage() {
   })
   const [printLoading, setPrintLoading] = useState(false)
   const [pendingSaleData, setPendingSaleData] = useState<any>(null)
+  const [selectedSale, setSelectedSale] = useState<Sale | null>(null)
   const { isOpen: isWarningOpen, onOpen: onWarningOpen, onClose: onWarningClose } = useDisclosure()
   const { isOpen: isConfirmOpen, onOpen: onConfirmOpen, onClose: onConfirmClose } = useDisclosure()
+  const { isOpen: isSaleDetailOpen, onOpen: onSaleDetailOpen, onClose: onSaleDetailClose } = useDisclosure()
 
   const fetchProducts = async () => {
     try {
@@ -417,19 +436,19 @@ export default function VentasPage() {
   const getSaleTypeColor = (type: string) => {
     switch (type) {
       case 'product': return 'primary'
-      case 'service': return 'success'
-      case 'mixed': return 'secondary'
+      case 'service': return 'primary'
+      case 'mixed': return 'primary'
       default: return 'default'
     }
   }
 
   const getPaymentMethodColor = (method: string) => {
     switch (method) {
-      case 'efectivo': return 'success'
+      case 'efectivo': return 'primary'
       case 'tarjeta': return 'primary'
-      case 'transferencia': return 'success'
-      case 'yape': return 'warning'
-      case 'plin': return 'danger'
+      case 'transferencia': return 'primary'
+      case 'yape': return 'primary'
+      case 'plin': return 'primary'
       default: return 'default'
     }
   }
@@ -1038,10 +1057,10 @@ export default function VentasPage() {
         {/* Header */}
         <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
           <div className="space-y-2">
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-[#4ca771] to-[#013237] bg-clip-text text-transparent">
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-[#004085] to-[#003366] bg-clip-text text-transparent">
               Sistema de Ventas
             </h1>
-            <p className="text-[#4ca771] text-lg">
+            <p className="text-[#6C757D] text-lg">
               Punto de venta y gestión de transacciones
             </p>
           </div>
@@ -1055,7 +1074,7 @@ export default function VentasPage() {
           size="lg"
           classNames={{
             tabList: "grid w-full grid-cols-2",
-            cursor: "w-full bg-gradient-to-r from-blue-500 to-purple-500",
+            cursor: "w-full bg-gradient-to-r from-[#004085] to-[#003366]",
             tab: "max-w-fit px-0 h-12",
             tabContent: "group-data-[selected=true]:text-white"
           }}
@@ -1074,7 +1093,7 @@ export default function VentasPage() {
               <div className="lg:col-span-3 space-y-6">
                 <Card>
                   <CardBody className="p-6">
-                    <h3 className={`text-xl font-bold ${textColors.primary} mb-4`}>{t('sales.searchProducts')}</h3>
+                                          <h3 className="text-xl font-bold text-[#343A40] mb-4">{t('sales.searchProducts')}</h3>
                     <div className="flex items-center">
                       <div className="flex-grow">
                         <Input
@@ -1082,12 +1101,12 @@ export default function VentasPage() {
                           placeholder={t('inventory.searchPlaceholder')}
                           value={searchProducts}
                           onValueChange={setSearchProducts}
-                          startContent={<Search className="w-5 h-5 text-gray-400" />}
+                          startContent={<Search className="w-5 h-5 text-[#6C757D]" />}
                           isClearable
                           variant="bordered"
                           classNames={{
-                            input: "text-gray-900 placeholder:text-gray-500",
-                            inputWrapper: "border-gray-300",
+                            input: "text-[#343A40] placeholder:text-[#6C757D]",
+                            inputWrapper: "border-[#E8F0FE] hover:border-[#004085] focus-within:border-[#004085]",
                           }}
                         />
                       </div>
@@ -1111,34 +1130,32 @@ export default function VentasPage() {
                       <CardBody className="p-4">
                         <div className="flex items-center gap-3 mb-3">
                           <Avatar
-                            icon={<Package className="w-4 h-4" />}
+                            icon={<Package className="w-4 h-4 text-[#004085]" />}
                             classNames={{
-                              base: "bg-gradient-to-br from-blue-400 to-purple-500",
-                              icon: "text-white"
+                              base: "bg-gradient-to-br from-[#E8F0FE] to-[#D1E7FF]",
+                              icon: "text-[#004085]"
                             }}
                             size="sm"
                           />
                           <div className="flex-1">
-                            <p className={`font-semibold text-sm ${textColors.primary}`}>{product.name}</p>
-                            <p className={`text-xs ${textColors.secondary}`}>{product.brand} {product.model}</p>
+                            <p className="font-semibold text-sm text-[#343A40]">{product.name}</p>
+                            <p className="text-xs text-[#6C757D]">{product.brand} {product.model}</p>
                           </div>
                         </div>
                         <div className="flex justify-between items-center">
-                          <p className="text-lg font-bold text-green-600">
+                          <p className="text-lg font-bold text-[#004085]">
                             {formatCurrency(product.enduser_price)}
                           </p>
                           <Chip 
                             size="sm" 
-                            variant="bordered" 
-                            color={getCategoryColor(product.category)}
-                            classNames={{
-                              content: "text-gray-800 font-medium"
-                            }}
+                            variant="flat" 
+                            color="primary"
+                            className="bg-[#E8F0FE] text-[#004085]"
                           >
                             {product.category}
                           </Chip>
                         </div>
-                        <p className={`text-xs text-right mt-1 ${textColors.tertiary}`}>
+                        <p className="text-xs text-right mt-1 text-[#6C757D]">
                           Stock: {product.stock_quantity}
                         </p>
                       </CardBody>
@@ -1153,7 +1170,7 @@ export default function VentasPage() {
                 <Card>
                   <CardBody className="p-6">
                     <div className="flex items-center justify-between mb-4">
-                      <h3 className={`text-xl font-bold ${textColors.primary}`}>{t('sales.cart')}</h3>
+                      <h3 className="text-xl font-bold text-[#343A40]">{t('sales.cart')}</h3>
                       {cart.length > 0 && (
                         <Button
                           variant="flat"
@@ -1170,16 +1187,16 @@ export default function VentasPage() {
                     {cart.length === 0 ? (
                       <div className="text-center py-8">
                         <ShoppingCart className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-                        <p className={textColors.muted}>El carrito está vacío</p>
-                        <p className={`text-sm ${textColors.muted}`}>Agrega productos</p>
+                        <p className="text-[#6C757D]">El carrito está vacío</p>
+                        <p className="text-sm text-[#6C757D]">Agrega productos</p>
                       </div>
                     ) : (
                       <div className="space-y-3 max-h-64 overflow-y-auto">
                         {cart.map((item) => (
                           <div key={item.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                             <div className="flex-1">
-                              <p className={`font-medium text-sm ${textColors.primary}`}>{item.name}</p>
-                              <p className={`text-xs ${textColors.secondary}`}>
+                              <p className="font-medium text-sm text-[#343A40]">{item.name}</p>
+                              <p className="text-xs text-[#6C757D]">
                                 {formatCurrency(item.price)} x {item.quantity}
                               </p>
                             </div>
@@ -1223,7 +1240,7 @@ export default function VentasPage() {
                 {cart.length > 0 && (
                   <Card>
                     <CardBody className="p-6 space-y-4">
-                      <h3 className={`text-lg font-bold ${textColors.primary}`}>Información de venta</h3>
+                      <h3 className="text-lg font-bold text-[#343A40]">Información de venta</h3>
                       
                       <FormField
                         label="Cliente"
@@ -1261,12 +1278,12 @@ export default function VentasPage() {
                       {/* Resumen de totales */}
                       <div className="space-y-2">
                         <div className="flex justify-between">
-                          <span className={textColors.secondary}>{t('sales.subtotal')}:</span>
-                          <span className={`font-medium ${textColors.primary}`}>{formatCurrency(getSubtotal())}</span>
+                          <span className="text-[#6C757D]">{t('sales.subtotal')}:</span>
+                          <span className="font-medium text-[#343A40]">{formatCurrency(getSubtotal())}</span>
                         </div>
                         <div className="flex justify-between text-lg font-bold">
-                          <span className={textColors.primary}>Total:</span>
-                          <span className="text-green-600">{formatCurrency(getTotal())}</span>
+                          <span className="text-[#343A40]">Total:</span>
+                          <span className="text-[#004085] font-bold">{formatCurrency(getTotal())}</span>
                         </div>
                       </div>
 
@@ -1284,7 +1301,7 @@ export default function VentasPage() {
                         <Button
                           color="primary"
                           size="lg"
-                          className="w-full font-semibold bg-gradient-to-r from-green-500 to-green-600 text-white hover:from-green-600 hover:to-green-700"
+                          className="w-full font-semibold bg-gradient-to-r from-[#004085] to-[#003366] text-white hover:from-[#003366] hover:to-[#004085]"
                           startContent={<CreditCard className="w-5 h-5" />}
                           onPress={processSale}
                           isLoading={loading}
@@ -1311,77 +1328,77 @@ export default function VentasPage() {
             <div className="space-y-6 mt-6">
               {/* Stats Cards para ventas */}
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-6">
-                <Card className="hover:scale-105 transition-transform border-0 shadow-lg">
+                <Card className="hover:scale-105 transition-transform border-0 shadow-lg bg-gradient-to-br from-[#F8F9FA] to-[#E9ECEF] border border-[#6C757D]/20">
                   <CardBody className="p-6">
                     <div className="flex items-center justify-between mb-4">
-                      <div className="p-3 rounded-xl bg-gradient-to-br from-blue-400 to-blue-600 shadow-lg">
+                      <div className="p-3 rounded-xl bg-gradient-to-br from-[#6C757D] to-[#495057] shadow-lg">
                         <Receipt className="w-6 h-6 text-white" />
                       </div>
-                      <Chip color="primary" variant="flat">Total</Chip>
+                      <Chip color="default" variant="flat" className="bg-[#F8F9FA] text-[#6C757D]">Total</Chip>
                     </div>
                     <div className="space-y-2">
-                      <p className={`text-sm font-medium ${textColors.tertiary}`}>{t('sales.salesHistory')}</p>
-                      <p className={`text-3xl font-bold ${textColors.primary}`}>{salesStats.total}</p>
+                      <p className="text-sm font-medium text-[#6C757D]">{t('sales.salesHistory')}</p>
+                      <p className="text-3xl font-bold text-[#343A40]">{salesStats.total}</p>
                     </div>
                   </CardBody>
                 </Card>
 
-                <Card className="hover:scale-105 transition-transform border-0 shadow-lg">
+                <Card className="hover:scale-105 transition-transform border-0 shadow-lg bg-gradient-to-br from-[#E8F0FE] to-[#D1E7FF] border border-[#004085]/20">
                   <CardBody className="p-6">
                     <div className="flex items-center justify-between mb-4">
-                      <div className="p-3 rounded-xl bg-gradient-to-br from-green-400 to-green-600 shadow-lg">
+                      <div className="p-3 rounded-xl bg-gradient-to-br from-[#004085] to-[#003366] shadow-lg">
                         <Calendar className="w-6 h-6 text-white" />
                       </div>
-                      <Chip color="success" variant="flat">Hoy</Chip>
+                      <Chip color="primary" variant="flat" className="bg-[#004085] text-white">Hoy</Chip>
                     </div>
                     <div className="space-y-2">
-                      <p className={`text-sm font-medium ${textColors.tertiary}`}>Ventas Hoy</p>
-                      <p className={`text-3xl font-bold text-green-600`}>{salesStats.ventasHoy}</p>
+                      <p className="text-sm font-medium text-[#6C757D]">Ventas Hoy</p>
+                      <p className="text-3xl font-bold text-[#343A40]">{salesStats.ventasHoy}</p>
                     </div>
                   </CardBody>
                 </Card>
 
-                <Card className="hover:scale-105 transition-transform border-0 shadow-lg">
+                <Card className="hover:scale-105 transition-transform border-0 shadow-lg bg-gradient-to-br from-[#F8F9FA] to-[#E9ECEF] border border-[#6C757D]/20">
                   <CardBody className="p-6">
                     <div className="flex items-center justify-between mb-4">
-                      <div className="p-3 rounded-xl bg-gradient-to-br from-purple-400 to-purple-600 shadow-lg">
+                      <div className="p-3 rounded-xl bg-gradient-to-br from-[#6C757D] to-[#495057] shadow-lg">
                         <DollarSign className="w-6 h-6 text-white" />
                       </div>
-                      <Chip color="secondary" variant="flat">Monto</Chip>
+                      <Chip color="default" variant="flat" className="bg-[#F8F9FA] text-[#6C757D]">Monto</Chip>
                     </div>
                     <div className="space-y-2">
-                      <p className={`text-sm font-medium ${textColors.tertiary}`}>Total Vendido</p>
-                      <p className={`text-lg font-bold text-purple-600`}>{formatCurrency(salesStats.totalMonto)}</p>
+                      <p className="text-sm font-medium text-[#6C757D]">Total Vendido</p>
+                      <p className="text-lg font-bold text-[#343A40]">{formatCurrency(salesStats.totalMonto)}</p>
                     </div>
                   </CardBody>
                 </Card>
 
-                <Card className="hover:scale-105 transition-transform border-0 shadow-lg">
+                <Card className="hover:scale-105 transition-transform border-0 shadow-lg bg-gradient-to-br from-[#E8F0FE] to-[#D1E7FF] border border-[#004085]/20">
                   <CardBody className="p-6">
                     <div className="flex items-center justify-between mb-4">
-                      <div className="p-3 rounded-xl bg-gradient-to-br from-green-400 to-green-600 shadow-lg">
+                      <div className="p-3 rounded-xl bg-gradient-to-br from-[#004085] to-[#003366] shadow-lg">
                         <DollarSign className="w-6 h-6 text-white" />
                       </div>
-                      <Chip color="success" variant="flat">Efectivo</Chip>
+                      <Chip color="primary" variant="flat" className="bg-[#004085] text-white">Efectivo</Chip>
                     </div>
                     <div className="space-y-2">
-                      <p className={`text-sm font-medium ${textColors.tertiary}`}>Efectivo</p>
-                      <p className={`text-3xl font-bold text-green-600`}>{salesStats.efectivo}</p>
+                      <p className="text-sm font-medium text-[#6C757D]">Efectivo</p>
+                      <p className="text-3xl font-bold text-[#004085]">{salesStats.efectivo}</p>
                     </div>
                   </CardBody>
                 </Card>
 
-                <Card className="hover:scale-105 transition-transform border-0 shadow-lg">
+                <Card className="hover:scale-105 transition-transform border-0 shadow-lg bg-gradient-to-br from-[#F8F9FA] to-[#E9ECEF] border border-[#6C757D]/20">
                   <CardBody className="p-6">
                     <div className="flex items-center justify-between mb-4">
-                      <div className="p-3 rounded-xl bg-gradient-to-br from-blue-400 to-blue-600 shadow-lg">
+                      <div className="p-3 rounded-xl bg-gradient-to-br from-[#6C757D] to-[#495057] shadow-lg">
                         <CreditCard className="w-6 h-6 text-white" />
                       </div>
-                      <Chip color="primary" variant="flat">Digital</Chip>
+                      <Chip color="default" variant="flat" className="bg-[#F8F9FA] text-[#6C757D]">Digital</Chip>
                     </div>
                     <div className="space-y-2">
-                      <p className={`text-sm font-medium ${textColors.tertiary}`}>Digital</p>
-                      <p className={`text-3xl font-bold text-blue-600`}>{salesStats.digital}</p>
+                      <p className="text-sm font-medium text-[#6C757D]">Digital</p>
+                      <p className="text-3xl font-bold text-[#343A40]">{salesStats.digital}</p>
                     </div>
                   </CardBody>
                 </Card>
@@ -1398,15 +1415,15 @@ export default function VentasPage() {
                       className="w-full md:w-56"
                       variant="bordered"
                       classNames={{
-                        trigger: "text-gray-900",
-                        value: "text-gray-900",
-                        popoverContent: "bg-white",
+                        trigger: "text-[#343A40] border-[#E8F0FE] hover:border-[#004085] focus:border-[#004085]",
+                        value: "text-[#343A40]",
+                        popoverContent: "bg-white border border-[#E8F0FE]",
                       }}
                     >
-                      <SelectItem key="todos" className="text-gray-900">{t('sales.allPaymentMethods')}</SelectItem>
-                      <SelectItem key="efectivo" className="text-gray-900">{t('sales.cash')}</SelectItem>
-                      <SelectItem key="tarjeta" className="text-gray-900">{t('sales.card')}</SelectItem>
-                      <SelectItem key="transferencia" className="text-gray-900">{t('sales.transfer')}</SelectItem>
+                      <SelectItem key="todos" className="text-[#343A40]">{t('sales.allPaymentMethods')}</SelectItem>
+                      <SelectItem key="efectivo" className="text-[#343A40]">{t('sales.cash')}</SelectItem>
+                      <SelectItem key="tarjeta" className="text-[#343A40]">{t('sales.card')}</SelectItem>
+                      <SelectItem key="transferencia" className="text-[#343A40]">{t('sales.transfer')}</SelectItem>
                     </Select>
                     <Input
                       type="date"
@@ -1415,8 +1432,8 @@ export default function VentasPage() {
                       className="w-full md:w-56"
                       variant="bordered"
                       classNames={{
-                        input: "text-gray-900",
-                        inputWrapper: "border-gray-300",
+                        input: "text-[#343A40]",
+                        inputWrapper: "border-[#E8F0FE] hover:border-[#004085] focus-within:border-[#004085]",
                       }}
                     />
                     <Input
@@ -1426,11 +1443,11 @@ export default function VentasPage() {
                       className="w-full md:w-56"
                       variant="bordered"
                       classNames={{
-                        input: "text-gray-900",
-                        inputWrapper: "border-gray-300",
+                        input: "text-[#343A40]",
+                        inputWrapper: "border-[#E8F0FE] hover:border-[#004085] focus-within:border-[#004085]",
                       }}
                     />
-                    <Button onPress={handleDateFilter} color="primary">Filtrar</Button>
+                    <Button onPress={handleDateFilter} color="primary" className="bg-gradient-to-r from-[#004085] to-[#003366] text-white">Filtrar</Button>
                   </div>
                 </CardBody>
               </Card>
@@ -1444,7 +1461,7 @@ export default function VentasPage() {
                       aria-label="Tabla de ventas"
                       classNames={{
                         wrapper: "min-h-[400px]",
-                        th: "bg-gray-50 text-gray-700 font-semibold",
+                        th: "bg-[#004085] text-white font-bold text-base",
                         td: "py-4"
                       }}
                     >
@@ -1471,41 +1488,45 @@ export default function VentasPage() {
                                 variant="flat"
                                 startContent={getSaleTypeIcon(sale.sale_type)}
                                 size="sm"
+                                className="bg-[#E8F0FE] text-[#004085]"
                               >
-                                {sale.sale_type.charAt(0).toUpperCase() + sale.sale_type.slice(1)}
+                                {sale.sale_type === 'product' ? 'Productos' : sale.sale_type === 'service' ? 'Servicio' : sale.sale_type === 'mixed' ? 'Mixta' : sale.sale_type.charAt(0).toUpperCase() + sale.sale_type.slice(1)}
                               </Chip>
                             </TableCell>
                             <TableCell>
                               <div className="flex items-center gap-2">
-                                <User className="w-4 h-4 text-gray-400" />
-                                <span className={`text-sm ${textColors.primary}`}>{getCustomerName(sale.customer)}</span>
+                                <User className="w-4 h-4 text-[#6C757D]" />
+                                <span className="text-sm text-[#343A40]">{getCustomerName(sale.customer)}</span>
                               </div>
                             </TableCell>
                             <TableCell>
                               <div>
-                                <p className={`text-sm font-medium ${textColors.primary}`}>{sale.seller.name}</p>
-                                <p className={`text-xs ${textColors.muted}`}>{sale.seller.email}</p>
+                                <p className="text-sm font-medium text-[#343A40]">{sale.seller?.name || 'Vendedor'}</p>
+                                <p className="text-xs text-[#6C757D]">{sale.seller?.email || ''}</p>
                               </div>
                             </TableCell>
                             <TableCell>
                               <div>
-                                <p className={`text-sm font-medium ${textColors.primary}`}>
-                                  {sale.sale_items.length} item{sale.sale_items.length !== 1 ? 's' : ''}
+                                <p className="text-sm font-medium text-[#343A40]">
+                                  {(sale.items || sale.sale_items).length} item{(sale.items || sale.sale_items).length !== 1 ? 's' : ''}
                                 </p>
-                                <div className={`text-xs ${textColors.muted} space-y-1`}>
-                                  {sale.sale_items.slice(0, 2).map((item, idx) => (
-                                    <div key={idx}>
-                                      {item.inventory?.name || 'Producto'} x{item.quantity}
+                                <div className="text-xs text-[#6C757D] space-y-1">
+                                  {(sale.items || sale.sale_items).slice(0, 2).map((item, idx) => (
+                                    <div key={idx} className="flex justify-between">
+                                      <span className="text-[#343A40] font-medium">
+                                        {(item as any).product?.name || (item as any).inventory?.name || 'Producto sin nombre'}
+                                      </span>
+                                      <span>x{item.quantity}</span>
                                     </div>
                                   ))}
-                                  {sale.sale_items.length > 2 && (
-                                    <div>+{sale.sale_items.length - 2} más...</div>
+                                  {(sale.items || sale.sale_items).length > 2 && (
+                                    <div className="text-center">+{(sale.items || sale.sale_items).length - 2} más...</div>
                                   )}
                                 </div>
                               </div>
                             </TableCell>
                             <TableCell>
-                              <span className="text-lg font-bold text-green-600">
+                              <span className="text-lg font-bold text-[#343A40]">
                                 {formatCurrency(sale.total)}
                               </span>
                             </TableCell>
@@ -1514,16 +1535,17 @@ export default function VentasPage() {
                                 color={getPaymentMethodColor(sale.payment_method)}
                                 variant="flat"
                                 size="sm"
+                                className="bg-[#004085] text-white"
                               >
                                 {sale.payment_method.charAt(0).toUpperCase() + sale.payment_method.slice(1)}
                               </Chip>
                             </TableCell>
                             <TableCell>
                               <div>
-                                <p className={`text-sm ${textColors.primary}`}>
+                                <p className="text-sm text-[#343A40]">
                                   {new Date(sale.created_at).toLocaleDateString('es-PE')}
                                 </p>
-                                <p className={`text-xs ${textColors.muted}`}>
+                                <p className="text-xs text-[#6C757D]">
                                   {new Date(sale.created_at).toLocaleTimeString('es-PE', { 
                                     hour: '2-digit', 
                                     minute: '2-digit' 
@@ -1532,9 +1554,12 @@ export default function VentasPage() {
                               </div>
                             </TableCell>
                             <TableCell>
-                              <Tooltip content="Ver detalles de la venta" classNames={{ content: "bg-gray-900 text-white" }}>
-                                <Button isIconOnly variant="flat" size="sm">
-                                  <Receipt className="w-5 h-5" />
+                              <Tooltip content="Ver detalles de la venta" classNames={{ content: "bg-[#343A40] text-white" }}>
+                                <Button isIconOnly variant="flat" size="sm" className="hover:bg-[#E8F0FE] text-[#004085]" onPress={() => {
+                                  setSelectedSale(sale);
+                                  onSaleDetailOpen();
+                                }}>
+                                  <Eye className="w-4 h-4" />
                                 </Button>
                               </Tooltip>
                             </TableCell>
@@ -1567,11 +1592,11 @@ export default function VentasPage() {
                       </div>
                     ) : sales.length === 0 ? (
                       <div className="text-center py-12 px-4">
-                        <Receipt className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                        <h3 className={`text-lg font-semibold ${textColors.primary} mb-2`}>
+                        <Receipt className="w-16 h-16 text-[#6C757D] mx-auto mb-4" />
+                        <h3 className="text-lg font-semibold text-[#343A40] mb-2">
                           No hay ventas
                         </h3>
-                        <p className={`${textColors.muted} mb-6`}>
+                        <p className="text-[#6C757D] mb-6">
                           No se encontraron ventas con los filtros aplicados
                         </p>
                       </div>
@@ -1583,7 +1608,7 @@ export default function VentasPage() {
                               {/* Header de la venta */}
                               <div className="flex items-start justify-between mb-4">
                                 <div className="flex items-center gap-3">
-                                  <div className="p-2 rounded-lg bg-gradient-to-br from-green-100 to-green-200">
+                                  <div className="p-2 rounded-lg bg-gradient-to-br from-[#E8F0FE] to-[#D1E7FF]">
                                     {getSaleTypeIcon(sale.sale_type)}
                                   </div>
                                   <div>
@@ -1591,26 +1616,27 @@ export default function VentasPage() {
                                       color={getSaleTypeColor(sale.sale_type)}
                                       variant="flat"
                                       size="sm"
-                                      className="mb-1"
+                                      className="mb-1 bg-[#E8F0FE] text-[#004085]"
                                     >
-                                      {sale.sale_type.charAt(0).toUpperCase() + sale.sale_type.slice(1)}
+                                      {sale.sale_type === 'product' ? 'Productos' : sale.sale_type === 'service' ? 'Servicio' : sale.sale_type === 'mixed' ? 'Mixta' : sale.sale_type.charAt(0).toUpperCase() + sale.sale_type.slice(1)}
                                     </Chip>
-                                    <p className={`text-xs ${textColors.muted}`}>
-                                      {new Date(sale.created_at).toLocaleDateString('es-PE')} - {new Date(sale.created_at).toLocaleTimeString('es-PE', { 
-                                        hour: '2-digit', 
-                                        minute: '2-digit' 
-                                      })}
-                                    </p>
+                                                                          <p className="text-xs text-[#6C757D]">
+                                        {new Date(sale.created_at).toLocaleDateString('es-PE')} - {new Date(sale.created_at).toLocaleTimeString('es-PE', { 
+                                          hour: '2-digit', 
+                                          minute: '2-digit' 
+                                        })}
+                                      </p>
                                   </div>
                                 </div>
-                                <div className="text-right">
-                                  <p className="text-xl font-bold text-green-600">
+                                                                  <div className="text-right">
+                                  <p className="text-xl font-bold text-[#343A40]">
                                     {formatCurrency(sale.total)}
                                   </p>
                                   <Chip
                                     color={getPaymentMethodColor(sale.payment_method)}
                                     variant="flat"
                                     size="sm"
+                                    className="bg-[#004085] text-white"
                                   >
                                     {sale.payment_method.charAt(0).toUpperCase() + sale.payment_method.slice(1)}
                                   </Chip>
@@ -1620,51 +1646,51 @@ export default function VentasPage() {
                               {/* Información de la venta */}
                               <div className="grid grid-cols-1 gap-4 mb-4">
                                 {/* Cliente */}
-                                <div className="bg-gray-50 rounded-lg p-3">
+                                <div className="bg-[#E8F0FE] rounded-lg p-3">
                                   <div className="flex items-center gap-2 mb-2">
-                                    <User className="w-4 h-4 text-gray-600" />
-                                    <p className={`text-xs font-medium ${textColors.tertiary} uppercase tracking-wide`}>
+                                    <User className="w-4 h-4 text-[#004085]" />
+                                    <p className="text-xs font-medium text-[#6C757D] uppercase tracking-wide">
                                       Cliente
                                     </p>
                                   </div>
-                                  <p className={`text-sm font-medium ${textColors.primary}`}>
+                                  <p className="text-sm font-medium text-[#343A40]">
                                     {getCustomerName(sale.customer)}
                                   </p>
                                 </div>
 
                                 {/* Vendedor */}
-                                <div className="bg-gray-50 rounded-lg p-3">
-                                  <p className={`text-xs font-medium ${textColors.tertiary} uppercase tracking-wide mb-2`}>
+                                <div className="bg-[#F8F9FA] rounded-lg p-3">
+                                  <p className="text-xs font-medium text-[#6C757D] uppercase tracking-wide mb-2">
                                     Vendedor
                                   </p>
-                                  <p className={`text-sm font-medium ${textColors.primary}`}>
-                                    {sale.seller.name}
+                                  <p className="text-sm font-medium text-[#343A40]">
+                                    {sale.seller?.name || 'Vendedor'}
                                   </p>
-                                  <p className={`text-xs ${textColors.muted}`}>
-                                    {sale.seller.email}
+                                  <p className="text-xs text-[#6C757D]">
+                                    {sale.seller?.email || ''}
                                   </p>
                                 </div>
                               </div>
 
                               {/* Productos */}
-                              <div className="bg-blue-50 rounded-lg p-3 mb-4">
-                                <p className={`text-xs font-medium ${textColors.tertiary} uppercase tracking-wide mb-2`}>
-                                  Productos ({sale.sale_items.length} item{sale.sale_items.length !== 1 ? 's' : ''})
+                              <div className="bg-[#E8F0FE] rounded-lg p-3 mb-4">
+                                <p className="text-xs font-medium text-[#6C757D] uppercase tracking-wide mb-2">
+                                  Productos ({(sale.items || sale.sale_items).length} item{(sale.items || sale.sale_items).length !== 1 ? 's' : ''})
                                 </p>
                                 <div className="space-y-2">
-                                  {sale.sale_items.slice(0, 3).map((item, idx) => (
+                                  {(sale.items || sale.sale_items).slice(0, 3).map((item, idx) => (
                                     <div key={idx} className="flex justify-between items-center">
-                                      <span className={`text-sm ${textColors.primary}`}>
-                                        {item.inventory?.name || 'Producto'}
+                                      <span className="text-sm text-[#343A40] font-medium">
+                                        {(item as any).product?.name || (item as any).inventory?.name || 'Producto sin nombre'}
                                       </span>
-                                      <span className={`text-sm ${textColors.secondary}`}>
+                                      <span className="text-sm text-[#6C757D]">
                                         x{item.quantity}
                                       </span>
                                     </div>
                                   ))}
-                                  {sale.sale_items.length > 3 && (
-                                    <div className={`text-xs ${textColors.muted} text-center pt-2 border-t border-blue-200`}>
-                                      +{sale.sale_items.length - 3} producto{sale.sale_items.length - 3 !== 1 ? 's' : ''} más
+                                  {(sale.items || sale.sale_items).length > 3 && (
+                                    <div className="text-xs text-[#6C757D] text-center pt-2 border-t border-[#E8F0FE]">
+                                      +{(sale.items || sale.sale_items).length - 3} producto{(sale.items || sale.sale_items).length - 3 !== 1 ? 's' : ''} más
                                     </div>
                                   )}
                                 </div>
@@ -1675,8 +1701,12 @@ export default function VentasPage() {
                                 <Button 
                                   variant="flat" 
                                   size="sm" 
-                                  startContent={<Receipt className="w-4 h-4" />}
-                                  className="flex-1"
+                                  startContent={<Eye className="w-4 h-4" />}
+                                  className="flex-1 hover:bg-[#E8F0FE] text-[#004085]"
+                                  onPress={() => {
+                                    setSelectedSale(sale);
+                                    onSaleDetailOpen();
+                                  }}
                                 >
                                   Ver Detalles
                                 </Button>
@@ -1684,10 +1714,10 @@ export default function VentasPage() {
                                   variant="flat" 
                                   size="sm" 
                                   color="primary"
-                                  startContent={<Eye className="w-4 h-4" />}
-                                  className="flex-1"
+                                  startContent={<Receipt className="w-4 h-4" />}
+                                  className="flex-1 bg-gradient-to-r from-[#004085] to-[#003366] text-white"
                                 >
-                                  Factura
+                                  Comprobante
                                 </Button>
                               </div>
                             </CardBody>
@@ -1734,6 +1764,205 @@ export default function VentasPage() {
         </div>
       )}
 
+      {/* Modal de Detalles de Venta */}
+      {selectedSale && (
+        <Modal 
+          isOpen={isSaleDetailOpen} 
+          onClose={() => {
+            onSaleDetailClose();
+            setSelectedSale(null);
+          }} 
+          size="2xl"
+          scrollBehavior="inside"
+          classNames={{
+            wrapper: "z-[1000]",
+            backdrop: "z-[999]",
+            base: "max-h-[95vh] my-1 mx-1 sm:my-2 sm:mx-2 md:mx-6",
+            body: "max-h-[70vh] overflow-y-auto py-2 md:py-4",
+            header: "bg-gradient-to-r from-[#F8F9FA]/50 to-white border-b border-[#E8F0FE]/50 pb-2 md:pb-4",
+            footer: "bg-[#F8F9FA] border-t border-[#E8F0FE]/50 pt-2 md:pt-4"
+          }}
+        >
+          <ModalContent>
+            <ModalHeader>
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-lg bg-gradient-to-br from-[#004085] to-[#003366]">
+                  <Receipt className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <h2 className="text-lg md:text-xl font-bold text-[#343A40]">
+                    Detalles de Venta
+                  </h2>
+                  <p className="text-sm text-[#6C757D]">
+                    ID: {selectedSale.id}
+                  </p>
+                </div>
+              </div>
+            </ModalHeader>
+            <ModalBody>
+              <div className="space-y-6">
+                {/* Información General */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Información de Venta */}
+                  <div className="bg-[#E8F0FE] rounded-lg p-4">
+                    <h3 className="text-sm font-bold text-[#004085] uppercase tracking-wide mb-3">
+                      Información de Venta
+                    </h3>
+                    <div className="space-y-3">
+                      <div className="flex justify-between">
+                        <span className="text-sm text-[#6C757D]">Fecha:</span>
+                        <span className="text-sm font-medium text-[#343A40]">
+                          {new Date(selectedSale.created_at).toLocaleDateString('es-PE')} - {new Date(selectedSale.created_at).toLocaleTimeString('es-PE', { 
+                            hour: '2-digit', 
+                            minute: '2-digit' 
+                          })}
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-sm text-[#6C757D]">Tipo:</span>
+                        <Chip size="sm" className="bg-[#004085] text-white">
+                          {selectedSale.sale_type === 'product' ? 'Productos' : selectedSale.sale_type === 'service' ? 'Servicio' : selectedSale.sale_type === 'mixed' ? 'Mixta' : selectedSale.sale_type}
+                        </Chip>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-sm text-[#6C757D]">Método de Pago:</span>
+                        <Chip size="sm" className="bg-[#004085] text-white">
+                          {selectedSale.payment_method.charAt(0).toUpperCase() + selectedSale.payment_method.slice(1)}
+                        </Chip>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-sm text-[#6C757D]">Total:</span>
+                        <span className="text-lg font-bold text-[#004085]">
+                          {formatCurrency(selectedSale.total)}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Información del Cliente */}
+                  <div className="bg-[#F8F9FA] rounded-lg p-4">
+                    <h3 className="text-sm font-bold text-[#6C757D] uppercase tracking-wide mb-3">
+                      Cliente
+                    </h3>
+                    <div className="space-y-3">
+                      <div className="flex items-start gap-3">
+                        <User className="w-5 h-5 text-[#004085] mt-0.5" />
+                        <div>
+                          <p className="text-sm font-medium text-[#343A40]">
+                            {getCustomerName(selectedSale.customer)}
+                          </p>
+                          {selectedSale.customer?.email && (
+                            <p className="text-xs text-[#6C757D]">
+                              {selectedSale.customer.email}
+                            </p>
+                          )}
+                          {selectedSale.customer?.phone && (
+                            <p className="text-xs text-[#6C757D]">
+                              Tel: {selectedSale.customer.phone}
+                            </p>
+                          )}
+                          <p className="text-xs text-[#6C757D]">
+                            Tipo: {selectedSale.customer?.type || 'General'}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Información del Vendedor */}
+                <div className="bg-[#E8F0FE] rounded-lg p-4">
+                  <h3 className="text-sm font-bold text-[#004085] uppercase tracking-wide mb-3">
+                    Vendedor
+                  </h3>
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-[#004085]/10">
+                      <User className="w-4 h-4 text-[#004085]" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-[#343A40]">
+                        {selectedSale.seller?.name || 'Vendedor'}
+                      </p>
+                      <p className="text-xs text-[#6C757D]">
+                        {selectedSale.seller?.email || ''}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Productos Vendidos */}
+                <div className="bg-[#F8F9FA] rounded-lg p-4">
+                  <h3 className="text-sm font-bold text-[#6C757D] uppercase tracking-wide mb-4">
+                    Productos Vendidos ({(selectedSale.items || selectedSale.sale_items).length} item{(selectedSale.items || selectedSale.sale_items).length !== 1 ? 's' : ''})
+                  </h3>
+                  <div className="space-y-3">
+                    {(selectedSale.items || selectedSale.sale_items).map((item, idx) => (
+                      <div key={idx} className="flex items-center justify-between p-3 bg-white rounded-lg border border-[#E8F0FE]">
+                        <div className="flex items-center gap-3">
+                          <div className="p-2 rounded-lg bg-gradient-to-br from-[#E8F0FE] to-[#D1E7FF]">
+                            <Package className="w-4 h-4 text-[#004085]" />
+                          </div>
+                          <div>
+                            <p className="text-sm font-medium text-[#343A40]">
+                              {(item as any).product?.name || (item as any).inventory?.name || 'Producto sin nombre'}
+                            </p>
+                            <p className="text-xs text-[#6C757D]">
+                              {(item as any).product?.category || (item as any).inventory?.category || 'Sin categoría'}
+                            </p>
+                            {((item as any).product?.brand || (item as any).product?.model) && (
+                              <p className="text-xs text-[#6C757D]">
+                                {(item as any).product?.brand} {(item as any).product?.model}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-sm font-medium text-[#343A40]">
+                            {item.quantity} x {formatCurrency(item.unit_price)}
+                          </p>
+                          <p className="text-sm font-bold text-[#004085]">
+                            {formatCurrency((item as any).total_price || (item.quantity * item.unit_price))}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Resumen Total */}
+                <div className="bg-[#004085] rounded-lg p-4 text-white">
+                  <div className="flex justify-between items-center">
+                    <span className="text-lg font-bold">Total de la Venta:</span>
+                    <span className="text-2xl font-bold">
+                      {formatCurrency(selectedSale.total)}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </ModalBody>
+            <ModalFooter>
+              <Button
+                variant="light"
+                onPress={() => {
+                  onSaleDetailClose();
+                  setSelectedSale(null);
+                }}
+                className="text-[#6C757D] hover:bg-[#E8F0FE]"
+              >
+                Cerrar
+              </Button>
+              <Button
+                color="primary"
+                className="bg-gradient-to-r from-[#004085] to-[#003366] text-white"
+                startContent={<Printer className="w-4 h-4" />}
+              >
+                Reimprimir Comprobante
+              </Button>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
+      )}
+
       {/* Modal de advertencia inicial */}
       <Modal 
         isOpen={isWarningOpen} 
@@ -1751,33 +1980,33 @@ export default function VentasPage() {
       >
         <ModalContent>
           <ModalHeader>
-            <h2 className={`text-lg md:text-xl font-bold ${textColors.primary} flex items-center gap-2`}>
+            <h2 className="text-lg md:text-xl font-bold text-[#343A40] flex items-center gap-2">
               <AlertTriangle className="w-4 h-4 md:w-6 md:h-6 text-orange-500" />
               Confirmar Venta
             </h2>
           </ModalHeader>
           <ModalBody>
             <div className="space-y-3 md:space-y-4">
-              <p className={`text-sm md:text-lg ${textColors.primary}`}>
+              <p className="text-sm md:text-lg text-[#343A40]">
                 ¿Estás seguro de que deseas procesar esta venta?
               </p>
               
               <div className="bg-orange-50 rounded-lg p-3 md:p-4 border border-orange-200">
                 <div className="flex justify-between items-center mb-2">
-                  <span className={`text-sm md:text-base font-medium ${textColors.secondary}`}>Total a cobrar:</span>
+                  <span className="text-sm md:text-base font-medium text-[#6C757D]">Total a cobrar:</span>
                   <span className="text-lg md:text-2xl font-bold text-orange-600">
                     {formatCurrency(getTotal())}
                   </span>
                 </div>
                 <div className="flex justify-between items-center mb-2">
-                  <span className={`text-sm md:text-base ${textColors.secondary}`}>Productos:</span>
-                  <span className={`text-sm md:text-base font-medium ${textColors.primary}`}>
+                  <span className="text-sm md:text-base text-[#6C757D]">Productos:</span>
+                  <span className="text-sm md:text-base font-medium text-[#343A40]">
                     {cart.length} item{cart.length !== 1 ? 's' : ''}
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className={`text-sm md:text-base ${textColors.secondary}`}>Método de pago:</span>
-                  <span className={`text-sm md:text-base font-medium ${textColors.primary}`}>
+                  <span className="text-sm md:text-base text-[#6C757D]">Método de pago:</span>
+                  <span className="text-sm md:text-base font-medium text-[#343A40]">
                     {paymentMethod.charAt(0).toUpperCase() + paymentMethod.slice(1)}
                   </span>
                 </div>
@@ -1785,7 +2014,7 @@ export default function VentasPage() {
 
               <div className="flex items-center gap-2 p-3 bg-orange-50 rounded-lg border border-orange-200">
                 <AlertTriangle className="w-4 h-4 md:w-5 md:h-5 text-orange-600" />
-                <p className={`text-xs md:text-sm ${textColors.secondary}`}>
+                <p className="text-xs md:text-sm text-[#6C757D]">
                   Una vez procesada, esta venta no se puede deshacer. Verifica que todos los datos sean correctos.
                 </p>
               </div>
@@ -1830,27 +2059,27 @@ export default function VentasPage() {
       >
         <ModalContent>
           <ModalHeader>
-            <h2 className={`text-lg md:text-xl font-bold ${textColors.primary} flex items-center gap-2`}>
+            <h2 className="text-lg md:text-xl font-bold text-[#343A40] flex items-center gap-2">
               <Receipt className="w-4 h-4 md:w-6 md:h-6" />
               Confirmar Venta
             </h2>
           </ModalHeader>
           <ModalBody>
             <div className="space-y-3 md:space-y-4">
-              <p className={`text-sm md:text-lg ${textColors.primary}`}>
+              <p className="text-sm md:text-lg text-[#343A40]">
                 ¿Desea imprimir un comprobante de esta venta?
               </p>
               
               <div className="bg-gray-50 rounded-lg p-3 md:p-4">
                 <div className="flex justify-between items-center mb-2">
-                  <span className={`text-sm md:text-base font-medium ${textColors.secondary}`}>Total de la venta:</span>
-                  <span className="text-lg md:text-xl font-bold text-green-600">
+                  <span className="text-sm md:text-base font-medium text-[#6C757D]">Total de la venta:</span>
+                  <span className="text-lg md:text-xl font-bold text-[#004085]">
                     {formatCurrency(getTotal())}
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className={`text-sm md:text-base ${textColors.secondary}`}>Método de pago:</span>
-                  <span className={`text-sm md:text-base font-medium ${textColors.primary}`}>
+                  <span className="text-sm md:text-base text-[#6C757D]">Método de pago:</span>
+                  <span className="text-sm md:text-base font-medium text-[#343A40]">
                     {paymentMethod.charAt(0).toUpperCase() + paymentMethod.slice(1)}
                   </span>
                 </div>
@@ -1858,7 +2087,7 @@ export default function VentasPage() {
 
               <div className="flex items-center gap-2 p-3 bg-blue-50 rounded-lg">
                 <Printer className="w-4 h-4 md:w-5 md:h-5 text-blue-600" />
-                <p className={`text-xs md:text-sm ${textColors.secondary}`}>
+                <p className="text-xs md:text-sm text-[#6C757D]">
                   El comprobante será enviado a la impresora predeterminada en formato de ticket térmico (80mm).
                 </p>
               </div>

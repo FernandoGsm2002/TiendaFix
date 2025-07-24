@@ -46,7 +46,9 @@ import {
   AlertTriangle,
   Filter,
   Printer,
-  MessageCircle
+  MessageCircle,
+  AlertCircle,
+  Settings
 } from 'lucide-react'
 import PatternLock from '@/app/components/ui/PatternLock'
 import DeviceTicket from '@/app/components/ui/DeviceTicket'
@@ -422,17 +424,36 @@ export default function TechnicianRepairsPage() {
 
   // Eliminado: getDeviceDisplay ya no se necesita
 
-  const getStatusColor = (status: string) => {
-    const colors: Record<string, any> = {
-      'received': 'default',
-      'diagnosed': 'warning',
-      'in_progress': 'primary',
-      'waiting_parts': 'secondary',
-      'completed': 'success',
-      'delivered': 'success',
-      'cancelled': 'danger'
+  const getStatusColor = (status: string): "default" | "warning" | "primary" | "success" | "danger" | "secondary" => {
+    switch (status) {
+      case 'received': return 'default'
+      case 'diagnosed': return 'warning'
+      case 'in_progress': return 'secondary'
+      case 'completed': return 'success'
+      case 'delivered': return 'success'
+      case 'cancelled': return 'danger'
+      default: return 'default'
     }
-    return colors[status] || 'default'
+  }
+
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case 'received': return Clock
+      case 'diagnosed': return AlertTriangle
+      case 'in_progress': return Settings
+      case 'completed': return CheckCircle
+      case 'delivered': return CheckCircle
+      case 'cancelled': return AlertCircle
+      default: return Clock
+    }
+  }
+
+  const getStatusInfo = (status: string) => {
+    return {
+      color: getStatusColor(status),
+      icon: getStatusIcon(status),
+      label: getStatusLabel(status)
+    }
   }
 
   const getStatusLabel = (status: string) => {
@@ -873,11 +894,12 @@ export default function TechnicianRepairsPage() {
         return (
           <div className="flex flex-col gap-1">
             <Chip
-              color={getStatusColor(repair.status)}
-              variant="flat"
+              color={getStatusInfo(repair.status).color}
+              variant="solid"
               size="sm"
+              startContent={React.createElement(getStatusInfo(repair.status).icon, { className: "w-4 h-4" })}
             >
-              {getStatusLabel(repair.status)}
+              {getStatusInfo(repair.status).label}
             </Chip>
             <Chip
               color={getPriorityColor(repair.priority)}
@@ -1206,11 +1228,12 @@ export default function TechnicianRepairsPage() {
                       </div>
                       <div className="flex gap-2">
                         <Chip
-                          color={getStatusColor(repair.status)}
-                          variant="flat"
+                          color={getStatusInfo(repair.status).color}
+                          variant="solid"
                           size="sm"
+                          startContent={React.createElement(getStatusInfo(repair.status).icon, { className: "w-4 h-4" })}
                         >
-                          {getStatusLabel(repair.status)}
+                          {getStatusInfo(repair.status).label}
                         </Chip>
                         <Chip
                           color={getPriorityColor(repair.priority)}
@@ -1748,8 +1771,8 @@ export default function TechnicianRepairsPage() {
                    </div>
                    <div>
                      <p className="text-xs md:text-sm font-medium text-gray-500">Estado</p>
-                     <Chip color={getStatusColor(selectedRepair.status)} variant="flat" size="sm">
-                       {getStatusLabel(selectedRepair.status)}
+                     <Chip color={getStatusInfo(selectedRepair.status).color} variant="flat" size="sm">
+                       {getStatusInfo(selectedRepair.status).label}
                      </Chip>
                    </div>
                  </div>
@@ -1940,8 +1963,8 @@ export default function TechnicianRepairsPage() {
                 <div className="space-y-4">
                   <div className="flex items-center gap-2">
                     <p className="text-sm text-gray-700 dark:text-gray-300">Estado actual:</p>
-                    <Chip color={getStatusColor(selectedRepair.status)} size="sm">
-                      {getStatusLabel(selectedRepair.status)}
+                    <Chip color={getStatusInfo(selectedRepair.status).color} size="sm">
+                      {getStatusInfo(selectedRepair.status).label}
                     </Chip>
                   </div>
                   <div className="flex flex-col gap-2 pt-2">
@@ -1951,13 +1974,13 @@ export default function TechnicianRepairsPage() {
                         <Button
                           key={status}
                           variant={selectedRepair.status === status ? "solid" : "bordered"}
-                          color={getStatusColor(status)}
+                          color={getStatusInfo(status).color}
                           onPress={() => confirmUpdateStatus(status)}
                           className="w-full"
                           size="sm"
                           isLoading={updateLoading && selectedRepair.status !== status}
                         >
-                          {getStatusLabel(status)}
+                          {getStatusInfo(status).label}
                         </Button>
                       ))}
                     </div>

@@ -16,7 +16,7 @@ import {
   Button,
   Input
 } from '@heroui/react'
-import { textColors } from '@/lib/utils/colors'
+
 import { SUPPORTED_LOCALES, LOCALE_NAMES, type Locale } from '@/lib/utils/i18n'
 import { CURRENCIES, getCurrencyName } from '@/lib/utils/currency'
 import { useTranslations } from '@/lib/contexts/TranslationContext'
@@ -459,8 +459,8 @@ export default function ConfiguracionPage() {
         {/* Header simplificado */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-gray-900">{t('settings.title')}</h1>
-            <p className={`text-sm md:text-base ${textColors.secondary} mt-1`}>{t('settings.description')}</p>
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-[#004085] to-[#003366] bg-clip-text text-transparent">{t('settings.title')}</h1>
+            <p className="text-[#6C757D] text-lg mt-1">{t('settings.description')}</p>
           </div>
         </div>
 
@@ -512,16 +512,16 @@ export default function ConfiguracionPage() {
           {/* Configuraciones de Usuario */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Idioma */}
-            <Card className="shadow-lg border-0 bg-gradient-to-br from-gray-50 to-gray-100">
+            <Card className="shadow-lg border-0 bg-gradient-to-br from-[#F8F9FA] to-[#E9ECEF] border border-[#6C757D]/20">
               <CardBody className="p-6">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-lg bg-blue-100">
-                      <Globe className="w-5 h-5 text-blue-600" />
+                    <div className="p-2 rounded-lg bg-[#E8F0FE]">
+                      <Globe className="w-5 h-5 text-[#004085]" />
                     </div>
                     <div>
-                      <h3 className="text-lg font-semibold text-gray-800">{t('settings.language')}</h3>
-                      <p className="text-sm text-gray-500">Idioma de la interfaz</p>
+                      <h3 className="text-lg font-semibold text-[#343A40]">{t('settings.language')}</h3>
+                      <p className="text-sm text-[#6C757D]">Idioma de la interfaz</p>
                     </div>
                   </div>
                   <div className="min-w-[140px]">
@@ -555,16 +555,16 @@ export default function ConfiguracionPage() {
             </Card>
 
             {/* Moneda */}
-            <Card className="shadow-lg border-0 bg-gradient-to-br from-gray-50 to-gray-100">
+            <Card className="shadow-lg border-0 bg-gradient-to-br from-[#E8F0FE] to-[#D1E7FF] border border-[#004085]/20">
               <CardBody className="p-6">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-lg bg-green-100">
-                      <DollarSign className="w-5 h-5 text-green-600" />
+                    <div className="p-2 rounded-lg bg-[#004085]">
+                      <DollarSign className="w-5 h-5 text-white" />
                     </div>
                     <div>
-                      <h3 className="text-lg font-semibold text-gray-800">{t('settings.currency')}</h3>
-                      <p className="text-sm text-gray-500">Moneda predeterminada</p>
+                      <h3 className="text-lg font-semibold text-[#343A40]">{t('settings.currency')}</h3>
+                      <p className="text-sm text-[#6C757D]">Moneda predeterminada</p>
                     </div>
                   </div>
                   <div className="min-w-[140px]">
@@ -580,7 +580,7 @@ export default function ConfiguracionPage() {
                         if (selectedKey) handleCurrencyChange(selectedKey)
                       }}
                       classNames={{
-                        trigger: "border-gray-300 bg-white hover:border-gray-400 focus:border-green-500 min-h-[40px]",
+                        trigger: "border-gray-300 bg-white hover:border-gray-400 focus:border-[#004085] min-h-[40px]",
                         value: "text-gray-700 font-medium",
                         listbox: "bg-white shadow-lg",
                         popoverContent: "bg-white shadow-xl border border-gray-200 rounded-lg",
@@ -594,7 +594,7 @@ export default function ConfiguracionPage() {
                           textValue={`${getCurrencyName(code, locale)} (${code})`}
                         >
                           <div className="flex items-center gap-2">
-                            <span className="font-bold text-green-600">{currencyInfo.symbol}</span>
+                            <span className="font-bold text-[#004085]">{currencyInfo.symbol}</span>
                             <span>{getCurrencyName(code, locale)} ({code})</span>
                           </div>
                         </SelectItem>
@@ -607,11 +607,11 @@ export default function ConfiguracionPage() {
           </div>
 
           {/* Logo del Local */}
-          <Card className="shadow-lg border-0 bg-gradient-to-br from-white to-gray-50">
+          <Card className="shadow-lg border-0 bg-gradient-to-br from-[#F8F9FA] to-[#E9ECEF] border border-[#6C757D]/20">
             <CardBody className="p-6">
               <div className="flex items-center gap-3 mb-6">
-                <div className="p-2 rounded-lg bg-indigo-100">
-                  <ImageIcon className="w-5 h-5 text-indigo-600" />
+                <div className="p-2 rounded-lg bg-[#E8F0FE]">
+                  <ImageIcon className="w-5 h-5 text-[#004085]" />
                 </div>
                 <div>
                   <h3 className="text-xl font-semibold text-gray-800">Logo del Local</h3>
@@ -681,7 +681,7 @@ export default function ConfiguracionPage() {
                       variant="bordered"
                       classNames={{
                         label: "text-gray-700",
-                        inputWrapper: "border-gray-300 hover:border-gray-400 focus-within:border-indigo-500"
+                        inputWrapper: "border-gray-300 hover:border-gray-400 focus-within:border-[#004085]"
                       }}
                     />
                   </div>
@@ -693,7 +693,7 @@ export default function ConfiguracionPage() {
                       startContent={<Upload className="w-4 h-4" />}
                       onPress={handleUploadLogo}
                       isLoading={logoLoading}
-                      className="bg-gradient-to-r from-[#4ca771] to-[#013237] text-white hover:from-[#013237] hover:to-[#4ca771] transition-all font-semibold"
+                      className="bg-gradient-to-r from-[#004085] to-[#003366] text-white hover:from-[#003366] hover:to-[#004085] transition-all font-semibold"
                     >
                       {logoLoading ? 'Subiendo...' : 'Subir Logo'}
                     </Button>
@@ -712,13 +712,13 @@ export default function ConfiguracionPage() {
                 )}
 
                 {logoSuccess && (
-                  <div className="bg-green-50 border border-green-200 rounded-lg p-3">
-                    <div className="flex items-center gap-2">
-                      <CheckCircle className="w-4 h-4 text-green-600" />
-                      <span className="text-sm font-medium text-green-800">Éxito</span>
-                    </div>
-                    <p className="text-sm text-green-700 mt-1">{logoSuccess}</p>
+                                  <div className="bg-[#E8F0FE] border border-[#004085]/20 rounded-lg p-3">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="w-4 h-4 text-[#004085]" />
+                    <span className="text-sm font-medium text-[#343A40]">Éxito</span>
                   </div>
+                  <p className="text-sm text-[#343A40] mt-1">{logoSuccess}</p>
+                </div>
                 )}
 
                 {/* Información adicional */}
@@ -741,7 +741,7 @@ export default function ConfiguracionPage() {
           </Card>
 
           {/* Identificación Tributaria */}
-          <Card className="shadow-lg border-0 bg-gradient-to-br from-white to-gray-50">
+          <Card className="shadow-lg border-0 bg-gradient-to-br from-[#F8F9FA] to-[#E9ECEF] border border-[#6C757D]/20">
             <CardBody className="p-6">
               <div className="flex items-center gap-3 mb-6">
                 <div className="p-2 rounded-lg bg-cyan-100">
@@ -832,7 +832,7 @@ export default function ConfiguracionPage() {
                     startContent={<CheckCircle className="w-4 h-4" />}
                     onPress={handleUpdateTaxId}
                     isLoading={taxIdLoading}
-                    className="bg-gradient-to-r from-cyan-500 to-blue-600 text-white hover:from-cyan-600 hover:to-blue-700 transition-all font-semibold"
+                    className="bg-gradient-to-r from-[#004085] to-[#003366] text-white hover:from-[#003366] hover:to-[#004085] transition-all font-semibold"
                   >
                     {taxIdLoading ? 'Guardando...' : 'Guardar Información'}
                   </Button>
@@ -850,20 +850,20 @@ export default function ConfiguracionPage() {
                 )}
 
                 {taxIdSuccess && (
-                  <div className="bg-green-50 border border-green-200 rounded-lg p-3">
-                    <div className="flex items-center gap-2">
-                      <CheckCircle className="w-4 h-4 text-green-600" />
-                      <span className="text-sm font-medium text-green-800">Éxito</span>
-                    </div>
-                    <p className="text-sm text-green-700 mt-1">{taxIdSuccess}</p>
+                                  <div className="bg-[#E8F0FE] border border-[#004085]/20 rounded-lg p-3">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="w-4 h-4 text-[#004085]" />
+                    <span className="text-sm font-medium text-[#343A40]">Éxito</span>
                   </div>
+                  <p className="text-sm text-[#343A40] mt-1">{taxIdSuccess}</p>
+                </div>
                 )}
               </div>
             </CardBody>
           </Card>
 
           {/* Seguridad - Cambio de Contraseña */}
-          <Card className="shadow-lg border-0 bg-gradient-to-br from-white to-gray-50">
+          <Card className="shadow-lg border-0 bg-gradient-to-br from-[#F8F9FA] to-[#E9ECEF] border border-[#6C757D]/20">
             <CardBody className="p-6">
               <div className="flex items-center gap-3 mb-6">
                 <div className="p-2 rounded-lg bg-red-100">
@@ -948,13 +948,13 @@ export default function ConfiguracionPage() {
                 )}
 
                 {passwordSuccess && (
-                  <div className="bg-green-50 border border-green-200 rounded-lg p-3">
-                    <div className="flex items-center gap-2">
-                      <CheckCircle className="w-4 h-4 text-green-600" />
-                      <span className="text-sm font-medium text-green-800">Éxito</span>
-                    </div>
-                    <p className="text-sm text-green-700 mt-1">{passwordSuccess}</p>
+                                  <div className="bg-[#E8F0FE] border border-[#004085]/20 rounded-lg p-3">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="w-4 h-4 text-[#004085]" />
+                    <span className="text-sm font-medium text-[#343A40]">Éxito</span>
                   </div>
+                  <p className="text-sm text-[#343A40] mt-1">{passwordSuccess}</p>
+                </div>
                 )}
 
                 <div className="flex flex-col sm:flex-row gap-3 pt-2">
@@ -1006,12 +1006,12 @@ export default function ConfiguracionPage() {
           </Card>
 
           {/* Información de la Organización */}
-          <Card className="shadow-lg border-0 bg-gradient-to-br from-white to-gray-50">
+          <Card className="shadow-lg border-0 bg-gradient-to-br from-[#F8F9FA] to-[#E9ECEF] border border-[#6C757D]/20">
             <CardBody className="p-6">
               <div className="flex items-center gap-3 mb-4">
-                <div className="p-2 rounded-lg bg-purple-100">
-                  <Building className="w-5 h-5 text-purple-600" />
-                </div>
+                                  <div className="p-2 rounded-lg bg-[#E8F0FE]">
+                    <Building className="w-5 h-5 text-[#004085]" />
+                  </div>
                 <div>
                   <h3 className="text-xl font-semibold text-gray-800">{t('settings.organization')}</h3>
                   {dataLoading ? (
@@ -1058,7 +1058,7 @@ export default function ConfiguracionPage() {
           </Card>
 
           {/* Información de Suscripción */}
-          <Card className="shadow-lg border-0 bg-gradient-to-br from-white to-gray-50">
+          <Card className="shadow-lg border-0 bg-gradient-to-br from-[#F8F9FA] to-[#E9ECEF] border border-[#6C757D]/20">
             <CardBody className="p-6">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
@@ -1109,14 +1109,14 @@ export default function ConfiguracionPage() {
                     <div className="text-lg font-semibold text-blue-700">{organizationData.max_users}</div>
                     <div className="text-xs text-blue-500">Máximo permitido</div>
                   </div>
-                  <div className="bg-green-50 p-3 rounded-lg">
-                    <div className="text-xs text-green-600 font-medium uppercase tracking-wide">Dispositivos</div>
-                    <div className="text-lg font-semibold text-green-700">{organizationData.max_devices}</div>
-                    <div className="text-xs text-green-500">Máximo permitido</div>
-                  </div>
-                  <div className="bg-purple-50 p-3 rounded-lg">
-                    <div className="text-xs text-purple-600 font-medium uppercase tracking-wide">Inicio</div>
-                    <div className="text-sm font-semibold text-purple-700">
+                                  <div className="bg-[#E8F0FE] p-3 rounded-lg">
+                  <div className="text-xs text-[#004085] font-medium uppercase tracking-wide">Dispositivos</div>
+                  <div className="text-lg font-semibold text-[#343A40]">{organizationData.max_devices}</div>
+                  <div className="text-xs text-[#6C757D]">Máximo permitido</div>
+                </div>
+                  <div className="bg-[#F8F9FA] p-3 rounded-lg">
+                    <div className="text-xs text-[#6C757D] font-medium uppercase tracking-wide">Inicio</div>
+                    <div className="text-sm font-semibold text-[#343A40]">
                       {organizationData.subscription_start_date ? formatDate(organizationData.subscription_start_date).split(',')[0] : 'No configurado'}
                     </div>
                   </div>
@@ -1136,8 +1136,8 @@ export default function ConfiguracionPage() {
             <CardBody className="p-6">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-indigo-100">
-                    <User className="w-5 h-5 text-indigo-600" />
+                  <div className="p-2 rounded-lg bg-[#E8F0FE]">
+                    <User className="w-5 h-5 text-[#004085]" />
                   </div>
                   <div>
                     <h3 className="text-xl font-semibold text-gray-800">{t('settings.ownerProfile')}</h3>
@@ -1160,7 +1160,7 @@ export default function ConfiguracionPage() {
                         name={userProfile.name}
                         size="lg"
                         classNames={{
-                          base: "bg-gradient-to-br from-indigo-400 to-purple-600 text-white",
+                          base: "bg-gradient-to-br from-[#004085] to-[#003366] text-white",
                           icon: "text-white"
                         }}
                       />

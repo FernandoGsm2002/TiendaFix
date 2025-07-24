@@ -1,5 +1,33 @@
 # CHANGELOG - TiendaFix Web Platform
 
+## [1.6.0] - 2025-07-24
+
+### 🎉 **Rediseño de Interfaz y Nuevas Funcionalidades Clave**
+
+#### 🎨 **Mejoras de UI/UX**
+
+**Rediseño de la Interfaz del Dashboard:**
+- **Paleta de colores unificada y profesional** aplicada en todas las secciones principales (Inventario, Desbloqueos, Personal, Configuración)
+- **Consistencia visual** en tablas, botones, modales, y tarjetas de estadísticas
+- **Headers de tablas estandarizados** con un fondo azul (#004085) y texto blanco para mejorar la legibilidad
+- **Iconografía y espaciado mejorados** para una experiencia de usuario más limpia y moderna
+- **Eliminación de colores inconsistentes** (verdes, púrpuras, etc.) a favor de una paleta azul y gris
+
+#### ✨ **Nuevas Características**
+
+**Integración con API de WhatsApp:**
+- **Conexión directa con la API de WhatsApp** para notificaciones y comunicación con clientes (implementación inicial)
+
+**Formato de Ticket de Reparación:**
+- **Generación de un ticket de reparación estandarizado** para ser impreso y pegado en los dispositivos, mejorando el seguimiento físico
+
+#### 🐛 **Corrección de Bugs**
+
+- **Solucionados múltiples bugs de la interfaz** relacionados con colores y estilos inconsistentes
+- **Corregidos errores de layout** en vistas móviles y de escritorio para una mejor responsividad
+
+---
+
 ## [1.5.0] - 2025-07-11
 
 ### 🎉 **Funcionalidad WhatsApp Completa para Reparaciones y Desbloqueos**

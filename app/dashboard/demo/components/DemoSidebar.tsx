@@ -36,7 +36,8 @@ const getMenuItems = (t: (key: string) => string) => [
     href: '/dashboard/demo',
     icon: BarChart3,
     color: 'text-blue-600',
-    gradient: 'from-blue-400 to-blue-600'
+    gradient: 'from-blue-500 to-blue-600',
+    bgGradient: 'from-blue-50 to-blue-100'
   },
   {
     id: 'reparaciones',
@@ -44,7 +45,8 @@ const getMenuItems = (t: (key: string) => string) => [
     href: '/dashboard/demo/reparaciones',
     icon: Wrench,
     color: 'text-orange-600',
-    gradient: 'from-orange-400 to-red-600'
+    gradient: 'from-orange-400 to-red-600',
+    bgGradient: 'from-orange-50 to-red-100'
   },
   {
     id: 'clientes',
@@ -52,7 +54,8 @@ const getMenuItems = (t: (key: string) => string) => [
     href: '/dashboard/demo/clientes',
     icon: Users,
     color: 'text-green-600',
-    gradient: 'from-green-400 to-emerald-600'
+    gradient: 'from-green-400 to-emerald-600',
+    bgGradient: 'from-green-50 to-emerald-100'
   },
   {
     id: 'inventario',
@@ -60,7 +63,8 @@ const getMenuItems = (t: (key: string) => string) => [
     href: '/dashboard/demo/inventario',
     icon: Package,
     color: 'text-amber-600',
-    gradient: 'from-amber-400 to-orange-600'
+    gradient: 'from-amber-400 to-orange-600',
+    bgGradient: 'from-amber-50 to-orange-100'
   },
   {
     id: 'ventas',
@@ -68,7 +72,8 @@ const getMenuItems = (t: (key: string) => string) => [
     href: '/dashboard/demo/ventas',
     icon: ShoppingCart,
     color: 'text-emerald-600',
-    gradient: 'from-emerald-400 to-green-600'
+    gradient: 'from-emerald-400 to-green-600',
+    bgGradient: 'from-emerald-50 to-green-100'
   },
   {
     id: 'desbloqueos',
@@ -76,7 +81,8 @@ const getMenuItems = (t: (key: string) => string) => [
     href: '/dashboard/demo/desbloqueos',
     icon: Unlock,
     color: 'text-cyan-600',
-    gradient: 'from-cyan-400 to-blue-600'
+    gradient: 'from-cyan-400 to-blue-600',
+    bgGradient: 'from-cyan-50 to-blue-100'
   },
   {
     id: 'personal',
@@ -84,7 +90,8 @@ const getMenuItems = (t: (key: string) => string) => [
     href: '/dashboard/demo/personal',
     icon: UserCheck,
     color: 'text-indigo-600',
-    gradient: 'from-indigo-400 to-purple-600'
+    gradient: 'from-indigo-400 to-purple-600',
+    bgGradient: 'from-indigo-50 to-purple-100'
   },
   {
     id: 'reportes',
@@ -92,7 +99,8 @@ const getMenuItems = (t: (key: string) => string) => [
     href: '/dashboard/demo/reportes',
     icon: FileBarChart,
     color: 'text-pink-600',
-    gradient: 'from-pink-400 to-rose-600'
+    gradient: 'from-pink-400 to-rose-600',
+    bgGradient: 'from-pink-50 to-rose-100'
   },
   {
     id: 'configuracion',
@@ -100,7 +108,8 @@ const getMenuItems = (t: (key: string) => string) => [
     href: '/dashboard/demo/configuracion',
     icon: Settings,
     color: 'text-gray-600',
-    gradient: 'from-gray-400 to-gray-600'
+    gradient: 'from-gray-400 to-gray-600',
+    bgGradient: 'from-gray-100 to-gray-200'
   }
 ]
 
@@ -131,7 +140,7 @@ export default function DemoSidebar({ isCollapsed, onToggleCollapse, onMobileMen
           content={item.label}
           placement="right"
           classNames={{ 
-            content: "bg-gray-900 text-white border border-gray-700 shadow-2xl backdrop-blur-lg" 
+            content: "bg-gray-800 text-white border border-gray-700 shadow-2xl backdrop-blur-lg" 
           }}
           delay={200}
         >
@@ -142,10 +151,10 @@ export default function DemoSidebar({ isCollapsed, onToggleCollapse, onMobileMen
             variant={isActive ? "solid" : "light"}
             color={isActive ? "primary" : "default"}
             className={`
-              w-12 h-12 m-1 transition-all duration-300
+              w-12 h-12 m-1 transition-all duration-300 rounded-xl
               ${isActive 
-                ? `bg-gradient-to-br ${item.gradient} shadow-lg transform scale-105` 
-                : 'hover:bg-gradient-to-br hover:from-gray-100 hover:to-gray-200 hover:scale-105'
+                ? `bg-gradient-to-br ${item.gradient} text-white shadow-lg transform scale-105` 
+                : `text-gray-600 hover:bg-gradient-to-br hover:${item.bgGradient} hover:scale-105`
               }
             `}
             onClick={handleMenuItemClick}
@@ -162,34 +171,30 @@ export default function DemoSidebar({ isCollapsed, onToggleCollapse, onMobileMen
         href={item.href}
         variant="light"
         className={`
-          w-full justify-start p-4 h-14 rounded-xl transition-all duration-300 mb-2
+          w-full justify-start p-4 h-14 rounded-xl transition-all duration-300 mb-2 group
           ${isActive 
             ? `bg-gradient-to-r ${item.gradient} text-white shadow-lg transform scale-[1.02]` 
-            : 'hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100 hover:shadow-md'
+            : `hover:bg-gradient-to-r hover:${item.bgGradient} hover:shadow-md`
           }
         `}
         onClick={handleMenuItemClick}
       >
         <div className="flex items-center w-full">
           <div className={`
-            p-2.5 rounded-lg mr-4 transition-all
+            p-2.5 rounded-lg mr-4 transition-all duration-300
             ${isActive 
               ? 'bg-white/20 backdrop-blur-sm' 
-              : `bg-gradient-to-br ${item.gradient} shadow-md`
+              : `bg-white shadow-md group-hover:bg-gradient-to-br group-hover:${item.bgGradient}`
             }
           `}>
-            <Icon className={`h-5 w-5 ${isActive ? 'text-white' : 'text-white'}`} />
+            <Icon className={`h-5 w-5 ${isActive ? 'text-white' : item.color}`} />
           </div>
           <div className="flex-1 text-left flex items-center">
-            <p className={`text-base font-bold ${isActive ? 'text-white' : 'text-gray-800'}`}>
+            <p className={`text-base font-bold ${isActive ? 'text-white' : 'text-gray-700'}`}>
               {item.label}
             </p>
           </div>
-          {isActive && (
-            <div className="ml-2">
-              <Sparkles className="h-4 w-4 text-white/80" />
-            </div>
-          )}
+
         </div>
       </Button>
     );
@@ -197,12 +202,12 @@ export default function DemoSidebar({ isCollapsed, onToggleCollapse, onMobileMen
 
   return (
     <div className={`
-      flex h-full flex-col bg-gradient-to-b from-white via-gray-50/50 to-white transition-all duration-300 ease-in-out border-r border-gray-200/50
+      flex h-full flex-col bg-gradient-to-b from-gray-50 to-gray-100 transition-all duration-300 ease-in-out border-r border-gray-200/80
       ${isCollapsed ? 'w-20' : 'w-80'}
     `}>
       {/* Header del Sidebar con gradiente */}
       <div className={`
-        flex shrink-0 items-center justify-between p-4 border-b border-gray-200/50
+        flex shrink-0 items-center justify-between p-4 border-b border-gray-200/80
         ${isCollapsed ? 'h-20' : 'h-24'}
       `}>
         {!isCollapsed && (
@@ -243,7 +248,7 @@ export default function DemoSidebar({ isCollapsed, onToggleCollapse, onMobileMen
           variant="light"
           onPress={onToggleCollapse}
           className={`
-            h-10 w-10 text-gray-600 hover:text-gray-800 hover:bg-gradient-to-br hover:from-blue-50 hover:to-purple-50 transition-all duration-300 rounded-xl shadow-sm hover:shadow-md
+            h-10 w-10 text-gray-500 hover:text-blue-600 hover:bg-blue-100 transition-all duration-300 rounded-xl shadow-sm hover:shadow-md
             ${isCollapsed ? 'mx-auto' : ''}
           `}
           aria-label={isCollapsed ? "Expandir sidebar" : "Contraer sidebar"}
@@ -266,9 +271,9 @@ export default function DemoSidebar({ isCollapsed, onToggleCollapse, onMobileMen
             <div className="mb-6">
               <div className="flex items-center gap-2 mb-3">
                 <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full"></div>
-                <p className="text-xs font-bold text-gray-600 uppercase tracking-wide">Vista Previa</p>
+                <p className="text-xs font-bold text-gray-500 uppercase tracking-wide">Vista Previa</p>
               </div>
-              <Divider className="bg-gradient-to-r from-transparent via-gray-300 to-transparent" />
+              <Divider className="bg-gradient-to-r from-transparent via-gray-200 to-transparent" />
             </div>
           )}
           
@@ -280,7 +285,7 @@ export default function DemoSidebar({ isCollapsed, onToggleCollapse, onMobileMen
         </nav>
 
         {/* Footer del sidebar */}
-        <div className={`p-4 border-t border-gray-200/50 bg-gradient-to-r from-gray-50/50 to-white ${isCollapsed ? 'px-2' : ''}`}>
+        <div className={`p-4 border-t border-gray-200/80 bg-gradient-to-r from-gray-50/50 to-gray-100 ${isCollapsed ? 'px-2' : ''}`}>
           {isCollapsed ? (
             <Tooltip 
               content="Salir del Demo" 
@@ -335,7 +340,7 @@ export default function DemoSidebar({ isCollapsed, onToggleCollapse, onMobileMen
               
               {/* Footer info */}
               <div className="text-center">
-                <p className="text-xs text-gray-400 font-medium">
+                <p className="text-xs text-gray-500 font-medium">
                   © TIENDAFIX V2 - 2025
                 </p>
               </div>

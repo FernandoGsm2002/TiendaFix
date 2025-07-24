@@ -738,11 +738,11 @@ export default function DispositivosPage() {
           scrollBehavior="inside"
           classNames={{
             wrapper: "z-[1000]",
-            backdrop: "z-[999]",
-            base: "max-h-[95vh] my-2 mx-2 sm:mx-6",
-            body: "max-h-[70vh] overflow-y-auto py-4",
-            header: "border-b border-gray-200 pb-4",
-            footer: "border-t border-gray-200 pt-4"
+            backdrop: "z-[999] bg-black/40 backdrop-blur-sm",
+            base: "!rounded-3xl shadow-2xl border-0 bg-white my-4 mx-4 sm:my-6 sm:mx-6 md:mx-8 lg:mx-12",
+            body: "max-h-[70vh] overflow-y-auto p-6 md:p-8",
+            header: "border-b border-gray-200/50 p-6 md:p-8 bg-gradient-to-r from-green-50/50 to-white !rounded-t-3xl",
+            footer: "border-t border-gray-200/50 p-6 md:p-8 bg-gradient-to-r from-green-50/50 to-white !rounded-b-3xl"
           }}
         >
           <ModalContent>
@@ -849,11 +849,11 @@ export default function DispositivosPage() {
           scrollBehavior="inside"
           classNames={{
             wrapper: "z-[1000]",
-            backdrop: "z-[999]",
-            base: "max-h-[100vh] h-full w-full m-0 sm:max-h-[95vh] sm:h-auto sm:w-auto sm:my-2 sm:mx-2 md:mx-6 md:max-w-4xl",
-            body: "max-h-[calc(100vh-120px)] sm:max-h-[75vh] overflow-y-auto p-3 sm:p-4 md:p-6",
-            header: "border-b border-gray-200 p-3 sm:p-4 md:p-6",
-            footer: "border-t border-gray-200 p-3 sm:p-4 md:p-6"
+            backdrop: "z-[999] bg-black/40 backdrop-blur-sm",
+            base: "!rounded-3xl shadow-2xl border-0 bg-white max-h-[100vh] h-full w-full m-0 sm:max-h-[95vh] sm:h-auto sm:w-auto sm:my-6 sm:mx-6 md:mx-8 lg:mx-12 md:max-w-4xl",
+            body: "max-h-[calc(100vh-120px)] sm:max-h-[75vh] overflow-y-auto p-4 sm:p-6 md:p-8",
+            header: "border-b border-gray-200/50 p-4 sm:p-6 md:p-8 bg-gradient-to-r from-blue-50/50 to-white !rounded-t-3xl",
+            footer: "border-t border-gray-200/50 p-4 sm:p-6 md:p-8 bg-gradient-to-r from-blue-50/50 to-white !rounded-b-3xl"
           }}
         >
           <ModalContent>
@@ -930,11 +930,11 @@ export default function DispositivosPage() {
           scrollBehavior="inside"
           classNames={{
             wrapper: "z-[1000]",
-            backdrop: "z-[999]",
-            base: "max-h-[95vh] my-2 mx-2 sm:mx-6",
-            body: "max-h-[70vh] overflow-y-auto py-4",
-            header: "border-b border-gray-200 pb-4",
-            footer: "border-t border-gray-200 pt-4"
+            backdrop: "z-[999] bg-black/40 backdrop-blur-sm",
+            base: "!rounded-3xl shadow-2xl border-0 bg-white my-4 mx-4 sm:my-6 sm:mx-6 md:mx-8 lg:mx-12",
+            body: "max-h-[70vh] overflow-y-auto p-6 md:p-8",
+            header: "border-b border-gray-200/50 p-6 md:p-8 bg-gradient-to-r from-yellow-50/50 to-white !rounded-t-3xl",
+            footer: "border-t border-gray-200/50 p-6 md:p-8 bg-gradient-to-r from-yellow-50/50 to-white !rounded-b-3xl"
           }}
         >
           <ModalContent>
@@ -1046,11 +1046,11 @@ export default function DispositivosPage() {
           scrollBehavior="inside"
           classNames={{
             wrapper: "z-[1000]",
-            backdrop: "z-[999]",
-            base: "max-h-[95vh] my-2 mx-2 sm:mx-6",
-            body: "max-h-[60vh] overflow-y-auto py-4",
-            header: "border-b border-gray-200 pb-4",
-            footer: "border-t border-gray-200 pt-4"
+            backdrop: "z-[999] bg-black/40 backdrop-blur-sm",
+            base: "!rounded-3xl shadow-2xl border-0 bg-white my-4 mx-4 sm:my-6 sm:mx-6 md:mx-8 lg:mx-12",
+            body: "p-6 md:p-8",
+            header: "border-b border-gray-200/50 p-6 md:p-8 bg-gradient-to-r from-red-50/50 to-white !rounded-t-3xl",
+            footer: "border-t border-gray-200/50 p-6 md:p-8 bg-gradient-to-r from-red-50/50 to-white !rounded-b-3xl"
           }}
         >
           <ModalContent>
@@ -1083,11 +1083,11 @@ export default function DispositivosPage() {
           scrollBehavior="inside"
           classNames={{
             wrapper: "z-[1000]",
-            backdrop: "z-[999]",
-            base: "max-h-[95vh] my-2 mx-2 sm:mx-6",
-            body: "max-h-[70vh] overflow-y-auto py-4",
-            header: "border-b border-gray-200 pb-4",
-            footer: "border-t border-gray-200 pt-4"
+            backdrop: "z-[999] bg-black/40 backdrop-blur-sm",
+            base: "!rounded-3xl shadow-2xl border-0 bg-white my-4 mx-4 sm:my-6 sm:mx-6 md:mx-8 lg:mx-12",
+            body: "max-h-[70vh] overflow-y-auto p-6 md:p-8",
+            header: "border-b border-gray-200/50 p-6 md:p-8 bg-gradient-to-r from-purple-50/50 to-white !rounded-t-3xl",
+            footer: "border-t border-gray-200/50 p-6 md:p-8 bg-gradient-to-r from-purple-50/50 to-white !rounded-b-3xl"
           }}
         >
           <ModalContent>

@@ -29,7 +29,6 @@ import {
   TableCell
 } from '@heroui/react'
 import FormField from '@/app/components/ui/FormField'
-import { textColors } from '@/lib/utils/colors'
 import { formatCurrency } from '@/lib/utils/currency'
 import { useTranslations } from '@/lib/contexts/TranslationContext'
 import { 
@@ -215,14 +214,14 @@ export default function PersonalPage() {
     const loginTime = new Date(lastLogin).getTime()
     const daysDiff = (now - loginTime) / (1000 * 60 * 60 * 24)
     
-    if (daysDiff <= 1) return { label: 'Hoy', color: 'success' }
-    if (daysDiff <= 7) return { label: 'Esta semana', color: 'primary' }
+    if (daysDiff <= 1) return { label: 'Hoy', color: 'primary' }
+    if (daysDiff <= 7) return { label: 'Esta semana', color: 'secondary' }
     if (daysDiff <= 30) return { label: 'Este mes', color: 'warning' }
           return { label: t('common.inactive'), color: 'danger' }
   }
 
   const getEfficiencyColor = (efficiency: number) => {
-    if (efficiency >= 80) return 'success'
+    if (efficiency >= 80) return 'primary'
     if (efficiency >= 60) return 'warning'
     return 'danger'
   }
@@ -358,7 +357,7 @@ export default function PersonalPage() {
               <div className="text-danger-600 text-lg font-semibold">
                 Error al cargar personal
               </div>
-              <p className={textColors.tertiary}>{error}</p>
+              <p className="text-[#6C757D]">{error}</p>
               <Button 
                 color="danger"
                 variant="flat"
@@ -380,10 +379,10 @@ export default function PersonalPage() {
         {/* Header */}
         <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
           <div className="space-y-2">
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-[#4ca771] to-[#013237] bg-clip-text text-transparent">
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-[#004085] to-[#003366] bg-clip-text text-transparent">
               Gestión de Personal
             </h1>
-            <p className="text-[#4ca771] text-lg">
+            <p className="text-[#6C757D] text-lg">
               Administración de empleados y técnicos
             </p>
           </div>
@@ -391,7 +390,7 @@ export default function PersonalPage() {
           <Button
             onPress={onCreateOpen}
             startContent={<Plus className="w-4 h-4" />}
-            className="bg-gradient-to-r from-[#4ca771] to-[#013237] text-white hover:from-[#013237] hover:to-[#4ca771] transition-all shadow-lg"
+            className="bg-gradient-to-r from-[#004085] to-[#003366] text-white hover:from-[#003366] hover:to-[#004085] transition-all shadow-lg"
           >
             Agregar Personal
           </Button>
@@ -399,62 +398,62 @@ export default function PersonalPage() {
 
         {/* Estadísticas */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <Card className="hover:scale-105 transition-all duration-300 border border-gray-200 shadow-lg bg-gradient-to-br from-blue-100 to-blue-200">
+          <Card className="hover:scale-105 transition-all duration-300 border-0 shadow-lg bg-gradient-to-br from-[#F8F9FA] to-[#E9ECEF] border border-[#6C757D]/20">
             <CardBody className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <div className="p-3 rounded-xl bg-blue-500 shadow-lg">
+                <div className="p-3 rounded-xl bg-gradient-to-br from-[#6C757D] to-[#495057] shadow-lg">
                   <Users className="w-6 h-6 text-white" />
                 </div>
-                <Chip variant="flat" size="sm" className="font-semibold bg-white/60 text-blue-800 border border-white/30">Total</Chip>
+                <Chip variant="flat" size="sm" className="bg-[#F8F9FA] text-[#6C757D]">Total</Chip>
               </div>
               <div className="space-y-2">
-                <p className="text-base font-bold text-blue-800 opacity-90 uppercase tracking-wider">Total Personal</p>
-                <p className="text-4xl font-extrabold text-blue-800 mb-2 tracking-tight">{stats.total}</p>
+                <p className="text-base font-bold text-[#6C757D] uppercase tracking-wider">Total Personal</p>
+                <p className="text-4xl font-extrabold text-[#343A40] mb-2 tracking-tight">{stats.total}</p>
               </div>
             </CardBody>
           </Card>
 
-          <Card className="hover:scale-105 transition-all duration-300 border border-gray-200 shadow-lg bg-gradient-to-br from-emerald-100 to-emerald-200">
+          <Card className="hover:scale-105 transition-all duration-300 border-0 shadow-lg bg-gradient-to-br from-[#E8F0FE] to-[#D1E7FF] border border-[#004085]/20">
             <CardBody className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <div className="p-3 rounded-xl bg-emerald-500 shadow-lg">
+                <div className="p-3 rounded-xl bg-gradient-to-br from-[#004085] to-[#003366] shadow-lg">
                   <UserCheck className="w-6 h-6 text-white" />
                 </div>
-                <Chip variant="flat" size="sm" className="font-semibold bg-white/60 text-emerald-800 border border-white/30">Activos</Chip>
+                <Chip variant="flat" size="sm" className="bg-[#004085] text-white">Activos</Chip>
               </div>
               <div className="space-y-2">
-                <p className="text-base font-bold text-emerald-800 opacity-90 uppercase tracking-wider">{t('staff.activeTechnicians')}</p>
-                <p className="text-4xl font-extrabold text-emerald-800 mb-2 tracking-tight">{stats.activos}</p>
+                <p className="text-base font-bold text-[#6C757D] uppercase tracking-wider">Activos</p>
+                <p className="text-4xl font-extrabold text-[#343A40] mb-2 tracking-tight">{stats.activos}</p>
               </div>
             </CardBody>
           </Card>
 
-          <Card className="hover:scale-105 transition-all duration-300 border border-gray-200 shadow-lg bg-gradient-to-br from-purple-100 to-purple-200">
+          <Card className="hover:scale-105 transition-all duration-300 border-0 shadow-lg bg-gradient-to-br from-[#F8F9FA] to-[#E9ECEF] border border-[#6C757D]/20">
             <CardBody className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <div className="p-3 rounded-xl bg-purple-500 shadow-lg">
+                <div className="p-3 rounded-xl bg-gradient-to-br from-[#6C757D] to-[#495057] shadow-lg">
                   <Shield className="w-6 h-6 text-white" />
                 </div>
-                <Chip variant="flat" size="sm" className="font-semibold bg-white/60 text-purple-800 border border-white/30">Técnicos</Chip>
+                <Chip variant="flat" size="sm" className="bg-[#F8F9FA] text-[#6C757D]">Técnicos</Chip>
               </div>
               <div className="space-y-2">
-                <p className="text-base font-bold text-purple-800 opacity-90 uppercase tracking-wider">{t('staff.technician')}</p>
-                <p className="text-4xl font-extrabold text-purple-800 mb-2 tracking-tight">{stats.tecnicos}</p>
+                <p className="text-base font-bold text-[#6C757D] uppercase tracking-wider">Técnicos</p>
+                <p className="text-4xl font-extrabold text-[#343A40] mb-2 tracking-tight">{stats.tecnicos}</p>
               </div>
             </CardBody>
           </Card>
 
-          <Card className="hover:scale-105 transition-all duration-300 border border-gray-200 shadow-lg bg-gradient-to-br from-indigo-100 to-indigo-200">
+          <Card className="hover:scale-105 transition-all duration-300 border-0 shadow-lg bg-gradient-to-br from-[#E8F0FE] to-[#D1E7FF] border border-[#004085]/20">
             <CardBody className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <div className="p-3 rounded-xl bg-indigo-500 shadow-lg">
+                <div className="p-3 rounded-xl bg-gradient-to-br from-[#004085] to-[#003366] shadow-lg">
                   <Shield className="w-6 h-6 text-white" />
                 </div>
-                <Chip variant="flat" size="sm" className="font-semibold bg-white/60 text-indigo-800 border border-white/30">Admins</Chip>
+                <Chip variant="flat" size="sm" className="bg-[#004085] text-white">Admins</Chip>
               </div>
               <div className="space-y-2">
-                <p className="text-base font-bold text-indigo-800 opacity-90 uppercase tracking-wider">Propietarios</p>
-                <p className="text-4xl font-extrabold text-indigo-800 mb-2 tracking-tight">{stats.propietarios}</p>
+                <p className="text-base font-bold text-[#6C757D] uppercase tracking-wider">Propietarios</p>
+                <p className="text-4xl font-extrabold text-[#343A40] mb-2 tracking-tight">{stats.propietarios}</p>
               </div>
             </CardBody>
           </Card>
@@ -463,51 +462,58 @@ export default function PersonalPage() {
         {/* Filtros y búsqueda */}
         <Card>
           <CardBody className="p-6">
-            <div className="flex flex-wrap gap-4 items-center">
-              <Input
-                placeholder="Buscar por nombre o correo..."
-                value={busqueda}
-                onValueChange={handleBusquedaChange}
-                startContent={<Search className="w-4 h-4 text-gray-400" />}
-                className="flex-1 min-w-[200px]"
-                variant="bordered"
-                classNames={{
-                  input: "text-gray-900 placeholder:text-gray-500",
-                  inputWrapper: "border-gray-300",
-                }}
-              />
-              <Select
-                placeholder="Filtrar por rol"
-                selectedKeys={new Set([filtroRol])}
-                onSelectionChange={handleRolChange}
-                className="w-full sm:w-auto"
-                variant="bordered"
-                classNames={{
-                  trigger: "text-gray-900",
-                  value: "text-gray-900",
-                  popoverContent: "bg-white",
-                }}
-              >
-                <SelectItem key="todos" className="text-gray-900">{t('filters.allRoles')}</SelectItem>
-                <SelectItem key="owner" className="text-gray-900">Propietario</SelectItem>
-                <SelectItem key="technician" className="text-gray-900">Técnico</SelectItem>
-              </Select>
-              <Select
-                placeholder="Filtrar por estado"
-                selectedKeys={new Set([filtroEstado])}
-                onSelectionChange={handleEstadoChange}
-                className="w-full sm:w-auto"
-                variant="bordered"
-                classNames={{
-                  trigger: "text-gray-900",
-                  value: "text-gray-900",
-                  popoverContent: "bg-white",
-                }}
-              >
-                <SelectItem key="todos" className="text-gray-900">{t('filters.allStates')}</SelectItem>
-                                  <SelectItem key="active" className="text-gray-900">{t('common.active')}</SelectItem>
-                                  <SelectItem key="inactive" className="text-gray-900">{t('common.inactive')}</SelectItem>
-              </Select>
+            <div className="flex flex-col md:flex-row gap-4">
+              <div className="flex-1">
+                <Input
+                  placeholder="Buscar por nombre o correo..."
+                  startContent={<Search className="w-4 h-4 text-[#6C757D]" />}
+                  value={busqueda}
+                  onValueChange={handleBusquedaChange}
+                  variant="bordered"
+                  size="lg"
+                  classNames={{
+                    input: "text-[#343A40] placeholder:text-[#6C757D]",
+                    inputWrapper: "border-[#E8F0FE] hover:border-[#004085] focus-within:border-[#004085]",
+                  }}
+                />
+              </div>
+              <div className="w-full md:w-48">
+                <Select
+                  placeholder="Filtrar por rol"
+                  selectedKeys={new Set([filtroRol])}
+                  onSelectionChange={handleRolChange}
+                  variant="bordered"
+                  size="lg"
+                  startContent={<Filter className="w-4 h-4" />}
+                  classNames={{
+                    trigger: "text-gray-900",
+                    value: "text-gray-900",
+                    popoverContent: "bg-white",
+                  }}
+                >
+                  <SelectItem key="todos" className="text-gray-900">Todos los roles</SelectItem>
+                  <SelectItem key="owner" className="text-gray-900">Propietario</SelectItem>
+                  <SelectItem key="technician" className="text-gray-900">Técnico</SelectItem>
+                </Select>
+              </div>
+              <div className="w-full md:w-48">
+                <Select
+                  placeholder="Filtrar por estado"
+                  selectedKeys={new Set([filtroEstado])}
+                  onSelectionChange={handleEstadoChange}
+                  variant="bordered"
+                  size="lg"
+                  classNames={{
+                    trigger: "text-gray-900",
+                    value: "text-gray-900",
+                    popoverContent: "bg-white",
+                  }}
+                >
+                  <SelectItem key="todos" className="text-gray-900">Todos los estados</SelectItem>
+                  <SelectItem key="active" className="text-gray-900">Activo</SelectItem>
+                  <SelectItem key="inactive" className="text-gray-900">Inactivo</SelectItem>
+                </Select>
+              </div>
             </div>
           </CardBody>
         </Card>
@@ -521,7 +527,7 @@ export default function PersonalPage() {
                 aria-label="Tabla de personal"
                 classNames={{
                   wrapper: "min-h-[400px]",
-                  th: "bg-gray-50 text-gray-700 font-semibold",
+                  th: "bg-[#004085] text-white font-bold text-base",
                   td: "py-4"
                 }}
               >
@@ -548,8 +554,8 @@ export default function PersonalPage() {
                             }}
                           />
                           <div>
-                            <p className={`font-semibold ${textColors.primary}`}>{technician.name}</p>
-                            <p className={`text-sm ${textColors.muted}`}>
+                            <p className="font-semibold text-[#343A40]">{technician.name}</p>
+                            <p className="text-sm text-[#6C757D]">
                               Registrado: {formatDate(technician.created_at)}
                             </p>
                           </div>
@@ -559,12 +565,12 @@ export default function PersonalPage() {
                         <div className="space-y-2">
                           <div className="flex items-center gap-2">
                             <Mail className="w-4 h-4 text-gray-400" />
-                            <span className={`text-sm ${textColors.secondary}`}>{technician.email}</span>
+                            <span className="text-sm text-[#343A40]">{technician.email}</span>
                           </div>
                           {technician.phone && (
                             <div className="flex items-center gap-2">
                               <Phone className="w-4 h-4 text-gray-400" />
-                              <span className={`text-sm ${textColors.secondary}`}>{technician.phone}</span>
+                              <span className="text-sm text-[#343A40]">{technician.phone}</span>
                             </div>
                           )}
                         </div>
@@ -580,7 +586,7 @@ export default function PersonalPage() {
                       </TableCell>
                       <TableCell>
                         <Chip
-                          color={technician.is_active ? 'success' : 'danger'}
+                          className={technician.is_active ? "bg-[#E8F0FE] text-[#004085]" : "bg-[#F8F9FA] text-[#6C757D]"}
                           variant="flat"
                           startContent={technician.is_active ? <CheckCircle className="w-3 h-3" /> : <X className="w-3 h-3" />}
                         >
@@ -597,7 +603,7 @@ export default function PersonalPage() {
                           >
                             {getActivityStatus(technician.last_login).label}
                           </Chip>
-                          <p className={`text-xs ${textColors.muted}`}>
+                          <p className="text-xs text-[#6C757D]">
                             {formatDate(technician.last_login)}
                           </p>
                         </div>
@@ -606,26 +612,28 @@ export default function PersonalPage() {
                         {technician.stats ? (
                           <div className="space-y-2">
                             <div className="grid grid-cols-2 gap-2 text-xs">
-                              <div className="text-center p-2 bg-blue-50 rounded">
-                                <p className="font-bold text-blue-600">{technician.stats.totalReparaciones}</p>
-                                <p className={textColors.muted}>Total</p>
+                              <div className="text-center p-2 bg-[#E8F0FE] rounded">
+                                <p className="font-bold text-[#343A40]">{technician.stats.totalReparaciones}</p>
+                                <p className="text-[#6C757D]">Total</p>
                               </div>
-                              <div className="text-center p-2 bg-green-50 rounded">
-                                <p className="font-bold text-green-600">{technician.stats.completadas}</p>
-                                <p className={textColors.muted}>Completadas</p>
+                              <div className="text-center p-2 bg-[#E8F0FE] rounded">
+                                <p className="font-bold text-[#343A40]">{technician.stats.completadas}</p>
+                                <p className="text-[#6C757D]">Completadas</p>
                               </div>
                             </div>
                             <Progress 
                               value={technician.stats.eficiencia} 
-                              color={getEfficiencyColor(technician.stats.eficiencia) as any}
+                              classNames={{
+                                indicator: "bg-[#004085]",
+                              }}
                               size="sm"
                             />
-                            <p className={`text-xs ${textColors.muted} text-center`}>
+                            <p className="text-xs text-[#6C757D] text-center">
                               {technician.stats.eficiencia}% eficiencia
                             </p>
                           </div>
                         ) : (
-                          <p className={`text-sm ${textColors.muted}`}>Sin datos</p>
+                          <p className="text-sm text-[#6C757D]">Sin datos</p>
                         )}
                       </TableCell>
                       <TableCell>
@@ -677,13 +685,17 @@ export default function PersonalPage() {
               ) : technicians.length === 0 ? (
                 <div className="text-center py-12 px-4">
                   <Users className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                  <h3 className={`text-lg font-semibold ${textColors.primary} mb-2`}>
+                  <h3 className="text-lg font-semibold text-[#343A40] mb-2">
                     No hay personal
                   </h3>
-                  <p className={`${textColors.muted} mb-6`}>
+                  <p className="text-[#6C757D] mb-6">
                     No se encontró personal registrado en el sistema
                   </p>
-                  <Button color="primary" startContent={<Plus className="w-4 h-4" />} onPress={onCreateOpen}>
+                  <Button 
+                    startContent={<Plus className="w-4 h-4" />} 
+                    onPress={onCreateOpen}
+                    className="bg-gradient-to-r from-[#004085] to-[#003366] text-white hover:from-[#003366] hover:to-[#004085] transition-all"
+                  >
                     Agregar Personal
                   </Button>
                 </div>
@@ -704,10 +716,10 @@ export default function PersonalPage() {
                             size="lg"
                           />
                           <div className="flex-1 min-w-0">
-                            <h4 className={`font-semibold ${textColors.primary} truncate`}>
+                            <h4 className="font-semibold text-[#343A40] truncate">
                               {technician.name}
                             </h4>
-                            <p className={`text-sm ${textColors.muted} mb-2`}>
+                            <p className="text-sm text-[#6C757D] mb-2">
                               Registrado: {formatDate(technician.created_at)}
                             </p>
                             <div className="flex gap-2 flex-wrap">
@@ -720,7 +732,7 @@ export default function PersonalPage() {
                                 {getRoleLabel(technician.role)}
                               </Chip>
                               <Chip
-                                color={technician.is_active ? 'success' : 'danger'}
+                                className={technician.is_active ? "bg-[#E8F0FE] text-[#004085]" : "bg-[#F8F9FA] text-[#6C757D]"}
                                 variant="flat"
                                 size="sm"
                                 startContent={technician.is_active ? <CheckCircle className="w-3 h-3" /> : <X className="w-3 h-3" />}
@@ -732,21 +744,21 @@ export default function PersonalPage() {
                         </div>
 
                         {/* Información de contacto */}
-                        <div className="bg-gray-50 rounded-lg p-3 mb-4">
-                          <p className={`text-xs font-medium ${textColors.tertiary} uppercase tracking-wide mb-2`}>
+                        <div className="bg-[#E8F0FE] rounded-lg p-3 mb-4">
+                          <p className="text-xs font-medium text-[#6C757D] uppercase tracking-wide mb-2">
                             Contacto
                           </p>
                           <div className="space-y-2">
                             <div className="flex items-center gap-2">
-                              <Mail className="w-3 h-3 text-gray-600" />
-                              <span className={`text-sm ${textColors.primary} truncate`}>
+                              <Mail className="w-3 h-3 text-[#6C757D]" />
+                              <span className="text-sm text-[#343A40] truncate">
                                 {technician.email}
                               </span>
                             </div>
                             {technician.phone && (
                               <div className="flex items-center gap-2">
-                                <Phone className="w-3 h-3 text-gray-600" />
-                                <span className={`text-sm ${textColors.primary}`}>
+                                <Phone className="w-3 h-3 text-[#6C757D]" />
+                                <span className="text-sm text-[#343A40]">
                                   {technician.phone}
                                 </span>
                               </div>
@@ -755,8 +767,8 @@ export default function PersonalPage() {
                         </div>
 
                         {/* Actividad */}
-                        <div className="bg-blue-50 rounded-lg p-3 mb-4">
-                          <p className={`text-xs font-medium ${textColors.tertiary} uppercase tracking-wide mb-2`}>
+                        <div className="bg-[#E8F0FE] rounded-lg p-3 mb-4">
+                          <p className="text-xs font-medium text-[#6C757D] uppercase tracking-wide mb-2">
                             Actividad
                           </p>
                           <div className="space-y-2">
@@ -768,7 +780,7 @@ export default function PersonalPage() {
                             >
                               {getActivityStatus(technician.last_login).label}
                             </Chip>
-                            <p className={`text-xs ${textColors.muted}`}>
+                            <p className="text-xs text-[#6C757D]">
                               Último acceso: {formatDate(technician.last_login)}
                             </p>
                           </div>
@@ -776,24 +788,24 @@ export default function PersonalPage() {
 
                         {/* Estadísticas */}
                         {technician.stats ? (
-                          <div className="bg-green-50 rounded-lg p-3 mb-4">
-                            <p className={`text-xs font-medium ${textColors.tertiary} uppercase tracking-wide mb-3`}>
+                          <div className="bg-[#E8F0FE] rounded-lg p-3 mb-4">
+                            <p className="text-xs font-medium text-[#6C757D] uppercase tracking-wide mb-3">
                               Estadísticas
                             </p>
                             <div className="grid grid-cols-2 gap-3 mb-3">
                               <div className="text-center p-2 bg-white rounded border">
-                                <p className="font-bold text-blue-600 text-lg">{technician.stats.totalReparaciones}</p>
-                                <p className={`text-xs ${textColors.muted}`}>Total</p>
+                                <p className="font-bold text-[#343A40] text-lg">{technician.stats.totalReparaciones}</p>
+                                <p className="text-xs text-[#6C757D]">Total</p>
                               </div>
                               <div className="text-center p-2 bg-white rounded border">
-                                <p className="font-bold text-green-600 text-lg">{technician.stats.completadas}</p>
-                                <p className={`text-xs ${textColors.muted}`}>Completadas</p>
+                                <p className="font-bold text-[#343A40] text-lg">{technician.stats.completadas}</p>
+                                <p className="text-xs text-[#6C757D]">Completadas</p>
                               </div>
                             </div>
                             <div className="space-y-2">
                               <div className="flex justify-between items-center">
-                                <span className={`text-xs ${textColors.muted}`}>Eficiencia</span>
-                                <span className={`text-xs font-medium ${textColors.primary}`}>
+                                <span className="text-xs text-[#6C757D]">Eficiencia</span>
+                                <span className="text-xs font-medium text-[#343A40]">
                                   {technician.stats.eficiencia}%
                                 </span>
                               </div>
@@ -805,8 +817,8 @@ export default function PersonalPage() {
                             </div>
                           </div>
                         ) : (
-                          <div className="bg-gray-50 rounded-lg p-3 mb-4 text-center">
-                            <p className={`text-sm ${textColors.muted}`}>Sin estadísticas disponibles</p>
+                          <div className="bg-[#E8F0FE] rounded-lg p-3 mb-4 text-center">
+                            <p className="text-sm text-[#6C757D]">Sin estadísticas disponibles</p>
                           </div>
                         )}
 
@@ -858,19 +870,19 @@ export default function PersonalPage() {
           scrollBehavior="inside"
           classNames={{
             wrapper: "z-[1000]",
-            backdrop: "z-[999]",
-            base: "max-h-[95vh] my-1 mx-1 sm:my-2 sm:mx-2 md:mx-6",
-            body: "max-h-[70vh] overflow-y-auto py-2 md:py-4",
-            header: "border-b border-gray-200 pb-2 md:pb-4",
-            footer: "border-t border-gray-200 pt-2 md:pt-4"
+            backdrop: "z-[999] bg-black/40 backdrop-blur-sm",
+            base: "!rounded-3xl shadow-2xl border-0 bg-white my-4 mx-4 sm:my-6 sm:mx-6 md:mx-8 lg:mx-12",
+            body: "max-h-[70vh] overflow-y-auto p-6 md:p-8",
+            header: "border-b border-gray-200/50 p-6 md:p-8 bg-gradient-to-r from-[#E8F0FE]/50 to-white !rounded-t-3xl",
+            footer: "border-t border-gray-200/50 p-6 md:p-8 bg-gradient-to-r from-[#E8F0FE]/50 to-white !rounded-b-3xl"
           }}
         >
           <ModalContent>
             {(onClose) => (
               <>
                 <ModalHeader className="flex flex-col gap-1">
-                  <h2 className={`text-lg md:text-xl font-bold ${textColors.primary}`}>Agregar Nuevo Personal</h2>
-                  <p className={`text-sm md:text-base ${textColors.secondary}`}>Complete la información del nuevo empleado</p>
+                  <h2 className="text-lg md:text-xl font-bold text-[#343A40]">Agregar Nuevo Personal</h2>
+                  <p className="text-sm md:text-base text-[#343A40]">Complete la información del nuevo empleado</p>
                 </ModalHeader>
                 <ModalBody>
                   <form onSubmit={handleCreateTechnician} className="space-y-3 md:space-y-4">
@@ -925,7 +937,7 @@ export default function PersonalPage() {
                     onPress={() => handleCreateTechnician({ preventDefault: () => {} } as any)}
                     isLoading={createLoading}
                     size="sm"
-                    className="bg-gradient-to-r from-[#4ca771] to-[#013237] text-white hover:from-[#013237] hover:to-[#4ca771] transition-all"
+                    className="bg-gradient-to-r from-[#004085] to-[#003366] text-white hover:from-[#003366] hover:to-[#004085] transition-all"
                   >
                     Crear Personal
                   </Button>
@@ -943,18 +955,18 @@ export default function PersonalPage() {
           scrollBehavior="inside"
           classNames={{
             wrapper: "z-[1000]",
-            backdrop: "z-[999]",
-            base: "max-h-[95vh] my-1 mx-1 sm:my-2 sm:mx-2 md:mx-6",
-            body: "max-h-[75vh] overflow-y-auto py-2 md:py-4",
-            header: "border-b border-gray-200 pb-2 md:pb-4",
-            footer: "border-t border-gray-200 pt-2 md:pt-4"
+            backdrop: "z-[999] bg-black/40 backdrop-blur-sm",
+            base: "!rounded-3xl shadow-2xl border-0 bg-white my-4 mx-4 sm:my-6 sm:mx-6 md:mx-8 lg:mx-12",
+            body: "max-h-[75vh] overflow-y-auto p-6 md:p-8",
+            header: "border-b border-gray-200/50 p-6 md:p-8 bg-gradient-to-r from-gray-50/50 to-white !rounded-t-3xl",
+            footer: "border-t border-gray-200/50 p-6 md:p-8 bg-gradient-to-r from-gray-50/50 to-white !rounded-b-3xl"
           }}
         >
           <ModalContent>
             {(onClose) => (
               <>
                 <ModalHeader className="flex flex-col gap-1">
-                  <h2 className={`text-lg md:text-xl font-bold ${textColors.primary}`}>Detalles del Técnico</h2>
+                  <h2 className="text-lg md:text-xl font-bold text-[#343A40]">Detalles del Técnico</h2>
                 </ModalHeader>
                 <ModalBody>
                   {selectedTechnician && (
@@ -970,20 +982,20 @@ export default function PersonalPage() {
                           }}
                         />
                         <div>
-                          <p className={`text-sm md:text-base font-semibold ${textColors.primary}`}>{selectedTechnician.name}</p>
-                          <p className={`text-xs md:text-sm ${textColors.muted}`}>
+                          <p className="text-sm md:text-base font-semibold text-[#343A40]">{selectedTechnician.name}</p>
+                          <p className="text-xs md:text-sm text-[#6C757D]">
                             Registrado: {formatDate(selectedTechnician.created_at)}
                           </p>
                         </div>
                       </div>
                       <div className="space-y-2">
-                        <p className={`text-xs md:text-sm font-medium ${textColors.secondary}`}>Correo Electrónico: {selectedTechnician.email}</p>
+                        <p className="text-xs md:text-sm font-medium text-[#343A40]">Correo Electrónico: {selectedTechnician.email}</p>
                         {selectedTechnician.phone && (
-                          <p className={`text-xs md:text-sm font-medium ${textColors.secondary}`}>Teléfono: {selectedTechnician.phone}</p>
+                          <p className="text-xs md:text-sm font-medium text-[#343A40]">Teléfono: {selectedTechnician.phone}</p>
                         )}
                       </div>
                       <div className="space-y-2">
-                        <p className={`text-xs md:text-sm font-medium ${textColors.secondary}`}>Rol: {getRoleLabel(selectedTechnician.role)}</p>
+                        <p className="text-xs md:text-sm font-medium text-[#343A40]">Rol: {getRoleLabel(selectedTechnician.role)}</p>
                         <Chip
                           color={getRoleColor(selectedTechnician.role) as any}
                           variant="flat"
@@ -994,9 +1006,9 @@ export default function PersonalPage() {
                         </Chip>
                       </div>
                       <div className="space-y-2">
-                        <p className={`text-xs md:text-sm font-medium ${textColors.secondary}`}>Estado: {selectedTechnician.is_active ? 'Activo' : 'Inactivo'}</p>
+                        <p className="text-xs md:text-sm font-medium text-[#343A40]">Estado: {selectedTechnician.is_active ? 'Activo' : 'Inactivo'}</p>
                         <Chip
-                          color={selectedTechnician.is_active ? 'success' : 'danger'}
+                          className={selectedTechnician.is_active ? "bg-[#E8F0FE] text-[#004085]" : "bg-[#F8F9FA] text-[#6C757D]"}
                           variant="flat"
                           size="sm"
                           startContent={selectedTechnician.is_active ? <CheckCircle className="w-3 h-3" /> : <X className="w-3 h-3" />}
@@ -1005,7 +1017,7 @@ export default function PersonalPage() {
                         </Chip>
                       </div>
                       <div className="space-y-2">
-                        <p className={`text-xs md:text-sm font-medium ${textColors.secondary}`}>Último acceso: {formatDate(selectedTechnician.last_login)}</p>
+                        <p className="text-xs md:text-sm font-medium text-[#343A40]">Último acceso: {formatDate(selectedTechnician.last_login)}</p>
                         <Chip
                           color={getActivityStatus(selectedTechnician.last_login).color as any}
                           variant="flat"
@@ -1017,15 +1029,15 @@ export default function PersonalPage() {
                       </div>
                       {selectedTechnician.stats && (
                         <div className="space-y-2">
-                          <p className={`text-xs md:text-sm font-medium ${textColors.secondary}`}>Estadísticas</p>
+                          <p className="text-xs md:text-sm font-medium text-[#343A40]">Estadísticas</p>
                           <div className="grid grid-cols-2 gap-2 text-xs">
-                            <div className="text-center p-2 bg-blue-50 rounded">
-                              <p className="font-bold text-blue-600">{selectedTechnician.stats.totalReparaciones}</p>
-                              <p className={textColors.muted}>Total</p>
+                                                          <div className="text-center p-2 bg-[#E8F0FE] rounded">
+                              <p className="font-bold text-[#343A40]">{selectedTechnician.stats.totalReparaciones}</p>
+                              <p className="text-[#6C757D]">Total</p>
                             </div>
-                            <div className="text-center p-2 bg-green-50 rounded">
-                              <p className="font-bold text-green-600">{selectedTechnician.stats.completadas}</p>
-                              <p className={textColors.muted}>Completadas</p>
+                                                          <div className="text-center p-2 bg-[#E8F0FE] rounded">
+                              <p className="font-bold text-[#343A40]">{selectedTechnician.stats.completadas}</p>
+                              <p className="text-[#6C757D]">Completadas</p>
                             </div>
                           </div>
                           <Progress 
@@ -1033,7 +1045,7 @@ export default function PersonalPage() {
                             color={getEfficiencyColor(selectedTechnician.stats.eficiencia) as any}
                             size="sm"
                           />
-                          <p className={`text-xs ${textColors.muted} text-center`}>
+                          <p className="text-xs text-[#6C757D] text-center">
                             {selectedTechnician.stats.eficiencia}% eficiencia
                           </p>
                         </div>
@@ -1059,18 +1071,18 @@ export default function PersonalPage() {
           scrollBehavior="inside"
           classNames={{
             wrapper: "z-[1000]",
-            backdrop: "z-[999]",
-            base: "max-h-[95vh] my-2 mx-2 sm:mx-6",
-            body: "max-h-[70vh] overflow-y-auto py-4",
-            header: "border-b border-gray-200 pb-4",
-            footer: "border-t border-gray-200 pt-4"
+            backdrop: "z-[999] bg-black/40 backdrop-blur-sm",
+            base: "!rounded-3xl shadow-2xl border-0 bg-white my-4 mx-4 sm:my-6 sm:mx-6 md:mx-8 lg:mx-12",
+            body: "max-h-[70vh] overflow-y-auto p-6 md:p-8",
+            header: "border-b border-gray-200/50 p-6 md:p-8 bg-gradient-to-r from-yellow-50/50 to-white !rounded-t-3xl",
+            footer: "border-t border-gray-200/50 p-6 md:p-8 bg-gradient-to-r from-yellow-50/50 to-white !rounded-b-3xl"
           }}
         >
           <ModalContent>
             {(onClose) => (
               <>
                 <ModalHeader className="flex flex-col gap-1">
-                  <h2 className={`text-xl font-bold ${textColors.primary}`}>Editar Personal</h2>
+                  <h2 className="text-xl font-bold text-[#343A40]">Editar Personal</h2>
                 </ModalHeader>
                 <ModalBody>
                   {editingTechnician && (
@@ -1119,7 +1131,7 @@ export default function PersonalPage() {
                     type="submit"
                     form="edit-technician-form"
                     isLoading={updateLoading}
-                    className="bg-gradient-to-r from-[#4ca771] to-[#013237] text-white hover:from-[#013237] hover:to-[#4ca771] transition-all"
+                    className="bg-gradient-to-r from-[#004085] to-[#003366] text-white hover:from-[#003366] hover:to-[#004085] transition-all"
                   >
                     Actualizar Personal
                   </Button>
@@ -1137,22 +1149,22 @@ export default function PersonalPage() {
           scrollBehavior="inside"
           classNames={{
             wrapper: "z-[1000]",
-            backdrop: "z-[999]",
-            base: "max-h-[95vh] my-2 mx-2 sm:mx-6",
-            body: "max-h-[60vh] overflow-y-auto py-4",
-            header: "border-b border-gray-200 pb-4",
-            footer: "border-t border-gray-200 pt-4"
+            backdrop: "z-[999] bg-black/40 backdrop-blur-sm",
+            base: "!rounded-3xl shadow-2xl border-0 bg-white my-4 mx-4 sm:my-6 sm:mx-6 md:mx-8 lg:mx-12",
+            body: "p-6 md:p-8",
+            header: "border-b border-gray-200/50 p-6 md:p-8 bg-gradient-to-r from-red-50/50 to-white !rounded-t-3xl",
+            footer: "border-t border-gray-200/50 p-6 md:p-8 bg-gradient-to-r from-red-50/50 to-white !rounded-b-3xl"
           }}
         >
           <ModalContent>
             {(onClose) => (
               <>
                 <ModalHeader className="flex flex-col gap-1">
-                  <h2 className={`text-xl font-bold ${textColors.primary}`}>Eliminar Técnico</h2>
+                  <h2 className="text-xl font-bold text-[#343A40]">Eliminar Técnico</h2>
                 </ModalHeader>
                 <ModalBody>
                   {selectedTechnician && (
-                    <p className={`text-sm ${textColors.secondary}`}>¿Estás seguro de que quieres eliminar este técnico?</p>
+                    <p className="text-sm text-[#343A40]">¿Estás seguro de que quieres eliminar este técnico?</p>
                   )}
                 </ModalBody>
                 <ModalFooter>
@@ -1160,9 +1172,9 @@ export default function PersonalPage() {
                     Cancelar
                   </Button>
                   <Button 
-                    color="primary" 
                     onPress={confirmDeleteTechnician}
                     isLoading={deleteLoading}
+                    className="bg-gradient-to-r from-[#6C757D] to-[#495057] text-white hover:from-[#495057] hover:to-[#6C757D] transition-all"
                   >
                     Eliminar Personal
                   </Button>

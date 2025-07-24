@@ -16,16 +16,54 @@ export interface VersionInfo {
   showAnnouncement: boolean
 }
 
-export const APP_VERSION = '1.2.2'
+export const APP_VERSION = '1.6.0'
 
 export const CHANGELOG: VersionInfo[] = [
+  {
+    version: '1.6.0',
+    releaseDate: '2025-07-24',
+    title: 'Rediseño de Interfaz y Nuevas Funcionalidades',
+    description: 'Hemos renovado la interfaz de usuario con una paleta de colores profesional y consistente, además de agregar nuevas funcionalidades clave.',
+    priority: 'high',
+    showAnnouncement: true,
+    changes: [
+      {
+        id: 'ui-redesign',
+        type: 'improvement',
+        title: 'Rediseño de Interfaz de Usuario',
+        description: 'Paleta de colores unificada y profesional aplicada en todas las secciones para una experiencia de usuario más limpia y moderna.',
+        icon: 'star'
+      },
+      {
+        id: 'whatsapp-api',
+        type: 'feature',
+        title: 'Conexión con API de WhatsApp',
+        description: 'Conexión directa con la API de WhatsApp para futuras notificaciones y comunicación con clientes.',
+        icon: 'zap'
+      },
+      {
+        id: 'repair-ticket',
+        type: 'feature',
+        title: 'Formato para Ticket de Reparación',
+        description: 'Generación de un ticket de reparación estandarizado para ser impreso y pegado en los dispositivos.',
+        icon: 'receipt'
+      },
+      {
+        id: 'bug-fixes',
+        type: 'fix',
+        title: 'Corrección de Bugs de UI',
+        description: 'Solucionados múltiples bugs de la interfaz relacionados con colores y estilos inconsistentes en todo el dashboard.',
+        icon: 'bug'
+      }
+    ]
+  },
   {
     version: '1.2.2',
     releaseDate: '2025-07-11',
     title: 'Integración Completa de WhatsApp',
     description: 'Implementación completa de WhatsApp para reparaciones y desbloqueos con mensajes personalizados y soporte multi-país',
     priority: 'high',
-    showAnnouncement: true,
+    showAnnouncement: false,
     changes: [
       {
         id: 'whatsapp-unlocks',

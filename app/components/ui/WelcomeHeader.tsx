@@ -150,27 +150,27 @@ export default function WelcomeHeader() {
       {/* Bienvenida Principal */}
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div>
-            <h1 className="text-2xl md:text-3xl font-bold text-[#013237] tracking-tight">
-              {getGreetingMessage()}, {userName}! 👋🏻
-            </h1>
-          </div>
+                  <div>
+          <h1 className="text-2xl md:text-3xl font-bold text-[#343A40] tracking-tight">
+            {getGreetingMessage()}, {userName}! 👋🏻
+          </h1>
+        </div>
         </div>
 
         {/* Widget de Clima y Tiempo */}
         <div className="flex flex-col sm:flex-row gap-3">
           {/* Hora Actual */}
-          <Card className="bg-gradient-to-br from-[#f0fdf9] to-[#eafae7] border border-[#c0e6ba]/50 shadow-lg">
+          <Card className="bg-[#E8F0FE] border border-[#004085]/20 shadow-lg">
             <CardBody className="p-4">
               <div className="flex items-center gap-3">
                 <div className="text-center">
-                  <p className="text-2xl font-bold text-[#013237]">
+                  <p className="text-2xl font-bold text-[#004085]">
                     {currentTime.toLocaleTimeString('es-ES', { 
                       hour: '2-digit', 
                       minute: '2-digit' 
                     })}
                   </p>
-                  <p className="text-xs text-[#4ca771]">
+                  <p className="text-xs text-[#6C757D]">
                     {currentTime.toLocaleDateString('es-ES', { 
                       weekday: 'short', 
                       day: 'numeric', 
@@ -183,7 +183,7 @@ export default function WelcomeHeader() {
           </Card>
 
           {/* Información del Clima */}
-          <Card className="bg-gradient-to-br from-[#f0fdf9] to-[#eafae7] border border-[#c0e6ba]/50 shadow-lg">
+          <Card className="bg-[#F8F9FA] border border-[#6C757D]/20 shadow-lg">
             <CardBody className="p-4">
               {weatherLoading ? (
                 <div className="flex items-center gap-3">
@@ -195,34 +195,34 @@ export default function WelcomeHeader() {
                 </div>
               ) : weather ? (
                 <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-[#c0e6ba]/50 text-[#013237]">
+                  <div className="p-2 rounded-lg bg-[#6C757D] text-white">
                     {getWeatherIcon(weather.condition)}
                   </div>
                   <div className="text-left">
                     <div className="flex items-center gap-2">
-                      <span className="text-lg font-bold text-[#013237]">{weather.temperature}°C</span>
+                      <span className="text-lg font-bold text-[#343A40]">{weather.temperature}°C</span>
                       <Chip 
                         variant="flat" 
                         size="sm" 
-                        className="bg-[#c0e6ba]/30 text-[#013237] text-xs"
+                        className="bg-[#E8F0FE] text-[#004085] text-xs"
                       >
                         {weather.description}
                       </Chip>
                     </div>
                     <div className="flex items-center gap-1 mt-1">
-                      <MapPin className="h-3 w-3 text-[#4ca771]" />
-                      <span className="text-xs text-[#4ca771]">{weather.location}</span>
+                      <MapPin className="h-3 w-3 text-[#6C757D]" />
+                      <span className="text-xs text-[#6C757D]">{weather.location}</span>
                     </div>
                   </div>
                 </div>
               ) : (
                 <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-[#c0e6ba]/50 text-[#013237]">
+                  <div className="p-2 rounded-lg bg-[#6C757D] text-white">
                     <Sun className="h-5 w-5" />
                   </div>
                   <div className="text-left">
-                    <span className="text-lg font-bold text-[#013237]">--°C</span>
-                    <p className="text-xs text-[#4ca771]">No disponible</p>
+                    <span className="text-lg font-bold text-[#343A40]">--°C</span>
+                    <p className="text-xs text-[#6C757D]">No disponible</p>
                   </div>
                 </div>
               )}

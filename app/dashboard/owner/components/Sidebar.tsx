@@ -36,27 +36,27 @@ const getMenuItems = (t: (key: string) => string) => [
     label: t('navigation.dashboard'),
     href: '/dashboard/owner/dashboard',
     icon: BarChart3,
-    color: 'text-[#4ca771]',
-    gradient: 'from-[#4ca771] to-[#013237]',
-    bgGradient: 'from-[#eafae7] to-[#c0e6ba]'
+    color: 'text-blue-600',
+    gradient: 'from-blue-500 to-blue-600',
+    bgGradient: 'from-blue-50 to-blue-100'
   },
   {
     id: 'reparaciones',
     label: t('navigation.repairs'),
     href: '/dashboard/owner/reparaciones',
     icon: Wrench,
-    color: 'text-[#4ca771]',
-    gradient: 'from-[#4ca771] to-[#013237]',
-    bgGradient: 'from-[#eafae7] to-[#c0e6ba]'
+    color: 'text-blue-600',
+    gradient: 'from-blue-500 to-blue-600',
+    bgGradient: 'from-blue-50 to-blue-100'
   },
   {
     id: 'clientes',
     label: t('navigation.customers'),
     href: '/dashboard/owner/clientes',
     icon: Users,
-    color: 'text-[#4ca771]',
-    gradient: 'from-[#4ca771] to-[#013237]',
-    bgGradient: 'from-[#eafae7] to-[#c0e6ba]'
+    color: 'text-blue-600',
+    gradient: 'from-blue-500 to-blue-600',
+    bgGradient: 'from-blue-50 to-blue-100'
   },
   // TEMPORALMENTE OCULTO - Apartado de dispositivos será eliminado en el nuevo flujo
   // {
@@ -64,63 +64,63 @@ const getMenuItems = (t: (key: string) => string) => [
   //   label: t('navigation.devices'),
   //   href: '/dashboard/owner/dispositivos',
   //   icon: Smartphone,
-  //   color: 'text-[#4ca771]',
-  //   gradient: 'from-[#4ca771] to-[#013237]',
-  //   bgGradient: 'from-[#eafae7] to-[#c0e6ba]'
+  //   color: 'text-blue-600',
+  //   gradient: 'from-blue-500 to-blue-600',
+  //   bgGradient: 'from-blue-50 to-blue-100'
   // },
   {
     id: 'inventario',
     label: t('navigation.inventory'),
     href: '/dashboard/owner/inventario',
     icon: Package,
-    color: 'text-[#4ca771]',
-    gradient: 'from-[#4ca771] to-[#013237]',
-    bgGradient: 'from-[#eafae7] to-[#c0e6ba]'
+    color: 'text-blue-600',
+    gradient: 'from-blue-500 to-blue-600',
+    bgGradient: 'from-blue-50 to-blue-100'
   },
   {
     id: 'ventas',
     label: t('navigation.pos'),
     href: '/dashboard/owner/ventas',
     icon: ShoppingCart,
-    color: 'text-[#4ca771]',
-    gradient: 'from-[#4ca771] to-[#013237]',
-    bgGradient: 'from-[#eafae7] to-[#c0e6ba]'
+    color: 'text-blue-600',
+    gradient: 'from-blue-500 to-blue-600',
+    bgGradient: 'from-blue-50 to-blue-100'
   },
   {
     id: 'desbloqueos',
     label: t('navigation.unlocks'),
     href: '/dashboard/owner/desbloqueos',
     icon: Unlock,
-    color: 'text-[#4ca771]',
-    gradient: 'from-[#4ca771] to-[#013237]',
-    bgGradient: 'from-[#eafae7] to-[#c0e6ba]'
+    color: 'text-blue-600',
+    gradient: 'from-blue-500 to-blue-600',
+    bgGradient: 'from-blue-50 to-blue-100'
   },
   {
     id: 'personal',
     label: t('navigation.staff'),
     href: '/dashboard/owner/personal',
     icon: UserCheck,
-    color: 'text-[#4ca771]',
-    gradient: 'from-[#4ca771] to-[#013237]',
-    bgGradient: 'from-[#eafae7] to-[#c0e6ba]'
+    color: 'text-blue-600',
+    gradient: 'from-blue-500 to-blue-600',
+    bgGradient: 'from-blue-50 to-blue-100'
   },
   {
     id: 'reportes',
     label: t('navigation.reports'),
     href: '/dashboard/owner/reportes',
     icon: FileBarChart,
-    color: 'text-[#4ca771]',
-    gradient: 'from-[#4ca771] to-[#013237]',
-    bgGradient: 'from-[#eafae7] to-[#c0e6ba]'
+    color: 'text-blue-600',
+    gradient: 'from-blue-500 to-blue-600',
+    bgGradient: 'from-blue-50 to-blue-100'
   },
   {
     id: 'configuracion',
     label: t('navigation.settings'),
     href: '/dashboard/owner/configuracion',
     icon: Settings,
-    color: 'text-[#4ca771]',
-    gradient: 'from-[#4ca771] to-[#013237]',
-    bgGradient: 'from-[#eafae7] to-[#c0e6ba]'
+    color: 'text-blue-600',
+    gradient: 'from-blue-500 to-blue-600',
+    bgGradient: 'from-blue-50 to-blue-100'
   }
 ]
 
@@ -153,7 +153,7 @@ export default function Sidebar({ isCollapsed, onToggleCollapse, onMobileMenuClo
           content={item.label}
           placement="right"
           classNames={{ 
-            content: "bg-[#013237] text-white border border-[#4ca771] shadow-2xl backdrop-blur-lg" 
+            content: "bg-gray-800 text-white border border-gray-700 shadow-2xl backdrop-blur-lg" 
           }}
           delay={200}
         >
@@ -164,15 +164,15 @@ export default function Sidebar({ isCollapsed, onToggleCollapse, onMobileMenuClo
             variant={isActive ? "solid" : "light"}
             color={isActive ? "primary" : "default"}
             className={`
-              w-12 h-12 m-1 transition-all duration-300
+              w-12 h-12 m-1 transition-all duration-300 rounded-xl
               ${isActive 
-                ? `bg-gradient-to-br ${item.gradient} shadow-lg transform scale-105` 
-                : `hover:bg-gradient-to-br hover:${item.bgGradient} hover:scale-105`
+                ? `bg-gradient-to-br ${item.gradient} text-white shadow-lg transform scale-105` 
+                : `text-gray-600 hover:bg-gradient-to-br hover:${item.bgGradient} hover:scale-105`
               }
             `}
             onClick={handleMenuItemClick}
           >
-            <Icon className={`h-5 w-5 ${isActive ? 'text-white' : item.color}`} />
+            <Icon className={`h-5 w-5 ${isActive ? 'text-white' : 'text-gray-500 group-hover:text-blue-600'}`} />
           </Button>
         </Tooltip>
       );
@@ -184,7 +184,7 @@ export default function Sidebar({ isCollapsed, onToggleCollapse, onMobileMenuClo
         href={item.href}
         variant="light"
         className={`
-          w-full justify-start p-4 h-14 rounded-xl transition-all duration-300 mb-2
+          w-full justify-start p-4 h-14 rounded-xl transition-all duration-300 mb-2 group
           ${isActive 
             ? `bg-gradient-to-r ${item.gradient} text-white shadow-lg transform scale-[1.02]` 
             : `hover:bg-gradient-to-r hover:${item.bgGradient} hover:shadow-md`
@@ -194,24 +194,20 @@ export default function Sidebar({ isCollapsed, onToggleCollapse, onMobileMenuClo
       >
         <div className="flex items-center w-full">
           <div className={`
-            p-2.5 rounded-lg mr-4 transition-all
+            p-2.5 rounded-lg mr-4 transition-all duration-300
             ${isActive 
               ? 'bg-white/20 backdrop-blur-sm' 
-              : `bg-gradient-to-br ${item.gradient} shadow-md`
+              : `bg-white shadow-md group-hover:bg-gradient-to-br group-hover:${item.bgGradient}`
             }
           `}>
-            <Icon className={`h-5 w-5 ${isActive ? 'text-white' : 'text-white'}`} />
+            <Icon className={`h-5 w-5 ${isActive ? 'text-white' : 'text-gray-500 group-hover:text-blue-600'}`} />
           </div>
           <div className="flex-1 text-left flex items-center">
-            <p className={`text-base font-bold ${isActive ? 'text-white' : 'text-[#013237]'}`}>
+            <p className={`text-base font-bold ${isActive ? 'text-white' : 'text-gray-700'}`}>
               {item.label}
             </p>
           </div>
-          {isActive && (
-            <div className="ml-2">
-              <Sparkles className="h-4 w-4 text-white/80" />
-            </div>
-          )}
+
         </div>
       </Button>
     );
@@ -219,12 +215,12 @@ export default function Sidebar({ isCollapsed, onToggleCollapse, onMobileMenuClo
 
   return (
     <div className={`
-      flex h-full flex-col bg-gradient-to-b from-[#f0fdf9] via-[#eafae7]/50 to-[#f0fdf9] transition-all duration-300 ease-in-out border-r border-[#c0e6ba]/50
+      flex h-full flex-col bg-gradient-to-b from-gray-50 to-gray-100 transition-all duration-300 ease-in-out border-r border-gray-200/80
       ${isCollapsed ? 'w-20' : 'w-80'}
     `}>
       {/* Header del Sidebar con gradiente */}
       <div className={`
-        relative flex shrink-0 items-center justify-center p-4 border-b border-[#c0e6ba]/50
+        relative flex shrink-0 items-center justify-center p-4 border-b border-gray-200/80
         ${isCollapsed ? 'h-20' : 'h-28'}
       `}>
         {!isCollapsed && (
@@ -248,7 +244,7 @@ export default function Sidebar({ isCollapsed, onToggleCollapse, onMobileMenuClo
           variant="light"
           onPress={onToggleCollapse}
           className={`
-            absolute top-4 right-4 h-8 w-8 text-[#4ca771] hover:text-[#013237] hover:bg-[#eafae7] transition-all duration-300 rounded-lg z-10
+            absolute top-4 right-4 h-8 w-8 text-gray-500 hover:text-blue-600 hover:bg-blue-100 transition-all duration-300 rounded-lg z-10
             ${isCollapsed ? 'mx-auto relative top-0 right-0' : ''}
           `}
           aria-label={isCollapsed ? "Expandir sidebar" : "Contraer sidebar"}
@@ -261,7 +257,7 @@ export default function Sidebar({ isCollapsed, onToggleCollapse, onMobileMenuClo
         {/* Badge de estado cuando está colapsado */}
         {isCollapsed && (
           <div className="p-2">
-            <div className="w-12 h-1 bg-gradient-to-r from-[#4ca771] to-[#013237] rounded-full mx-auto"></div>
+            <div className="w-12 h-1 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full mx-auto"></div>
           </div>
         )}
 
@@ -270,10 +266,10 @@ export default function Sidebar({ isCollapsed, onToggleCollapse, onMobileMenuClo
           {!isCollapsed && (
             <div className="mb-6">
               <div className="flex items-center gap-2 mb-3">
-                <div className="w-2 h-2 bg-gradient-to-r from-[#4ca771] to-[#013237] rounded-full"></div>
-                <p className="text-xs font-bold text-[#013237] uppercase tracking-wide">Control Total</p>
+                <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full"></div>
+                <p className="text-xs font-bold text-gray-500 uppercase tracking-wide">Control Total</p>
               </div>
-              <Divider className="bg-gradient-to-r from-transparent via-[#c0e6ba] to-transparent" />
+              <Divider className="bg-gradient-to-r from-transparent via-gray-200 to-transparent" />
             </div>
           )}
           
@@ -285,7 +281,7 @@ export default function Sidebar({ isCollapsed, onToggleCollapse, onMobileMenuClo
         </nav>
 
         {/* Footer del sidebar */}
-        <div className={`p-4 border-t border-[#c0e6ba]/50 bg-gradient-to-r from-[#eafae7]/50 to-[#f0fdf9] ${isCollapsed ? 'px-2' : ''}`}>
+        <div className={`p-4 border-t border-gray-200/80 bg-gradient-to-r from-gray-50/50 to-gray-100 ${isCollapsed ? 'px-2' : ''}`}>
           {isCollapsed ? (
             <Tooltip 
               content="Cerrar Sesión" 
@@ -328,12 +324,12 @@ export default function Sidebar({ isCollapsed, onToggleCollapse, onMobileMenuClo
               {/* Footer info */}
               <div className="mt-4 text-center">
                 <div className="flex items-center justify-center gap-2 mb-2">
-                  <div className="w-1 h-1 bg-[#4ca771] rounded-full animate-pulse"></div>
-                  <Chip size="sm" color="success" variant="dot" className="text-xs text-[#013237] bg-[#eafae7]">
+                  <div className="w-1 h-1 bg-blue-500 rounded-full animate-pulse"></div>
+                  <Chip size="sm" color="primary" variant="dot" className="text-xs text-gray-600 bg-blue-100">
                     Administrador Activo
                   </Chip>
                 </div>
-                <p className="text-xs text-[#4ca771] font-medium">
+                <p className="text-xs text-gray-500 font-medium">
                   © TIENDAFIX V2 - 2025
                 </p>
               </div>

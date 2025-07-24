@@ -33,7 +33,7 @@ import {
       Textarea
   } from '@heroui/react'
 import FormField from '@/app/components/ui/FormField'
-import { textColors } from '@/lib/utils/colors'
+
 import { useCurrency } from '@/lib/contexts/TranslationContext'
 import { 
   Unlock, 
@@ -307,11 +307,11 @@ export default function DesbloqueoPage() {
     const baseClass = 'h-16 flex-col font-semibold transition-all duration-200 min-w-0'
     
     switch (status) {
-      case 'pending': return `${baseClass} bg-orange-50 text-orange-700 border-orange-300 hover:bg-orange-100 hover:border-orange-400`
-      case 'in_progress': return `${baseClass} bg-blue-50 text-blue-700 border-blue-300 hover:bg-blue-100 hover:border-blue-400`
-      case 'completed': return `${baseClass} bg-green-50 text-green-700 border-green-300 hover:bg-green-100 hover:border-green-400`
-      case 'failed': return `${baseClass} bg-red-50 text-red-700 border-red-300 hover:bg-red-100 hover:border-red-400`
-      default: return `${baseClass} bg-gray-50 text-gray-700 border-gray-300 hover:bg-gray-100 hover:border-gray-400`
+      case 'pending': return `${baseClass} bg-[#FFF8E1] text-[#FF8C00] border-[#FF8C00]/20 hover:bg-[#FFE8B3] hover:border-[#FF8C00]/40`
+      case 'in_progress': return `${baseClass} bg-[#E8F0FE] text-[#004085] border-[#004085]/20 hover:bg-[#D1E7FF] hover:border-[#004085]/40`
+      case 'completed': return `${baseClass} bg-[#F0FFF4] text-[#28A745] border-[#28A745]/20 hover:bg-[#E8F5E8] hover:border-[#28A745]/40`
+      case 'failed': return `${baseClass} bg-[#FFF5F5] text-[#DC3545] border-[#DC3545]/20 hover:bg-[#FFEBEE] hover:border-[#DC3545]/40`
+      default: return `${baseClass} bg-[#F8F9FA] text-[#6C757D] border-[#6C757D]/20 hover:bg-[#E9ECEF] hover:border-[#6C757D]/40`
     }
   }
 
@@ -497,10 +497,10 @@ export default function DesbloqueoPage() {
         {/* Header */}
         <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
           <div className="space-y-2">
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-[#4ca771] to-[#013237] bg-clip-text text-transparent">
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-[#004085] to-[#003366] bg-clip-text text-transparent">
               Servicios de Desbloqueo
             </h1>
-            <p className="text-[#4ca771] text-lg">
+            <p className="text-[#6C757D] text-lg">
               Gestión de servicios de unlock y liberación de dispositivos
             </p>
           </div>
@@ -508,7 +508,7 @@ export default function DesbloqueoPage() {
           <Button
             onPress={onCreateOpen}
             startContent={<Plus className="w-4 h-4" />}
-            className="bg-gradient-to-r from-[#4ca771] to-[#013237] text-white hover:from-[#013237] hover:to-[#4ca771] transition-all shadow-lg"
+            className="bg-gradient-to-r from-[#004085] to-[#003366] text-white hover:from-[#003366] hover:to-[#004085] transition-all shadow-lg"
           >
             Nuevo Desbloqueo
           </Button>
@@ -516,55 +516,41 @@ export default function DesbloqueoPage() {
 
         {/* Estadísticas */}
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
-          <Card className="hover:scale-105 transition-all duration-300 border border-gray-200 shadow-lg bg-gradient-to-br from-blue-100 to-blue-200">
+          <Card className="hover:scale-105 transition-all duration-300 border-0 shadow-lg bg-gradient-to-br from-[#F8F9FA] to-[#E9ECEF] border border-[#6C757D]/20">
             <CardBody className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <div className="p-3 rounded-xl bg-blue-500 shadow-lg">
+                <div className="p-3 rounded-xl bg-gradient-to-br from-[#6C757D] to-[#495057] shadow-lg">
                   <Unlock className="w-6 h-6 text-white" />
                 </div>
-                <div className="flex items-center gap-2">
-                  <div className="flex items-center gap-1">
-                    <ArrowUpRight className="w-3 h-3 text-green-500" />
-                    <span className="text-xs text-green-600 font-medium">+18%</span>
-                  </div>
-                  <Chip variant="flat" size="sm" className="font-semibold bg-white/60 text-blue-800 border border-white/30">
-                    Total
-                  </Chip>
-                </div>
+                <Chip variant="flat" size="sm" className="bg-[#F8F9FA] text-[#6C757D]">
+                  Total
+                </Chip>
               </div>
               <div className="space-y-2">
-                <p className="text-base font-bold text-blue-800 opacity-90 uppercase tracking-wider">Total</p>
-                <p className="text-4xl font-extrabold text-blue-800 mb-2 tracking-tight">{stats.total}</p>
-                <p className="text-sm font-medium text-blue-800 opacity-70">Desbloqueos procesados</p>
+                <p className="text-base font-bold text-[#6C757D] uppercase tracking-wider">Total</p>
+                <p className="text-4xl font-extrabold text-[#343A40] mb-2 tracking-tight">{stats.total}</p>
+                <p className="text-sm font-medium text-[#6C757D]">Desbloqueos procesados</p>
               </div>
             </CardBody>
           </Card>
 
-
-
-          <Card className="hover:scale-105 transition-all duration-300 border border-gray-200 shadow-lg bg-gradient-to-br from-purple-100 to-purple-200">
+          <Card className="hover:scale-105 transition-all duration-300 border-0 shadow-lg bg-gradient-to-br from-[#E8F0FE] to-[#D1E7FF] border border-[#004085]/20">
             <CardBody className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <div className="p-3 rounded-xl bg-purple-500 shadow-lg">
+                <div className="p-3 rounded-xl bg-gradient-to-br from-[#004085] to-[#003366] shadow-lg">
                   <Play className="w-6 h-6 text-white" />
                 </div>
-                <div className="flex items-center gap-2">
-                  <div className="flex items-center gap-1">
-                    <ArrowUpRight className="w-3 h-3 text-green-500" />
-                    <span className="text-xs text-green-600 font-medium">+25%</span>
-                  </div>
-                  <Chip variant="flat" size="sm" className="font-semibold bg-white/60 text-purple-800 border border-white/30">
-                    Proceso
-                  </Chip>
-                </div>
+                <Chip variant="flat" size="sm" className="bg-[#004085] text-white">
+                  Proceso
+                </Chip>
               </div>
               <div className="space-y-2">
-                <p className="text-base font-bold text-purple-800 opacity-90 uppercase tracking-wider">En Proceso</p>
-                <p className="text-4xl font-extrabold text-purple-800 mb-2 tracking-tight">{stats.enProceso}</p>
+                <p className="text-base font-bold text-[#6C757D] uppercase tracking-wider">En Proceso</p>
+                <p className="text-4xl font-extrabold text-[#343A40] mb-2 tracking-tight">{stats.enProceso}</p>
                 <Progress 
                   value={(stats.enProceso / Math.max(stats.total, 1)) * 100} 
                   classNames={{
-                    indicator: "bg-purple-500",
+                    indicator: "bg-[#004085]",
                   }}
                   size="sm" 
                   className="max-w-md"
@@ -573,29 +559,23 @@ export default function DesbloqueoPage() {
             </CardBody>
           </Card>
 
-          <Card className="hover:scale-105 transition-all duration-300 border border-gray-200 shadow-lg bg-gradient-to-br from-emerald-100 to-emerald-200">
+          <Card className="hover:scale-105 transition-all duration-300 border-0 shadow-lg bg-gradient-to-br from-[#F8F9FA] to-[#E9ECEF] border border-[#6C757D]/20">
             <CardBody className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <div className="p-3 rounded-xl bg-emerald-500 shadow-lg">
+                <div className="p-3 rounded-xl bg-gradient-to-br from-[#6C757D] to-[#495057] shadow-lg">
                   <CheckCircle2 className="w-6 h-6 text-white" />
                 </div>
-                <div className="flex items-center gap-2">
-                  <div className="flex items-center gap-1">
-                    <ArrowUpRight className="w-3 h-3 text-green-500" />
-                    <span className="text-xs text-green-600 font-medium">+30%</span>
-                  </div>
-                  <Chip variant="flat" size="sm" className="font-semibold bg-white/60 text-emerald-800 border border-white/30">
-                    Completados
-                  </Chip>
-                </div>
+                <Chip variant="flat" size="sm" className="bg-[#F8F9FA] text-[#6C757D]">
+                  Completados
+                </Chip>
               </div>
               <div className="space-y-2">
-                <p className="text-base font-bold text-emerald-800 opacity-90 uppercase tracking-wider">Completados</p>
-                <p className="text-4xl font-extrabold text-emerald-800 mb-2 tracking-tight">{stats.completados}</p>
+                <p className="text-base font-bold text-[#6C757D] uppercase tracking-wider">Completados</p>
+                <p className="text-4xl font-extrabold text-[#343A40] mb-2 tracking-tight">{stats.completados}</p>
                 <Progress 
                   value={(stats.completados / Math.max(stats.total, 1)) * 100} 
                   classNames={{
-                    indicator: "bg-emerald-500",
+                    indicator: "bg-[#6C757D]",
                   }}
                   size="sm" 
                   className="max-w-md"
@@ -604,34 +584,28 @@ export default function DesbloqueoPage() {
             </CardBody>
           </Card>
 
-          <Card className="hover:scale-105 transition-all duration-300 border border-gray-200 shadow-lg bg-gradient-to-br from-teal-100 to-teal-200">
+          <Card className="hover:scale-105 transition-all duration-300 border-0 shadow-lg bg-gradient-to-br from-[#E8F0FE] to-[#D1E7FF] border border-[#004085]/20">
             <CardBody className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <div className="p-3 rounded-xl bg-teal-500 shadow-lg">
+                <div className="p-3 rounded-xl bg-gradient-to-br from-[#004085] to-[#003366] shadow-lg">
                   <DollarSign className="w-6 h-6 text-white" />
                 </div>
-                <div className="flex items-center gap-2">
-                  <div className="flex items-center gap-1">
-                    <ArrowUpRight className="w-3 h-3 text-green-500" />
-                    <span className="text-xs text-green-600 font-medium">+42%</span>
-                  </div>
-                  <Chip variant="flat" size="sm" className="font-semibold bg-white/60 text-teal-800 border border-white/30">
-                    Ingresos
-                  </Chip>
-                </div>
+                <Chip variant="flat" size="sm" className="bg-[#004085] text-white">
+                  Ingresos
+                </Chip>
               </div>
               <div className="space-y-2">
-                <p className="text-base font-bold text-teal-800 opacity-90 uppercase tracking-wider">Ingresos</p>
-                <p className="text-3xl font-extrabold text-teal-800 mb-2 tracking-tight">{formatCurrency(stats.totalIngresos)}</p>
+                <p className="text-base font-bold text-[#6C757D] uppercase tracking-wider">Ingresos</p>
+                <p className="text-3xl font-extrabold text-[#343A40] mb-2 tracking-tight">{formatCurrency(stats.totalIngresos)}</p>
                 <Progress 
                   value={85} 
                   classNames={{
-                    indicator: "bg-teal-500",
+                    indicator: "bg-[#004085]",
                   }}
                   size="sm" 
                   className="max-w-md"
                 />
-                <p className="text-sm font-medium text-teal-800 opacity-70">Meta: {formatCurrency(stats.totalIngresos * 1.2)}</p>
+                <p className="text-sm font-medium text-[#6C757D]">Meta: {formatCurrency(stats.totalIngresos * 1.2)}</p>
               </div>
             </CardBody>
           </Card>
@@ -644,7 +618,7 @@ export default function DesbloqueoPage() {
               <div className="flex-1">
                 <Input
                   placeholder="Buscar por cliente, marca, modelo, IMEI..."
-                  startContent={<Search className="w-4 h-4 text-gray-400" />}
+                  startContent={<Search className="w-4 h-4 text-[#6C757D]" />}
                   value={busqueda}
                   onValueChange={(value) => {
                     setBusqueda(value)
@@ -652,8 +626,8 @@ export default function DesbloqueoPage() {
                   variant="bordered"
                   size="lg"
                   classNames={{
-                    input: "text-gray-900 placeholder:text-gray-500",
-                    inputWrapper: "border-gray-300",
+                    input: "text-[#343A40] placeholder:text-[#6C757D]",
+                    inputWrapper: "border-[#E8F0FE] hover:border-[#004085] focus-within:border-[#004085]",
                   }}
                 />
               </div>
@@ -719,7 +693,7 @@ export default function DesbloqueoPage() {
                 aria-label="Tabla de desbloqueos"
                 classNames={{
                   wrapper: "min-h-[400px]",
-                  th: "bg-gray-50 text-gray-700 font-semibold",
+                  th: "bg-[#004085] text-white font-bold text-base",
                   td: "py-4"
                 }}
               >
@@ -744,16 +718,16 @@ export default function DesbloqueoPage() {
                           <Avatar
                             icon={getUnlockTypeIcon(unlock.unlock_type)}
                             classNames={{
-                              base: "bg-gradient-to-br from-cyan-400 to-blue-600",
-                              icon: "text-white"
+                              base: "bg-gradient-to-br from-[#E8F0FE] to-[#D1E7FF]",
+                              icon: "text-[#004085]"
                             }}
                             size="sm"
                           />
                           <div>
-                            <p className={`font-semibold ${textColors.primary}`}>
+                            <p className="font-semibold text-[#343A40]">
                               {getUnlockTypeLabel(unlock.unlock_type)}
                             </p>
-                            <p className={`text-sm ${textColors.secondary}`}>
+                            <p className="text-sm text-[#6C757D]">
                               {unlock.brand} {unlock.model}
                             </p>
                           </div>
@@ -761,13 +735,13 @@ export default function DesbloqueoPage() {
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-2">
-                          <User className="w-4 h-4 text-gray-400" />
+                                                      <User className="w-4 h-4 text-[#6C757D]" />
                           <div>
-                            <p className={`text-sm font-medium ${textColors.primary}`}>
+                            <p className="text-sm font-medium text-[#343A40]">
                               {getCustomerName(unlock.customers)}
                             </p>
                             {unlock.customers?.phone && (
-                              <p className={`text-xs ${textColors.muted}`}>
+                              <p className="text-xs text-[#6C757D]">
                                 {unlock.customers.phone}
                               </p>
                             )}
@@ -778,16 +752,16 @@ export default function DesbloqueoPage() {
                         <div className="space-y-1">
                           {unlock.imei && (
                             <div className="flex items-center gap-2">
-                              <Smartphone className="w-3 h-3 text-gray-400" />
-                              <span className={`text-xs ${textColors.secondary}`}>
+                                                              <Smartphone className="w-3 h-3 text-[#004085]" />
+                              <span className="text-xs text-[#6C757D]">
                                 IMEI: {unlock.imei}
                               </span>
                             </div>
                           )}
                           {unlock.serial_number && (
                             <div className="flex items-center gap-2">
-                              <Phone className="w-3 h-3 text-gray-400" />
-                              <span className={`text-xs ${textColors.secondary}`}>
+                                                              <Phone className="w-3 h-3 text-[#004085]" />
+                              <span className="text-xs text-[#6C757D]">
                                 SN: {unlock.serial_number}
                               </span>
                             </div>
@@ -796,7 +770,13 @@ export default function DesbloqueoPage() {
                       </TableCell>
                       <TableCell>
                         <Chip
-                          color={getStatusInfo(unlock.status).color as any}
+                          className={
+                            unlock.status === 'pending' ? "bg-[#FFF8E1] text-[#FF8C00]" :
+                            unlock.status === 'in_progress' ? "bg-[#E8F0FE] text-[#004085]" :
+                            unlock.status === 'completed' ? "bg-[#F0FFF4] text-[#28A745]" :
+                            unlock.status === 'failed' ? "bg-[#FFF5F5] text-[#DC3545]" :
+                            "bg-[#F8F9FA] text-[#6C757D]"
+                          }
                           variant="flat"
                           startContent={React.createElement(getStatusInfo(unlock.status).icon, { className: "w-4 h-4" })}
                         >
@@ -804,17 +784,17 @@ export default function DesbloqueoPage() {
                         </Chip>
                       </TableCell>
                       <TableCell>
-                        <span className="font-semibold text-green-600">
+                        <span className="font-semibold text-gray-900">
                           {formatCurrency(unlock.cost)}
                         </span>
                       </TableCell>
                       <TableCell>
                         <div>
-                          <p className={`text-sm ${textColors.primary}`}>
+                          <p className="text-sm text-[#343A40]">
                             {formatDate(unlock.created_at)}
                           </p>
                           {unlock.completion_time && (
-                            <p className={`text-xs ${textColors.muted}`}>
+                            <p className="text-xs text-[#6C757D]">
                               Completado: {formatDate(unlock.completion_time)}
                             </p>
                           )}
@@ -822,75 +802,75 @@ export default function DesbloqueoPage() {
                       </TableCell>
                       <TableCell>
                         <div className="grid grid-cols-3 gap-1 w-fit">
-                          <Tooltip 
-                            content="Ver detalles"
-                            classNames={{
-                              content: "bg-gray-900 text-white"
-                            }}
-                          >
-                            <Button
-                              isIconOnly
-                              size="sm"
-                              variant="flat"
-                              color="primary"
-                              onPress={() => handleViewDetails(unlock)}
+                                                      <Tooltip 
+                              content="Ver detalles"
+                              classNames={{
+                                content: "bg-[#343A40] text-white"
+                              }}
                             >
-                              <Eye className="w-4 h-4" />
-                            </Button>
-                          </Tooltip>
-                          
-                          <Tooltip 
-                            content="Cambiar estado"
-                            classNames={{
-                              content: "bg-gray-900 text-white"
-                            }}
-                          >
-                            <Button
-                              isIconOnly
-                              size="sm"
-                              variant="flat"
-                              onPress={() => handleStatusChange(unlock)}
-                              className={`text-${getStatusButtonColor(unlock.status)} hover:text-${getStatusButtonHoverColor(unlock.status)} hover:bg-${getStatusButtonBgColor(unlock.status)}`}
+                              <Button
+                                isIconOnly
+                                size="sm"
+                                variant="flat"
+                                className="hover:bg-[#E8F0FE] text-[#004085]"
+                                onPress={() => handleViewDetails(unlock)}
+                              >
+                                <Eye className="w-4 h-4" />
+                              </Button>
+                            </Tooltip>
+                            
+                            <Tooltip 
+                              content="Cambiar estado"
+                              classNames={{
+                                content: "bg-[#343A40] text-white"
+                              }}
                             >
-                              <Edit className="w-4 h-4" />
-                            </Button>
-                          </Tooltip>
+                              <Button
+                                isIconOnly
+                                size="sm"
+                                variant="flat"
+                                className="hover:bg-[#E8F0FE] text-[#004085]"
+                                onPress={() => handleStatusChange(unlock)}
+                              >
+                                <Edit className="w-4 h-4" />
+                              </Button>
+                            </Tooltip>
 
-                          {unlock.status === 'pending' ? (
-                            <Tooltip 
-                              content="Marcar como completado"
-                              classNames={{
-                                content: "bg-gray-900 text-white"
-                              }}
-                            >
-                              <Button
-                                isIconOnly
-                                size="sm"
-                                variant="flat"
-                                color="success"
-                                onPress={() => handleCompleteUnlock(unlock.id)}
+                            {unlock.status === 'pending' ? (
+                              <Tooltip 
+                                content="Marcar como completado"
+                                classNames={{
+                                  content: "bg-[#343A40] text-white"
+                                }}
                               >
-                                <Check className="w-4 h-4" />
-                              </Button>
-                            </Tooltip>
-                          ) : (
-                            <Tooltip 
-                              content="Eliminar"
-                              classNames={{
-                                content: "bg-gray-900 text-white"
-                              }}
-                            >
-                              <Button
-                                isIconOnly
-                                size="sm"
-                                variant="flat"
-                                color="danger"
-                                onPress={() => handleDeleteUnlock(unlock)}
+                                <Button
+                                  isIconOnly
+                                  size="sm"
+                                  variant="flat"
+                                  className="hover:bg-[#E8F0FE] text-[#004085]"
+                                  onPress={() => handleCompleteUnlock(unlock.id)}
+                                >
+                                  <Check className="w-4 h-4" />
+                                </Button>
+                              </Tooltip>
+                            ) : (
+                              <Tooltip 
+                                content="Eliminar"
+                                classNames={{
+                                  content: "bg-[#343A40] text-white"
+                                }}
                               >
-                                <Trash2 className="w-4 h-4" />
-                              </Button>
-                            </Tooltip>
-                          )}
+                                <Button
+                                  isIconOnly
+                                  size="sm"
+                                  variant="flat"
+                                  className="hover:bg-[#F8F9FA] text-[#6C757D]"
+                                  onPress={() => handleDeleteUnlock(unlock)}
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </Button>
+                              </Tooltip>
+                            )}
                         </div>
                       </TableCell>
                     </TableRow>
@@ -923,10 +903,10 @@ export default function DesbloqueoPage() {
               ) : unlocks.length === 0 ? (
                 <div className="text-center py-12 px-4">
                   <Unlock className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                  <h3 className={`text-lg font-semibold ${textColors.primary} mb-2`}>
+                  <h3 className="text-lg font-semibold text-[#343A40] mb-2">
                     No hay desbloqueos
                   </h3>
-                  <p className={`${textColors.muted} mb-6`}>
+                  <p className="text-[#6C757D] mb-6">
                     No se encontraron servicios de desbloqueo con los filtros aplicados
                   </p>
                   <Button color="primary" startContent={<Plus className="w-4 h-4" />} onPress={onCreateOpen}>
@@ -950,23 +930,29 @@ export default function DesbloqueoPage() {
                               size="md"
                             />
                             <div>
-                              <h4 className={`font-semibold ${textColors.primary}`}>
-                                {getUnlockTypeLabel(unlock.unlock_type)}
-                              </h4>
-                              <p className={`text-sm ${textColors.secondary}`}>
-                                {unlock.brand} {unlock.model}
-                              </p>
-                              <p className={`text-xs ${textColors.muted}`}>
-                                {formatDate(unlock.created_at)}
-                              </p>
+                                                          <h4 className="font-semibold text-[#343A40]">
+                              {getUnlockTypeLabel(unlock.unlock_type)}
+                            </h4>
+                            <p className="text-sm text-[#6C757D]">
+                              {unlock.brand} {unlock.model}
+                            </p>
+                            <p className="text-xs text-[#6C757D]">
+                              {formatDate(unlock.created_at)}
+                            </p>
                             </div>
                           </div>
                           <div className="text-right">
-                            <p className="text-lg font-bold text-green-600 mb-1">
+                            <p className="text-lg font-bold text-gray-900 mb-1">
                               {formatCurrency(unlock.cost)}
                             </p>
                             <Chip
-                              color={getStatusInfo(unlock.status).color as any}
+                              className={
+                                unlock.status === 'pending' ? "bg-[#FFF8E1] text-[#FF8C00]" :
+                                unlock.status === 'in_progress' ? "bg-[#E8F0FE] text-[#004085]" :
+                                unlock.status === 'completed' ? "bg-[#F0FFF4] text-[#28A745]" :
+                                unlock.status === 'failed' ? "bg-[#FFF5F5] text-[#DC3545]" :
+                                "bg-[#F8F9FA] text-[#6C757D]"
+                              }
                               variant="flat"
                               size="sm"
                               startContent={React.createElement(getStatusInfo(unlock.status).icon, { className: "w-3 h-3" })}
@@ -980,15 +966,15 @@ export default function DesbloqueoPage() {
                         <div className="bg-gray-50 rounded-lg p-3 mb-4">
                           <div className="flex items-center gap-2 mb-2">
                             <User className="w-4 h-4 text-gray-600" />
-                            <p className={`text-xs font-medium ${textColors.tertiary} uppercase tracking-wide`}>
+                            <p className="text-xs font-medium text-[#6C757D] uppercase tracking-wide">
                               Cliente
                             </p>
                           </div>
-                          <p className={`text-sm font-medium ${textColors.primary}`}>
+                          <p className="text-sm font-medium text-[#343A40]">
                             {getCustomerName(unlock.customers)}
                           </p>
                           {unlock.customers?.phone && (
-                            <p className={`text-xs ${textColors.muted}`}>
+                            <p className="text-xs text-[#6C757D]">
                               {unlock.customers.phone}
                             </p>
                           )}
@@ -997,22 +983,22 @@ export default function DesbloqueoPage() {
                         {/* Identificadores */}
                         {(unlock.imei || unlock.serial_number) && (
                           <div className="bg-blue-50 rounded-lg p-3 mb-4">
-                            <p className={`text-xs font-medium ${textColors.tertiary} uppercase tracking-wide mb-2`}>
+                            <p className="text-xs font-medium text-[#6C757D] uppercase tracking-wide mb-2">
                               Identificadores
                             </p>
                             <div className="space-y-2">
                               {unlock.imei && (
                                 <div className="flex items-center gap-2">
-                                  <Smartphone className="w-3 h-3 text-gray-600" />
-                                  <span className={`text-sm ${textColors.primary}`}>
+                                  <Smartphone className="w-3 h-3 text-[#004085]" />
+                                  <span className="text-sm text-[#343A40]">
                                     IMEI: {unlock.imei}
                                   </span>
                                 </div>
                               )}
                               {unlock.serial_number && (
                                 <div className="flex items-center gap-2">
-                                  <Phone className="w-3 h-3 text-gray-600" />
-                                  <span className={`text-sm ${textColors.primary}`}>
+                                  <Phone className="w-3 h-3 text-[#004085]" />
+                                  <span className="text-sm text-[#343A40]">
                                     Serial: {unlock.serial_number}
                                   </span>
                                 </div>
@@ -1024,10 +1010,10 @@ export default function DesbloqueoPage() {
                         {/* Información adicional */}
                         {unlock.completion_time && (
                           <div className="mb-4">
-                            <p className={`text-xs font-medium ${textColors.tertiary} uppercase tracking-wide mb-1`}>
+                            <p className="text-xs font-medium text-[#6C757D] uppercase tracking-wide mb-1">
                               Fecha de Completado
                             </p>
-                            <p className={`text-sm ${textColors.primary}`}>
+                            <p className="text-sm text-[#343A40]">
                               {formatDate(unlock.completion_time)}
                             </p>
                           </div>
@@ -1040,7 +1026,7 @@ export default function DesbloqueoPage() {
                             size="sm" 
                             startContent={<Eye className="w-4 h-4" />}
                             onPress={() => handleViewDetails(unlock)}
-                            className="flex-1"
+                            className="flex-1 hover:bg-[#E8F0FE] text-[#004085]"
                           >
                             Ver
                           </Button>
@@ -1049,7 +1035,7 @@ export default function DesbloqueoPage() {
                             size="sm" 
                             startContent={<Edit className="w-4 h-4" />}
                             onPress={() => handleStatusChange(unlock)}
-                            className={`flex-1 text-${getStatusButtonColor(unlock.status)} hover:text-${getStatusButtonHoverColor(unlock.status)} hover:bg-${getStatusButtonBgColor(unlock.status)}`}
+                            className="flex-1 hover:bg-[#E8F0FE] text-[#004085]"
                           >
                             Estado
                           </Button>
@@ -1057,10 +1043,9 @@ export default function DesbloqueoPage() {
                             <Button 
                               variant="flat" 
                               size="sm" 
-                              color="success"
                               startContent={<Check className="w-4 h-4" />}
                               onPress={() => handleCompleteUnlock(unlock.id)}
-                              className="flex-1"
+                              className="flex-1 hover:bg-[#E8F0FE] text-[#004085]"
                             >
                               Completar
                             </Button>
@@ -1068,10 +1053,9 @@ export default function DesbloqueoPage() {
                             <Button 
                               variant="flat" 
                               size="sm" 
-                              color="danger"
                               startContent={<Trash2 className="w-4 h-4" />}
                               onPress={() => handleDeleteUnlock(unlock)}
-                              className="flex-1"
+                              className="flex-1 hover:bg-[#F8F9FA] text-[#6C757D]"
                             >
                               Eliminar
                             </Button>
@@ -1108,17 +1092,17 @@ export default function DesbloqueoPage() {
           scrollBehavior="inside"
           classNames={{
             wrapper: "z-[1000]",
-            backdrop: "z-[999]",
-            base: "max-h-[100vh] h-full sm:max-h-[95vh] sm:h-auto my-0 mx-0 sm:my-1 sm:mx-1 md:mx-6 sm:rounded-lg",
-            body: "max-h-[calc(100vh-180px)] sm:max-h-[75vh] overflow-y-auto py-2 px-2 sm:py-4 sm:px-6",
-            header: "border-b border-gray-200 pb-2 px-2 sm:pb-4 sm:px-6",
-            footer: "border-t border-gray-200 pt-2 px-2 sm:pt-4 sm:px-6"
+            backdrop: "z-[999] bg-black/40 backdrop-blur-sm",
+            base: "rounded-3xl shadow-2xl border-0 bg-white my-4 mx-4 sm:my-6 sm:mx-6 md:mx-8 lg:mx-12",
+            body: "max-h-[calc(100vh-180px)] sm:max-h-[75vh] overflow-y-auto p-6 md:p-8",
+            header: "border-b border-gray-200/50 p-6 md:p-8 bg-gradient-to-r from-blue-50/50 to-white rounded-t-3xl",
+            footer: "border-t border-gray-200/50 p-6 md:p-8 bg-gradient-to-r from-blue-50/50 to-white rounded-b-3xl"
           }}
         >
           <ModalContent>
             <ModalHeader>
-              <h2 className={`text-lg sm:text-xl md:text-2xl font-bold ${textColors.primary}`}>Nuevo Servicio de Desbloqueo</h2>
-              <p className={`text-sm sm:text-base ${textColors.secondary}`}>Complete la información del servicio</p>
+              <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-[#343A40]">Nuevo Servicio de Desbloqueo</h2>
+              <p className="text-sm sm:text-base text-[#6C757D]">Complete la información del servicio</p>
             </ModalHeader>
             <ModalBody>
               <form onSubmit={handleSubmit} className="space-y-5 md:space-y-6">
@@ -1212,10 +1196,15 @@ export default function DesbloqueoPage() {
                   onChange={(value) => setFormData(prev => ({ ...prev, notes: value }))}
                 />
                 <div className="flex justify-end gap-3 pt-6">
-                  <Button color="danger" variant="light" onClick={() => onCreateOpenChange()} size="md" className="text-base font-medium">
-                    Cancelar
-                  </Button>
-                  <Button type="submit" size="md" className="bg-gradient-to-r from-[#4ca771] to-[#013237] text-white hover:from-[#013237] hover:to-[#4ca771] transition-all text-base font-medium px-6">
+                                  <Button 
+                  variant="light" 
+                  onClick={() => onCreateOpenChange()} 
+                  size="md" 
+                  className="text-base font-medium text-[#6C757D] hover:bg-[#E8F0FE]"
+                >
+                  Cancelar
+                </Button>
+                  <Button type="submit" size="md" className="bg-gradient-to-r from-[#004085] to-[#003366] text-white hover:from-[#003366] hover:to-[#004085] transition-all text-base font-medium px-6">
                     Registrar Desbloqueo
                   </Button>
                 </div>
@@ -1232,20 +1221,20 @@ export default function DesbloqueoPage() {
           scrollBehavior="inside"
           classNames={{
             wrapper: "z-[1000]",
-            backdrop: "z-[999]",
-            base: "max-h-[95vh] my-2 mx-2 sm:mx-6",
-            body: "max-h-[70vh] overflow-y-auto py-4",
-            header: "border-b border-gray-200 pb-4",
-            footer: "border-t border-gray-200 pt-4"
+            backdrop: "z-[999] bg-black/40 backdrop-blur-sm",
+            base: "!rounded-3xl shadow-2xl border-0 bg-white my-4 mx-4 sm:my-6 sm:mx-6 md:mx-8 lg:mx-12",
+            body: "max-h-[calc(100vh-180px)] sm:max-h-[75vh] overflow-y-auto p-6 md:p-8",
+            header: "border-b border-gray-200/50 p-6 md:p-8 bg-gradient-to-r from-blue-50/50 to-white !rounded-t-3xl",
+            footer: "border-t border-gray-200/50 p-6 md:p-8 bg-gradient-to-r from-blue-50/50 to-white !rounded-b-3xl"
           }}
         >
           <ModalContent>
             {(onClose) => (
               <>
                 <ModalHeader className="flex flex-col gap-1">
-                  <h2 className={`text-xl font-bold ${textColors.primary}`}>Cambiar Estado del Desbloqueo</h2>
+                  <h2 className="text-xl font-bold text-[#343A40]">Cambiar Estado del Desbloqueo</h2>
                   {selectedUnlock && (
-                    <p className={textColors.secondary}>
+                    <p className="text-[#6C757D]">
                       {selectedUnlock.brand} {selectedUnlock.model} - {getUnlockTypeLabel(selectedUnlock.unlock_type)}
                     </p>
                   )}
@@ -1296,8 +1285,8 @@ export default function DesbloqueoPage() {
           scrollBehavior="inside"
           classNames={{
             wrapper: "z-[1000]",
-            backdrop: "z-[999]",
-            base: "max-h-[95vh] my-1 mx-1 sm:my-2 sm:mx-2 md:mx-6 w-full",
+            backdrop: "z-[999] bg-black/40 backdrop-blur-sm",
+            base: "rounded-3xl shadow-2xl border-0 bg-white my-1 mx-1 sm:my-2 sm:mx-2 md:mx-6 w-full",
             body: "max-h-[75vh] overflow-y-auto py-2 px-2 sm:py-4 sm:px-6",
             header: "border-b border-gray-200 pb-2 px-2 sm:pb-4 sm:px-6",
             footer: "border-t border-gray-200 pt-2 px-2 sm:pt-4 sm:px-6"
@@ -1307,7 +1296,7 @@ export default function DesbloqueoPage() {
             {(onClose) => (
               <>
                 <ModalHeader className="flex flex-col gap-1">
-                  <h2 className={`text-xl font-bold ${textColors.primary}`}>Editar Servicio de Desbloqueo</h2>
+                  <h2 className="text-xl font-bold text-[#343A40]">Editar Servicio de Desbloqueo</h2>
                 </ModalHeader>
                 <ModalBody>
                   {editingUnlock && (
@@ -1404,7 +1393,7 @@ export default function DesbloqueoPage() {
                     type="submit"
                     form="edit-unlock-form"
                     isLoading={updateLoading}
-                    className="bg-gradient-to-r from-[#4ca771] to-[#013237] text-white hover:from-[#013237] hover:to-[#4ca771] transition-all"
+                    className="bg-gradient-to-r from-[#004085] to-[#003366] text-white hover:from-[#003366] hover:to-[#004085] transition-all"
                   >
                     Actualizar Desbloqueo
                   </Button>
@@ -1422,29 +1411,35 @@ export default function DesbloqueoPage() {
           scrollBehavior="inside"
           classNames={{
             wrapper: "z-[1000]",
-            backdrop: "z-[999]",
-            base: "max-h-[100vh] h-full w-full m-0 sm:max-h-[95vh] sm:h-auto sm:w-auto sm:my-2 sm:mx-2 md:mx-6 md:max-w-4xl",
-            body: "max-h-[calc(100vh-120px)] sm:max-h-[75vh] overflow-y-auto p-3 sm:p-4 md:p-6",
-            header: "border-b border-gray-200 p-3 sm:p-4 md:p-6",
-            footer: "border-t border-gray-200 p-3 sm:p-4 md:p-6"
+            backdrop: "z-[999] bg-black/40 backdrop-blur-sm",
+            base: "!rounded-3xl shadow-2xl border-0 bg-white max-h-[100vh] h-full w-full m-0 sm:max-h-[95vh] sm:h-auto sm:w-auto sm:my-6 sm:mx-6 md:mx-8 lg:mx-12 md:max-w-4xl",
+            body: "max-h-[calc(100vh-120px)] sm:max-h-[75vh] overflow-y-auto p-4 sm:p-6 md:p-8",
+            header: "border-b border-gray-200/50 p-4 sm:p-6 md:p-8 bg-gradient-to-r from-green-50/50 to-white !rounded-t-3xl",
+            footer: "border-t border-gray-200/50 p-4 sm:p-6 md:p-8 bg-gradient-to-r from-green-50/50 to-white !rounded-b-3xl"
           }}
         >
           <ModalContent>
             <ModalHeader>
-              <h2 className={`text-xl font-bold ${textColors.primary}`}>Detalles del Desbloqueo</h2>
+              <h2 className="text-xl font-bold text-[#343A40]">Detalles del Desbloqueo</h2>
             </ModalHeader>
             <ModalBody>
               {selectedUnlock && (
                 <div className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <p className={`text-sm font-medium ${textColors.tertiary}`}>Tipo</p>
-                      <p className={`text-base font-semibold ${textColors.primary}`}>{getUnlockTypeLabel(selectedUnlock.unlock_type)}</p>
+                      <p className="text-sm font-medium text-[#6C757D]">Tipo</p>
+                      <p className="text-base font-semibold text-[#343A40]">{getUnlockTypeLabel(selectedUnlock.unlock_type)}</p>
                     </div>
                     <div>
-                      <p className={`text-sm font-medium ${textColors.tertiary}`}>Estado</p>
+                      <p className="text-sm font-medium text-[#6C757D]">Estado</p>
                       <Chip 
-                        color={getStatusInfo(selectedUnlock.status).color as any}
+                        className={
+                          selectedUnlock.status === 'pending' ? "bg-[#FFF8E1] text-[#FF8C00]" :
+                          selectedUnlock.status === 'in_progress' ? "bg-[#E8F0FE] text-[#004085]" :
+                          selectedUnlock.status === 'completed' ? "bg-[#F0FFF4] text-[#28A745]" :
+                          selectedUnlock.status === 'failed' ? "bg-[#FFF5F5] text-[#DC3545]" :
+                          "bg-[#F8F9FA] text-[#6C757D]"
+                        }
                         variant="flat"
                         startContent={React.createElement(getStatusInfo(selectedUnlock.status).icon, { className: "w-4 h-4" })}
                       >
@@ -1454,24 +1449,24 @@ export default function DesbloqueoPage() {
                   </div>
 
                   {/* Información del creador */}
-                  <div className="bg-cyan-50 p-4 rounded-lg border border-cyan-200">
+                  <div className="bg-[#E8F0FE] p-4 rounded-lg border border-[#004085]/20">
                     <div className="flex items-center gap-3">
-                      <div className="p-2 bg-cyan-100 rounded-full">
+                      <div className="p-2 bg-[#004085]/10 rounded-full">
                         {selectedUnlock.technician?.email.includes('admin') || selectedUnlock.technician?.name?.toLowerCase().includes('admin') ? (
-                          <Shield className="w-4 h-4 text-cyan-600" />
+                          <Shield className="w-4 h-4 text-[#004085]" />
                         ) : (
-                          <User className="w-4 h-4 text-cyan-600" />
+                          <User className="w-4 h-4 text-[#004085]" />
                         )}
                       </div>
                       <div className="flex-1">
-                        <p className="text-sm font-medium text-cyan-800">Creado por</p>
-                        <p className="text-base font-semibold text-cyan-900">
+                        <p className="text-sm font-medium text-[#6C757D]">Creado por</p>
+                        <p className="text-base font-semibold text-[#343A40]">
                           {selectedUnlock.technician ? selectedUnlock.technician.name : 'Usuario desconocido'}
                         </p>
-                        <p className="text-xs text-cyan-600">
+                        <p className="text-xs text-[#6C757D]">
                           {selectedUnlock.technician ? selectedUnlock.technician.email : 'Sin información de contacto'}
                         </p>
-                        <p className="text-xs text-cyan-500 mt-1">
+                        <p className="text-xs text-[#6C757D] mt-1">
                           {new Date(selectedUnlock.created_at).toLocaleString('es-ES', {
                             day: '2-digit',
                             month: 'short',
@@ -1483,7 +1478,7 @@ export default function DesbloqueoPage() {
                       </div>
                       <div className="ml-auto">
                         <Chip 
-                          color={selectedUnlock.technician?.email.includes('admin') || selectedUnlock.technician?.name?.toLowerCase().includes('admin') ? 'warning' : 'primary'}
+                          className="bg-[#004085] text-white"
                           variant="flat" 
                           size="sm"
                           startContent={selectedUnlock.technician?.email.includes('admin') || selectedUnlock.technician?.name?.toLowerCase().includes('admin') ? 
@@ -1501,39 +1496,43 @@ export default function DesbloqueoPage() {
                   </div>
                   
                   <div>
-                    <p className={`text-sm font-medium ${textColors.tertiary} mb-2`}>Dispositivo</p>
-                    <p className={`text-base ${textColors.primary}`}>{selectedUnlock.brand} {selectedUnlock.model}</p>
+                    <p className="text-sm font-medium text-[#6C757D] mb-2">Dispositivo</p>
+                    <p className="text-base text-[#343A40]">{selectedUnlock.brand} {selectedUnlock.model}</p>
                   </div>
 
                   <div>
-                    <p className={`text-sm font-medium ${textColors.tertiary} mb-2`}>Cliente</p>
-                    <p className={`text-base ${textColors.primary}`}>{getCustomerName(selectedUnlock.customers)}</p>
+                    <p className="text-sm font-medium text-[#6C757D] mb-2">Cliente</p>
+                    <p className="text-base text-[#343A40]">{getCustomerName(selectedUnlock.customers)}</p>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <p className={`text-sm font-medium ${textColors.tertiary}`}>Costo</p>
-                      <p className={`text-lg font-semibold ${textColors.primary}`}>{formatCurrency(selectedUnlock.cost)}</p>
-                    </div>
-                    {selectedUnlock.provider && (
+                                      <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <p className={`text-sm font-medium ${textColors.tertiary}`}>Proveedor</p>
-                        <p className={`text-base ${textColors.primary}`}>{selectedUnlock.provider}</p>
+                        <p className="text-sm font-medium text-[#6C757D]">Costo</p>
+                        <p className="text-lg font-semibold text-[#343A40]">{formatCurrency(selectedUnlock.cost)}</p>
+                      </div>
+                      {selectedUnlock.provider && (
+                        <div>
+                          <p className="text-sm font-medium text-[#6C757D]">Proveedor</p>
+                          <p className="text-base text-[#343A40]">{selectedUnlock.provider}</p>
+                        </div>
+                      )}
+                    </div>
+
+                    {selectedUnlock.notes && (
+                      <div>
+                        <p className="text-sm font-medium text-[#6C757D] mb-2">Notas</p>
+                        <p className="text-base text-[#343A40]">{selectedUnlock.notes}</p>
                       </div>
                     )}
-                  </div>
-
-                  {selectedUnlock.notes && (
-                    <div>
-                      <p className={`text-sm font-medium ${textColors.tertiary} mb-2`}>Notas</p>
-                      <p className={`text-base ${textColors.primary}`}>{selectedUnlock.notes}</p>
-                    </div>
-                  )}
                 </div>
               )}
             </ModalBody>
             <ModalFooter>
-              <Button color="default" variant="light" onPress={onDetailClose}>
+              <Button 
+                variant="light" 
+                onPress={onDetailClose}
+                className="text-[#6C757D] hover:bg-[#E8F0FE]"
+              >
                 Cerrar
               </Button>
               
@@ -1603,38 +1602,42 @@ export default function DesbloqueoPage() {
           scrollBehavior="inside"
           classNames={{
             wrapper: "z-[1000]",
-            backdrop: "z-[999]",
-            base: "max-h-[95vh] my-2 mx-2 sm:mx-6",
-            body: "max-h-[60vh] overflow-y-auto py-4",
-            header: "border-b border-gray-200 pb-4",
-            footer: "border-t border-gray-200 pt-4"
+            backdrop: "z-[999] bg-black/40 backdrop-blur-sm",
+            base: "!rounded-3xl shadow-2xl border-0 bg-white my-4 mx-4 sm:my-6 sm:mx-6 md:mx-8 lg:mx-12",
+            body: "p-6 md:p-8",
+            header: "border-b border-gray-200/50 p-6 md:p-8 bg-gradient-to-r from-red-50/50 to-white !rounded-t-3xl",
+            footer: "border-t border-gray-200/50 p-6 md:p-8 bg-gradient-to-r from-red-50/50 to-white !rounded-b-3xl"
           }}
         >
           <ModalContent>
             <ModalHeader>
-              <h3 className={`text-xl font-bold ${textColors.primary}`}>Confirmar Eliminación</h3>
+              <h3 className="text-xl font-bold text-[#343A40]">Confirmar Eliminación</h3>
             </ModalHeader>
             <ModalBody>
               {selectedUnlock && (
                 <div className="space-y-4">
-                  <p className={textColors.secondary}>¿Estás seguro de que deseas eliminar este desbloqueo?</p>
+                  <p className="text-[#6C757D]">¿Estás seguro de que deseas eliminar este desbloqueo?</p>
                   <div className="bg-red-50 p-4 rounded-lg">
-                    <p className={`font-medium ${textColors.primary}`}>{getUnlockTypeLabel(selectedUnlock.unlock_type)}</p>
-                    <p className={`text-sm ${textColors.secondary}`}>Dispositivo: {selectedUnlock.brand} {selectedUnlock.model}</p>
-                    <p className={`text-sm ${textColors.secondary}`}>Cliente: {getCustomerName(selectedUnlock.customers)}</p>
+                    <p className="font-medium text-[#343A40]">{getUnlockTypeLabel(selectedUnlock.unlock_type)}</p>
+                    <p className="text-sm text-[#6C757D]">Dispositivo: {selectedUnlock.brand} {selectedUnlock.model}</p>
+                    <p className="text-sm text-[#6C757D]">Cliente: {getCustomerName(selectedUnlock.customers)}</p>
                   </div>
                   <p className="text-sm text-red-600">Esta acción no se puede deshacer.</p>
                 </div>
               )}
             </ModalBody>
             <ModalFooter>
-              <Button color="default" variant="light" onPress={onDeleteClose}>
+              <Button 
+                variant="light" 
+                onPress={onDeleteClose}
+                className="text-[#6C757D] hover:bg-[#E8F0FE]"
+              >
                 Cancelar
               </Button>
               <Button 
-                color="danger" 
                 onPress={confirmDeleteUnlock}
                 isLoading={deleteLoading}
+                className="bg-gradient-to-r from-[#6C757D] to-[#495057] text-white hover:from-[#495057] hover:to-[#6C757D]"
               >
                 Eliminar
               </Button>

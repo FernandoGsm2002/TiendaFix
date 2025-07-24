@@ -88,14 +88,14 @@ export function AnnouncementModal({
       classNames={{
         wrapper: "z-[1100]",
         backdrop: "z-[1099] bg-black/50 backdrop-blur-sm",
-        base: "max-h-[90vh] my-4 mx-4 sm:mx-6 border-2 border-gray-200 shadow-2xl",
+        base: "max-h-[90vh] my-4 mx-4 sm:mx-6 border-2 border-[#004085]/20 shadow-2xl",
         body: "max-h-[60vh] overflow-y-auto py-4",
-        header: "border-b border-gray-200 pb-4",
-        footer: "border-t border-gray-200 pt-4 bg-gray-50"
+        header: "border-b border-[#004085]/20 pb-4",
+        footer: "border-t border-[#004085]/20 pt-4 bg-[#F8F9FA]"
       }}
     >
       <ModalContent className="bg-white">
-        <ModalHeader className="flex flex-col gap-3 bg-gradient-to-r from-[#4ca771] to-[#013237] text-white rounded-t-lg p-6">
+        <ModalHeader className="flex flex-col gap-3 bg-[#004085] text-white rounded-t-lg p-6">
           <div className="flex items-center justify-between w-full">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-white/20 rounded-full">
@@ -131,17 +131,17 @@ export function AnnouncementModal({
         <ModalBody className="p-6">
           <div className="space-y-6">
             {/* Descripción principal */}
-            <Card className="border border-gray-200 shadow-sm">
+            <Card className="border border-[#E8F0FE] shadow-sm bg-[#E8F0FE]">
               <CardHeader className="pb-3">
                 <div className="flex items-center gap-2">
-                  <Tag className="w-5 h-5 text-gray-600" />
-                  <h3 className={`text-lg font-semibold ${textColors.primary}`}>
+                  <Tag className="w-5 h-5 text-[#004085]" />
+                  <h3 className="text-lg font-semibold text-[#343A40]">
                     {version.title}
                   </h3>
                 </div>
               </CardHeader>
               <CardBody className="pt-0">
-                <p className={`text-sm ${textColors.secondary}`}>
+                <p className="text-sm text-[#6C757D]">
                   {version.description}
                 </p>
               </CardBody>
@@ -149,14 +149,14 @@ export function AnnouncementModal({
 
             {/* Lista de cambios */}
             <div className="space-y-3">
-              <h4 className={`text-lg font-semibold ${textColors.primary} flex items-center gap-2`}>
-                <Zap className="w-5 h-5" />
+              <h4 className="text-lg font-semibold text-[#343A40] flex items-center gap-2">
+                <Zap className="w-5 h-5 text-[#FF8C00]" />
                 Cambios incluidos
               </h4>
               
               <ScrollShadow className="max-h-60 space-y-3">
                 {version.changes.map((change, index) => (
-                  <Card key={change.id} className="border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                  <Card key={change.id} className="border border-[#E8F0FE] shadow-sm hover:shadow-md transition-shadow bg-[#F8F9FA]">
                     <CardBody className="p-4">
                       <div className="flex items-start gap-3">
                         <div className="text-2xl flex-shrink-0 mt-1">
@@ -164,18 +164,18 @@ export function AnnouncementModal({
                         </div>
                         <div className="flex-1 space-y-2">
                           <div className="flex items-start justify-between gap-2">
-                            <h5 className={`font-semibold ${textColors.primary}`}>
+                            <h5 className="font-semibold text-[#343A40]">
                               {change.title}
                             </h5>
                             <Chip
                               size="sm"
                               variant="bordered"
-                              className={`${getChangeTypeColor(change.type)} text-xs font-medium`}
+                              className="bg-[#E8F0FE] text-[#004085] border-[#004085]/20 text-xs font-medium"
                             >
                               {getChangeTypeLabel(change.type)}
                             </Chip>
                           </div>
-                          <p className={`text-sm ${textColors.secondary} leading-relaxed`}>
+                          <p className="text-sm text-[#6C757D] leading-relaxed">
                             {change.description}
                           </p>
                         </div>
@@ -187,10 +187,10 @@ export function AnnouncementModal({
             </div>
 
             {/* Información adicional */}
-            <Card className="border border-gray-200 bg-gray-50">
+            <Card className="border border-[#E8F0FE] bg-[#E8F0FE]">
               <CardBody className="p-4">
-                <div className="flex items-center gap-2 text-sm text-gray-600">
-                  <Calendar className="w-4 h-4" />
+                <div className="flex items-center gap-2 text-sm text-[#6C757D]">
+                  <Calendar className="w-4 h-4 text-[#004085]" />
                   <span>
                     Fecha de lanzamiento: {formatDate(version.releaseDate)}
                   </span>
@@ -200,13 +200,13 @@ export function AnnouncementModal({
           </div>
         </ModalBody>
 
-        <ModalFooter className="p-6 bg-gray-50">
+        <ModalFooter className="p-6 bg-[#F8F9FA]">
           <div className="flex items-center justify-between w-full">
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-[#6C757D]">
               Gracias por usar TiendaFix 🚀
             </p>
             <Button
-              className="bg-gradient-to-r from-[#4ca771] to-[#013237] text-white font-medium px-6"
+              className="bg-[#28A745] hover:bg-[#28A745]/90 text-white font-medium px-6"
               onPress={handleClose}
               startContent={<CheckCircle className="w-4 h-4" />}
             >

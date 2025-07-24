@@ -412,16 +412,37 @@ export default function ReparacionesPage() {
     setNewRepair(prev => ({ ...prev, customer_id: customerId, device_description: '' }))
   }
 
-  const getStatusColor = (status: string) => {
+  const getStatusColor = (status: string): "default" | "warning" | "primary" | "success" | "danger" | "secondary" => {
     switch (status) {
       case 'pending': return 'default'
       case 'received': return 'default'
       case 'diagnosed': return 'warning'
-      case 'in_progress': return 'primary'
+      case 'in_progress': return 'secondary'
       case 'completed': return 'success'
       case 'delivered': return 'success'
       case 'cancelled': return 'danger'
       default: return 'default'
+    }
+  }
+
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case 'pending': return Clock
+      case 'received': return Clock
+      case 'diagnosed': return AlertTriangle
+      case 'in_progress': return Settings
+      case 'completed': return CheckCircle
+      case 'delivered': return CheckCircle
+      case 'cancelled': return AlertCircle
+      default: return Clock
+    }
+  }
+
+  const getStatusInfo = (status: string) => {
+    return {
+      color: getStatusColor(status),
+      icon: getStatusIcon(status),
+      label: getStatusLabel(status)
     }
   }
 
@@ -485,7 +506,7 @@ export default function ReparacionesPage() {
       switch (status) {
         case 'received': return `${baseClass} bg-gray-500 text-white border-gray-500 hover:bg-gray-600`
         case 'diagnosed': return `${baseClass} bg-orange-500 text-white border-orange-500 hover:bg-orange-600`
-        case 'in_progress': return `${baseClass} bg-blue-500 text-white border-blue-500 hover:bg-blue-600`
+        case 'in_progress': return `${baseClass} bg-gray-600 text-white border-gray-600 hover:bg-gray-700`
         case 'completed': return `${baseClass} bg-green-500 text-white border-green-500 hover:bg-green-600`
         case 'delivered': return `${baseClass} bg-green-600 text-white border-green-600 hover:bg-green-700`
         case 'cancelled': return `${baseClass} bg-red-500 text-white border-red-500 hover:bg-red-600`
@@ -495,7 +516,7 @@ export default function ReparacionesPage() {
       switch (status) {
         case 'received': return `${baseClass} bg-gray-50 text-gray-700 border-gray-300 hover:bg-gray-100 hover:border-gray-400`
         case 'diagnosed': return `${baseClass} bg-orange-50 text-orange-700 border-orange-300 hover:bg-orange-100 hover:border-orange-400`
-        case 'in_progress': return `${baseClass} bg-blue-50 text-blue-700 border-blue-300 hover:bg-blue-100 hover:border-blue-400`
+        case 'in_progress': return `${baseClass} bg-gray-50 text-gray-700 border-gray-300 hover:bg-gray-100 hover:border-gray-400`
         case 'completed': return `${baseClass} bg-green-50 text-green-700 border-green-300 hover:bg-green-100 hover:border-green-400`
         case 'delivered': return `${baseClass} bg-green-50 text-green-800 border-green-400 hover:bg-green-100 hover:border-green-500`
         case 'cancelled': return `${baseClass} bg-red-50 text-red-700 border-red-300 hover:bg-red-100 hover:border-red-400`
@@ -1085,16 +1106,13 @@ export default function ReparacionesPage() {
       case 'estado':
         return (
           <Chip 
-            color={getStatusColor(repair.status) as any} 
-            variant="light"
-            startContent={
-              repair.status === 'in_progress' ? <Clock className="w-4 h-4" /> :
-              repair.status === 'completed' ? <CheckCircle className="w-4 h-4" /> :
-              repair.status === 'cancelled' ? <AlertCircle className="w-4 h-4" /> :
-              <Wrench className="w-4 h-4" />
-            }
+            color={getStatusInfo(repair.status).color} 
+            variant="solid" 
+            size="sm"
+            className="font-medium"
+            startContent={React.createElement(getStatusInfo(repair.status).icon, { className: "w-4 h-4" })}
           >
-            {getStatusLabel(repair.status)}
+            {getStatusInfo(repair.status).label}
           </Chip>
         )
       case 'costo':
@@ -1223,13 +1241,13 @@ export default function ReparacionesPage() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            <h1 className="text-xl md:text-2xl lg:text-3xl font-bold bg-gradient-to-r from-[#4ca771] to-[#013237] bg-clip-text text-transparent">{t('repairs.title')}</h1>
-            <p className="text-sm md:text-base text-[#4ca771] mt-1">{t('repairs.description')}</p>
+            <h1 className="text-xl md:text-2xl lg:text-3xl font-bold bg-gradient-to-r from-[#004085] to-[#003366] bg-clip-text text-transparent">{t('repairs.title')}</h1>
+                          <p className="text-sm md:text-base text-[#6C757D] mt-1">{t('repairs.description')}</p>
           </div>
           <Button 
             startContent={<Plus className="h-4 w-4" />}
             onPress={onCreateOpen}
-            className="w-full sm:w-auto font-semibold bg-gradient-to-r from-[#4ca771] to-[#013237] text-white hover:from-[#013237] hover:to-[#4ca771] transition-all"
+            className="w-full sm:w-auto font-semibold bg-gradient-to-r from-[#004085] to-[#003366] text-white hover:from-[#003366] hover:to-[#004085] transition-all"
             size="lg"
           >
             Nueva Reparación
@@ -1238,53 +1256,53 @@ export default function ReparacionesPage() {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <Card className="hover:scale-105 transition-all duration-300 border border-gray-200 shadow-lg bg-gradient-to-br from-blue-100 to-blue-200">
+          <Card className="hover:scale-105 transition-all duration-300 border border-[#6C757D]/20 shadow-lg bg-gradient-to-br from-[#F8F9FA] to-[#E9ECEF]">
             <CardBody className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <div className="p-3 rounded-xl bg-blue-500 shadow-lg">
+                <div className="p-3 rounded-xl bg-gradient-to-br from-[#6C757D] to-[#495057] shadow-lg">
                   <Wrench className="w-5 h-5 text-white" />
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="flex items-center gap-1">
-                    <ArrowUpRight className="w-3 h-3 text-green-500" />
-                    <span className="text-xs text-green-600 font-medium">+12%</span>
+                    <ArrowUpRight className="w-3 h-3 text-[#004085]" />
+                    <span className="text-xs text-[#004085] font-medium">+12%</span>
                   </div>
-                  <Chip variant="flat" size="sm" className="font-semibold bg-white/60 text-blue-800 border border-white/30">
+                  <Chip variant="flat" size="sm" className="font-semibold bg-white/60 text-[#343A40] border border-white/30">
                     Total
                   </Chip>
                 </div>
               </div>
               <div className="space-y-2">
-                <p className="text-base font-bold text-blue-800 opacity-90 uppercase tracking-wider">{t('repairs.total')}</p>
-                <p className="text-4xl font-extrabold text-blue-800 mb-2 tracking-tight">{stats.total}</p>
-                <p className="text-sm font-medium text-blue-800 opacity-70">Reparaciones registradas</p>
+                <p className="text-base font-bold text-[#343A40] opacity-90 uppercase tracking-wider">{t('repairs.total')}</p>
+                <p className="text-4xl font-extrabold text-[#343A40] mb-2 tracking-tight">{stats.total}</p>
+                <p className="text-sm font-medium text-[#6C757D] opacity-70">Reparaciones registradas</p>
               </div>
             </CardBody>
           </Card>
 
-          <Card className="hover:scale-105 transition-all duration-300 border border-gray-200 shadow-lg bg-gradient-to-br from-orange-100 to-orange-200">
+          <Card className="hover:scale-105 transition-all duration-300 border border-[#004085]/20 shadow-lg bg-gradient-to-br from-[#E8F0FE] to-[#D1E7FF]">
             <CardBody className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <div className="p-3 rounded-xl bg-orange-500 shadow-lg">
+                <div className="p-3 rounded-xl bg-gradient-to-br from-[#004085] to-[#003366] shadow-lg">
                   <Clock className="w-5 h-5 text-white" />
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="flex items-center gap-1">
-                    <ArrowDownRight className="w-3 h-3 text-red-500" />
-                    <span className="text-xs text-red-600 font-medium">-8%</span>
+                    <ArrowDownRight className="w-3 h-3 text-[#FF8C00]" />
+                    <span className="text-xs text-[#FF8C00] font-medium">-8%</span>
                   </div>
-                  <Chip variant="flat" size="sm" className="font-semibold bg-white/60 text-orange-800 border border-white/30">
+                  <Chip variant="flat" size="sm" className="font-semibold bg-white/60 text-[#343A40] border border-white/30">
                     Pendientes
                   </Chip>
                 </div>
               </div>
               <div className="space-y-2">
-                <p className="text-base font-bold text-orange-800 opacity-90 uppercase tracking-wider">Pendientes</p>
-                <p className="text-4xl font-extrabold text-orange-800 mb-2 tracking-tight">{stats.received + stats.diagnosed}</p>
+                <p className="text-base font-bold text-[#343A40] opacity-90 uppercase tracking-wider">Pendientes</p>
+                <p className="text-4xl font-extrabold text-[#343A40] mb-2 tracking-tight">{stats.received + stats.diagnosed}</p>
                 <Progress 
                   value={((stats.received + stats.diagnosed) / Math.max(stats.total, 1)) * 100} 
                   classNames={{
-                    indicator: "bg-orange-500",
+                    indicator: "bg-[#004085]",
                   }}
                   size="sm" 
                   className="max-w-md"
@@ -1293,29 +1311,29 @@ export default function ReparacionesPage() {
             </CardBody>
           </Card>
 
-          <Card className="hover:scale-105 transition-all duration-300 border border-gray-200 shadow-lg bg-gradient-to-br from-purple-100 to-purple-200">
+          <Card className="hover:scale-105 transition-all duration-300 border border-[#6C757D]/20 shadow-lg bg-gradient-to-br from-[#F8F9FA] to-[#E9ECEF]">
             <CardBody className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <div className="p-3 rounded-xl bg-purple-500 shadow-lg">
+                <div className="p-3 rounded-xl bg-gradient-to-br from-[#6C757D] to-[#495057] shadow-lg">
                   <Settings className="w-5 h-5 text-white" />
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="flex items-center gap-1">
-                    <ArrowUpRight className="w-3 h-3 text-green-500" />
-                    <span className="text-xs text-green-600 font-medium">+15%</span>
+                    <ArrowUpRight className="w-3 h-3 text-[#004085]" />
+                    <span className="text-xs text-[#004085] font-medium">+15%</span>
                   </div>
-                  <Chip variant="flat" size="sm" className="font-semibold bg-white/60 text-purple-800 border border-white/30">
+                  <Chip variant="flat" size="sm" className="font-semibold bg-white/60 text-[#343A40] border border-white/30">
                     Proceso
                   </Chip>
                 </div>
               </div>
               <div className="space-y-2">
-                <p className="text-base font-bold text-purple-800 opacity-90 uppercase tracking-wider">En Proceso</p>
-                <p className="text-4xl font-extrabold text-purple-800 mb-2 tracking-tight">{stats.inProgress}</p>
+                <p className="text-base font-bold text-[#343A40] opacity-90 uppercase tracking-wider">En Proceso</p>
+                <p className="text-4xl font-extrabold text-[#343A40] mb-2 tracking-tight">{stats.inProgress}</p>
                 <Progress 
                   value={(stats.inProgress / Math.max(stats.total, 1)) * 100} 
                   classNames={{
-                    indicator: "bg-purple-500",
+                    indicator: "bg-[#6C757D]",
                   }}
                   size="sm" 
                   className="max-w-md"
@@ -1324,29 +1342,29 @@ export default function ReparacionesPage() {
             </CardBody>
           </Card>
 
-          <Card className="hover:scale-105 transition-all duration-300 border border-gray-200 shadow-lg bg-gradient-to-br from-emerald-100 to-emerald-200">
+          <Card className="hover:scale-105 transition-all duration-300 border border-[#004085]/20 shadow-lg bg-gradient-to-br from-[#E8F0FE] to-[#D1E7FF]">
             <CardBody className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <div className="p-3 rounded-xl bg-emerald-500 shadow-lg">
+                <div className="p-3 rounded-xl bg-gradient-to-br from-[#004085] to-[#003366] shadow-lg">
                   <CheckCircle className="w-5 h-5 text-white" />
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="flex items-center gap-1">
-                    <ArrowUpRight className="w-3 h-3 text-green-500" />
-                    <span className="text-xs text-green-600 font-medium">+22%</span>
+                    <ArrowUpRight className="w-3 h-3 text-[#004085]" />
+                    <span className="text-xs text-[#004085] font-medium">+22%</span>
                   </div>
-                  <Chip variant="flat" size="sm" className="font-semibold bg-white/60 text-emerald-800 border border-white/30">
+                  <Chip variant="flat" size="sm" className="font-semibold bg-white/60 text-[#343A40] border border-white/30">
                     Completadas
                   </Chip>
                 </div>
               </div>
               <div className="space-y-2">
-                <p className="text-base font-bold text-emerald-800 opacity-90 uppercase tracking-wider">Completadas</p>
-                <p className="text-4xl font-extrabold text-emerald-800 mb-2 tracking-tight">{stats.completed + stats.delivered}</p>
+                <p className="text-base font-bold text-[#343A40] opacity-90 uppercase tracking-wider">Completadas</p>
+                <p className="text-4xl font-extrabold text-[#343A40] mb-2 tracking-tight">{stats.completed + stats.delivered}</p>
                 <Progress 
                   value={((stats.completed + stats.delivered) / Math.max(stats.total, 1)) * 100} 
                   classNames={{
-                    indicator: "bg-emerald-500",
+                    indicator: "bg-[#004085]",
                   }}
                   size="sm" 
                   className="max-w-md"
@@ -1483,12 +1501,13 @@ export default function ReparacionesPage() {
                       </TableCell>
                       <TableCell>
                         <Chip 
-                          color={getStatusColor(repair.status)} 
-                          variant="flat" 
+                          color={getStatusInfo(repair.status).color} 
+                          variant="solid" 
                           size="sm"
                           className="font-medium"
+                          startContent={React.createElement(getStatusInfo(repair.status).icon, { className: "w-4 h-4" })}
                         >
-                          {getStatusLabel(repair.status)}
+                          {getStatusInfo(repair.status).label}
                         </Chip>
                       </TableCell>
                       <TableCell>
@@ -1566,12 +1585,13 @@ export default function ReparacionesPage() {
                           <p className="text-sm text-gray-600 line-clamp-2">{repair.description}</p>
                         </div>
                         <Chip 
-                          color={getStatusColor(repair.status)} 
-                          variant="flat" 
+                          color={getStatusInfo(repair.status).color} 
+                          variant="solid" 
                           size="sm"
                           className="ml-2 flex-shrink-0"
+                          startContent={React.createElement(getStatusInfo(repair.status).icon, { className: "w-4 h-4" })}
                         >
-                          {getStatusLabel(repair.status)}
+                          {getStatusInfo(repair.status).label}
                         </Chip>
                       </div>
 
@@ -1698,11 +1718,11 @@ export default function ReparacionesPage() {
           scrollBehavior="inside"
           classNames={{
             wrapper: "z-[1000]",
-            backdrop: "z-[999]",
-            base: "max-h-[100vh] h-full w-full m-0 xs:max-h-[95vh] xs:h-auto xs:w-auto xs:my-1 xs:mx-1 sm:my-2 sm:mx-2 md:mx-4 lg:mx-6 xl:max-w-5xl",
-            body: "max-h-[calc(100vh-120px)] xs:max-h-[80vh] sm:max-h-[75vh] overflow-y-auto p-2 xs:p-3 sm:p-4 md:p-5 lg:p-6",
-            header: "border-b border-gray-200 p-2 xs:p-3 sm:p-4 md:p-5 lg:p-6",
-            footer: "border-t border-gray-200 p-2 xs:p-3 sm:p-4 md:p-5 lg:p-6"
+            backdrop: "z-[999] bg-black/40 backdrop-blur-sm",
+            base: "!rounded-3xl shadow-2xl border-0 bg-white max-h-[100vh] h-full w-full m-0 xs:max-h-[95vh] xs:h-auto xs:w-auto xs:my-4 xs:mx-4 sm:my-6 sm:mx-6 md:mx-8 lg:mx-12 xl:max-w-5xl",
+            body: "max-h-[calc(100vh-120px)] xs:max-h-[80vh] sm:max-h-[75vh] overflow-y-auto p-2 xs:p-4 sm:p-6 md:p-8 lg:p-10",
+            header: "border-b border-gray-200/50 p-2 xs:p-4 sm:p-6 md:p-8 lg:p-10 bg-gradient-to-r from-gray-50/50 to-white !rounded-t-3xl",
+            footer: "border-t border-gray-200/50 p-2 xs:p-4 sm:p-6 md:p-8 lg:p-10 bg-gradient-to-r from-gray-50/50 to-white !rounded-b-3xl"
           }}
         >
           <ModalContent>
@@ -1958,14 +1978,14 @@ export default function ReparacionesPage() {
                 </div>
               </form>
             </ModalBody>
-            <ModalFooter className="gap-3 py-4">
-              <Button variant="flat" onClick={onCreateClose} size="md" className="text-base font-medium">Cancelar</Button>
+            <ModalFooter className="gap-3 py-4 bg-[#F8F9FA] border-t border-[#E8F0FE]/50">
+              <Button variant="flat" onClick={onCreateClose} size="md" className="text-base font-medium text-[#6C757D] hover:bg-[#E8F0FE]">Cancelar</Button>
               <Button 
                 onClick={handleCreateRepair} 
                 isLoading={createLoading} 
                 size="md" 
                 startContent={!createLoading ? <Plus className="w-4 h-4" /> : null}
-                className="bg-gradient-to-r from-[#4ca771] to-[#013237] text-white hover:from-[#013237] hover:to-[#4ca771] transition-all text-base font-medium px-6"
+                className="bg-gradient-to-r from-[#004085] to-[#003366] text-white hover:from-[#003366] hover:to-[#004085] transition-all text-base font-medium px-6"
               >
                 Crear Reparación
               </Button>
@@ -1981,11 +2001,11 @@ export default function ReparacionesPage() {
           scrollBehavior="inside"
           classNames={{
             wrapper: "z-[1000]",
-            backdrop: "z-[999]",
-            base: "max-h-[100vh] h-full w-full m-0 xs:max-h-[95vh] xs:h-auto xs:w-auto xs:my-1 xs:mx-1 sm:my-2 sm:mx-2 md:mx-4 lg:mx-6 xl:max-w-4xl",
-            body: "max-h-[calc(100vh-120px)] xs:max-h-[80vh] sm:max-h-[75vh] overflow-y-auto p-2 xs:p-3 sm:p-4 md:p-5 lg:p-6",
-            header: "border-b border-gray-200 p-2 xs:p-3 sm:p-4 md:p-5 lg:p-6",
-            footer: "border-t border-gray-200 p-2 xs:p-3 sm:p-4 md:p-5 lg:p-6"
+            backdrop: "z-[999] bg-black/40 backdrop-blur-sm",
+            base: "!rounded-3xl shadow-2xl border-0 bg-white max-h-[100vh] h-full w-full m-0 xs:max-h-[95vh] xs:h-auto xs:w-auto xs:my-4 xs:mx-4 sm:my-6 sm:mx-6 md:mx-8 lg:mx-12 xl:max-w-4xl",
+            body: "max-h-[calc(100vh-120px)] xs:max-h-[80vh] sm:max-h-[75vh] overflow-y-auto p-2 xs:p-4 sm:p-6 md:p-8 lg:p-10",
+            header: "border-b border-[#E8F0FE]/50 p-2 xs:p-4 sm:p-6 md:p-8 lg:p-10 bg-gradient-to-r from-[#F8F9FA]/50 to-white !rounded-t-3xl",
+            footer: "border-t border-[#E8F0FE]/50 p-2 xs:p-4 sm:p-6 md:p-8 lg:p-10 bg-gradient-to-r from-[#F8F9FA]/50 to-white !rounded-b-3xl"
           }}
         >
           <ModalContent>
@@ -2000,32 +2020,32 @@ export default function ReparacionesPage() {
                   {selectedRepair && (
                    <div className="space-y-3 xs:space-y-4 sm:space-y-5 md:space-y-6">
                      <div className="grid grid-cols-1 gap-3 xs:gap-4 sm:grid-cols-2 sm:gap-5 md:gap-6">
-                                                <div className="bg-gray-50 p-2 xs:p-3 rounded-lg">
-                           <p className={`text-xs xs:text-sm font-medium ${textColors.tertiary} mb-1`}>Título</p>
-                           <p className={`text-sm xs:text-base sm:text-lg font-semibold ${textColors.primary}`}>{selectedRepair.title}</p>
+                                                <div className="bg-[#E8F0FE] p-2 xs:p-3 rounded-lg">
+                           <p className="text-xs xs:text-sm font-medium text-[#6C757D] mb-1">Título</p>
+                           <p className="text-sm xs:text-base sm:text-lg font-semibold text-[#343A40]">{selectedRepair.title}</p>
                          </div>
-                         <div className="bg-gray-50 p-2 xs:p-3 rounded-lg">
-                           <p className={`text-xs xs:text-sm font-medium ${textColors.tertiary} mb-1`}>Estado</p>
-                           <Chip color={getStatusColor(selectedRepair.status)} variant="flat" size="sm" className="xs:text-sm">
-                             {getStatusLabel(selectedRepair.status)}
+                         <div className="bg-[#E8F0FE] p-2 xs:p-3 rounded-lg">
+                           <p className="text-xs xs:text-sm font-medium text-[#6C757D] mb-1">Estado</p>
+                           <Chip color={getStatusInfo(selectedRepair.status).color} variant="solid" size="sm" className="xs:text-sm">
+                             {getStatusInfo(selectedRepair.status).label}
                            </Chip>
                          </div>
                      </div>
 
                      {/* Información del creador */}
-                     <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                     <div className="bg-[#E8F0FE] p-4 rounded-lg border border-[#004085]/20">
                        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
                          <div className="flex items-center gap-3 flex-1">
-                           <div className="p-2 bg-blue-100 rounded-full flex-shrink-0">
+                           <div className="p-2 bg-[#004085]/10 rounded-full flex-shrink-0">
                              {selectedRepair.technician?.email.includes('admin') || selectedRepair.technician?.name?.toLowerCase().includes('admin') ? (
-                               <Shield className="w-4 h-4 text-blue-600" />
+                               <Shield className="w-4 h-4 text-[#004085]" />
                              ) : (
-                               <User className="w-4 h-4 text-blue-600" />
+                               <User className="w-4 h-4 text-[#004085]" />
                              )}
                            </div>
                            <div className="flex-1 min-w-0">
-                             <p className="text-sm font-medium text-blue-800">Creado por</p>
-                             <p className="text-base font-semibold text-blue-900 truncate">
+                             <p className="text-sm font-medium text-[#6C757D]">Creado por</p>
+                             <p className="text-base font-semibold text-[#343A40] truncate">
                                {selectedRepair.technician ? selectedRepair.technician.name : 'Usuario desconocido'}
                              </p>
                              <p className="text-sm text-blue-600 truncate">
@@ -2186,11 +2206,11 @@ export default function ReparacionesPage() {
           scrollBehavior="inside"
           classNames={{
             wrapper: "z-[1000]",
-            backdrop: "z-[999]",
-            base: "max-h-[100vh] h-full w-full m-0 xs:max-h-[95vh] xs:h-auto xs:w-auto xs:my-1 xs:mx-1 sm:my-2 sm:mx-2 md:mx-4 lg:mx-6 xl:max-w-2xl",
-            body: "max-h-[calc(100vh-120px)] xs:max-h-[70vh] sm:max-h-[60vh] overflow-y-auto p-2 xs:p-3 sm:p-4 md:p-5 lg:p-6",
-            header: "border-b border-gray-200 p-2 xs:p-3 sm:p-4 md:p-5 lg:p-6",
-            footer: "border-t border-gray-200 p-2 xs:p-3 sm:p-4 md:p-5 lg:p-6"
+            backdrop: "z-[999] bg-black/40 backdrop-blur-sm",
+            base: "!rounded-3xl shadow-2xl border-0 bg-white my-4 mx-4 sm:my-6 sm:mx-6 md:mx-8 lg:mx-12",
+            body: "p-6 md:p-8",
+            header: "border-b border-gray-200/50 p-6 md:p-8 bg-gradient-to-r from-red-50/50 to-white !rounded-t-3xl",
+            footer: "border-t border-gray-200/50 p-6 md:p-8 bg-gradient-to-r from-red-50/50 to-white !rounded-b-3xl"
           }}
         >
           <ModalContent>
@@ -2234,11 +2254,11 @@ export default function ReparacionesPage() {
           scrollBehavior="inside"
           classNames={{
             wrapper: "z-[1000]",
-            backdrop: "z-[999]",
-            base: "max-h-[100vh] h-full w-full m-0 xs:max-h-[95vh] xs:h-auto xs:w-auto xs:my-1 xs:mx-1 sm:my-2 sm:mx-2 md:mx-4 lg:mx-6 xl:max-w-3xl",
-            body: "max-h-[calc(100vh-120px)] xs:max-h-[75vh] sm:max-h-[70vh] overflow-y-auto p-2 xs:p-3 sm:p-4 md:p-5 lg:p-6",
-            header: "border-b border-gray-200 p-2 xs:p-3 sm:p-4 md:p-5 lg:p-6",
-            footer: "border-t border-gray-200 p-2 xs:p-3 sm:p-4 md:p-5 lg:p-6"
+            backdrop: "z-[999] bg-black/40 backdrop-blur-sm",
+            base: "!rounded-3xl shadow-2xl border-0 bg-white max-h-[100vh] h-full w-full m-0 xs:max-h-[95vh] xs:h-auto xs:w-auto xs:my-4 xs:mx-4 sm:my-6 sm:mx-6 md:mx-8 lg:mx-12 xl:max-w-3xl",
+            body: "max-h-[calc(100vh-120px)] xs:max-h-[75vh] sm:max-h-[70vh] overflow-y-auto p-2 xs:p-4 sm:p-6 md:p-8 lg:p-10",
+            header: "border-b border-gray-200/50 p-2 xs:p-4 sm:p-6 md:p-8 lg:p-10 bg-gradient-to-r from-gray-50/50 to-white !rounded-t-3xl",
+            footer: "border-t border-gray-200/50 p-2 xs:p-4 sm:p-6 md:p-8 lg:p-10 bg-gradient-to-r from-gray-50/50 to-white !rounded-b-3xl"
           }}
         >
           <ModalContent>
@@ -2250,8 +2270,8 @@ export default function ReparacionesPage() {
                 <div className="space-y-3 md:space-y-4">
                   <div className="flex items-center gap-2">
                     <p className={`text-xs md:text-sm ${textColors.secondary}`}>Estado actual:</p>
-                    <Chip color={getStatusColor(selectedRepair.status) as any} size="sm">
-                      {getStatusLabel(selectedRepair.status)}
+                    <Chip color={getStatusInfo(selectedRepair.status).color} size="sm">
+                      {getStatusInfo(selectedRepair.status).label}
                     </Chip>
                   </div>
                   <div className="flex flex-col gap-2 pt-2">
@@ -2265,7 +2285,7 @@ export default function ReparacionesPage() {
                           size="md"
                           className={getModalButtonClass(status, selectedRepair.status === status)}
                         >
-                          {getStatusLabel(status)}
+                          {getStatusInfo(status).label}
                         </Button>
                       ))}
                     </div>
@@ -2281,14 +2301,18 @@ export default function ReparacionesPage() {
           </ModalContent>
         </Modal>
 
-        {/* Modal de selección de tipo de ticket */}
+        {/* Modal de selección de tipo de impresión */}
         <Modal 
           isOpen={isPrintModalOpen} 
-          onClose={onPrintModalClose} 
+          onClose={onPrintModalClose}
           size="lg"
           classNames={{
-            wrapper: "z-[1050]",
-            backdrop: "z-[1040]",
+            wrapper: "z-[1200]",
+            backdrop: "z-[1199] bg-black/50 backdrop-blur-md",
+            base: "!rounded-3xl shadow-2xl border-0 bg-white my-4 mx-4 sm:my-6 sm:mx-6 md:mx-8 lg:mx-12",
+            body: "p-6 md:p-8",
+            header: "border-b border-gray-200/50 p-6 md:p-8 bg-gradient-to-r from-green-50/50 to-white !rounded-t-3xl",
+            footer: "border-t border-gray-200/50 p-6 md:p-8 bg-gradient-to-r from-green-50/50 to-white !rounded-b-3xl"
           }}
         >
           <ModalContent>

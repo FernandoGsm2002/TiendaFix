@@ -203,12 +203,12 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
         <div className="fixed bottom-4 right-4 z-50 transition-all duration-300 ease-smooth">
           <div className={`
             flex items-center gap-2 px-3 py-2 rounded-full
-            bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200
-            border border-green-200 dark:border-green-700
+            bg-[#E8F0FE] dark:bg-[#004085] text-[#004085] dark:text-white
+            border border-[#004085]/20 dark:border-[#004085]
             shadow-sm text-xs font-medium
             ${!reducedMotion ? 'animate-fade-in' : ''}
           `}>
-            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+            <div className="w-2 h-2 bg-[#004085] rounded-full animate-pulse" />
             En línea
           </div>
         </div>
